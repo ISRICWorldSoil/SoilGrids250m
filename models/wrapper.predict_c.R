@@ -14,7 +14,7 @@ wrapper.predict_c <- function(i, gm, varn, in.path, out.path){
     }
   }
   gc()
-  out <- paste0(out.path, "/", i, "/", varn, "_M_", substr(i, 4, nchar(i)), ".tif")
+  out <- paste0(out.path, "/", i, "/", varn, "_", i, ".tif")
   if(!file.exists(out)){  
     ## most probable class:
     try( c <- predict(gm, m, na.action = na.pass) )
@@ -30,7 +30,7 @@ wrapper.predict_c <- function(i, gm, varn, in.path, out.path){
       gc()
       for(j in 1:ncol(m)){
         m$v <- round(m@data[,j]*100)
-        out <- paste0(out.path, "/", i, "/", varn, "_", tax[j], "_M_", substr(i, 4, nchar(i)), ".tif")
+        out <- paste0(out.path, "/", i, "/", varn, "_", tax[j], "_", i, ".tif")
         writeGDAL(m["v"], out, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
       }
     }
