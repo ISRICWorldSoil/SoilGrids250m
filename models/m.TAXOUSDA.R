@@ -9,6 +9,11 @@ library(snowfall)
 library(rgdal)
 library(nnet)
 library(psych)
+library(plotKML)
+plotKML.env(convert="convert", show.env=FALSE)
+gdalwarp =  "/usr/local/bin/gdalwarp"
+gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
+system("/usr/local/bin/gdal-config --version")
 
 source("extract.equi7t3.R")
 source("wrapper.predict_c.R")
@@ -51,14 +56,14 @@ save(m_TAXOUSDA, file="m_TAXOUSDA.rda")
 ## Alternative models??
 #mrf_TAXOUSDA <- randomForestSRC::rfsrc(formulaString.USDA, ov)
 
-## predict for sample locations:
+## create dirs:
 dir.lst <- list.dirs("/data/covs")[-1]
-Sys.chmod(gsub("covs", "predicted", dir.lst), "777")
+x <- lapply(gsub("covs", "predicted", dir.lst), dir.create, recursive=TRUE)
+## predict for sample locations:
 wrapper.predict_c(i="NA_060_036", varn="TAXOUSDA", gm=m_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted")
 wrapper.predict_c(i="OC_087_063", varn="TAXOUSDA", gm=m_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted")
 wrapper.predict_c(i="EU_051_012", varn="TAXOUSDA", gm=m_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted")
 ## plot in GE:
-plotKML.env(convert="convert", show.env=FALSE)
 x <- readGDAL("/data/predicted/NA_060_036/TAXOUSDA_Xeralfs_NA_060_036.tif")
 kml(x, file.name="TAXOUSDA_Xeralfs_NA_060_036.kml", folder.name="Xeralfs", colour=band1, z.lim=c(0,60), colour_scale=SAGA_pal[["SG_COLORS_YELLOW_RED"]], raster_name="TAXOUSDA_Xeralfs_NA_060_036.png")
 x <- readGDAL("/data/predicted/OC_087_063/TAXOUSDA_Xeralfs_OC_087_063.tif")
@@ -66,6 +71,20 @@ kml(x, file.name="TAXOUSDA_Xeralfs_OC_087_063.kml", folder.name="Xeralfs", colou
 x <- readGDAL("/data/predicted/EU_051_012/TAXOUSDA_Aqualfs_EU_051_012.tif")
 kml(x, file.name="TAXOUSDA_Aqualfs_EU_051_012.kml", folder.name="Aqualfs", colour=band1, z.lim=c(0,60), colour_scale=SAGA_pal[["SG_COLORS_YELLOW_RED"]], raster_name="TAXOUSDA_Aqualfs_EU_051_012.png")
 
-## run in parallel:
+## run all predictions in parallel:
+pr.dirs <- basename(list.dirs("/data/predicted")[-1])
+## 2594 dirs
+sfInit(parallel=TRUE, cpus=35)
+## RAM is the bottleneck hence leave at least few cores free!
+sfExport("wrapper.predict_c", "m_TAXOUSDA")
+sfLibrary(rgdal)
+sfLibrary(sp)
+sfLibrary(nnet)
+x <- sfLapply(pr.dirs, fun=wrapper.predict_c, varn="TAXOUSDA", gm=m_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted")
+sfStop()
 
-
+## Create a mosaick:
+tmp.lst <- list.files(path="/data/predicted", pattern="Udalfs_NA", full.names=TRUE)
+cat(tmp.lst, sep="\n", file="tmp.txt")
+system(paste0(gdalbuildvrt, ' -input_file_list tmp.txt tmp.vrt'))
+system(paste0(gdalwarp, ' tmp.vrt TAXOUSDA_Udalfs_NA_250m.tif -t_srs \"+proj=longlat +datum=WGS84\" -r \"bilinear\" -ot \"Byte\" -dstnodata \"255\" -tr 0.002083333 0.002083333 -co \"COMPRESS=DEFLATE\"'))
