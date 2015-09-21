@@ -1,0 +1,23 @@
+<kml xmlns:xsd="http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd" xmlns:xmlns="http://www.opengis.net/kml/2.2/" version="1.0">
+  <Document>
+    <name>SoilGrids: TAXOUSDA</name>
+    <open>1</open>
+    <Folder>
+      <name>Predicted</name>
+      <GroundOverlay>
+        <name>cl</name>
+        <altitude>0</altitude>
+        <altitudeMode>clampToGround</altitudeMode>
+        <Icon>
+          <href>TAXOUSDA_NA_060_036.png</href>
+        </Icon>
+        <LatLonBox>
+          <north>40.5757744261276</north>
+          <south>37.1723444261276</south>
+          <east>-119.931074901552</east>
+          <west>-124.225954901552</west>
+        </LatLonBox>
+      </GroundOverlay>
+    </Folder>
+  </Document>
+</kml>

@@ -19,6 +19,7 @@ load("equi7t3.rda")
 source("tiler.R")
 source("prepareCovs.R")
 source("plotCovsSoilGrids250m.R")
+source("make.covsRDA.R")
 
 ## Months of interest:
 m.lst <- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
@@ -116,6 +117,17 @@ plotKML.env(convert="convert", show.env=FALSE)
 ## this takes some time...
 s <- raster::stack(tif.lst)
 plotCovsSoilGrids250m(s, path="./KML/", ATTRIBUTE_TITLE=paste(des$ATTRIBUTE_TITLE[no]), DESCRIPTION=paste(des$DESCRIPTION[no]), EVI_range=c(120,2300), ES_range=c(0,4200), TD_range=c(265,295), TN_range=c(265,295), NBR4_range=c(300,7500), NBR7_range=c(60,1500), SNW_range=c(100,630))
+
+## Prepare RDA files (one file per tile):
+make.covsRDA(in.path="/data/covs", i="NA_060_036")
+
+pr.dirs <- basename(list.dirs("/data/predicted")[-1])
+sfInit(parallel=TRUE, cpus=35)
+sfExport("make.covsRDA")
+sfLibrary(rgdal)
+sfLibrary(sp)
+x <- sfLapply(pr.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs") ) })
+sfStop()
 
 ## clean-up:
 #del.lst <- list.files(pattern=glob2rx("VDPMRG5_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
