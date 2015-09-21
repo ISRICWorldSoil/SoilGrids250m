@@ -15,6 +15,9 @@ library(rgdal)
 tax.lst <- c("USDA/NCSS/TAXOUSDA.NCSS.rda", "IranSoil/TAXOUSDA.Iransoil.rda", "ISCN/TAXOUSDA.ISCN.rda", "CIFOR/TAXOUSDA.CIFOR.rda", "WISE/TAXOUSDA.WISE.rda", "ISIS/TAXOUSDA.ISIS.rda")
 in.lst <- lapply(paste0("../../SoilData/", tax.lst), load, .GlobalEnv)
 in.lst <- lapply(in.lst, function(x){as.data.frame(get(x))})
+col.legend <- read.csv("TAXOUSDA_legend.csv")
+col.legend <- col.legend[!is.na(col.legend$R),]
+col.legend$COLOR <- rgb(red=col.legend$R/255, green=col.legend$G/255, blue=col.legend$B/255)
 
 ## desert soils:
 data(landmask20km)
@@ -68,10 +71,13 @@ summary(as.factor(TAXOUSDA.pnts$SOURCEDB))
 TAXOUSDA.pnts$LOC_ID <- as.factor(paste(TAXOUSDA.pnts@coords[,1], TAXOUSDA.pnts@coords[,2], sep="_"))
 ## 7495 duplicates!
 TAXOUSDA.pnts <- TAXOUSDA.pnts[!duplicated(TAXOUSDA.pnts$LOC_ID),]
-plotKML(TAXOUSDA.pnts["TAXOUSDA.f"])
+tax <- levels(TAXOUSDA.pnts$TAXOUSDA.f)
+pal <- col.legend[match(tax, col.legend$Group),"COLOR"]
+shape = "http://maps.google.com/mapfiles/kml/paddle/wht-blank.png"
+kml(TAXOUSDA.pnts, subfolder.name="Observed TAXOUSDA", colour=TAXOUSDA.f, colour_scale=pal, shape=shape, size=.8, kmz=TRUE, labels=TAXOUSDA.pnts$TAXOUSDA.f)
 str(TAXOUSDA.pnts@data)
 save("TAXOUSDA.pnts", file="TAXOUSDA.pnts.rda")
-## 30,290 points!
+## 30,270 points!
 
 #load("equi7t3.rda")
 source("extract.equi7t3.R")
