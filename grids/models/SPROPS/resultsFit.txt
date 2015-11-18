@@ -1,0 +1,313 @@
+Results of 'h2o.randomForest':
+
+Variable: ORCDRC
+Model Details:
+==============
+
+H2ORegressionModel: drf
+Model ID:  DRF_model_R_1447783818981_5 
+Model Summary: 
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
+1              50            11471224        20        20   20.00000      15718      22097 19814.42000
+
+
+H2ORegressionMetrics: drf
+** Reported on training data. **
+Description: Metrics reported on Out-Of-Bag training samples
+
+MSE:  737.4826
+R2 :  0.8088509
+Mean Residual Deviance :  737.4826
+
+
+
+
+Variable Importances: 
+  variable relative_importance scaled_importance percentage
+1    DEPTH  14054319104.000000          1.000000   0.142168
+2  T01MOD3   8320216576.000000          0.592004   0.084164
+3  T02MOD3   6275884544.000000          0.446545   0.063484
+4  T12MOD3   4755125760.000000          0.338339   0.048101
+5  T03MOD3   3815921408.000000          0.271512   0.038600
+
+---
+    variable relative_importance scaled_importance percentage
+149  L16USG5     15345839.000000          0.001092   0.000155
+150  F06USG5     11438522.000000          0.000814   0.000116
+151  L03USG5      6676468.000000          0.000475   0.000068
+152  L07USG5      5431872.000000          0.000386   0.000055
+153  L06USG5      2243267.750000          0.000160   0.000023
+154  F03USG5       131207.546875          0.000009   0.000001
+
+Variable: PHIHOX
+Model Details:
+==============
+
+H2ORegressionModel: drf
+Model ID:  DRF_model_R_1447783818981_10 
+Model Summary: 
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
+1              50            39124891        20        20   20.00000      62439      73798 67670.72000
+
+
+H2ORegressionMetrics: drf
+** Reported on training data. **
+Description: Metrics reported on Out-Of-Bag training samples
+
+MSE:  0.2906625
+R2 :  0.834208
+Mean Residual Deviance :  0.2906625
+
+
+
+
+Variable Importances: 
+  variable relative_importance scaled_importance percentage
+1  P12MRG3      7023560.000000          1.000000   0.156171
+2  P11MRG3      3676395.500000          0.523438   0.081746
+3  M05MOD4      2669501.750000          0.380078   0.059357
+4    DEPTH      2263680.500000          0.322298   0.050334
+5  P10MRG3      2063667.750000          0.293821   0.045886
+
+---
+    variable relative_importance scaled_importance percentage
+149  L06USG5         1892.367432          0.000269   0.000042
+150  F06USG5         1616.899536          0.000230   0.000036
+151  L08USG5         1556.299316          0.000222   0.000035
+152  C07GLC5         1193.951782          0.000170   0.000027
+153  L07USG5          438.487030          0.000062   0.000010
+154  F03USG5          100.751526          0.000014   0.000002
+
+Variable: CRFVOL
+Model Details:
+==============
+
+H2ORegressionModel: drf
+Model ID:  DRF_model_R_1447783818981_15 
+Model Summary: 
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
+1              50            13914611        20        20   20.00000      20580      26216 24029.56000
+
+
+H2ORegressionMetrics: drf
+** Reported on training data. **
+Description: Metrics reported on Out-Of-Bag training samples
+
+MSE:  83.31075
+R2 :  0.6754866
+Mean Residual Deviance :  83.31075
+
+
+
+
+Variable Importances: 
+  variable relative_importance scaled_importance percentage
+1    DEPTH    301796512.000000          1.000000   0.108250
+2  TWIMRG5    225315808.000000          0.746582   0.080817
+3  VBFMRG5    134589888.000000          0.445962   0.048275
+4  SLPMRG5    121453152.000000          0.402434   0.043563
+5  DEMMRG5     49547716.000000          0.164176   0.017772
+
+---
+    variable relative_importance scaled_importance percentage
+149  L13USG5       449376.093750          0.001489   0.000161
+150  FW4MOD5       412718.531250          0.001368   0.000148
+151  L16USG5       215481.140625          0.000714   0.000077
+152  L06USG5       110500.195312          0.000366   0.000040
+153  L07USG5        14409.620117          0.000048   0.000005
+154  F03USG5        11753.678711          0.000039   0.000004
+
+Variable: SNDPPT
+Model Details:
+==============
+
+H2ORegressionModel: drf
+Model ID:  DRF_model_R_1447783818981_20 
+Model Summary: 
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
+1              50            37308381        20        20   20.00000      58577      70917 64505.82000
+
+
+H2ORegressionMetrics: drf
+** Reported on training data. **
+Description: Metrics reported on Out-Of-Bag training samples
+
+MSE:  166.0386
+R2 :  0.7888076
+Mean Residual Deviance :  166.0386
+
+
+
+
+Variable Importances: 
+  variable relative_importance scaled_importance percentage
+1  P05MRG3   1041072384.000000          1.000000   0.059802
+2  VW4MOD1    877600704.000000          0.842978   0.050412
+3    DEPTH    685069184.000000          0.658042   0.039352
+4  P04MRG3    651393664.000000          0.625695   0.037418
+5  N07MOD3    415964096.000000          0.399553   0.023894
+
+---
+    variable relative_importance scaled_importance percentage
+149  F06USG5       732239.625000          0.000703   0.000042
+150  L13USG5       685716.375000          0.000659   0.000039
+151  C07GLC5       422178.468750          0.000406   0.000024
+152  L06USG5       373161.156250          0.000358   0.000021
+153  L07USG5       209339.500000          0.000201   0.000012
+154  F03USG5        17955.814453          0.000017   0.000001
+
+Variable: SLTPPT
+Model Details:
+==============
+
+H2ORegressionModel: drf
+Model ID:  DRF_model_R_1447783818981_25 
+Model Summary: 
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
+1              50            38306704        20        20   20.00000      58207      74081 66237.80000
+
+
+H2ORegressionMetrics: drf
+** Reported on training data. **
+Description: Metrics reported on Out-Of-Bag training samples
+
+MSE:  91.44808
+R2 :  0.8074179
+Mean Residual Deviance :  91.44808
+
+
+
+
+Variable Importances: 
+  variable relative_importance scaled_importance percentage
+1  T12MOD3   1423355264.000000          1.000000   0.120428
+2  T02MOD3   1011452160.000000          0.710611   0.085577
+3    DEPTH    606021440.000000          0.425770   0.051275
+4  T01MOD3    525969152.000000          0.369528   0.044501
+5  T11MOD3    507331456.000000          0.356433   0.042925
+
+---
+    variable relative_importance scaled_importance percentage
+149  L06USG5       423515.718750          0.000298   0.000036
+150  F06USG5       364162.937500          0.000256   0.000031
+151  L03USG5       322024.000000          0.000226   0.000027
+152  L13USG5       292889.218750          0.000206   0.000025
+153  L07USG5       104702.289062          0.000074   0.000009
+154  F03USG5        65732.453125          0.000046   0.000006
+
+Variable: CLYPPT
+Model Details:
+==============
+
+H2ORegressionModel: drf
+Model ID:  DRF_model_R_1447783818981_30 
+Model Summary: 
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
+1              50            32779792        20        20   20.00000      48176      63424 56682.00000
+
+
+H2ORegressionMetrics: drf
+** Reported on training data. **
+Description: Metrics reported on Out-Of-Bag training samples
+
+MSE:  94.71158
+R2 :  0.6973987
+Mean Residual Deviance :  94.71158
+
+
+
+
+Variable Importances: 
+  variable relative_importance scaled_importance percentage
+1    DEPTH    504073216.000000          1.000000   0.081180
+2  T10MOD3    396069312.000000          0.785738   0.063786
+3 LATWGS84    172275792.000000          0.341767   0.027745
+4  T09MOD3    150174048.000000          0.297921   0.024185
+5  VBFMRG5    134506560.000000          0.266839   0.021662
+
+---
+    variable relative_importance scaled_importance percentage
+149  L08USG5       397096.312500          0.000788   0.000064
+150  F06USG5       297698.250000          0.000591   0.000048
+151  L06USG5       246875.468750          0.000490   0.000040
+152  C07GLC5       110582.257812          0.000219   0.000018
+153  L07USG5        72677.382812          0.000144   0.000012
+154  F03USG5         2429.536133          0.000005   0.000000
+
+Variable: BLD
+Model Details:
+==============
+
+H2ORegressionModel: drf
+Model ID:  DRF_model_R_1447783818981_35 
+Model Summary: 
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
+1              50             6970041        20        20   20.00000      10080      13972 12038.90000
+
+
+H2ORegressionMetrics: drf
+** Reported on training data. **
+Description: Metrics reported on Out-Of-Bag training samples
+
+MSE:  58959.94
+R2 :  0.7988586
+Mean Residual Deviance :  58959.94
+
+
+
+
+Variable Importances: 
+  variable relative_importance scaled_importance percentage
+1 LATWGS84 192445317120.000000          1.000000   0.125514
+2    DEPTH  67602194432.000000          0.351280   0.044091
+3  N05MSD3  58687082496.000000          0.304955   0.038276
+4  T09MOD3  56949030912.000000          0.295923   0.037143
+5  N01MOD3  50009739264.000000          0.259865   0.032617
+
+---
+    variable relative_importance scaled_importance percentage
+149  FW4MOD5    123234992.000000          0.000640   0.000080
+150  L03USG5    122672112.000000          0.000637   0.000080
+151  L16USG5    110973384.000000          0.000577   0.000072
+152  L06USG5     52828148.000000          0.000275   0.000034
+153  L07USG5     37549276.000000          0.000195   0.000024
+154  F03USG5      3121552.000000          0.000016   0.000002
+
+Variable: CECSUM
+Model Details:
+==============
+
+H2ORegressionModel: drf
+Model ID:  DRF_model_R_1447783818981_40 
+Model Summary: 
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
+1              50            13727852        20        20   20.00000      19346      28095 23729.00000
+
+
+H2ORegressionMetrics: drf
+** Reported on training data. **
+Description: Metrics reported on Out-Of-Bag training samples
+
+MSE:  109.425
+R2 :  0.6110356
+Mean Residual Deviance :  109.425
+
+
+
+
+Variable Importances: 
+  variable relative_importance scaled_importance percentage
+1    DEPTH    299393120.000000          1.000000   0.093148
+2  N11MSD3     81734288.000000          0.273000   0.025429
+3  L04USG5     73966704.000000          0.247055   0.023013
+4 LATWGS84     61136980.000000          0.204203   0.019021
+5  T10MSD3     59605720.000000          0.199088   0.018545
+
+---
+    variable relative_importance scaled_importance percentage
+149  L13USG5       549022.312500          0.001834   0.000171
+150  F06USG5       457294.125000          0.001527   0.000142
+151  L08USG5       285123.437500          0.000952   0.000089
+152  L06USG5        69784.070312          0.000233   0.000022
+153  F03USG5        51758.656250          0.000173   0.000016
+154  L07USG5        39779.351562          0.000133   0.000012

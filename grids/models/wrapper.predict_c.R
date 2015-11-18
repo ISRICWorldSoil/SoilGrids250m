@@ -12,8 +12,8 @@ wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, 
     probs1 <- predict(gm1, m, type="probs", na.action = na.pass) ## nnet
     probs2 <- predict(gm2, m, type="prob", na.action = na.pass) ## randomForest
     ## this takes a lot of RAM - can it be reduced?
-    #probs3 <- predict(gm3, m, probability=TRUE, na.action = na.pass) ## SVM
-    lt <- list(probs1, probs2) # attr(probs3, "probabilities")
+    #probs3 <- attr(predict(gm3, m, probability=TRUE, na.action = na.pass), "probabilities") ## SVM
+    lt <- list(probs1[,gm1$lev], probs2[,gm1$lev])
     ## ensemble predictions (simple average):
     probs <- Reduce("+", lt) / length(lt)
     m@data <- data.frame(probs)
