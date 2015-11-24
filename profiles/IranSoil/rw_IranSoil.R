@@ -40,7 +40,7 @@ Iransoil$SAMPLEID <- make.unique(paste(Iransoil$SOURCEID, 1, sep="_"))
 Iransoil$SOURCEDB = "IranSoil"
 Iransoil$DEPTH <- Iransoil$UHDICM + (Iransoil$LHDICM - Iransoil$UHDICM)/2
 
-SPROPS.Iransoil <- Iransoil[,c("SOURCEID","SAMPLEID","LONWGS84","LATWGS84","UHDICM","LHDICM","DEPTH","SNDPPT","CLYPPT","SLTPPT","PHIHOX","ORCDRC","BLD")]
+SPROPS.Iransoil <- Iransoil[,c("SOURCEID","SAMPLEID","SOURCEDB","LONWGS84","LATWGS84","UHDICM","LHDICM","DEPTH","SNDPPT","CLYPPT","SLTPPT","PHIHOX","ORCDRC","BLD")]
 SPROPS.Iransoil <- SPROPS.Iransoil[!is.na(SPROPS.Iransoil$LONWGS84) & !is.na(SPROPS.Iransoil$LATWGS84) & !is.na(SPROPS.Iransoil$DEPTH),]
 str(SPROPS.Iransoil)
 ## 2026

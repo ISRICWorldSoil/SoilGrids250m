@@ -58,8 +58,8 @@ HOR.s$CLYPPT <- as.numeric(HOR.s$CLYPPT)
 summary(HOR.s$SNDPPT)
 summary(HOR.s$CRFVOL)
 ## Depth to bedrock:
-sel.r <- grep(pattern="R", HOR.s$HODE, ignore.case=FALSE, fixed=FALSE)
-## only two horizons?!
+#sel.r <- grep(pattern="R", HOR.s$HODE, ignore.case=FALSE, fixed=FALSE)
+## only two horizons?
 
 # ------------------------------------------------------------
 # export TAXONOMY DATA
@@ -81,5 +81,28 @@ save(TAXNWRB.CHINA_SOTERv1, file="TAXNWRB.CHINA_SOTERv1.rda")
 SPROPS.CSPBNU <- plyr::join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","BLD","ORCDRC","CECSUM")], sites[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
 SPROPS.CSPBNU <- SPROPS.CSPBNU[!is.na(SPROPS.CSPBNU$LONWGS84) & !is.na(SPROPS.CSPBNU$LATWGS84) & !is.na(SPROPS.CSPBNU$DEPTH),]
 #View(SPROPS.CSPBNU)
-## 17,535 horizons
+str(SPROPS.CSPBNU)
+## 32208 horizons
 save(SPROPS.CSPBNU, file="SPROPS.CSPBNU.rda")
+
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+
+horizons.s <- horizons[!is.na(horizons$H)&nchar(paste(horizons$H))>0,]
+sel.r <- grep(pattern="^R", horizons.s$H, ignore.case=FALSE, fixed=FALSE)
+sel.r2 <- grep(pattern="*/R", horizons.s$H, ignore.case=FALSE, fixed=FALSE)
+sel.r3 <- grep(pattern="CR", horizons.s$H, ignore.case=FALSE, fixed=FALSE)
+horizons.s$BDRICM <- NA
+horizons.s$BDRICM[sel.r] <- horizons.s$UHDICM[sel.r]
+horizons.s$BDRICM[sel.r2] <- horizons.s$LHDICM[sel.r2]
+horizons.s$BDRICM[sel.r3] <- horizons.s$LHDICM[sel.r3]
+bdr.d <- aggregate(horizons.s$BDRICM, list(horizons.s$SOURCEID), max, na.rm=TRUE)
+names(bdr.d) <- c("SOURCEID", "BDRICM")
+BDR.CSPBNU <- join(sites[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], bdr.d, type="left")
+BDR.CSPBNU$BDRICM <- ifelse(is.infinite(BDR.CSPBNU$BDRICM), 250, BDR.CSPBNU$BDRICM)
+BDR.CSPBNU <- BDR.CSPBNU[!is.na(BDR.CSPBNU$BDRICM),]
+str(BDR.CSPBNU)
+summary(BDR.CSPBNU$BDRICM<250)
+## 6988 points
+save(BDR.CSPBNU, file="BDR.CSPBNU.rda") 

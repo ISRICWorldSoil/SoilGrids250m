@@ -83,3 +83,36 @@ str(SPROPS.MX_PdS)
 save(SPROPS.MX_PdS, file="SPROPS.MX_PdS.rda")
 plot(SPROPS.MX_PdS$LONWGS84, SPROPS.MX_PdS$LATWGS84, pch="+")
 
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+
+## Depth to bedrock i.e. 'R' horizon:
+sel.r1 <- grep(pattern="x", perfilv12$LIM_ROCA, ignore.case=FALSE, fixed=FALSE)
+sel.r2 <- grep(pattern="x", perfilv12$LIM_REGO, ignore.case=FALSE, fixed=FALSE)
+sel.r3 <- grep(pattern="^R", perfilv12$HSIMBOLO, ignore.case=FALSE, fixed=FALSE)
+perfilv12$BDRICM <- 250
+perfilv12$BDRICM[unique(c(sel.r1, sel.r2, sel.r3))] <- perfilv12$PROFUNDI[unique(c(sel.r1, sel.r2, sel.r3))]
+summary(perfilv12$BDRICM<250)
+BDR.perfilv12 <- as.data.frame(perfilv12[c("SOURCEID","BDRICM")])
+BDR.perfilv12 <- rename(BDR.perfilv12, c("coords.x1"="LONWGS84", "coords.x2"="LATWGS84"))
+BDR.perfilv12$SOURCEDB <- "MX_INEGI"
+
+summary(edaf$CALIF_PRIM) ## "Lítico", "squelético"
+summary(edaf$GPO_SUELO)  ## LEPTOSOL, REGOSOL
+summary(edaf$NOMEN_HTE)  ## CR?, R
+sel2.r1 <- grep(pattern="Lítico", edaf$CALIF_PRIM, ignore.case=FALSE, fixed=FALSE)
+sel2.r2 <- grep(pattern="LEPT", edaf$GPO_SUELO, ignore.case=FALSE, fixed=FALSE)
+sel2.r3 <- grep(pattern="R", edaf$NOMEN_HTE, ignore.case=FALSE, fixed=FALSE)
+sel.t <- unique(c(sel2.r1, sel2.r2, sel2.r3))
+edaf$BDRICM <- NA
+edaf[sel.t,"BDRICM"] <- pmax(edaf$LIM_SUP[sel.t], edaf$LIM_INF[sel.t])
+bdr.d <- aggregate(edaf$BDRICM, list(edaf$SOURCEID), max, na.rm=TRUE)
+names(bdr.d) <- c("SOURCEID", "BDRICM")
+BDR.MX_PdS <- join(bdr.d, SITE[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
+BDR.MX_PdS$BDRICM <- ifelse(is.infinite(BDR.MX_PdS$BDRICM), 250, BDR.MX_PdS$BDRICM)
+BDR.MX_PdS <- rbind.fill(BDR.MX_PdS, BDR.perfilv12)
+str(BDR.MX_PdS)
+summary(BDR.MX_PdS$BDRICM<250)
+## 7906 points
+save(BDR.MX_PdS, file="BDR.MX_PdS.rda")

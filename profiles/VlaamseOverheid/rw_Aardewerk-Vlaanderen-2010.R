@@ -65,3 +65,8 @@ str(SPROPS.Vlaanderen)
 ## 41,789
 save(SPROPS.Vlaanderen, file="SPROPS.Vlaanderen.rda")
 plot(SPROPS.Vlaanderen$LONWGS84, SPROPS.Vlaanderen$LATWGS84, pch="+")
+
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+

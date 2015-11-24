@@ -18,7 +18,9 @@ pedon_physical <- read.csv("CAN_pedon_physical.csv")
 pedon_physical$SAMPLEID <- make.unique(paste("CAN", pedon_physical$PEDON, pedon_physical$LAYERNO, sep="_"))
 pedon_chemical <- read.csv("CAN_pedon_chemical.csv")
 pedon_chemical$SAMPLEID <- make.unique(paste("CAN", pedon_chemical$PEDON, pedon_chemical$LAYERNO, sep="_"))
-#pedon_morphology <- read.csv("CAN_pedon_morphology.csv")
+pedon_morphology <- read.csv("CAN_pedon_morphology.csv")
+pedon_morphology$SOURCEID <- as.factor(paste("CAN", pedon_morphology$PEDON, sep="_"))
+
 horizons <- plyr::join(pedon_physical, pedon_chemical[,c("SAMPLEID","PH1","PH2","ORGCARB","CEC_BUFF")], by="SAMPLEID")
 horizons$SOURCEID <- as.factor(paste("CAN", horizons$PEDON, sep="_"))
 ## replace "-99.9":
@@ -40,6 +42,7 @@ CAN_cor <- read.csv("CAN_correlation.csv")
 pedon_cor <- join(CAN_cor, CAN_cl, by="CSSC_Great_Groups")
 pedon_id <- read.csv("CAN_pedon_id.csv")
 pedon_class <- read.csv("CAN_pedon_class.csv")
+pedon_class$SOURCEID = paste("CAN", pedon_class$PEDON, sep="_")
 
 pedon_id$LONWGS84 <- cols2dms(pedon_id$LOCLONGDEG, pedon_id$LOCLONGMIN, pedon_id$LOCLONGSEC, rep("W", length(pedon_id$LOCLONGDEG)))
 pedon_id$LONWGS84 <- ifelse(pedon_id$LONWGS84>-1, NA, pedon_id$LONWGS84) 
@@ -87,3 +90,22 @@ View(SPROPS.CanSIS)
 ## 17,535 horizons
 save(SPROPS.CanSIS, file="SPROPS.CanSIS.rda")
 
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+
+levels(pedon_morphology$HORIZON)
+sel.n <- which(horizons$SOURCEID %in% pedon_id$SOURCEID[grep("lit", pedon_class$FAMILY_DEPTH, ignore.case=TRUE)])
+sel.r <- which(horizons$SOURCEID %in% pedon_morphology$SOURCEID[grep("^R", pedon_morphology$HORIZON, ignore.case=FALSE, fixed=FALSE)])
+sel.r2 <- which(horizons$SOURCEID %in% pedon_morphology$SOURCEID[grep("2R", pedon_morphology$HORIZON, ignore.case=FALSE, fixed=FALSE)])
+sel.t <- unique(c(sel.n, sel.r, sel.r2))
+horizons$BDRICM <- NA
+horizons[sel.t,"BDRICM"] <- pmax(horizons$UHDICM[sel.t], horizons$LHDICM[sel.t])
+bdr.d <- aggregate(horizons$BDRICM, list(horizons$SOURCEID), max, na.rm=TRUE)
+names(bdr.d) <- c("SOURCEID", "BDRICM")
+BDR.CanSIS <- join(bdr.d, pedon_id[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
+BDR.CanSIS$BDRICM <- ifelse(is.infinite(BDR.CanSIS$BDRICM), 250, BDR.CanSIS$BDRICM)
+summary(BDR.CanSIS$BDRICM<250)
+## 209 points
+str(BDR.CanSIS)
+save(BDR.CanSIS, file="BDR.CanSIS.rda")

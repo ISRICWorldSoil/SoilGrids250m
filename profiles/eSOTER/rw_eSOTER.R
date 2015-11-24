@@ -50,16 +50,18 @@ sel.r1 <- grep(pattern="^R", HOR.s$HODE, ignore.case=FALSE, fixed=FALSE)
 sel.r2 <- grep(pattern="*/R", HOR.s$HODE, ignore.case=FALSE, fixed=FALSE)
 sel.r3 <- grep(pattern="CR", HOR.s$HODE, ignore.case=FALSE, fixed=FALSE)
 HOR.s$BDRICM <- NA
-HOR.s$BDRICM[sel.r2] <- HOR.s$LHDICM[sel.r2]
-HOR.s$BDRICM[sel.r3] <- HOR.s$LHDICM[sel.r3]
-sel.rn <- which(HOR.s$SOURCEID %in% SITE.s$SOURCEID[sel.r])
-HOR.s$BDRICM[sel.rn] <- HOR.s$UHDICM[sel.rn]
+## Also upper depths for R horizon entered!
 HOR.s$BDRICM[sel.r1] <- HOR.s$UHDICM[sel.r1]
+HOR.s$BDRICM[sel.r2] <- HOR.s$UHDICM[sel.r2]
+HOR.s$BDRICM[sel.r3] <- HOR.s$UHDICM[sel.r3]
 bdr.d <- aggregate(HOR.s$BDRICM, list(HOR.s$SOURCEID), max, na.rm=TRUE)
 names(bdr.d) <- c("SOURCEID", "BDRICM")
-sites.m <- merge(profs.f@site, bdr.d, all.y=FALSE)
-sites.m$BDRICM <- ifelse(sites.m$BDRICM<5, NA, sites.m$BDRICM)
-summary(sites.m$BDRICM)
+BDR.eSOTER <- join(bdr.d, SITE.s[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
+BDR.eSOTER$BDRICM <- ifelse(is.infinite(BDR.eSOTER$BDRICM), 250, BDR.eSOTER$BDRICM)
+summary(BDR.eSOTER$BDRICM<250)
+## 40 points
+str(BDR.eSOTER)
+save(BDR.eSOTER, file="BDR.eSOTER.rda")
 
 
 # ------------------------------------------------------------

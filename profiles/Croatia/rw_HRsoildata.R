@@ -69,22 +69,6 @@ sumTex <- rowSums(horizon[,c("SLTPPT","CLYPPT","SNDPPT")])
 horizon$SNDPPT <- horizon$SNDPPT / ((sumTex - horizon$CLYPPT) /(100 - horizon$CLYPPT))
 horizon$SLTPPT <- horizon$SLTPPT / ((sumTex - horizon$CLYPPT) /(100 - horizon$CLYPPT))
 
-## subset to complete data:
-sel.s <- !is.na(site$LONWGS84)&!is.na(site$LATWGS84)
-## depth to bedrock:
-levels(as.factor(horizon$HORIZON))
-horizon$BDRICM <- NA
-sel.d <- grep("rz", horizon$HORIZON, ignore.case=FALSE, fixed=FALSE)
-sel.r <- unique(c(sel.d, grep("R", horizon$HORIZON, ignore.case=FALSE, fixed=FALSE)))
-horizon$BDRICM[sel.r] <- horizon$LHDICM[sel.r]
-summary(horizon$BDRICM)
-## copy to sites table:
-bdr.d <- aggregate(horizon$BDRICM, list(horizon$SOURCEID), max, na.rm=TRUE)
-names(bdr.d) <- c("SOURCEID", "BDRICM")
-site <- merge(site, bdr.d, all.y=FALSE)
-site$BDRICM <- ifelse(site$BDRICM<0, NA, site$BDRICM)
-summary(site$BDRICM)
-
 # ------------------------------------------------------------
 # export TAXONOMY DATA
 # ------------------------------------------------------------
@@ -107,3 +91,28 @@ SPROPS.HRSPDB <- SPROPS.HRSPDB[!is.na(SPROPS.HRSPDB$LONWGS84) & !is.na(SPROPS.HR
 View(SPROPS.HRSPDB)
 ## 5899
 save(SPROPS.HRSPDB, file="SPROPS.HRSPDB.rda")
+
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+
+levels(site$TAXNWRB)
+horizons.s <- horizon[!is.na(horizon$OZN)&nchar(paste(horizon$OZN))>0,]
+sel.r <- grep(pattern="^R", horizons.s$OZN, ignore.case=FALSE, fixed=FALSE)
+sel.r2 <- grep(pattern="*/R", horizons.s$OZN, ignore.case=FALSE, fixed=FALSE)
+sel.r3 <- grep(pattern="CR", horizons.s$OZN, ignore.case=FALSE, fixed=FALSE)
+sel.r4 <- unique(c(which(horizons.s$SOURCEID %in% site$SOURCEID[grep(pattern="LEPT", ignore.case=TRUE, paste(site$TAXNWRB))]), which(horizons.s$SOURCEID %in% site$SOURCEID[grep(pattern="LITH", ignore.case=TRUE, paste(site$TAXNWRB))])))
+horizons.s$BDRICM <- NA
+horizons.s$BDRICM[sel.r] <- horizons.s$UHDICM[sel.r]
+horizons.s$BDRICM[sel.r2] <- horizons.s$LHDICM[sel.r2]
+horizons.s$BDRICM[sel.r3] <- horizons.s$LHDICM[sel.r3]
+horizons.s$BDRICM[sel.r4] <- horizons.s$LHDICM[sel.r4]
+bdr.d <- aggregate(horizons.s$BDRICM, list(horizons.s$SOURCEID), max, na.rm=TRUE)
+names(bdr.d) <- c("SOURCEID", "BDRICM")
+BDR.HRSPDB <- join(site[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], bdr.d, type="left")
+BDR.HRSPDB$BDRICM <- ifelse(is.infinite(BDR.HRSPDB$BDRICM), 250, BDR.HRSPDB$BDRICM)
+BDR.HRSPDB <- BDR.HRSPDB[!is.na(BDR.HRSPDB$BDRICM),]
+str(BDR.HRSPDB)
+summary(BDR.HRSPDB$BDRICM<250)
+## 18 points
+save(BDR.HRSPDB, file="BDR.HRSPDB.rda")

@@ -54,6 +54,7 @@ depth1.tbl <- subset(SitedescriptionResults, ValueId==249)[,c("SampleId","Value"
 xx7 <- merge(SitedescriptionSamples[,c("Id","SiteId")], depth1.tbl, by.x="Id", by.y="SampleId")
 sites$BDRICM <- as.numeric(merge(sites[,c("SiteId","SOURCEID")], xx7[,c("SiteId","Value")], all.x=TRUE)$Value)
 summary(sites$BDRICM)
+sites$BDRICM <- ifelse(is.na(sites$BDRICM)|sites$BDRICM>250, 250, sites$BDRICM)
 sites$SOURCEDB = "ISIS"
 
 View(sites)
@@ -109,6 +110,7 @@ CEC.tbl <- subset(AnalyticalResults, ValueId==14)[,c("SampleId","Value")]
 names(CEC.tbl)[2] <- "CECSUM"
 BLD.tbl <- subset(AnalyticalResults, ValueId==34)[,c("SampleId","Value")]
 names(BLD.tbl)[2] <- "BLD"
+Dep.tbl <- 
 horizons <- plyr::join_all(list(hs, pHHO5.tbl, pHKCL.tbl, CRF.tbl, ORC.tbl, SND.tbl, SLT.tbl, CLY.tbl, CEC.tbl, BLD.tbl))
 str(horizons)
 ## 6497
@@ -128,3 +130,14 @@ str(SPROPS.ISIS)
 ## 5616
 save(SPROPS.ISIS, file="SPROPS.ISIS.rda")
 plot(SPROPS.ISIS$LONWGS84, SPROPS.ISIS$LATWGS84, pch="+")
+
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+
+BDR.ISIS <- sites[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","BDRICM")]
+str(BDR.ISIS)
+summary(BDR.ISIS$BDRICM<250)
+## 131 point
+save(BDR.ISIS, file="BDR.ISIS.rda")
+

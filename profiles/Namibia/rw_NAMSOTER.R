@@ -51,13 +51,39 @@ for(i in 2:7){
 }
 horizons$LHDICM <- ifelse(is.na(horizons$LHDICM), horizons$UHDICM+50, horizons$LHDICM)
 horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
-View(horizons[,c("SOURCEID","UHDICM","LHDICM","DEPTH")])
+View(horizons[,c("SOURCEID","UHDICM","LHDICM","DEPTH","ORCDRC","BLD")])
 summary(horizons$DEPTH)
+horizons$BLD <- ifelse(horizons$BLD == 9999, NA, horizons$BLD*1000)
+summary(horizons$BLD)
 ## 6208
 
-SPROPS.NAMSOTER <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM")], SITE[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
+SPROPS.NAMSOTER <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","BLD")], SITE[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
 SPROPS.NAMSOTER <- SPROPS.NAMSOTER[!is.na(SPROPS.NAMSOTER$LONWGS84) & !is.na(SPROPS.NAMSOTER$LATWGS84) & !is.na(SPROPS.NAMSOTER$DEPTH),]
 str(SPROPS.NAMSOTER)
 ## 5911
 save(SPROPS.NAMSOTER, file="SPROPS.NAMSOTER.rda")
 plot(SPROPS.NAMSOTER$LONWGS84, SPROPS.NAMSOTER$LATWGS84, pch="+")
+
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+
+horizons.s <- horizons[!is.na(horizons$HODE)&nchar(paste(horizons$HODE))>0,]
+sel.r <- grep(pattern="^R", horizons.s$HODE, ignore.case=FALSE, fixed=FALSE)
+sel.r2 <- grep(pattern="*/R", horizons.s$HODE, ignore.case=FALSE, fixed=FALSE)
+sel.r3 <- grep(pattern="CR", horizons.s$HODE, ignore.case=FALSE, fixed=FALSE)
+sel.r4 <- unique(c(which(horizons.s$SOURCEID %in% SITE$SOURCEID[grep(pattern="LEPT", ignore.case=TRUE, paste(SITE$TAXNWRB))]), which(horizons.s$SOURCEID %in% SITE$SOURCEID[grep(pattern="LIT", ignore.case=TRUE, paste(SITE$TAXNWRB))])))
+horizons.s$BDRICM <- NA
+horizons.s$BDRICM[sel.r] <- horizons.s$UHDICM[sel.r]
+horizons.s$BDRICM[sel.r2] <- horizons.s$LHDICM[sel.r2]
+horizons.s$BDRICM[sel.r3] <- horizons.s$LHDICM[sel.r3]
+horizons.s$BDRICM[sel.r4] <- horizons.s$LHDICM[sel.r4]
+bdr.d <- aggregate(horizons.s$BDRICM, list(horizons.s$SOURCEID), max, na.rm=TRUE)
+names(bdr.d) <- c("SOURCEID", "BDRICM")
+BDR.NAMSOTER <- join(SITE[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], bdr.d, type="left")
+BDR.NAMSOTER$BDRICM <- ifelse(is.infinite(BDR.NAMSOTER$BDRICM), 250, BDR.NAMSOTER$BDRICM)
+BDR.NAMSOTER <- BDR.NAMSOTER[!is.na(BDR.NAMSOTER$BDRICM),]
+str(BDR.NAMSOTER)
+summary(BDR.NAMSOTER$BDRICM<250)
+## 431 points
+save(BDR.NAMSOTER, file="BDR.NAMSOTER.rda")

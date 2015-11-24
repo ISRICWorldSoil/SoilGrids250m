@@ -1,5 +1,6 @@
 ## Russian profile data obtained from: http://egrpr.esoil.ru/
 ## by: Tom.Hengl@isric.org
+## CAREFUL with Russian font!
 
 #require(gdata)
 library(XLConnect)
@@ -33,6 +34,7 @@ tr <- read.csv("factors_translated.csv")
 ru$SOURCEID <- as.factor(paste(ru$CardID, ru$SOIL_ID, sep="_"))
 ru.xy <- ru[!duplicated(ru$SOURCEID),c("SOURCEID", "WRB06", "LONG", "LAT")]
 nrow(ru.xy)
+## 863
 #coordinates(ru.xy) <- ~LONG+LAT
 #proj4string(ru.xy) = "+proj=longlat +datum=WGS84"
 #shape = "http://maps.google.com/mapfiles/kml/pal2/icon18.png"
@@ -43,33 +45,55 @@ nrow(ru.xy)
 # export TAXONOMY DATA
 # ------------------------------------------------------------
 
-TAXNWRB.EGRPR <- rename(ru.xy, replace=c("LONG"="LONWGS84","LAT"="LATWGS84","WRB06"="TAXNWRB"))
+s <- summary(as.factor(ru.xy$WRB06), maxsum=90)
+soiltype <- data.frame(WRB06=attr(s, "names"), count=s)
+write.csv(soiltype, "soiltype_count.csv")
+legUSDA <- read.csv("cleanup_Russia.csv", fileEncoding="UTF-8")
+ru.xy$TAXNUSDA <- join(ru.xy, legUSDA, by="WRB06", type="left")$USDA_suborder
+
+TAXNWRB.EGRPR <- rename(ru.xy[,c("SOURCEID","LONG","LAT","WRB06")], replace=c("LONG"="LONWGS84","LAT"="LATWGS84","WRB06"="TAXNWRB"))
 TAXNWRB.EGRPR$SOURCEDB = "Russia_EGRPR"
 TAXNWRB.EGRPR <- TAXNWRB.EGRPR[!is.na(TAXNWRB.EGRPR$TAXNWRB)&!is.na(TAXNWRB.EGRPR$LONWGS84)&nchar(paste(TAXNWRB.EGRPR$TAXNWRB))>0,]
 str(TAXNWRB.EGRPR)
 ## 862 profiles
 coordinates(TAXNWRB.EGRPR) <- ~ LONWGS84+LATWGS84
 proj4string(TAXNWRB.EGRPR) <- "+proj=longlat +datum=WGS84"
-plotKML(TAXNWRB.EGRPR["TAXNWRB"])
+#plotKML(TAXNWRB.EGRPR["TAXNWRB"])
 save(TAXNWRB.EGRPR, file="TAXNWRB.EGRPR.rda")
+
+TAXOUSDA.EGRPR <- rename(ru.xy[,c("SOURCEID","LONG","LAT","TAXNUSDA")], replace=c("LONG"="LONWGS84","LAT"="LATWGS84"))
+TAXOUSDA.EGRPR$SOURCEDB = "Russia_EGRPR"
+TAXOUSDA.EGRPR <- TAXOUSDA.EGRPR[!is.na(TAXOUSDA.EGRPR$TAXNUSDA)&!is.na(TAXOUSDA.EGRPR$LONWGS84)&nchar(paste(TAXOUSDA.EGRPR$TAXNUSDA))>0,]
+str(TAXOUSDA.EGRPR)
+## 598 profiles
+coordinates(TAXOUSDA.EGRPR) <- ~ LONWGS84+LATWGS84
+proj4string(TAXOUSDA.EGRPR) <- "+proj=longlat +datum=WGS84"
+plotKML(TAXOUSDA.EGRPR["TAXNUSDA"])
+save(TAXOUSDA.EGRPR, file="TAXOUSDA.EGRPR.rda")
 
 # ------------------------------------------------------------
 # All soil properties
 # ------------------------------------------------------------
 
-horizons <- ru[,c("SOURCEID","HIAUTH","HORTOP","HORBOT","ORGMAT","CECST","PHH2O","PHSLT","TEXTSAF","TEXTSIC","TEXSCM","TEXTSIM","TEXTSIF","TEXTCL","TEXTPHC","DVOL","GRVDEG")]
+horizons <- ru[,c("SOURCEID","HIAUTH","HORTOP","HORBOT","ORGMAT","CECST","PHH2O","PHSLT","TEXTSAF","TEXTSIC","TEXSCM","TEXTSIM","TEXTSIF","TEXTCL","TEXTPHC","DVOL","GRVDEG","SPRDEPR")]
+## if both horizons have 0, then remove:
+sel0 <- horizons$HORTOP==0&horizons$HORBOT==0
+horizons$HORTOP[sel0] <- NA
+horizons$HORBOT[sel0] <- NA
 horizons$SAMPLEID <- make.unique(paste(horizons$SOURCEID, horizons$HIAUTH, sep="_"))
 horizons <- rename(horizons, c("HORTOP"="UHDICM","HORBOT"="LHDICM","PHH2O"="PHIHOX","PHSLT"="PHIKCL","ORGMAT"="ORCDRC","CECST"="CECSUM","DVOL"="BLD"))
 horizons$ORCDRC <- horizons$ORCDRC*10/1.724
 summary(horizons$ORCDRC)
 horizons$BLD <- horizons$BLD * 1000
 levels(as.factor(horizons$GRVDEG))
+## Copy paste by hand:
 horizons$CRFVOL <- 0
 horizons$CRFVOL[horizons$GRVDEG=="???"] <- 0
 horizons$CRFVOL[horizons$GRVDEG=="????????????"] <- 0.5
 horizons$CRFVOL[horizons$GRVDEG=="???????????????"] <- (0.5+5)/2
 horizons$CRFVOL[horizons$GRVDEG=="????????????????"] <- (5+10)/2
 horizons$CRFVOL[horizons$GRVDEG=="????????????????"] <- 15
+summary(horizons$CRFVOL)
 horizons$UHDICM <- as.numeric(horizons$UHDICM)
 summary(horizons$UHDICM)
 horizons$LHDICM <- as.numeric(horizons$LHDICM)
@@ -93,3 +117,28 @@ str(SPROPS.EGRPR)
 ## 11,232
 save(SPROPS.EGRPR, file="SPROPS.EGRPR.rda")
 plot(SPROPS.EGRPR$LONWGS84, SPROPS.EGRPR$LATWGS84, pch="+")
+
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+
+## Looks like the column SPRDEPR is not depth to R horizon!
+#bdr.d <- aggregate(as.numeric(horizons$SPRDEPR), list(horizons$SOURCEID), max, na.rm=TRUE)
+#names(bdr.d) <- c("SOURCEID", "BDRICM")
+horizons.s <- horizons[!is.na(horizons$HIAUTH)&nchar(paste(horizons$HIAUTH))>0,]
+sel.r <- grep(pattern="^R", horizons.s$HIAUTH, ignore.case=FALSE, fixed=FALSE)
+sel.r2 <- grep(pattern="*/R", horizons.s$HIAUTH, ignore.case=FALSE, fixed=FALSE)
+sel.r3 <- grep(pattern="CR", horizons.s$HIAUTH, ignore.case=FALSE, fixed=FALSE)
+horizons.s$BDRICM <- NA
+horizons.s$BDRICM[sel.r] <- horizons.s$UHDICM[sel.r]
+horizons.s$BDRICM[sel.r2] <- horizons.s$LHDICM[sel.r2]
+horizons.s$BDRICM[sel.r3] <- horizons.s$LHDICM[sel.r3]
+bdr.d <- aggregate(horizons.s$BDRICM, list(horizons.s$SOURCEID), max, na.rm=TRUE)
+names(bdr.d) <- c("SOURCEID", "BDRICM")
+BDR.EGRPR <- join(as.data.frame(TAXNWRB.EGRPR)[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], bdr.d, type="left")
+BDR.EGRPR$BDRICM <- ifelse(is.infinite(BDR.EGRPR$BDRICM), 250, BDR.EGRPR$BDRICM)
+BDR.EGRPR <- BDR.EGRPR[!is.na(BDR.EGRPR$BDRICM),]
+str(BDR.EGRPR)
+summary(BDR.EGRPR$BDRICM)
+## 862 points
+save(BDR.EGRPR, file="BDR.EGRPR.rda") 

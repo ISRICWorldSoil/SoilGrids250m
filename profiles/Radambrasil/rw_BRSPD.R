@@ -62,9 +62,35 @@ summary(horizons$PHIHOX)
 summary(horizons$SNDPPT)
 horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
 nrow(horizons)
+## 11232
 
 SPROPS.SolosBR <- horizons[!is.na(horizons$DEPTH),c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","CRFVOL","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","LONWGS84","LATWGS84")]
 str(SPROPS.SolosBR)
 ## 11,232
 save(SPROPS.SolosBR, file="SPROPS.SolosBR.rda")
 plot(SPROPS.SolosBR$LONWGS84, SPROPS.SolosBR$LATWGS84, pch="+")
+
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+
+horizons.s <- horizons[!is.na(horizons$HzSimb)&nchar(paste(horizons$HzSimb))>0,]
+sel.r <- grep(pattern="^R", horizons.s$HzSimb, ignore.case=FALSE, fixed=FALSE)
+sel.r2 <- grep(pattern="*/R", horizons.s$HzSimb, ignore.case=FALSE, fixed=FALSE)
+sel.r3 <- c(grep(pattern="IIR", horizons.s$HzSimb, ignore.case=FALSE, fixed=FALSE), grep(pattern="CR", horizons.s$HzSimb, ignore.case=FALSE, fixed=FALSE), grep(pattern="AR", horizons.s$HzSimb, ignore.case=FALSE, fixed=FALSE))
+## 'Lithic' soils:
+sel.r4 <- which(horizons.s$SOURCEID %in% edaf$SOURCEID[grep(pattern="lit", ignore.case=TRUE, paste(edaf$SoilClass))])
+horizons.s$BDRICM <- NA
+horizons.s$BDRICM[sel.r] <- horizons.s$UHDICM[sel.r]
+horizons.s$BDRICM[sel.r2] <- horizons.s$LHDICM[sel.r2]
+horizons.s$BDRICM[sel.r3] <- horizons.s$LHDICM[sel.r3]
+horizons.s$BDRICM[sel.r4] <- horizons.s$LHDICM[sel.r4]
+bdr.d <- aggregate(horizons.s$BDRICM, list(horizons.s$SOURCEID), max, na.rm=TRUE)
+names(bdr.d) <- c("SOURCEID", "BDRICM")
+BDR.SolosBR <- join(SITE[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84")], bdr.d, type="left")
+BDR.SolosBR$BDRICM <- ifelse(is.infinite(BDR.SolosBR$BDRICM), 250, BDR.SolosBR$BDRICM)
+BDR.SolosBR <- BDR.SolosBR[!is.na(BDR.SolosBR$BDRICM),]
+str(BDR.SolosBR)
+summary(BDR.SolosBR$BDRICM<250)
+## 287 points with R horizon or 'Litolic' classification
+save(BDR.SolosBR, file="BDR.SolosBR.rda") 

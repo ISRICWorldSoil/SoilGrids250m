@@ -52,15 +52,28 @@ sites$USDA[which(sites$USDA=="NA")] <- NA
 sites$LocalCls[which(sites$LocalCls=="NA")] <- NA
 sites$Location[which(sites$Location=="NA")] <- NA
 sites$Drain[which(sites$Drain=="NA")] <- NA
-sites$RockDpth[which(sites$RockDpth=="NA")] <- NA 
-RockDpth.sel <- grep(pattern="^>", sites$RockDpth, ignore.case=FALSE, fixed=FALSE)
-RockDpth.selP <- as.numeric(sapply(as.character(sites$RockDpth[RockDpth.sel]), function(x){strsplit(x, "\\>")[[1]][2]})) >= 1.8
-sites$RockDpth.f <- 100 * as.numeric(sites$RockDpth)
-sites$RockDpth.f[RockDpth.sel[RockDpth.selP]] <- 200
-sites$RockDpth <- NULL
-
 sites$SOURCEDB = "AfSPDB"
 sites <- rename(sites, c("ProfileID"="SOURCEID", "X_LonDD"="LONWGS84", "Y_LatDD"="LATWGS84", "T_Year"="TIMESTRR", "WRB06"="TAXNWRB", "USDA"="TAXOUSDA"))
+
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+
+## Filtered by Johan Leernaars:
+RockDpth.sel <- grep(pattern=">", sites$RockDpth, fixed=FALSE)
+rd = as.numeric(sapply(as.character(sites$RockDpth[RockDpth.sel]), function(x){strsplit(x, ">")[[1]][2]}))
+sel.n <- unique(c(grep(pattern="LEPT", ignore.case=TRUE, paste(sites$TAXNWRB)), grep(pattern="LEPT", ignore.case=TRUE, paste(sites$TAXNWRB))))
+sites$BDRICM <- as.numeric(as.character(sites$RockDpth))*100
+sites$BDRICM <- ifelse(is.na(sites$BDRICM), 250, sites$BDRICM)
+sites[RockDpth.sel, "BDRICM"] <- 100 * rd
+sites[-sel.n, "BDRICM"] <- ifelse(sites[-sel.n, "BDRICM"]<100, NA, sites[-sel.n, "BDRICM"])
+summary(sites$BDRICM)
+
+BDR.AfSPDB <- sites[!is.na(sites$BDRICM),c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","BDRICM")]
+summary(BDR.AfSPDB$BDRICM<250)
+## 2382 points
+str(BDR.AfSPDB)
+save(BDR.AfSPDB, file="BDR.AfSPDB.rda")
 
 
 # ------------------------------------------------------------

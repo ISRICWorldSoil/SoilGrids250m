@@ -15,24 +15,26 @@ library(plyr)
 library(sp)
 # define a new function to merge the degree, min, sec columns:
 cols2dms <- function(x,y,z,e){ifelse(is.na(e)|is.na(x), NA, as(char2dms(paste(x, "d", y, "'", z, "\"", e, sep="")), "numeric"))}
+m.lst <- tolower(c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
 
 # ------------------------------------------------------------
 # Fetch tables
 # ------------------------------------------------------------
 
-# import to R:
-cGSPD <- odbcConnect(dsn="ISRIC-WISE")
-odbcGetInfo(cGSPD)
-sqlTables(cGSPD)$TABLE_NAME
+## import to R:
+#cGSPD <- odbcConnect(dsn="ISRIC-WISE")
+#odbcGetInfo(cGSPD)
+#sqlTables(cGSPD)$TABLE_NAME
 # get horizon table:
 #HORIZON <- sqlFetch(cGSPD, "WISE3_HORIZON", stringsAsFactors=FALSE, as.is=TRUE)  
 HORIZON <- read.csv("WISE3_HORIZON.csv")
 str(HORIZON)
 # number of samples:
 length(HORIZON$ORGC[!is.na(HORIZON$ORGC)])
-mean(HORIZON$ORGC, na.rm=TRUE) ## Orgacic Carbon in promille!
+mean(HORIZON$ORGC, na.rm=TRUE) ## Orgacic Carbon in promilles
 summary(HORIZON$VMC1)
-SITE <- sqlFetch(cGSPD, "WISE3_SITE", stringsAsFactors=FALSE) 
+#SITE <- sqlFetch(cGSPD, "WISE3_SITE", stringsAsFactors=FALSE) 
+SITE <- read.csv("WISE3_SITE.csv", stringsAsFactors=FALSE)
 
 # ------------------------------------------------------------
 # Re-format columns
@@ -53,7 +55,7 @@ summary(SITE.s$LATWGS84); summary(SITE.s$LONWGS84)
 SITE.s$SOURCEID <- as.factor(SITE.s$WISE3_id)
 SITE.s$TAXGWRB <- as.factor(SITE.s$WRB2006)
 SITE.s$TAXNUSDA <- as.factor(SITE.s$USCL)
-SITE.s$TIMESTRR <- as.Date(SITE.s$USYR, format="%Y")
+SITE.s$TIMESTRR <- as.Date(paste0(SITE.s$DATEYR, "-", ifelse(is.na(SITE.s$DATEMON), m.lst[1], m.lst[SITE.s$DATEMON]), "-1"), format="%Y-%b-%d")
 ## classification key:
 legFAO_90 <- read.csv("cleanup_SU_SYM90.csv")
 SITE.s$TAXNWRB <- join(SITE.s, legFAO_90, type="left")$Name
@@ -62,31 +64,11 @@ SITE.s$SOURCEDB = "WISE"
 str(SITE.s)
 
 HORIZON$SOURCEID <- as.factor(HORIZON$WISE3_ID)
-# rename columns:
+## rename columns:
 HORIZON <- rename(HORIZON, c("TOPDEP"="UHDICM", "BOTDEP"="LHDICM", "ORGC"="ORCDRC", "PHH2O"="PHIHOX", "PHKCL"="PHIKCL", "SAND"="SNDPPT", "SILT"="SLTPPT", "CLAY"="CLYPPT", "GRAVEL"="CRFVOL", "BULKDENS"="BLD", "CECSOIL"="CECSUM"))
-
-## subset to complete data:
+## subset to complete data?
 sel.h <- !is.na(HORIZON$LHDICM)&!is.na(HORIZON$UHDICM)
-## depth to R horizon:
-sel.r <- grep(pattern="^R", HORIZON$DESIG, ignore.case=FALSE, fixed=FALSE)
-sel.r2 <- grep(pattern="*/R", HORIZON$DESIG, ignore.case=FALSE, fixed=FALSE)
-sel.r3 <- grep(pattern="CR", HORIZON$DESIG, ignore.case=FALSE, fixed=FALSE)
-HORIZON$BDRICM <- NA
-HORIZON$BDRICM[sel.r] <- HORIZON$UHDICM[sel.r]
-HORIZON$BDRICM[sel.r2] <- HORIZON$LHDICM[sel.r2]
-HORIZON$BDRICM[sel.r3] <- HORIZON$LHDICM[sel.r3]
-bdr.d <- aggregate(HORIZON$BDRICM, list(HORIZON$SOURCEID), max, na.rm=TRUE)
-names(bdr.d) <- c("SOURCEID", "BDRICM")
-SITE.sm <- merge(SITE.s, bdr.d, all.y=FALSE)
-SITE.sm$BDRICM <- ifelse(SITE.sm$BDRICM<0, NA, SITE.sm$BDRICM)
-summary(SITE.sm$BDRICM) 
-
-profs.f <- join(SITE.sm[,c("SOURCEID", "LONWGS84", "LATWGS84", "TIMESTRR", "TAXGWRB", "TAXNUSDA", "BDRICM")], HORIZON[sel.h,c("SOURCEID","UHDICM","LHDICM","CLYPPT","SNDPPT", "SLTPPT", "CRFVOL","PHIHO5","PHIKCL","BLD","ORCDRC")], type='inner')
-depths(profs.f) <- SOURCEID ~ UHDICM + LHDICM
-# extract site data
-site(profs.f) <- ~ LONWGS84 + LATWGS84 + TIMESTRR + TAXGWRB + TAXNUSDA + BDRICM
-## check if there are still some duplicates
-#profs.f@site$SOURCEID[duplicated(profs.f@site$SOURCEID)]
+HORIZON <- HORIZON[sel.h,]
 
 # ------------------------------------------------------------
 # All soil properties
@@ -97,11 +79,35 @@ HORIZON$SOURCEDB = "WISE"
 HORIZON$DEPTH <- HORIZON$UHDICM + (HORIZON$LHDICM - HORIZON$UHDICM)/2
 HORIZON$BLD <- HORIZON$BLD * 1000
 summary(HORIZON$BLD)
-SPROPS.WISE <- join(HORIZON[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CRFVOL","CECSUM","SNDPPT","CLYPPT","BLD","SLTPPT","PHIHOX","PHIKCL","ORCDRC")], SITE.s[,c("SOURCEID","LONWGS84","LATWGS84")])
+SPROPS.WISE <- join(HORIZON[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CRFVOL","CECSUM","SNDPPT","CLYPPT","BLD","SLTPPT","PHIHOX","PHIKCL","ORCDRC")], SITE.s[,c("SOURCEID","LONWGS84","LATWGS84","SOURCEDB")])
 str(SPROPS.WISE)
+summary(SPROPS.WISE$ORCDRC) ## mean=1.4%
+summary(SPROPS.WISE$BLD) ## mean=1381
 ## 47,833
 save(SPROPS.WISE, file="SPROPS.WISE.rda")
 plot(SPROPS.WISE$LONWGS84, SPROPS.WISE$LATWGS84, pch="+")
+
+# ------------------------------------------------------------
+# Depth to bedrock
+# ------------------------------------------------------------
+
+HORIZON.s <- HORIZON[!is.na(HORIZON$DESIG)&nchar(paste(HORIZON$DESIG))>0,]
+sel.r <- grep(pattern="^R", HORIZON.s$DESIG, ignore.case=FALSE, fixed=FALSE)
+sel.r2 <- grep(pattern="*/R", HORIZON.s$DESIG, ignore.case=FALSE, fixed=FALSE)
+sel.r3 <- grep(pattern="CR", HORIZON.s$DESIG, ignore.case=FALSE, fixed=FALSE)
+HORIZON.s$BDRICM <- NA
+HORIZON.s$BDRICM[sel.r] <- HORIZON.s$UHDICM[sel.r]
+HORIZON.s$BDRICM[sel.r2] <- HORIZON.s$LHDICM[sel.r2]
+HORIZON.s$BDRICM[sel.r3] <- HORIZON.s$LHDICM[sel.r3]
+bdr.d <- aggregate(HORIZON.s$BDRICM, list(HORIZON.s$SOURCEID), max, na.rm=TRUE)
+names(bdr.d) <- c("SOURCEID", "BDRICM")
+BDR.WISE <- join(SITE.s[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84")], bdr.d, type="left")
+BDR.WISE$BDRICM <- ifelse(is.infinite(BDR.WISE$BDRICM), 250, BDR.WISE$BDRICM)
+BDR.WISE <- BDR.WISE[!is.na(BDR.WISE$BDRICM),]
+str(BDR.WISE)
+## 7679 points
+save(BDR.WISE, file="BDR.WISE.rda") 
+
 
 # ------------------------------------------------------------
 # SPADE:
@@ -196,10 +202,14 @@ save(wsp9, file="../wsp9.rda", compress="xz")
 # export TAXONOMY DATA
 # ------------------------------------------------------------
 
-TAXNWRB.WISE <- rbind.fill(list(SITE.s[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXNWRB")], DAT_PLOT[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","TAXNWRB")]))
+## Universal soil classification data:
+USCL <- read.csv("USCL_points.csv", stringsAsFactors=FALSE)
+USCL <- rename(USCL[,c("WRB2006_subgroup","WISE_id","LONdd","LATdd","SOURCE_ID")], c("WRB2006_subgroup"="TAXNWRB", "WISE_id"="SOURCEID", "LONdd"="LONWGS84", "LATdd"="LATWGS84", "SOURCE_ID"="SOURCEDB"))
+
+TAXNWRB.WISE <- rbind.fill(list(SITE.s[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXNWRB")], DAT_PLOT[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","TAXNWRB")], USCL))
 TAXNWRB.WISE <- TAXNWRB.WISE[!is.na(TAXNWRB.WISE$TAXNWRB)&!is.na(TAXNWRB.WISE$LONWGS84)&nchar(paste(TAXNWRB.WISE$TAXNWRB))>0,]
 str(TAXNWRB.WISE)
-## 8271 profiles
+## 16,475 profiles
 coordinates(TAXNWRB.WISE) <- ~ LONWGS84+LATWGS84
 proj4string(TAXNWRB.WISE) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXNWRB.WISE["TAXNWRB"])
