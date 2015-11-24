@@ -42,7 +42,7 @@ check.LMK <- function(i){
     } 
   }
 }
-sfInit(parallel=TRUE, cpus=35)
+sfInit(parallel=TRUE, cpus=40)
 sfLibrary(raster)
 sfLibrary(rgdal)
 sfExport("check.LMK", "msk.lst")
@@ -80,12 +80,12 @@ TWI.lst <- paste0("/data/MDEM/MTWI_", names(equi7t3), "_250m.sdat")
 DEM.in.lst <- list(DEM.lst, SLP.lst, CRV.lst, VBF.lst, DVM.lst, VDP.lst, POS.lst, NEG.lst, TWI.lst)
 EVIM.out.lst <- paste0("EX",1:6, "MOD5")
 EVIS.out.lst <- paste0("ES",1:6, "MOD5")
-EVIM.lst <- paste0("/data/MOD13Q1/SD_liste", ms.lst, ".vrt")
-EVIS.lst <- paste0("/data/MOD13Q1/M_liste", ms.lst, ".vrt")
+EVIM.lst <- paste0("/data/MOD13Q1/M_liste", ms.lst, ".vrt")
+EVIS.lst <- paste0("/data/MOD13Q1/SD_liste", ms.lst, ".vrt")
 NBR4.out.lst <- c(paste0("I0",1:9, "MOD4"), paste0("I",10:12, "MOD4"))
 NBR7.out.lst <- c(paste0("M0",1:9, "MOD4"), paste0("M",10:12, "MOD4"))
-NBR4.lst <- paste0("/data/MCD43A4/NRB4_Ms_", m.lst, "_500m.tif")
-NBR7.lst <- paste0("/data/MCD43A4/NRB7_Ms_", m.lst, "_500m.tif")
+NBR4.lst <- paste0("/data/MCD43A4/M_liste", m.lst, "_4.vrt")
+NBR7.lst <- paste0("/data/MCD43A4/M_liste", m.lst, "_7.vrt")
 LSTD.out.lst <- c(paste0("T0",1:9, "MOD3"), paste0("T",10:12, "MOD3"), "TMDMOD3")
 LSTN.out.lst <- c(paste0("N0",1:9, "MOD3"), paste0("N",10:12, "MOD3"), "TMNMOD3")
 LSTD.lst <- c(paste0("/data/MOD11A2/LSTD_M_", m.lst, "_1km.tif"), "/data/MOD11A2/TMDMOD3.tif")
@@ -112,32 +112,8 @@ FW.lst <- list(paste0("/data/floods/FW", 4, "MOD5_", names(equi7t3), ".tif"), pa
 ## test preparing covs for 8 sample areas (single tile)
 #prepareCovsSoilGrids250m(s.zone=5, s.lst=145)
 prepareCovsSoilGrids250m(s.zone=1, s.lst=rownames(equi7t3[[1]]@data)[which(equi7t3[[1]]$TILE=="072_048")])
-prepareCovsSoilGrids250m(s.zone=1, s.lst=rownames(equi7t3[[1]]@data)[which(equi7t3[[1]]$TILE=="012_063")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=6, s.lst=rownames(equi7t3[[6]]@data)[which(equi7t3[[6]]$TILE=="087_063")])
-prepareCovsSoilGrids250m(s.zone=3, s.lst=rownames(equi7t3[[3]]@data)[which(equi7t3[[3]]$TILE=="072_087")])
-prepareCovsSoilGrids250m(s.zone=3, s.lst=rownames(equi7t3[[3]]@data)[which(equi7t3[[3]]$TILE=="048_003")])
-prepareCovsSoilGrids250m(s.zone=4, s.lst=rownames(equi7t3[[4]]@data)[which(equi7t3[[4]]$TILE=="039_039")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=4, s.lst=rownames(equi7t3[[4]]@data)[which(equi7t3[[4]]$TILE=="030_015")], close.gap=FALSE)
-## Corrupt file?? Fill gaps operation hangs in loops
-#rownames(equi7t3[[4]]@data)[which(equi7t3[[4]]$TILE=="039_039")]
-prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="060_030")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="054_069")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="099_057")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="084_057")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="087_072")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="102_018")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="105_069")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="102_069")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="102_084")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="084_057")], close.gap=FALSE)
-## Corrupt files??
-prepareCovsSoilGrids250m(s.zone=7, s.lst=rownames(equi7t3[[7]]@data)[which(equi7t3[[7]]$TILE=="063_030")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=7, s.lst=rownames(equi7t3[[7]]@data)[which(equi7t3[[7]]$TILE=="063_012")], close.gap=FALSE)
-## Corrupt files??
-prepareCovsSoilGrids250m(s.zone=7, s.lst=rownames(equi7t3[[7]]@data)[which(equi7t3[[7]]$TILE=="090_048")])
-## Corrupt files??
-prepareCovsSoilGrids250m(s.zone=3, s.lst=rownames(equi7t3[[3]]@data)[which(equi7t3[[3]]$TILE=="072_090")], close.gap=FALSE)
-prepareCovsSoilGrids250m(s.zone=3, s.lst=rownames(equi7t3[[3]]@data)[which(equi7t3[[3]]$TILE=="075_087")], close.gap=FALSE)
+prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="099_084")], close.gap=FALSE)
+prepareCovsSoilGrids250m(s.zone=5, s.lst=rownames(equi7t3[[5]]@data)[which(equi7t3[[5]]$TILE=="093_012")], close.gap=FALSE)
 
 ## all together (TAKES 3-4hrs):
 for(i in 1:7){
@@ -148,7 +124,7 @@ for(i in 1:7){
   sfLibrary(R.utils)
   sfExportAll()
   lst <- 1:length(equi7t3[[i]])
-  x <- sfLapply(lst, function(x){ try( prepareCovsSoilGrids250m(s.zone=i, s.lst=x, close.gap=TRUE) ) })
+  x <- sfClusterApplyLB(lst, function(x){ try( prepareCovsSoilGrids250m(s.zone=i, s.lst=x, close.gap=TRUE) ) })
   sfStop()
 }
 
@@ -177,10 +153,10 @@ make.covsRDA(in.path="/data/covs", i="AS_075_087")
 ## TAKES ca 2 hrs to generate all RDS files
 pr.dirs <- basename(list.dirs("/data/covs")[-1])
 ## 2356 dirs
-ok.lst <- basename(dirname(list.files(path="/data/predicted", pattern=glob2rx("TAXOUSDA_??_???_???.tif$"), full.names=TRUE, recursive=TRUE)))
-del.lst <- pr.dirs[which(!pr.dirs %in% ok.lst)]
-del.lst <- paste0('/data/covs/', del.lst, '/', del.lst,'.rds')
-unlink(del.lst)
+#ok.lst <- basename(dirname(list.files(path="/data/predicted", pattern=glob2rx("TAXOUSDA_??_???_???.tif$"), full.names=TRUE, recursive=TRUE)))
+#del.lst <- pr.dirs[which(!pr.dirs %in% ok.lst)]
+#del.lst <- paste0('/data/covs/', del.lst, '/', del.lst,'.rds')
+#unlink(del.lst)
 #x = paste0("/data/covs/", basename(dirname(del.lst)), "/N10MOD3_", basename(dirname(del.lst)),".tif")
 #unlink(x)
 
@@ -191,10 +167,37 @@ sfLibrary(sp)
 x <- sfLapply(pr.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs") ) })
 sfStop()
 
+## gz files for h2o:
+make.csv.gz <- function(i, in.path){
+  infile <- paste0(in.path, "/", i, "/", i, ".rds")
+  outfile <- paste0(in.path, "/", i, "/", i, ".csv")
+  if(!file.exists(paste0(outfile, ".gz"))){
+    m <- readRDS(infile)
+    df <- as.data.frame(m)
+    write.csv(df, outfile)
+    gc()
+    gzip(outfile)
+  }
+}
+
+sfInit(parallel=TRUE, cpus=40)
+sfExport("make.csv.gz")
+sfLibrary(rgdal)
+sfLibrary(sp)
+sfLibrary(R.utils)
+x <- sfLapply(pr.dirs, fun=function(i){ try(make.csv.gz(i, in.path="/data/covs") ) })
+sfStop()
+
 ## create prediction dirs:
 #x <- lapply(gsub("covs", "predicted", pr.dirs), dir.create, recursive=TRUE, showWarnings=FALSE)
 
 ## clean-up:
+#del.lst <- list.files(path="/data/covs", pattern=glob2rx("E??MOD5_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
+#del.lst <- list.files(path="/data/covs", pattern=glob2rx("I??MOD4_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
+#del.lst <- list.files(path="/data/covs", pattern=glob2rx("M??MOD4_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
 #del.lst <- list.files(path="/data/covs", pattern=glob2rx("C??GLC5_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 #del.lst <- list.files(path="/data/covs", pattern=glob2rx("ES?MOD5_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
@@ -206,6 +209,10 @@ sfStop()
 #del.lst <- list.files(path="/data/covs", pattern=glob2rx("GTDHYS3_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 #del.lst <- list.files(path="/data/covs", pattern=glob2rx("*_*_*.rds"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
+#del.lst <- list.files(path="/data/covs", pattern=glob2rx("*_*_*.csv.gz"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
+#del.lst <- list.files(path="/data/covs", pattern=glob2rx("LMK_*_*_*.sdat$"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 #del.lst <- list.files(path="/data/GEOG", pattern=glob2rx("*.tif$"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)

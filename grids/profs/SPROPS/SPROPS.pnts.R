@@ -17,19 +17,15 @@ country <- as(map2SpatialPolygons(country.m, IDs=IDs), "SpatialLines")
 
 ## list of input data sets:
 tax.lst <- list.files(path="G:\\soilstorage\\SoilData", pattern=glob2rx("SPROPS.*.rda"), full.names=TRUE, recursive=TRUE)
+tax.lst
 in.lst <- lapply(tax.lst, load, .GlobalEnv)
 in.lst <- lapply(in.lst, function(x){as.data.frame(get(x))})
 ## 24 data sets
 
-## Simulate desert soils:
-data(landmask20km)
-landmask20km <- as(landmask20km["suborder"], "SpatialPixelsDataFrame")
-summary(landmask20km$suborder)
-sand.sim <- spsample(landmask20km[landmask20km$suborder=="Shifting Sand",], type="random", n=150)
-plot(raster(landmask20km["suborder"])); points(sand.sim)
-#plotKML(SpatialPointsDataFrame(sand.sim, data.frame(ID=1:length(sand.sim))))
-
-SPROPS.sim <- as.data.frame(spTransform(sand.sim, CRS("+proj=longlat +datum=WGS84")))
+## Simulated desert soils:
+load("../TAXOUSDA/deserts.pnt.rda")
+SPROPS.sim <- as.data.frame(spTransform(deserts.pnt, CRS("+proj=longlat +datum=WGS84")))
+SPROPS.sim[,1] <- NULL
 SPROPS.sim <- plyr::rename(SPROPS.sim, c("x"="LONWGS84", "y"="LATWGS84"))
 SPROPS.sim$SOURCEID <- paste("SIM", 1:nrow(SPROPS.sim), sep="_")
 SPROPS.sim$SOURCEDB = "Simulated"
@@ -42,16 +38,17 @@ SPROPS.sim$PHIHOX = 8.1
 SPROPS.sim$UHDICM = 0
 SPROPS.sim$LHDICM = 200
 SPROPS.sim$DEPTH = 100
+str(SPROPS.sim)
 
 ## add to the list:
 in.lst[[length(in.lst)+1]] <- SPROPS.sim
 ## Bind everything together:
 all.pnts <- dplyr::rbind_all(in.lst)
 str(all.pnts)
-## 1,046,492
+## 759,259
 all.pnts$LOC_ID <- as.factor(paste("ID", all.pnts$LONWGS84, all.pnts$LATWGS84, sep="_"))
 summary(!duplicated(all.pnts$LOC_ID))
-## 145,183 duplicate points
+## 146,605 unique locations!
 save(all.pnts, file="all.pnts.rda")
 
 SPROPS.pnts <- as.data.frame(all.pnts[!duplicated(all.pnts$LOC_ID),c("LOC_ID","SOURCEID","SOURCEDB","LONWGS84","LATWGS84")])

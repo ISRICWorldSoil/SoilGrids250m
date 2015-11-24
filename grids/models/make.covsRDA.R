@@ -13,22 +13,15 @@ make.covsRDA <- function(in.path, i){
       if(!k==mask){
         covn = strsplit(basename(cov.lst[k]), "_")[[1]][1]
         d <- readGDAL(cov.lst[k], silent=TRUE)$band1[m@grid.index]
-        ## They should all have complete values, but we run one more check just to be certain:
         dn <- which(is.na(d)|d<= -32767|d>= 65535)
         if(length(dn)>0){ 
-          d[dn] <- NA
-          ## replace all missing values with median value
           d[dn] <- quantile(d, probs=0.5, na.rm=TRUE)
+          ## replace all missing values with median value
         }
         m@data[,covn] <- d 
       }
     }
     gc()
-    ## TH: remove this once EVI images are fixed
-    if(all(is.na(m@data[,"EX6MOD5"]))){
-      m@data[,"EX6MOD5"] <- m@data[,"EX5MOD5"]
-      m@data[,"ES6MOD5"] <- m@data[,"ES5MOD5"]
-    }
     saveRDS(m, file=out.rda, compress=TRUE)
   }
 }

@@ -20,7 +20,6 @@ plotKML.env(convert="convert", show.env=FALSE)
 gdalwarp = "/usr/local/bin/gdalwarp"
 gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
 system("/usr/local/bin/gdal-config --version")
-gdal_merge.py = "/usr/local/bin/gdal_merge.py"
 source("../extract.equi7t3.R")
 source("../wrapper.predict_c.R")
 load("../equi7t3.rda")
@@ -33,16 +32,21 @@ col.legend$COLOR <- rgb(red=col.legend$R/255, green=col.legend$G/255, blue=col.l
 des <- read.csv("../SoilGrids250m_COVS250m.csv")
 load("../../profs/TAXOUSDA/TAXOUSDA.pnts.rda")
 ## 54,311 points!
-#load("../ov.rda") ## check if the values exist already
 
 ## OVERLAY AND FIT MODELS:
 ov <- extract.equi7t3(x=TAXOUSDA.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=40)
-#ov <- rbind.fill(ov, extract.equi7t3(x=TAXOUSDA.pnts[-match(ov$SOURCEID, TAXOUSDA.pnts$SOURCEID),], y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=40))
 ## TAKES ca 10 MINS FOR 40k points
 #str(ov)
-#ov$LATWGS84 <- TAXOUSDA.pnts@coords[,2]
 ## remove all NA values:
-#for(i in des$WORLDGRIDS_CODE){ ov[,i] <- ifelse(ov[,i]<= -32767, NA, ov[,i])  }
+for(i in des$WORLDGRIDS_CODE){ ov[,i] <- ifelse(ov[,i]<= -32767, NA, ov[,i])  }
+#NA.rows <- which(!complete.cases(ov))
+ov$ES2MOD5 <- ifelse(is.na(ov$ES2MOD5)|ov$ES2MOD5<0, ov$ES3MOD5, ov$ES2MOD5)
+ov$ES1MOD5 <- ifelse(is.na(ov$ES1MOD5)|ov$ES1MOD5<0, ov$ES2MOD5, ov$ES1MOD5) 
+ov$ES6MOD5 <- ifelse(is.na(ov$ES6MOD5)|ov$ES6MOD5<0, ov$ES5MOD5, ov$ES6MOD5)
+ov$EX1MOD5 <- ifelse(is.na(ov$EX1MOD5), ov$EX2MOD5, ov$EX1MOD5) 
+ov$EX6MOD5 <- ifelse(is.na(ov$EX6MOD5), ov$EX5MOD5, ov$EX6MOD5)
+#ov$LATWGS84 <- TAXOUSDA.pnts@coords[,2]
+
 write.csv(ov, file="ov.TAXOUSDA_SoilGrids250m.csv")
 unlink("ov.TAXOUSDA_SoilGrids250m.csv.gz")
 gzip("ov.TAXOUSDA_SoilGrids250m.csv")
@@ -69,9 +73,9 @@ b = attr(cf, "dimnames")[[2]] %in% attr(cf, "dimnames")[[1]]
 c.kappa = psych::cohen.kappa(cf[a,b])
 ac <- sum(diag(cf))/sum(cf)*100
 message(paste("Estimated Cohen Kappa (weighted):", signif(c.kappa$weighted.kappa, 4)))
-## 29%
+## 35%
 message(paste("Map purity:", signif(ac, 3)))
-## 33%
+## 34%
 saveRDS(m_TAXOUSDA, file="m_TAXOUSDA.rds")
 
 ## subset to complete pairs:
@@ -103,9 +107,9 @@ saveRDS(mrf_TAXOUSDA, file="mrf_TAXOUSDA.rds")
 #mkk_TAXOUSDA <- kknn(formulaString.USDA, train=ov, test=ov, distance=1, kernel="triangular")
 
 ## predict for sample locations:
-wrapper.predict_c(i="NA_060_036", varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend) ## gm3=svm_TAXOUSDA,
-wrapper.predict_c(i="EU_036_015", varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend)
-wrapper.predict_c(i="EU_030_015", varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend)
+#wrapper.predict_c(i="NA_060_036", varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend) ## gm3=svm_TAXOUSDA,
+#wrapper.predict_c(i="EU_036_015", varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend)
+#wrapper.predict_c(i="EU_030_015", varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend)
 #wrapper.predict_c(i="OC_087_063", varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend)
 #wrapper.predict_c(i="EU_051_012", varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend)
 ## plot in GE:

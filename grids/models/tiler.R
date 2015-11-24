@@ -26,7 +26,11 @@ close.gaps <- function(inputTile, maskTile, outTile, ot, nodata, a_srs, zmin){
   ## Filter only blocks which miss less than 95% of missing values? 
   if(na.count.mask>0 & !s.zmin.count==ncell(r) & na.count.mask<0.95*ncell(r) ){
     if(s.zmin.count>0){
-      system(paste0(saga_cmd, ' -c=1 grid_calculus 1 -GRIDS ', set.file.extension(inputTile, ".sgrd"), ' -FORMULA=\"ifelse(g1<', zmin, ',-99999,g1)\" -INTERPOLATION 0 -RESULT ', set.file.extension(inputTile, ".sgrd")))
+      if(zmin>=0){
+        #system(paste0(saga_cmd, ' -c=1 grid_calculus 1 -GRIDS ', set.file.extension(inputTile, ".sgrd"), ' -FORMULA=\"ifelse(g1+', abs(zmin),'<0,-99999,g1)\" -INTERPOLATION 0 -RESULT ', set.file.extension(inputTile, ".sgrd")))
+      #} else {
+        system(paste0(saga_cmd, ' -c=1 grid_calculus 1 -GRIDS ', set.file.extension(inputTile, ".sgrd"), ' -FORMULA=\"ifelse(g1<', zmin, ',-99999,g1)\" -INTERPOLATION 0 -RESULT ', set.file.extension(inputTile, ".sgrd")))
+      }
     }
     ## http://saga-gis.org/saga_module_doc/2.2.0/grid_tools_7.html  
     system(paste0(saga_cmd, ' -c=1 grid_tools 7 -INPUT ', set.file.extension(inputTile, ".sgrd"), ' -MASK ', maskTile, ' -RESULT ', tmp))

@@ -125,6 +125,10 @@ prepareCovsSoilGrids250m <- function(nms=c("DEM","MOD13Q1","MCD43A4","MOD11A2","
       if(missing(s.lst)){ s.lst <- 1:length(equi7t3[[i]]) }
       sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input="/data/Groundwater/World_wtd_v2_f.tif", nm="GTDHYS3", resample.type="cubicspline", ot="Int16", nodata="-32767", srcnodata=-32768, zmin=-1, close.gap=close.gap)})
     }
+    for(i in s.zone){ 
+      if(missing(s.lst)){ s.lst <- 1:length(equi7t3[[i]]) }
+      sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input="/data/mangroves/MANGPRf_500m.sdat", nm="MNGUSG", resample.type="bilinear", ot="Byte", nodata="255", srcnodata=255, zmin=0, close.gap=close.gap)})
+    }
   }
   #} , timeout=120, onTimeout="silent")
   

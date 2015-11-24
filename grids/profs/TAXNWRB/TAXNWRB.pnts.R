@@ -10,9 +10,11 @@ library(lattice)
 library(scales)
 library(plotKML)
 library(maps)
+library(stringr)
 
 ## list of input data sets:
 tax.lst <- list.files(path="G:\\soilstorage\\SoilData", pattern=glob2rx("TAXNWRB.*.rda"), full.names=TRUE, recursive=TRUE)
+tax.lst ## 14
 in.lst <- lapply(tax.lst, load, .GlobalEnv)
 in.lst <- lapply(in.lst, function(x){as.data.frame(get(x))})
 
@@ -41,7 +43,7 @@ in.lst[[length(in.lst)+1]] <- TAXNWRB.sim
 ## Bind everything together:
 all.pnts <- dplyr::rbind_all(in.lst)
 str(all.pnts)
-## 38,324
+## 46,488
 all.pnts <- as.data.frame(all.pnts)
 coordinates(all.pnts) <- ~ LONWGS84+LATWGS84
 proj4string(all.pnts) <- "+proj=longlat +datum=WGS84"
@@ -53,7 +55,6 @@ summary(!duplicated(all.pnts$LOC_ID))
 #TAXNWRB.pnts <- all.pnts[!duplicated(all.pnts$LOC_ID),]
 ## TH: We keep the duplicates because there are indeed many points with approximate geocoordinates
 length(all.pnts)
-## 38,324
 
 ## clean-up names:
 FAO_levs <- read.csv("WRB_versions.csv")
@@ -99,40 +100,45 @@ str(soiltype.leg)
 names(soiltype.leg) = c("WRB_2006_NAMEf","count")
 soiltype.leg <- soiltype.leg[rank(1/soiltype.leg$count)<100,]
 soiltype.leg$Group <- sapply(as.character(soiltype.leg$WRB_2006_NAMEf), function(x){strsplit(x, " ")[[1]][2]})
-write.csv(soiltype.leg, file="TAXNWRB_legend.csv")
+write.csv(soiltype.leg, file="soiltype_legend.csv")
 
-## Selection of soil types for SoilGrids250m:
+## Selection of soil types for SoilGrids250m
+## THE FINAL LEGEND
 levsf <- c(levels(as.factor(soiltype.leg$WRB_2006_NAMEf)), "Sapric Histosols", "Hemic Histosols", "Alic Nitisols", "Haplic Albeluvisols", "Cutanic Alisols", "Regic Anthrosols", "Petric Durisols", "Cryic Histosols", "Leptic Umbrisols", "Haplic Umbrisols", "Luvic Stagnosols", "Lixic Plinthosols", "Vitric Cryosols", "Histic Albeluvisols")
-levsf <- unique(as.character(unlist(sapply(levsf, function(x){strsplit(x, "/ ")[[1]]}))))
+levsf <- unique(str_trim(as.character(unlist(sapply(levsf, function(x){strsplit(x, "/")[[1]]})))))
 str(levsf)
-## 116 classes!
+soiltype.leg2 <- data.frame(WRB_2006_NAMEf=levsf)
+soiltype.leg2$Group <- sapply(as.character(soiltype.leg2$WRB_2006_NAMEf), function(x){strsplit(x, " ")[[1]][2]})
+write.csv(soiltype.leg2, file="TAXNWRB_legend2.csv")
+## 114 classes!
 
 ## One by one subgroup name --> try to located them in the raw names
 tax.lst <- list(NULL)
 for(j in 1:length(levsf)){
   ## remove "s" if at the end of the class name:
-  pat <- gsub("sols", "sol", levsf[j])
-  sel1 <- grep(pat, paste(all.pnts$WRB_2006_NAMEf), ignore.case=TRUE)
-  sel2 <- grep(pat, paste(all.pnts$TAXNWRB), ignore.case=TRUE)
-  sel <- unique(c(sel1, sel2))
+  pat <- gsub("chaks", "chak", gsub("zems", "zem", gsub("sols", "sol", levsf[j])))  
+  sel1 <- which(paste(all.pnts$WRB_2006_NAMEf) %in% pat)
+  sel2 <- which(paste(all.pnts$WRB_2006_NAMEf) %in% levsf[j])
+  sel3 <- grep(pat, paste(all.pnts$TAXNWRB), ignore.case=TRUE)
+  sel <- unique(c(sel1, sel2, sel3))
   ## there can be multiple soil taxa at the same location
   if(length(sel)>0){
     tax.lst[[j]] <- data.frame(all.pnts[sel,])
-    tax.lst[[j]]$TAXNWRB.f = levsf[j]
+    tax.lst[[j]]$TAXNWRB.f <- levsf[j]
   }
 }
 TAXNWRB.pnts <- do.call(rbind, tax.lst)
 TAXNWRB.pnts$TAXNWRB.f <- as.factor(TAXNWRB.pnts$TAXNWRB.f)
 summary(TAXNWRB.pnts$TAXNWRB.f)
 length(TAXNWRB.pnts$TAXNWRB.f)
-## FINAL NUMBER OF POINTS: 41,023 points!
+## FINAL NUMBER OF POINTS: 43,121 points!
 summary(as.factor(TAXNWRB.pnts$SOURCEDB))
-#    AfSPDB       eSOTER  RadamBrasil     CN-SOTER       HRSPDB       IRSPDB 
-#        2013         1809         5190         1279         1802         4298 
-#        ISIS      MX_CDPS     NAMSOTER        SPADE         WISE Russia_EGRPR 
-#         544         3658         1859           81         7340          472 
-#      CanSIS         OFRA        CIFOR    Simulated 
-#       11232           36          196          500
+#      AfSPDB       eSOTER  RadamBrasil     CN-SOTER       HRSPDB       IRSPDB   ISCN2012/N         ISIS 
+#        1863         1854         5359         1272         1812         4412         7830          530 
+#     MX_CDPS     NAMSOTER        SPADE         WISE Russia_EGRPR         OFRA        CIFOR   HILATS2014 
+#        2567         1807           82         7096          439           28          196          334 
+#      CanSIS    Simulated 
+#        5140          500 
 
 coordinates(TAXNWRB.pnts) <- ~ LONWGS84+LATWGS84
 proj4string(TAXNWRB.pnts) <- "+proj=longlat +datum=WGS84"

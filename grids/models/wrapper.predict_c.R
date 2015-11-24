@@ -5,9 +5,6 @@ wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, 
   out.c <- paste0(out.path, "/", i, "/", varn, "_", i, ".tif")
   if(!file.exists(out.c)){
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
-    ## Reading models from disk does not help with RAM
-    #gm1 <- readRDS(gm1)
-    #gm2 <- readRDS(gm2)
     ## predict probabilities:
     probs1 <- predict(gm1, m, type="probs", na.action = na.pass) ## nnet
     probs2 <- predict(gm2, m, type="prob", na.action = na.pass) ## randomForest

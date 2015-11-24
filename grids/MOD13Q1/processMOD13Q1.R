@@ -18,7 +18,7 @@ system("/usr/local/bin/gdal-config --version")
 ## MODIS tiles and days of the year
 load(file="modis_grid.rda")
 str(modis_grid$TILE)
-## only 317 cover land
+## only 296 cover land
 modis_grid$TILEh <- paste0(ifelse(nchar(modis_grid$h)==1, paste0("h0", modis_grid$h), paste0("h", modis_grid$h)), ifelse(nchar(modis_grid$v)==1, paste0("v0", modis_grid$v), paste0("v", modis_grid$v)))
 ## 8-day period
 load("dirs.rda")
@@ -88,33 +88,92 @@ sfLibrary(RSAGA)
 t4 <- sfLapply(1:length(sdat.lst), sdat2gdal, sdat.lst)
 sfStop()
 
-## Mosaic:
-M.lstD <- list.files(path="./Mtiled/", pattern=glob2rx("EVI_M_*_*.tif$"), full.names = TRUE)
-SD.lstD <- list.files(path="./Mtiled/", pattern=glob2rx("EVI_SD_*_*.tif$"), full.names = TRUE)
-## 3552 tiles
-
-make_mosaic <- function(j, mon, typ){
-  outm <- paste0("EVI", "_", typ[j], "_", mon[j], "_250m.tif")
-  if(!file.exists(paste0(outm,'.gz'))){
-    lst <- get(paste0(typ[j],".lstD"))
-    lst.s <- lst[grep(pattern=mon[j], lst)]
-    vrt <- paste0(typ[j], '_liste', mon[j], '.vrt')
-    txt <- paste0(typ[j], '_liste', mon[j], '.txt')
-    cat(lst.s, sep="\n", file=txt)
-    system(paste0(gdalbuildvrt, ' -input_file_list ', txt,' ', vrt))
-    system(paste0(gdalwarp, ' ', vrt, ' ', outm, ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"bilinear\" -ot \"Int16\" -dstnodata \"-32768\" -tr 0.002083333 0.002083333 -te -180 -90 180 90 -co \"COMPRESS=DEFLATE\"'))
-    #gzip(outm)
-    #unlink(vrt)
-    #unlink(txt)
+## filter tiles with missing values for landmask:
+filter_NA <- function(i, mask.path="/data/modis_grid"){
+  ## if necessary resample:
+  tgrid <- raster("./Mtiled/EVI_M_", m.lst[1],"_", i, ".tif")
+  m <- raster(paste0(mask.path, "/LMK_", i, ".tif"))
+  if(!sum(getValues(is.na(m)))==length(m)){
+    ## some tiles got 1 pixel extra and need to be re-aligned
+    if(!length(tgrid)==length(m)){
+      m <- raster::resample(m, tgrid, method='ngb')      
+    }
+    m <- as(as(m, "SpatialGridDataFrame"), "SpatialPixelsDataFrame") ## takes 1-2 mins
+    for(j in 1:length(m.lst)){
+      infile1 <- paste0("./Mtiled/EVI_M_", m.lst[j],"_", i, ".tif")
+      infile2 <- paste0("./Mtiled/EVI_SD_", m.lst[j],"_", i, ".tif")
+      n1 <- ifelse(j==1, m.lst[length(m.lst)], m.lst[j-1])
+      n2 <- ifelse(j==length(m.lst), m.lst[1], m.lst[j+1])
+      m$d1 <- readGDAL(infile1, silent=TRUE)$band1[m@grid.index]
+      ## check if there are missing pixels:
+      if(any(is.na(m$d1))){
+        m$df1 <- rowMeans(cbind(readGDAL(paste0("./Mtiled/EVI_M_", n1, "_", i, ".tif"))$band1[m@grid.index], readGDAL(paste0("./Mtiled/EVI_M_", n2, "_", i, ".tif"))$band1[m@grid.index], silent=TRUE), na.rm=TRUE)
+        m$df1 <- ifelse(is.na(m$d1), m$df1, m$d1)
+        writeGDAL(m["df1"], infile1, type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")
+      }
+      m$d2 <- readGDAL(infile2, silent=TRUE)$band1[m@grid.index]
+      if(any(is.na(m$d2))){
+        m$df2 <- rowMeans(cbind(readGDAL(paste0("./Mtiled/EVI_SD_", n1, "_", i, ".tif"))$band1[m@grid.index], readGDAL(paste0("./Mtiled/EVI_SD_", n2, "_", i, ".tif"))$band1[m@grid.index], silent=TRUE), na.rm=TRUE)
+        m$df2 <- ifelse(is.na(m$d2), m$df2, m$d2)
+        writeGDAL(m["df2"], infile2, type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")
+      }
+      gc()    
+    }
   }
+}
+
+sfInit(parallel=TRUE, cpus=40)
+sfExport("filter_NA", "m.lst", "modis_grid_land")
+sfLibrary(rgdal)
+sfLibrary(raster)
+t <- sfLapply(modis_grid_land$TILEh, function(i){try( filter_NA(i) )})
+sfStop()
+
+## Mosaic:
+M.lstD <- list.files(path="./Mtiled", pattern=glob2rx("EVI_M_*_*.tif$"), full.names = TRUE)
+SD.lstD <- list.files(path="./Mtiled", pattern=glob2rx("EVI_SD_*_*.tif$"), full.names = TRUE)
+## 3552 tiles
+JanFeb.lst <- M.lstD[grep(pattern="_M_JanFeb", M.lstD)]
+## get bounding box and resolution
+mod.land <- lapply(JanFeb.lst, function(x){c(as.vector(extent(raster(x))), res(raster(x)))})
+#mod.land <- unique(sapply(basename(M.lstD[grep(pattern="_M_JanFeb", M.lstD)]), function(x){strsplit(strsplit(x, "_")[[1]][4], "\\.")[[1]][1]}))
+#modis_grid_land <- modis_grid[which(modis_grid$TILEh %in% mod.land),]
+modis_grid_land <- as.data.frame(do.call(rbind, mod.land))
+names(modis_grid_land) <- c("xmin","xmax","ymin","ymax","xres","yres")
+modis_grid_land$TILEh <- sapply(JanFeb.lst, function(x){strsplit(strsplit(x, "_")[[1]][4], "\\.")[[1]][1]})
+save(modis_grid_land, file="modis_grid_land.rda")
+
+
+make_mosaic <- function(j, mon, typ, res=c("250m","1km")){
+  outm <- paste0("EVI", "_", typ[j], "_", mon[j], "_", res[1], ".tif")
+  lst <- get(paste0(typ[j],".lstD"))
+  lst.s <- lst[grep(pattern=mon[j], lst)]
+  vrt <- paste0(typ[j], '_liste', mon[j], '.vrt')
+  txt <- paste0(typ[j], '_liste', mon[j], '.txt')
+  unlink(txt)
+  cat(lst.s, sep="\n", file=txt)
+  system(paste0(gdalbuildvrt, ' -input_file_list ', txt,' ', vrt))
+  if(any(res=="250m")){
+    system(paste0(gdalwarp, ' ', vrt, ' ', outm, ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"bilinear\" -ot \"Int16\" -dstnodata \"-32768\" -tr 0.002083333 0.002083333 -te -180 -90 180 90 -co BIGTIFF=YES -wm 4000')) ## -co \"COMPRESS=DEFLATE\" 
+    gzip(outm)
+  }
+  if(any(res=="1km")){
+    system(paste0(gdalwarp, ' ', vrt, ' ', gsub("250m", "1km", outm), ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"bilinear\" -ot \"Int16\" -dstnodata \"-32768\" -tr 0.008333333 0.008333333 -te -180 -90 180 90 -co \"COMPRESS=DEFLATE\"'))
+  }
+  #unlink(vrt)
+  #unlink(txt)
 }
 
 mon <- rep(m.lst, 2)
 typ <- as.vector(sapply(c("M","SD"), rep, length(m.lst)))
+## in series:
+for(j in 1:length(mon)){
+  make_mosaic(j, mon, typ, res="250m")
+}
 
-sfInit(parallel=TRUE, cpus=12)
+sfInit(parallel=TRUE, cpus=6) ## too many processes lead to error ('No space left on device')
 sfExport("make_mosaic", "M.lstD", "SD.lstD", "m.lst", "gdalbuildvrt", "gdalwarp", "mon", "typ")
 sfLibrary(R.utils)
-sfLibrary(sp)
-t <- sfLapply(1:length(mon), make_mosaic, mon=mon, typ=typ)
+sfLibrary(rgdal)
+t <- sfLapply(1:length(mon), make_mosaic, mon=mon, typ=typ, res="1km")
 sfStop()

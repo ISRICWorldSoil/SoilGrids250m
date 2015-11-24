@@ -4,6 +4,7 @@
 gdalwarp = "/usr/local/bin/gdalwarp"
 gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
 gdal_translate =  "/usr/local/bin/gdal_translate"
+gdal_merge.py = "/usr/local/bin/gdal_merge.py"
 system("/usr/local/bin/gdal-config --version")
 load("../equi7t3.rda")
 
