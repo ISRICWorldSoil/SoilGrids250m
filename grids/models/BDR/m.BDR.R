@@ -78,3 +78,13 @@ str(pr.dirs)
 ## 2356 dirs
 ## test predictions:
 wrapper.predict_2D(i="NA_060_036", varn=t.vars, gm_path=mrfX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max)
+wrapper.predict_2D(i="NA_096_036", varn=t.vars, gm_path=mrfX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max)
+
+x <- readGDAL("/data/predicted/NA_096_036/BDRLOG_M_NA_096_036.tif")
+x.ll <- reproject(x)
+kml(x.ll, file.name="BDRLOG_M_NA_096_036.kml", folder.name="R horizon", colour=band1, z.lim=c(0,100), colour_scale=SAGA_pal[["SG_COLORS_YELLOW_RED"]], raster_name="BDRLOG_M_NA_096_036.png")
+x <- readGDAL("/data/predicted/NA_096_036/BDTICM_M_NA_096_036.tif")
+x.ll <- reproject(x)
+kml(x.ll, file.name="BDTICM_M_NA_096_036.kml", folder.name="Absolute depth in cm", colour=band1, z.lim=c(0,5000), colour_scale=SAGA_pal[[1]], raster_name="BDTICM_M_NA_096_036.png")
+
+h2o.shutdown(localH2O)

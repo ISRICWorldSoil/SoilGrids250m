@@ -50,7 +50,7 @@ proj4string(all.pnts) <- "+proj=longlat +datum=WGS84"
 ## Remove spatial duplicates (except for the NCSS data):
 all.pnts$LOC_ID <- as.factor(paste(all.pnts@coords[,1], all.pnts@coords[,2], sep="_"))
 summary(!duplicated(all.pnts$LOC_ID))
-## 2014 duplicate points
+## 2603 duplicate points
 ## data.frame(all.pnts[all.pnts$LOC_ID=="25.944444_-24.561111",])
 #TAXNWRB.pnts <- all.pnts[!duplicated(all.pnts$LOC_ID),]
 ## TH: We keep the duplicates because there are indeed many points with approximate geocoordinates
@@ -104,13 +104,16 @@ write.csv(soiltype.leg, file="soiltype_legend.csv")
 
 ## Selection of soil types for SoilGrids250m
 ## THE FINAL LEGEND
-levsf <- c(levels(as.factor(soiltype.leg$WRB_2006_NAMEf)), "Sapric Histosols", "Hemic Histosols", "Alic Nitisols", "Haplic Albeluvisols", "Cutanic Alisols", "Regic Anthrosols", "Petric Durisols", "Cryic Histosols", "Leptic Umbrisols", "Haplic Umbrisols", "Luvic Stagnosols", "Lixic Plinthosols", "Vitric Cryosols", "Histic Albeluvisols")
+levsf0 <- levels(as.factor(soiltype.leg$WRB_2006_NAMEf))
+levsf <- c(levsf0, "Sapric Histosols", "Hemic Histosols", "Alic Nitisols", "Haplic Albeluvisols", "Cutanic Alisols", "Regic Anthrosols", "Petric Durisols", "Cryic Histosols", "Leptic Umbrisols", "Haplic Umbrisols", "Luvic Stagnosols", "Lixic Plinthosols", "Vitric Cryosols", "Histic Albeluvisols")
 levsf <- unique(str_trim(as.character(unlist(sapply(levsf, function(x){strsplit(x, "/")[[1]]})))))
+levsf <- levsf[-c(grep(pattern="Anthrosol", levsf), grep(pattern="Technic", levsf))]
+## remove Anthrosols because there are still too difficult to map in automated manner
 str(levsf)
 soiltype.leg2 <- data.frame(WRB_2006_NAMEf=levsf)
 soiltype.leg2$Group <- sapply(as.character(soiltype.leg2$WRB_2006_NAMEf), function(x){strsplit(x, " ")[[1]][2]})
 write.csv(soiltype.leg2, file="TAXNWRB_legend2.csv")
-## 114 classes!
+## 108 classes on the end
 
 ## One by one subgroup name --> try to located them in the raw names
 tax.lst <- list(NULL)
@@ -131,7 +134,7 @@ TAXNWRB.pnts <- do.call(rbind, tax.lst)
 TAXNWRB.pnts$TAXNWRB.f <- as.factor(TAXNWRB.pnts$TAXNWRB.f)
 summary(TAXNWRB.pnts$TAXNWRB.f)
 length(TAXNWRB.pnts$TAXNWRB.f)
-## FINAL NUMBER OF POINTS: 43,121 points!
+## FINAL NUMBER OF POINTS: 42,518 points
 summary(as.factor(TAXNWRB.pnts$SOURCEDB))
 #      AfSPDB       eSOTER  RadamBrasil     CN-SOTER       HRSPDB       IRSPDB   ISCN2012/N         ISIS 
 #        1863         1854         5359         1272         1812         4412         7830          530 

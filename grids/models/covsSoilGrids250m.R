@@ -167,31 +167,48 @@ sfLibrary(sp)
 x <- sfLapply(pr.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs") ) })
 sfStop()
 
-## gz files for h2o:
-make.csv.gz <- function(i, in.path){
-  infile <- paste0(in.path, "/", i, "/", i, ".rds")
-  outfile <- paste0(in.path, "/", i, "/", i, ".csv")
-  if(!file.exists(paste0(outfile, ".gz"))){
-    m <- readRDS(infile)
-    df <- as.data.frame(m)
-    write.csv(df, outfile)
-    gc()
-    gzip(outfile)
-  }
-}
-
-sfInit(parallel=TRUE, cpus=40)
-sfExport("make.csv.gz")
-sfLibrary(rgdal)
-sfLibrary(sp)
-sfLibrary(R.utils)
-x <- sfLapply(pr.dirs, fun=function(i){ try(make.csv.gz(i, in.path="/data/covs") ) })
-sfStop()
+## gz files for h2o (ca 2 hrs to make):
+#make.csv.gz(i="NA_060_036", in.path="/data/covs")
 
 ## create prediction dirs:
 #x <- lapply(gsub("covs", "predicted", pr.dirs), dir.create, recursive=TRUE, showWarnings=FALSE)
 
+## ------------ 1 km ------------------
+
+## Resample covs to 1km resolution (for testing purposes only!):
+new.dirs <- list.dirs("/data/covs")[-1]
+## create dirs for covs and predictions:
+x <- lapply(gsub("covs", "covs1km", new.dirs), dir.create, recursive=TRUE, showWarnings=FALSE)
+x <- lapply(gsub("covs", "predicted1km", new.dirs), dir.create, recursive=TRUE, showWarnings=FALSE)
+## function for fast resampling:
+cov.lst <- as.vector(sapply(basename(list.files(path="/data/covs/NA_060_036", pattern=glob2rx("*.tif$"))), function(x){strsplit(x, "_")[[1]][1]}))
+resample_tif <- function(i, in.path="/data/covs", res=1000, out.dir="covs1km", cov.lst){
+  in.file <- paste0(in.path, '/', i, '/', cov.lst, '_', i, '.tif')
+  x <- lapply(in.file, function(x){ if(!file.exists(gsub("covs", out.dir, x))){ try( system(paste0(gdalwarp, ' ', x, ' ', gsub("covs", out.dir, x), ' -r \"near\" -tr ', res, ' ', res, ' -co \"COMPRESS=DEFLATE\"')) ) } }) 
+}
+#resample_tif(i="NA_060_036", cov.lst=cov.lst)
+
+## this takes only ca 20 mins with 'near' resampling
+sfInit(parallel=TRUE, cpus=40)
+sfExport("resample_tif", "cov.lst", "gdalwarp")
+x <- sfClusterApplyLB(pr.dirs, fun=function(i){ resample_tif(i, cov.lst=cov.lst) })
+sfStop()
+
+#make.covsRDA(i="NA_060_036", in.path="/data/covs1km")
+## RDS files at 1 km
+sfInit(parallel=TRUE, cpus=40)
+sfExport("make.covsRDA")
+sfLibrary(rgdal)
+sfLibrary(sp)
+sfLibrary(R.utils)
+x <- sfClusterApplyLB(pr.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs1km") ) })
+sfStop()
+
+
 ## clean-up:
+#empty.lst <- list.files(path="/data/covs1km", pattern=glob2rx("*.tif$"), full.names=TRUE, recursive=TRUE)
+#del.lst <- empty.lst[which(file.size(empty.lst)==0)]
+
 #del.lst <- list.files(path="/data/covs", pattern=glob2rx("E??MOD5_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 #del.lst <- list.files(path="/data/covs", pattern=glob2rx("I??MOD4_*_*_*.tif"), full.names=TRUE, recursive=TRUE)

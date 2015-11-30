@@ -2,6 +2,8 @@
 ## Tom.Hengl@isric.org
 
 library(rgdal)
+library(raster)
+library(GSIF)
 fao.lst <- c("Sapric.Histosols", "Hemic.Histosols", "Fibric.Histosols", "Cryic.Histosols", "Histic.Albeluvisols")
 usda.lst <- c("Saprists", "Hemists", "Folists", "Fibrists")
 
@@ -18,5 +20,21 @@ histosol.prob <- function(i, in.path, fao.lst, usda.lst){
   }
 }
 
-in.path="G:/SoilGrids250m/predicted"
-i = "NA_060_036"
+#histosol.prob(i="SA_051_069", in.path="/data/predicted", fao.lst, usda.lst)
+
+## Organic carbon stock:
+wrapper.OCSTHA <- function(i, in.path, n.lst=c("ORCDRC","BLD","CRFVOL"), ORCDRC.sd=5, BLD.sd=120, CRFVOL.sd=4){
+  out.all <- paste0(in.path, "/", i, "/OCSTHA_M_sd", 1:6, "_", i,".tif")
+  if(any(!file.exists(out.all))){
+    for(d in 1:6){
+      tif.lst <- paste0(in.path, "/", i, "/", n.lst, "_M_sd", d, "_", i, ".tif")
+      s <- raster::stack(tif.lst)
+      s <- as(as(s, "SpatialGridDataFrame"), "SpatialPixelsDataFrame")
+      ## Predict organic carbon stock (in tones / ha):
+      s$v <- round(as.vector(OCSKGM(ORCDRC=s@data[,1], BLD=s@data[,2], CRFVOL=s@data[,3], HSIZE=get("stsize", envir = GSIF.opts)[d]*100, ORCDRC.sd=ORCDRC.sd, BLD.sd=BLD.sd, CRFVOL.sd=CRFVOL.sd)*10))
+      writeGDAL(s["v"], out.all[d], type="Int16", mvFlag=-9999, options="COMPRESS=DEFLATE")
+    }
+  }
+}
+
+#wrapper.OCSTHA(i="NA_060_036", in.path="G:/SoilGrids250m/predicted")
