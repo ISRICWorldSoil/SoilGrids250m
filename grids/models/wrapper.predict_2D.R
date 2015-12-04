@@ -1,28 +1,39 @@
 ## predict 2D variables using a model "gm" and write GeoTifs out - SoilGrids250m
 ## by: Tom.Hengl@isric.org
 
-wrapper.predict_2D <- function(i, gm_path, varn, in.path, out.path, z.min, z.max){ ## , nthreads 
-  out.all <- as.vector(sapply(varn, function(x){paste0(out.path, "/", i, "/", x, "_M_sd", 1:length(sd), "_", i, ".tif")}))
+wrapper.predict_2D <- function(i, gm_path1, gm_path2, varn, in.path, out.path, z.min, z.max, gm1.w, gm2.w){ ## , nthreads 
+  out.all <- as.vector(sapply(varn, function(x){paste0(out.path, "/", i, "/", x, "_M_", i, ".tif")}))
   if(any(!file.exists(out.all))){
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
     gz.file <- paste0(in.path, "/", i, "/", i, ".csv.gz")
     if(file.exists(gz.file)){
-      print("Predicting from csv.gz file.")
-      print("Reading gz file...")
+      message("Predicting from csv.gz file.")
       m.grid <- h2o.importFile(localH2O, path = gz.file)
     } else {
       m.grid <- as.h2o(m@data, conn=h2o.getConnection(), destination_frame="m.grid")
     }
     for(x in 1:length(varn)){
-      gm <- h2o.loadModel(gm_path[[x]], h2o.getConnection())
       out.c <- paste0(out.path, "/", i, "/", varn[x], "_M_", i, ".tif")
-      v1 <- as.data.frame(h2o.predict(gm, m.grid, na.action=na.pass))$predict
-      if(varn[x]=="BDRLOG"){ v1 <- v1 * 100 }
-      m$v <- ifelse(v1 < z.min[x], z.min[x], ifelse(v1 > z.max[x], z.max[x], v1))
-      writeGDAL(m["v"], out.c[j], type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")
+      gm1 <- h2o.loadModel(gm_path1[[x]], h2o.getConnection())
+      if(missing(gm1.w)){ gm1.w = gm1@model$training_metrics@metrics$r2 }
+      gm2 <- h2o.loadModel(gm_path2[[x]], h2o.getConnection())
+      if(missing(gm2.w)){ gm2.w = gm2@model$training_metrics@metrics$r2 }
+      v1 <- as.data.frame(h2o.predict(gm1, m.grid, na.action=na.pass))$predict
+      v2 <- as.data.frame(h2o.predict(gm2, m.grid, na.action=na.pass))$predict
+      v <- rowSums(cbind(v1*gm1.w, v2*gm2.w))/(gm1.w+gm2.w)
+      gc()
+      if(varn[x]=="BDRLOG"){ v <- v * 100 }
+      if(is.na(z.max[x])){ z.max[x] = Inf }
+      m$v <- ifelse(v < z.min[x], z.min[x], ifelse(v > z.max[x], z.max[x], v))
+      #plot(raster(m["v"]), col=SAGA_pal[[1]], zlim=c(0,100))
+      if(varn[x]=="BDRLOG"){
+        writeGDAL(m["v"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
+      } else {
+        writeGDAL(m["v"], out.c, type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")  
+      }
       gc()
     }
-    h2o.rm("m.grid", localH2O)
-    h2o.rm("newdata", localH2O)
+    gc()
+    h2o.removeAll(localH2O)
   }
 }

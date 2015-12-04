@@ -13,6 +13,7 @@ library(dplyr)
 library(snowfall)
 library(rgdal)
 library(utils)
+library(R.utils)
 library(plotKML)
 library(GSIF)
 plotKML.env(convert="convert", show.env=FALSE)
@@ -25,11 +26,11 @@ load("../equi7t3.rda")
 
 ## class definitions:
 col.legend <- read.csv("TAXNWRB_legend.csv")
-## 113 classes
+## 107 classes
 col.legend <- col.legend[!is.na(col.legend$R),]
 col.legend$COLOR <- rgb(red=col.legend$R/255, green=col.legend$G/255, blue=col.legend$B/255)
-#unlink("TAXNWRB.txt")
-#makeSAGAlegend(x=as.factor(paste(col.legend$Group)), MINIMUM=1:nrow(col.legend), MAXIMUM=1:nrow(col.legend)+1, col_pal=col.legend$COLOR, filename="TAXNWRB.txt")
+unlink("TAXNWRB.txt")
+makeSAGAlegend(x=as.factor(as.character(col.legend$Group)), MINIMUM=1:nrow(col.legend), MAXIMUM=1:nrow(col.legend)+1, col_pal=col.legend$COLOR, filename="TAXNWRB.txt")
 des <- read.csv("../SoilGrids250m_COVS250m.csv")
 #load("../cov.lst.rda") ## list of all Geotifs in 'covs' dir
 load("../../profs/TAXNWRB/TAXNWRB.pnts.rda")
@@ -38,13 +39,13 @@ load("../../profs/TAXNWRB/TAXNWRB.pnts.rda")
 #load("../ov.rda") ## check if the values exist already
 
 ## OVERLAY (ca 20+ mins):
-ov <- extract.equi7t3(x=TAXNWRB.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=40) ## , cov.lst=cov.lst
-#ov <- rbind.fill(ov, extract.equi7t3(x=TAXNWRB.pnts[-match(ov$SOURCEID, TAXNWRB.pnts$SOURCEID),], y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=40))
+ov <- extract.equi7t3(x=TAXNWRB.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=40) 
 ## TAKES ca 10 MINS FOR 40k points
 str(ov)
+## 42121 x 162 vars
 #ov$LATWGS84 <- TAXNWRB.pnts@coords[,2]
 ## remove all NA values:
-#for(i in des$WORLDGRIDS_CODE){ ov[,i] <- ifelse(ov[,i]<= -32767, NA, ov[,i])  }
+for(i in des$WORLDGRIDS_CODE){ ov[,i] <- ifelse(ov[,i]<= -10000, NA, ov[,i])  }
 write.csv(ov, file="ov.TAXNWRB_SoilGrids250m.csv")
 unlink("ov.TAXNWRB_SoilGrids250m.csv.gz")
 gzip("ov.TAXNWRB_SoilGrids250m.csv")
@@ -85,18 +86,17 @@ varImpPlot(mrf_TAXNWRB)
 #object.size(mrf_TAXNWRB)
 saveRDS(mrf_TAXNWRB, file="mrf_TAXNWRB.rds")
 
-## validate the model:
+## validate model:
 #s <- sample.int(nrow(ovA), 5000)
 #cv.mrf_TAXNWRB <- randomForest(x=ovA[-s,all.vars(formulaString.FAO)[-1]], y=ovA$TAXNWRB.f[-s], xtest=ovA[s,all.vars(formulaString.FAO)[-1]], ytest=ovA$TAXNWRB.f[s])
 #cv.mrf_TAXNWRB$test$confusion[,"class.error"]
 ## http://stats.stackexchange.com/questions/30691/how-to-interpret-oob-and-confusion-matrix-for-random-forest
 
 ## predict for sample locations:
-#wrapper.predict_c(i="NA_063_036", varn="TAXNWRB", gm1="m_TAXNWRB.rds", gm2="mrf_TAXNWRB.rds", in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend)
-#wrapper.predict_c(i="NA_060_036", varn="TAXNWRB", gm1=m_TAXNWRB, gm2=mrf_TAXNWRB, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend)
+#wrapper.predict_c(i="NA_063_036", varn="TAXNWRB", gm1=m_TAXNWRB, gm2=mrf_TAXNWRB, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend)
 
 ## run all predictions in parallel
-## TH: TAKES ABOUT 8-10 HOURS
+## TH: TAKES ABOUT 12-14 HOURS
 ## THERE IS A PROBLEM WITH RAM (HENCE <25 CORES) BECAUSE THE prediction location/data objects are LARGE
 ## 'Error in unserialize(socklist[[n]]) : error reading from connection'
 ## http://gforge.se/2015/02/how-to-go-parallel-in-r-basics-tips/#Memory_load
@@ -104,7 +104,7 @@ saveRDS(mrf_TAXNWRB, file="mrf_TAXNWRB.rds")
 pr.dirs <- basename(dirname(list.files(path="/data/covs", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
 str(pr.dirs)
 ## 2356 dirs
-sfInit(parallel=TRUE, cpus=10)
+sfInit(parallel=TRUE, cpus=15)
 sfExport("wrapper.predict_c", "m_TAXNWRB", "mrf_TAXNWRB", "pr.dirs", "col.legend")
 sfLibrary(rgdal)
 sfLibrary(sp)
@@ -112,7 +112,7 @@ sfLibrary(plyr)
 sfLibrary(nnet)
 sfLibrary(randomForest)
 ## 'sfClusterApplyLB' would have been better but it breaks as soon as the available RAM runs out
-x <- sfApply(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn="TAXNWRB", gm1=m_TAXNWRB, gm2=mrf_TAXNWRB, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend) )  } )
+x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn="TAXNWRB", gm1=m_TAXNWRB, gm2=mrf_TAXNWRB, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend) )  } )
 sfStop()
 
 ## clean-up:

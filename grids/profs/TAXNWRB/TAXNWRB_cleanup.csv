@@ -87,12 +87,12 @@ Rhodic Ferralsol,87,Haplic Ferralsols (Rhodic)
 Ferric Lixisol,86,Haplic Lixisols (Ferric)
 Haplic Solonetz,86,Haplic Solonetz
 Stagnic Luvisol,85,Stagnic Luvisols
-Orthic Luvisols,83,Plinhtic Acrisols
+Orthic Luvisols,83,Haplic Luvisols
 Solodic Planosol / Haplic Solonetz,83,Solodic Planosols
 Umbric Ferralsol,83,Umbric Ferralsols
 Cryosol,82,Haplic Cryosols
 Haplic Kastanozem,81,Haplic Kastanozems
-Cambic Arenosol,80,Vetic Acrisols
+Cambic Arenosol,80,Cambic Arenosols
 Endoleptic REGOSOL,80,Leptic Regosols
 Vertic Luvisol,80,Vertic Luvisols
 Luvic Chernozem,78,Luvic Chernozems
@@ -159,7 +159,7 @@ Gleyic Acrisol,44,Gleyic Acrisols
 Lixic Plinthosol,44,Lixic Plinthosols
 Eutric Fluvisols,42,Haplic Fluvisols (Eutric)
 Fibric Histosol,42,Fibric Histosols
-Gleyic Solonchak,42,Leptic Acrisols
+Gleyic Solonchak,42,Gleyic Solonchaks
 Rhodic Lixisols,42,Haplic Lixisols (Rhodic)
 Calcic Solonetz,41,Calcic Solonetz
 Calcic CHERNOZEM,40,Calcic Chernozems
@@ -180,7 +180,7 @@ Salic Fluvisol,35,Salic Fluvisols
 Cutanic Alisol,34,Cutanic Alisols
 Cutanic Luvisol,34,Cutanic Luvisols
 Dystric Plinthosol,34,Haplic Plinthosols (Dystric)
-Haplic Greyzem,34,Gleyic Acrisols
+Haplic Greyzem,34,Haplic Phaeozems
 Rhodic Cambisols,34,Haplic Cambisols (Rhodic)
 Calcaric CAMBISOL,33,Haplic Cambisols (Calcaric)
 Carbic Podzol,33,Carbic Podzols
@@ -239,7 +239,7 @@ FERRALIC / HAPLIC ARENOSOL,22,Haplic Arenosols
 Fluvisols,22,Haplic Fluvisols
 Gleyic Alisol,22,Gleyic Alisols
 Luvisols,22,Haplic Luvisols
-Orthic Podzols,22,Vitric Acrisols
+Orthic Podzols,22,Haplic Podzols
 Sodic CAMBISOL,22,Haplic Cambisols (Sodic)
 Albic Plinthosol,21,Haplic Plinthosols (Albic)
 Ferric Alisol,21,Haplic Alisols (Ferric)
@@ -343,7 +343,7 @@ Haplic Stagnosol,12,Haplic Stagnosols
 Humic Alisol,12,Haplic Alisols (Humic)
 LEPTIC-CALCARIC REGOSOL,12,Aric Regosols
 Luvic Stagnosols Dystric,12,Luvic Stagnosols
-Pellic Vertisol,12,Plinthic Planosols
+Pellic Vertisol,12,Haplic Vertisols (Pellic)
 Rubic Arenosols Eutric,12,Rubic Arenosols
 SODIC GYPSISOL,12,Haplic Gypsisols (Sodic)
 Stagnic Phaeozem,12,Stagnic Phaeozems

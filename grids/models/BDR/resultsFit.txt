@@ -5,115 +5,202 @@ Model Details:
 ==============
 
 H2ORegressionModel: drf
-Model ID:  DRF_model_R_1448374580776_5 
+Model ID:  DRF_model_R_1449157365495_5 
 Model Summary: 
   number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
-1              50            29649658        20        20   20.00000      44615      56824 51248.90000
+1              50            29656789        20        20   20.00000      46831      54874 51261.72000
 
 
 H2ORegressionMetrics: drf
 ** Reported on training data. **
 Description: Metrics reported on Out-Of-Bag training samples
 
-MSE:  2450.309
-R2 :  0.3688502
-Mean Residual Deviance :  2450.309
+MSE:  2449.735
+R2 :  0.3691204
+Mean Residual Deviance :  2449.735
 
 
 
 
 Variable Importances: 
   variable relative_importance scaled_importance percentage
-1 LATWGS84   8847434752.000000          1.000000   0.073303
-2  I04MOD4   4638133248.000000          0.524235   0.038428
-3  T10MOD3   2838153216.000000          0.320788   0.023515
-4  VW3MOD1   2475453184.000000          0.279793   0.020510
-5  T05MOD3   2240875776.000000          0.253280   0.018566
+1 LATWGS84   9755045888.000000          1.000000   0.080753
+2  I04MOD4   5444843520.000000          0.558157   0.045073
+3  T10MOD3   3118978048.000000          0.319730   0.025819
+4  VW3MOD1   2407043584.000000          0.246749   0.019926
+5  P05MRG3   2103211392.000000          0.215602   0.017411
 
 ---
     variable relative_importance scaled_importance percentage
-149  F06USG5     11673868.000000          0.001319   0.000097
-150  L06USG5      3708658.750000          0.000419   0.000031
-151   MNGUSG      2394361.750000          0.000271   0.000020
-152  L07USG5      2005710.625000          0.000227   0.000017
-153  F03USG5      1255304.125000          0.000142   0.000010
-154  C07GLC5      1038183.187500          0.000117   0.000009
+149  F06USG5     12372914.000000          0.001268   0.000102
+150  L06USG5      3649915.500000          0.000374   0.000030
+151   MNGUSG      3243374.500000          0.000332   0.000027
+152  L07USG5      2548734.750000          0.000261   0.000021
+153  F03USG5      1038701.687500          0.000106   0.000009
+154  C07GLC5       752626.250000          0.000077   0.000006
+
+Model Details:
+==============
+
+H2ORegressionModel: deeplearning
+Model ID:  DeepLearning_model_R_1449157365495_10 
+Status of Neuron Layers: predicting BDRICM, regression, gaussian distribution, MeanSquare loss, 71,401 weights/biases, 864.8 KB, 17,003,731 training samples, mini-batch size 1
+  layer units      type dropout       l1       l2 mean_rate rate_RMS momentum mean_weight weight_RMS
+1     1   154     Input  0.00 %                                                                     
+2     2   200 Rectifier  0.00 % 0.000000 0.000000  0.138405 0.192446 0.000000    0.040663   0.975275
+3     3   200 Rectifier  0.00 % 0.000000 0.000000  0.011389 0.018306 0.000000   -0.059309   0.158835
+4     4     1    Linear         0.000000 0.000000  0.000236 0.000247 0.000000   -0.008657   0.056918
+  mean_bias bias_RMS
+1                   
+2 -1.756225 1.040589
+3  0.842136 0.353395
+4 -0.715730 0.000000
+
+
+H2ORegressionMetrics: deeplearning
+** Reported on training data. **
+Description: Metrics reported on temporary training frame with 9970 samples
+
+MSE:  2626.706
+R2 :  0.3222183
+Mean Residual Deviance :  2626.706
+
+
+
 
 Variable: BDRLOG
 Model Details:
 ==============
 
 H2ORegressionModel: drf
-Model ID:  DRF_model_R_1448374580776_10 
+Model ID:  DRF_model_R_1449157365495_15 
 Model Summary: 
   number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
-1              50            23492816        20        20   20.00000      37177      45035 40611.88000
+1              50            24018845        20        20   20.00000      37592      45933 41520.68000
 
 
 H2ORegressionMetrics: drf
 ** Reported on training data. **
 Description: Metrics reported on Out-Of-Bag training samples
 
-MSE:  0.1112165
-R2 :  0.3657165
-Mean Residual Deviance :  0.1112165
+MSE:  0.111225
+R2 :  0.3657976
+Mean Residual Deviance :  0.111225
 
 
 
 
 Variable Importances: 
   variable relative_importance scaled_importance percentage
-1  I04MOD4       291104.843750          1.000000   0.056242
-2  T05MOD3       167255.953125          0.574556   0.032314
-3  P05MRG3       131063.273438          0.450227   0.025322
-4 LATWGS84       126786.835938          0.435537   0.024495
-5  T04MOD3       121877.585938          0.418672   0.023547
+1  I04MOD4       289882.218750          1.000000   0.055533
+2  T05MOD3       224458.078125          0.774308   0.043000
+3 LATWGS84       156535.031250          0.539995   0.029988
+4  P05MRG3       129441.117188          0.446530   0.024797
+5  I10MOD4       125389.742188          0.432554   0.024021
 
 ---
     variable relative_importance scaled_importance percentage
-149  F06USG5          239.691925          0.000823   0.000046
-150  L06USG5          121.676880          0.000418   0.000024
-151   MNGUSG           67.831482          0.000233   0.000013
-152  L07USG5           63.914536          0.000220   0.000012
-153  C07GLC5           37.613396          0.000129   0.000007
-154  F03USG5           20.602762          0.000071   0.000004
+149  F06USG5          245.955002          0.000848   0.000047
+150  L06USG5          123.004181          0.000424   0.000024
+151  L07USG5           95.292061          0.000329   0.000018
+152   MNGUSG           91.090363          0.000314   0.000017
+153  C07GLC5           37.050140          0.000128   0.000007
+154  F03USG5           23.546717          0.000081   0.000005
+
+Model Details:
+==============
+
+H2ORegressionModel: deeplearning
+Model ID:  DeepLearning_model_R_1449157365495_20 
+Status of Neuron Layers: predicting BDRLOG, regression, gaussian distribution, MeanSquare loss, 71,401 weights/biases, 864.8 KB, 16,997,314 training samples, mini-batch size 1
+  layer units      type dropout       l1       l2 mean_rate rate_RMS momentum mean_weight weight_RMS
+1     1   154     Input  0.00 %                                                                     
+2     2   200 Rectifier  0.00 % 0.000000 0.000000  0.141579 0.192576 0.000000    0.036291   0.855002
+3     3   200 Rectifier  0.00 % 0.000000 0.000000  0.012742 0.016852 0.000000   -0.089103   0.201158
+4     4     1    Linear         0.000000 0.000000  0.000220 0.000195 0.000000    0.001728   0.060738
+  mean_bias bias_RMS
+1                   
+2 -2.566920 0.955142
+3  0.582474 0.429168
+4  0.430916 0.000000
+
+
+H2ORegressionMetrics: deeplearning
+** Reported on training data. **
+Description: Metrics reported on temporary training frame with 10056 samples
+
+MSE:  0.1262855
+R2 :  0.300367
+Mean Residual Deviance :  0.1262855
+
+
+
 
 Variable: BDTICM
 Model Details:
 ==============
 
 H2ORegressionModel: drf
-Model ID:  DRF_model_R_1448374580776_15 
+Model ID:  DRF_model_R_1449157365495_25 
 Model Summary: 
   number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves mean_leaves
-1              50            32326144        20        20   20.00000      44960      71520 55896.04000
+1              50            36564724        20        20   20.00000      55398      70294 63222.90000
 
 
 H2ORegressionMetrics: drf
 ** Reported on training data. **
 Description: Metrics reported on Out-Of-Bag training samples
 
-MSE:  1971037
-R2 :  0.5560844
-Mean Residual Deviance :  1971037
+MSE:  1435427
+R2 :  0.5606369
+Mean Residual Deviance :  1435427
 
 
 
 
 Variable Importances: 
   variable   relative_importance scaled_importance percentage
-1  P01MRG3 11955094945792.000000          1.000000   0.064446
-2  M04MOD4  8459167203328.000000          0.707578   0.045601
-3 LATWGS84  6137392398336.000000          0.513370   0.033085
-4  M10MOD4  5128797028352.000000          0.429005   0.027648
-5  VBFMRG5  4871559839744.000000          0.407488   0.026261
+1  P01MRG3 11524660789248.000000          1.000000   0.089327
+2  M04MOD4  7175703363584.000000          0.622639   0.055618
+3  M05MOD4  5253924126720.000000          0.455885   0.040723
+4  VDPMRG5  3804913205248.000000          0.330154   0.029492
+5  M10MOD4  3592189640704.000000          0.311696   0.027843
 
 ---
     variable relative_importance scaled_importance percentage
-149  L13USG5   4572004864.000000          0.000382   0.000025
-150  F06USG5   2198857216.000000          0.000184   0.000012
-151  C07GLC5   1818420480.000000          0.000152   0.000010
-152  L07USG5    521997248.000000          0.000044   0.000003
-153   MNGUSG    132147568.000000          0.000011   0.000001
+149  L13USG5   4842880000.000000          0.000420   0.000038
+150  C07GLC5   1846125184.000000          0.000160   0.000014
+151  F06USG5   1531181056.000000          0.000133   0.000012
+152  L07USG5    556660800.000000          0.000048   0.000004
+153   MNGUSG      1835827.500000          0.000000   0.000000
 154  F03USG5            0.000000          0.000000   0.000000
+
+Model Details:
+==============
+
+H2ORegressionModel: deeplearning
+Model ID:  DeepLearning_model_R_1449157365495_30 
+Status of Neuron Layers: predicting BDTICM, regression, gaussian distribution, MeanSquare loss, 71,401 weights/biases, 864.8 KB, 15,799,520 training samples, mini-batch size 1
+  layer units      type dropout       l1       l2 mean_rate rate_RMS momentum mean_weight weight_RMS
+1     1   154     Input  0.00 %                                                                     
+2     2   200 Rectifier  0.00 % 0.000000 0.000000  0.043361 0.121437 0.000000    0.014280   0.643438
+3     3   200 Rectifier  0.00 % 0.000000 0.000000  0.009980 0.025270 0.000000   -0.035889   0.147896
+4     4     1    Linear         0.000000 0.000000  0.000179 0.000242 0.000000    0.042440   0.096527
+  mean_bias bias_RMS
+1                   
+2  0.080958 0.833495
+3  0.951764 0.193626
+4  0.771455 0.000000
+
+
+H2ORegressionMetrics: deeplearning
+** Reported on training data. **
+Description: Metrics reported on temporary training frame with 10001 samples
+
+MSE:  1450005
+R2 :  0.5573629
+Mean Residual Deviance :  1450005
+
+
+
 

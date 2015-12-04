@@ -1,114 +1,108 @@
 COLOR	NAME	DESCRIPTION	MINIMUM	MAXIMUM
-6530301	Gleyic Acrisols	CL1	1	2
-4096510	Haplic Acrisols	CL2	2	3
-3776509	Haplic Acrisols (Alumic)	CL3	3	4
-7057149	Haplic Acrisols (Ferric)	CL4	4	5
-3968509	Haplic Acrisols (Humic)	CL5	5	6
-92396	Plinthic Acrisols	CL6	6	7
-421354	Vetic Acrisols	CL7	7	8
-12512255	Umbric Albeluvisols	CL8	8	9
-6080752	Haplic Albeluvisols	CL9	9	10
-7525375	Histic Albeluvisols	CL10	10	11
-13429749	Haplic Alisols	CL11	11	12
-12573668	Cutanic Alisols	CL12	12	13
-6122492	Umbric Andosols	CL13	13	14
-4609532	Vitric Andosols	CL14	14	15
-2832892	Terric Anthrosols	CL15	15	16
-1910444	Regic Anthrosols	CL16	16	17
-12642302	Ferralic Arenosols	CL17	17	18
-12641278	Haplic Arenosols	CL18	18	19
-11658494	Haplic Arenosols (Calcaric)	CL19	19	20
-12644094	Hypoluvic Arenosols	CL20	20	21
-12645374	Protic Arenosols	CL21	21	22
-5369855	Haplic Calcisols	CL22	22	23
-2746360	Haplic Calcisols (Sodic)	CL23	23	24
-2882815	Luvic Calcisols	CL24	24	25
-2879231	Petric Calcisols	CL25	25	26
-7393021	Endogleyic Cambisols	CL26	26	27
-6932205	Ferralic Cambisols	CL27	27	28
-6349565	Haplic Cambisols	CL28	28	29
-7399421	Haplic Cambisols (Calcaric)	CL29	29	30
-7403517	Haplic Cambisols (Chromic)	CL30	30	31
-4968182	Haplic Cambisols (Dystric)	CL31	31	32
-7397885	Haplic Cambisols (Eutric)	CL32	32	33
-6283517	Haplic Cambisols (Humic)	CL33	33	34
-7400445	Haplic Cambisols (Sodic)	CL34	34	35
-7397885	Leptic Cambisols	CL35	35	36
-7397373	Vertic Cambisols	CL36	36	37
-6146021	Calcic Chernozems	CL37	37	38
-6083045	Haplic Chernozems	CL38	38	39
-6084837	Luvic Chernozems	CL39	39	40
-10386834	Haplic Cryosols	CL40	40	41
-8227998	Vitric Cryosols	CL41	41	42
-13036538	Petric Durisols	CL42	42	43
-5081596	Acric Ferralsols	CL43	43	44
-5086460	Haplic Ferralsols	CL44	44	45
-4221411	Haplic Ferralsols (Rhodic)	CL45	45	46
-5084156	Haplic Ferralsols (Xanthic)	CL46	46	47
-7846652	Umbric Ferralsols	CL47	47	48
-15313168	Haplic Fluvisols	CL48	48	49
-15321359	Haplic Fluvisols (Arenic)	CL49	49	50
-15305487	Haplic Fluvisols (Calcaric)	CL50	50	51
-15288591	Haplic Fluvisols (Dystric)	CL51	51	52
-15306255	Haplic Fluvisols (Eutric)	CL52	52	53
-12556971	Calcic Gleysols	CL53	53	54
-12552096	Haplic Gleysols	CL54	54	55
-12533625	Haplic Gleysols (Dystric)	CL55	55	56
-12551070	Haplic Gleysols (Eutric)	CL56	56	57
-12540295	Mollic Gleysols	CL57	57	58
-12545939	Umbric Gleysols	CL58	58	59
-11401727	Calcic Gypsisols	CL59	59	60
-8910335	Haplic Gypsisols	CL60	60	61
-8028287	Sapric Histosols	CL61	61	62
-9601144	Fibric Histosols	CL62	62	63
-6969916	Hemic Histosols	CL63	63	64
-10000010	Cryic Histosols	CL64	64	65
-9282002	Calcic Kastanozems	CL65	65	66
-6916050	Haplic Kastanozems	CL66	66	67
-13224393	Haplic Leptosols (Eutric)	CL67	67	68
-9998232	Haplic Leptosols	CL68	68	69
-11976116	Lithic Leptosols	CL69	69	70
-10721424	Mollic Leptosols	CL70	70	71
-10658466	Rendzic Leptosols	CL71	71	72
-13289463	Haplic Lixisols	CL72	72	73
-15316471	Haplic Lixisols (Chromic)	CL73	73	74
-11965943	Haplic Lixisols (Ferric)	CL74	74	75
-9480441	Calcic Luvisols	CL75	75	76
-9543929	Gleyic Luvisols	CL76	76	77
-9540857	Haplic Luvisols	CL77	77	78
-10195449	Haplic Luvisols (Chromic)	CL78	78	79
-9608441	Haplic Luvisols (Ferric)	CL79	79	80
-8688121	Leptic Luvisols	CL80	80	81
-9615859	Stagnic Luvisols	CL81	81	82
-9605625	Vertic Luvisols	CL82	82	83
-6847436	Haplic Nitisols (Rhodic)	CL83	83	84
-4608672	Alic Nitisols	CL84	84	85
-14412501	Haplic Phaeozems	CL85	85	86
-14412468	Leptic Phaeozems	CL86	86	87
-14412482	Luvic Phaeozems	CL87	87	88
-6921462	Haplic Planosols (Eutric)	CL88	88	89
-6133208	Solodic Planosols	CL89	89	90
-5331076	Acric Plinthosols	CL90	90	91
-6910635	Lixic Plinthosols	CL91	91	92
-8170094	Gleyic Podzols	CL92	92	93
-6400621	Haplic Podzols	CL93	93	94
-12051709	Aric Regosols	CL94	94	95
-12112637	Calcaric Regosols	CL95	95	96
-10476541	Haplic Regosols	CL96	96	97
-9951485	Haplic Regosols (Dystric)	CL97	97	98
-10279677	Haplic Regosols (Eutric)	CL98	98	99
-9360893	Leptic Regosols	CL99	99	100
-10116064	Gypsic Solonchaks	CL100	100	101
-11820000	Haplic Solonchaks	CL101	101	102
-8346592	Haplic Solonchaks (Sodic)	CL102	102	103
-15587576	Calcic Solonetz	CL103	103	104
-14592760	Haplic Solonetz	CL104	104	105
-15130616	Mollic Solonetz	CL105	105	106
-13422050	Gleyic Solonetz	CL106	106	107
-16040819	Luvic Stagnosols	CL107	107	108
-8621177	Leptic Umbrisols	CL108	108	109
-7962252	Haplic Umbrisols	CL109	109	110
-8941992	Calcic Vertisols	CL110	110	111
-10063528	Haplic Vertisols	CL111	111	112
-8215720	Haplic Vertisols (Eutric)	CL112	112	113
-10637736	Mollic Vertisols	CL113	113	114
+4096510	Haplic Acrisols	CL1	1	2
+3776509	Haplic Acrisols (Alumic)	CL2	2	3
+7057149	Haplic Acrisols (Ferric)	CL3	3	4
+3968509	Haplic Acrisols (Humic)	CL4	4	5
+92396	Plinthic Acrisols	CL5	5	6
+6080752	Haplic Albeluvisols	CL6	6	7
+7525375	Histic Albeluvisols	CL7	7	8
+13429749	Haplic Alisols	CL8	8	9
+12573668	Cutanic Alisols	CL9	9	10
+6122492	Umbric Andosols	CL10	10	11
+4609532	Vitric Andosols	CL11	11	12
+12642302	Ferralic Arenosols	CL12	12	13
+12641278	Haplic Arenosols	CL13	13	14
+11658494	Haplic Arenosols (Calcaric)	CL14	14	15
+12644094	Hypoluvic Arenosols	CL15	15	16
+12645374	Protic Arenosols	CL16	16	17
+5369855	Haplic Calcisols	CL17	17	18
+2746360	Haplic Calcisols (Sodic)	CL18	18	19
+2882815	Luvic Calcisols	CL19	19	20
+2879231	Petric Calcisols	CL20	20	21
+7393021	Endogleyic Cambisols	CL21	21	22
+6932205	Ferralic Cambisols	CL22	22	23
+6349565	Haplic Cambisols	CL23	23	24
+7399421	Haplic Cambisols (Calcaric)	CL24	24	25
+7403517	Haplic Cambisols (Chromic)	CL25	25	26
+4968182	Haplic Cambisols (Dystric)	CL26	26	27
+7397885	Haplic Cambisols (Eutric)	CL27	27	28
+6283517	Haplic Cambisols (Humic)	CL28	28	29
+7400445	Haplic Cambisols (Sodic)	CL29	29	30
+7397885	Leptic Cambisols	CL30	30	31
+7397373	Vertic Cambisols	CL31	31	32
+6146021	Calcic Chernozems	CL32	32	33
+6083045	Haplic Chernozems	CL33	33	34
+6084837	Luvic Chernozems	CL34	34	35
+10386834	Haplic Cryosols	CL35	35	36
+8227998	Vitric Cryosols	CL36	36	37
+13036538	Petric Durisols	CL37	37	38
+5081596	Acric Ferralsols	CL38	38	39
+5086460	Haplic Ferralsols	CL39	39	40
+4221411	Haplic Ferralsols (Rhodic)	CL40	40	41
+5084156	Haplic Ferralsols (Xanthic)	CL41	41	42
+15313168	Haplic Fluvisols	CL42	42	43
+15321359	Haplic Fluvisols (Arenic)	CL43	43	44
+15305487	Haplic Fluvisols (Calcaric)	CL44	44	45
+15288591	Haplic Fluvisols (Dystric)	CL45	45	46
+15306255	Haplic Fluvisols (Eutric)	CL46	46	47
+12556971	Calcic Gleysols	CL47	47	48
+12552096	Haplic Gleysols	CL48	48	49
+12533625	Haplic Gleysols (Dystric)	CL49	49	50
+12551070	Haplic Gleysols (Eutric)	CL50	50	51
+12540295	Mollic Gleysols	CL51	51	52
+12545939	Umbric Gleysols	CL52	52	53
+11401727	Calcic Gypsisols	CL53	53	54
+8910335	Haplic Gypsisols	CL54	54	55
+8028287	Sapric Histosols	CL55	55	56
+9601144	Fibric Histosols	CL56	56	57
+6969916	Hemic Histosols	CL57	57	58
+10000010	Cryic Histosols	CL58	58	59
+9282002	Calcic Kastanozems	CL59	59	60
+6916050	Haplic Kastanozems	CL60	60	61
+13224393	Haplic Leptosols (Eutric)	CL61	61	62
+9998232	Haplic Leptosols	CL62	62	63
+11976116	Lithic Leptosols	CL63	63	64
+10721424	Mollic Leptosols	CL64	64	65
+10658466	Rendzic Leptosols	CL65	65	66
+13289463	Haplic Lixisols	CL66	66	67
+15316471	Haplic Lixisols (Chromic)	CL67	67	68
+11965943	Haplic Lixisols (Ferric)	CL68	68	69
+9480441	Calcic Luvisols	CL69	69	70
+9543929	Gleyic Luvisols	CL70	70	71
+9540857	Haplic Luvisols	CL71	71	72
+10195449	Haplic Luvisols (Chromic)	CL72	72	73
+9608441	Haplic Luvisols (Ferric)	CL73	73	74
+8688121	Leptic Luvisols	CL74	74	75
+9615859	Stagnic Luvisols	CL75	75	76
+9605625	Vertic Luvisols	CL76	76	77
+6847436	Haplic Nitisols (Rhodic)	CL77	77	78
+4608672	Alic Nitisols	CL78	78	79
+14412501	Haplic Phaeozems	CL79	79	80
+14412468	Leptic Phaeozems	CL80	80	81
+14412482	Luvic Phaeozems	CL81	81	82
+6921462	Haplic Planosols (Eutric)	CL82	82	83
+6133208	Solodic Planosols	CL83	83	84
+5331076	Acric Plinthosols	CL84	84	85
+6910635	Lixic Plinthosols	CL85	85	86
+8170094	Gleyic Podzols	CL86	86	87
+6400621	Haplic Podzols	CL87	87	88
+12051709	Aric Regosols	CL88	88	89
+12112637	Calcaric Regosols	CL89	89	90
+10476541	Haplic Regosols	CL90	90	91
+9951485	Haplic Regosols (Dystric)	CL91	91	92
+10279677	Haplic Regosols (Eutric)	CL92	92	93
+9360893	Leptic Regosols	CL93	93	94
+10116064	Gypsic Solonchaks	CL94	94	95
+11820000	Haplic Solonchaks	CL95	95	96
+8346592	Haplic Solonchaks (Sodic)	CL96	96	97
+15587576	Calcic Solonetz	CL97	97	98
+14592760	Haplic Solonetz	CL98	98	99
+15130616	Mollic Solonetz	CL99	99	100
+13422050	Gleyic Solonetz	CL100	100	101
+16040819	Luvic Stagnosols	CL101	101	102
+8621177	Leptic Umbrisols	CL102	102	103
+7962252	Haplic Umbrisols	CL103	103	104
+8941992	Calcic Vertisols	CL104	104	105
+10063528	Haplic Vertisols	CL105	105	106
+8215720	Haplic Vertisols (Eutric)	CL106	106	107
+10637736	Mollic Vertisols	CL107	107	108

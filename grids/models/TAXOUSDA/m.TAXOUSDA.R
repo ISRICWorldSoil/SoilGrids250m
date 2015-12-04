@@ -38,13 +38,8 @@ ov <- extract.equi7t3(x=TAXOUSDA.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, p
 ## TAKES ca 10 MINS FOR 40k points
 #str(ov)
 ## remove all NA values:
-for(i in des$WORLDGRIDS_CODE){ ov[,i] <- ifelse(ov[,i]<= -32767, NA, ov[,i])  }
+for(i in des$WORLDGRIDS_CODE){ ov[,i] <- ifelse(ov[,i]<= -10000, NA, ov[,i])  }
 #NA.rows <- which(!complete.cases(ov))
-ov$ES2MOD5 <- ifelse(is.na(ov$ES2MOD5)|ov$ES2MOD5<0, ov$ES3MOD5, ov$ES2MOD5)
-ov$ES1MOD5 <- ifelse(is.na(ov$ES1MOD5)|ov$ES1MOD5<0, ov$ES2MOD5, ov$ES1MOD5) 
-ov$ES6MOD5 <- ifelse(is.na(ov$ES6MOD5)|ov$ES6MOD5<0, ov$ES5MOD5, ov$ES6MOD5)
-ov$EX1MOD5 <- ifelse(is.na(ov$EX1MOD5), ov$EX2MOD5, ov$EX1MOD5) 
-ov$EX6MOD5 <- ifelse(is.na(ov$EX6MOD5), ov$EX5MOD5, ov$EX6MOD5)
 #ov$LATWGS84 <- TAXOUSDA.pnts@coords[,2]
 
 write.csv(ov, file="ov.TAXOUSDA_SoilGrids250m.csv")
