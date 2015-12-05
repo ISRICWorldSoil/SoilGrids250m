@@ -30,7 +30,11 @@ col.legend <- read.csv("TAXNWRB_legend.csv")
 col.legend <- col.legend[!is.na(col.legend$R),]
 col.legend$COLOR <- rgb(red=col.legend$R/255, green=col.legend$G/255, blue=col.legend$B/255)
 unlink("TAXNWRB.txt")
+<<<<<<< HEAD
 makeSAGAlegend(x=as.factor(as.character(col.legend$Group)), MINIMUM=1:nrow(col.legend), MAXIMUM=1:nrow(col.legend)+1, col_pal=col.legend$COLOR, filename="TAXNWRB.txt")
+=======
+makeSAGAlegend(x=as.factor(paste(col.legend$Group)), MINIMUM=1:nrow(col.legend), MAXIMUM=1:nrow(col.legend)+1, col_pal=col.legend$COLOR, filename="TAXNWRB.txt")
+>>>>>>> origin/master
 des <- read.csv("../SoilGrids250m_COVS250m.csv")
 #load("../cov.lst.rda") ## list of all Geotifs in 'covs' dir
 load("../../profs/TAXNWRB/TAXNWRB.pnts.rda")

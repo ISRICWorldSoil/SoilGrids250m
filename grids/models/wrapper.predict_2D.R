@@ -1,7 +1,11 @@
 ## predict 2D variables using a model "gm" and write GeoTifs out - SoilGrids250m
 ## by: Tom.Hengl@isric.org
 
+<<<<<<< HEAD
 wrapper.predict_2D <- function(i, gm_path1, gm_path2, varn, in.path, out.path, z.min, z.max, gm1.w, gm2.w){ ## , nthreads 
+=======
+wrapper.predict_2D <- function(i, gm_path, varn, in.path, out.path, z.min, z.max){ ## , nthreads 
+>>>>>>> origin/master
   out.all <- as.vector(sapply(varn, function(x){paste0(out.path, "/", i, "/", x, "_M_", i, ".tif")}))
   if(any(!file.exists(out.all))){
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
@@ -14,6 +18,7 @@ wrapper.predict_2D <- function(i, gm_path1, gm_path2, varn, in.path, out.path, z
     }
     for(x in 1:length(varn)){
       out.c <- paste0(out.path, "/", i, "/", varn[x], "_M_", i, ".tif")
+<<<<<<< HEAD
       gm1 <- h2o.loadModel(gm_path1[[x]], h2o.getConnection())
       if(missing(gm1.w)){ gm1.w = gm1@model$training_metrics@metrics$r2 }
       gm2 <- h2o.loadModel(gm_path2[[x]], h2o.getConnection())
@@ -25,6 +30,13 @@ wrapper.predict_2D <- function(i, gm_path1, gm_path2, varn, in.path, out.path, z
       if(varn[x]=="BDRLOG"){ v <- v * 100 }
       if(is.na(z.max[x])){ z.max[x] = Inf }
       m$v <- ifelse(v < z.min[x], z.min[x], ifelse(v > z.max[x], z.max[x], v))
+=======
+      v1 <- as.data.frame(h2o.predict(gm, m.grid, na.action=na.pass))$predict
+      gc()
+      if(varn[x]=="BDRLOG"){ v1 <- v1 * 100 }
+      if(is.na(z.max[x])){ z.max[x] = Inf }
+      m$v <- ifelse(v1 < z.min[x], z.min[x], ifelse(v1 > z.max[x], z.max[x], v1))
+>>>>>>> origin/master
       #plot(raster(m["v"]), col=SAGA_pal[[1]], zlim=c(0,100))
       if(varn[x]=="BDRLOG"){
         writeGDAL(m["v"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
@@ -33,7 +45,10 @@ wrapper.predict_2D <- function(i, gm_path1, gm_path2, varn, in.path, out.path, z
       }
       gc()
     }
+<<<<<<< HEAD
     gc()
     h2o.removeAll(localH2O)
+=======
+>>>>>>> origin/master
   }
 }

@@ -18,6 +18,7 @@ load("equi7t3.rda")
 #unlink(del.lst)
 
 ## Create mosaicks:
+<<<<<<< HEAD
 mosaick.equi7t3 <- function(i, j, varn, in.path, r, te, tr){
   if(i=="dominant"){
     out.tif <- paste0('/data/GEOG/', j, '/', varn, '_', j, '_250m_ll.tif')
@@ -37,6 +38,17 @@ mosaick.equi7t3 <- function(i, j, varn, in.path, r, te, tr){
       system(paste0(gdalbuildvrt, ' -input_file_list ', out.tmp, ' ', vrt.tmp))
       system(paste0(gdalwarp, ' ', vrt.tmp, ' ', out.tif, ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"', r,'\" -ot \"Byte\" -dstnodata \"255\" -te ', paste(te, collapse=" "),' -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 4000')) ## -co \"COMPRESS=DEFLATE\"
     }
+=======
+mosaick.equi7t3 <- function(i, j, varn, r="bilinear", te){
+  out.tif <- paste0('/data/GEOG/', j, '/', varn, '_', i, '_', j, '_250m_ll.tif')
+  if(!file.exists(out.tif)){
+    tmp.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0(varn, "_", i, "_", j, "_*_*.tif$")), full.names=TRUE, recursive=TRUE)
+    out.tmp <- tempfile(fileext = ".txt")
+    vrt.tmp <- tempfile(fileext = ".vrt")
+    cat(tmp.lst, sep="\n", file=out.tmp)
+    system(paste0(gdalbuildvrt, ' -input_file_list ', out.tmp, ' ', vrt.tmp))
+    system(paste0(gdalwarp, ' ', vrt.tmp, ' ', out.tif, ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"', r,'\" -ot \"Byte\" -dstnodata \"255\" -te ', paste(te, collapse=" "),' -tr 0.002083333 0.002083333 -co \"BIGTIFF=YES\" -wm 4000')) ## -co \"COMPRESS=DEFLATE\"
+>>>>>>> origin/master
   }
 }
 
@@ -57,6 +69,7 @@ ext[[7]] <- c(-122.85, -56.29, -16.04, 20.23) ## "SA"
 ## Reprojection TAKES CA 3-5 hrs (compression is the most time-consuming?)
 #m <- readRDS("/data/models/TAXOUSDA/m_TAXOUSDA.rds")
 #levs <- m_TAXOUSDA$lev
+<<<<<<< HEAD
 #m <- readRDS("/data/models/TAXNWRB/m_TAXNWRB.rds")
 #levs <- gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\.\\.", m$lev)))
 #rm(m)
@@ -90,6 +103,29 @@ make_mosaick <- function(i, varn, ext, resample1="bilinear", resample2="average"
       unlink(vrt.tmp)
       unlink(in.tif)      
     }
+=======
+m <- readRDS("/data/models/TAXNWRB/m_TAXNWRB.rds")
+levs <- gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\.\\.", m$lev)))
+rm(m)
+
+## Merge everything into a single mosaick
+make_mosaick <- function(i, varn, ext){
+  out.tif <- paste0("/data/GEOG/", varn, "_", i, "_250m_ll.tif")
+  if(!file.exists(out.tif)){
+    ## per continent:
+    x <- sapply(1:length(equi7t3), function(x){mosaick.equi7t3(j=names(equi7t3)[x], i=i, varn=varn, te=ext[[x]])})
+    in.tif <- list.files(path="/data/GEOG", pattern=glob2rx(paste0(varn, "_", i, "_*_250m_ll.tif$")), full.names=TRUE, recursive=TRUE)
+    out.tmp <- tempfile(fileext = ".txt")
+    vrt.tmp <- tempfile(fileext = ".vrt")
+    cat(in.tif[c(2,3,5,7,6,1,4)], sep="\n", file=out.tmp)
+    system(paste0(gdalbuildvrt, ' -input_file_list ', out.tmp, ' ', vrt.tmp))
+    ## relatively fast
+    system(paste0(gdal_translate, " -of GTiff ", vrt.tmp, " ", out.tif, " -ot \"Byte\" -a_nodata \"255\" -co \"COMPRESS=DEFLATE\" -co \"TILED=YES\" -co \"BLOCKXSIZE=512\" -co \"BLOCKYSIZE=512\" -co \"BIGTIFF=YES\""))
+    system(paste0(gdal_translate, " -of GTiff -r \"average\" -tr 0.008333333 0.008333333 ", vrt.tmp, " ", gsub("250m_ll.tif", "1km_ll.tif", out.tif), " -ot \"Byte\" -a_nodata \"255\" -co \"COMPRESS=DEFLATE\" -co \"BIGTIFF=YES\""))
+    unlink(out.tmp)
+    unlink(vrt.tmp)
+    unlink(in.tif)
+>>>>>>> origin/master
   }
 }
 
@@ -99,6 +135,7 @@ sfExport("equi7t3", "gdalbuildvrt", "gdalwarp", "gdal_translate", "ext", "levs",
 #out <- sfClusterApplyLB(levs, function(i){make_mosaick(i, varn="TAXOUSDA", ext=ext)})
 out <- sfClusterApplyLB(levs, function(i){make_mosaick(i, varn="TAXNWRB", ext=ext)})
 sfStop()
+<<<<<<< HEAD
 
 ## only dominant class:
 make_mosaick(i="dominant", varn="TAXNWRB", ext=ext, resample1="near", resample2="near", r="near")
@@ -122,3 +159,5 @@ sfInit(parallel=TRUE, cpus=40)
 sfExport("equi7t3", "gdalbuildvrt", "gdalwarp", "gdal_translate", "ext", "props", "varn.lst", "mosaick.equi7t3", "make_mosaick")
 out <- sfClusterApplyLB(1:length(props), function(x){make_mosaick(varn.lst[x], varn=props[x], ext=ext, tr=0.008333333, in.path="/data/predicted1km", r250m=FALSE)})
 sfStop()
+=======
+>>>>>>> origin/master

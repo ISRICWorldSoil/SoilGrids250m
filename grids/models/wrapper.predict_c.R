@@ -5,10 +5,12 @@ wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, 
   out.c <- paste0(out.path, "/", i, "/", varn, "_", i, ".tif")
   if(!file.exists(out.c)){
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
-    ## predict probabilities:
+    ## predict probabilities
+    ## the following two comands take a lot of RAM >15GB
     probs1 <- predict(gm1, m, type="probs", na.action = na.pass) ## nnet
+    gc()
     probs2 <- predict(gm2, m, type="prob", na.action = na.pass) ## randomForest
-    ## this takes a lot of RAM - can it be reduced?
+    gc()
     #probs3 <- attr(predict(gm3, m, probability=TRUE, na.action = na.pass), "probabilities") ## SVM
     lt <- list(probs1[,gm1$lev], probs2[,gm1$lev])
     ## ensemble predictions (simple average):
@@ -35,7 +37,6 @@ wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, 
       m$cl <- col.tbl[match(apply(probs,1,which.max), col.tbl$int),"Number"]   
       writeGDAL(m["cl"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(col.tbl$Group)))  ## TH: 'colorTable=list(col.tbl$COLOR)' does not work
     }
-    gc()
     gc()
   }
 }
