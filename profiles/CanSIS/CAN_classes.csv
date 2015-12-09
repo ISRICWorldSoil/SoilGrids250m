@@ -1,0 +1,232 @@
+CSSC_Soil_Order_Code,CSSC_Soil_GreatGroup_Code,TAX_GTGRP,CSSC_Great_Groups,TAX_SBGRP,CSSC_Class,TAX_ID,TAXOUSDA,TAXNWRB
+BR,IA,MB,Melanic Brunisol,O,Orthic Melanic Brunisol,BR_MB,Cryochrepts / Eutrochrepts / Hapludolls,Eutric Cambisol
+BR,IA,MB,Melanic Brunisol,E,Eluviated Melanic Brunisol,BR_MB,Cryochrepts / Eutrochrepts / Hapludolls,Eutric Cambisol
+BR,IA,MB,Melanic Brunisol,GL,Gleyed Melanic Brunisol,BR_MB,Cryochrepts / Eutrochrepts / Hapludolls,Eutric Cambisol
+BR,IA,MB,Melanic Brunisol,GLE,Gleyed Eluviated Melanic Brunisol,BR_MB,Cryochrepts / Eutrochrepts / Hapludolls,Eutric Cambisol
+BR,IB,EB,Eutric Brunisol,O,Orthic Eutric Brunisol,BR_EB,Cryochrepts / Eutrochrepts,Eutric Cambisol / Calcic Cambisol
+BR,IB,EB,Eutric Brunisol,E,Eluviated Eutric Brunisol,BR_EB,Cryochrepts / Eutrochrepts,Eutric Cambisol / Calcic Cambisol
+BR,IB,EB,Eutric Brunisol,GL,Gleyed Eutric Brunisol,BR_EB,Cryochrepts / Eutrochrepts,Eutric Cambisol / Calcic Cambisol
+BR,IB,EB,Eutric Brunisol,GLE,Gleyed Eluviated Eutric Brunisol,BR_EB,Cryochrepts / Eutrochrepts,Eutric Cambisol / Calcic Cambisol
+BR,IC,SB,Sombric Brunisol,O,Orthic Sombric Brunisol,BR_SB,Humbric Dystrochrepts,Dystric Cambisol / Umbric Cambisol
+BR,IC,SB,Sombric Brunisol,E,Eluviated Sombric Brunisol,BR_SB,Humbric Dystrochrepts,Dystric Cambisol / Umbric Cambisol
+BR,IC,SB,Sombric Brunisol,DU,Duric Sombric Brunisol,BR_SB,Humbric Dystrochrepts,Dystric Cambisol / Umbric Cambisol
+BR,IC,SB,Sombric Brunisol,GL,Gleyed Sombric Brunisol,BR_SB,Humbric Dystrochrepts,Dystric Cambisol / Umbric Cambisol
+BR,IC,SB,Sombric Brunisol,GLE,Gleyed Eluviated Sombric Brunisol,BR_SB,Humbric Dystrochrepts,Dystric Cambisol / Umbric Cambisol
+BR,ID,DYB,Dystric Brunisol,O,Orthic Dystric Brunisol,BR_DYB,Dystrochrepts / Cryochrepts,Dystric Cambisol
+BR,ID,DYB,Dystric Brunisol,E,Eluviated Dystric Brunisol,BR_DYB,Dystrochrepts / Cryochrepts,Dystric Cambisol
+BR,ID,DYB,Dystric Brunisol,DU,Duric Dystric Brunisol,BR_DYB,Dystrochrepts / Cryochrepts,Dystric Cambisol
+BR,ID,DYB,Dystric Brunisol,GL,Gleyed Dystric Brunisol,BR_DYB,Dystrochrepts / Cryochrepts,Dystric Cambisol
+BR,ID,DYB,Dystric Brunisol,GLE,Gleyed Eluviated Dystric Brunisol,BR_DYB,Dystrochrepts / Cryochrepts,Dystric Cambisol
+CH,GA,B,Brown Chernozem,O,Orthic Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,R,Rego Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,CA,Calcareous Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,E,Eluviated Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,SZ,Solonetzic Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,V,Vertic Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,GL,Gleyed Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,GLR,Gleyed Rego Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,GLCA,Gleyed Calcareous Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,GLE,Gleyed Eluviated Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,GLSZ,Gleyed Solonetzic Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GA,B,Brown Chernozem,GLV,Gleyed Vertic Brown Chernozem,CH_B,Aridic Boroll,Aridic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,O,Orthic Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,R,Rego Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,CA,Calcareous Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,E,Eluviated Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,SZ,Solonetzic Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,V,Vertic Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,GL,Gleyed Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,GLR,Gleyed Rego Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,GLCA,Gleyed Calcareous Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,GLE,Gleyed Eluviated Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,GLSZ,Gleyed Solonetzic Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GB,DB,Dark Brown Chernozem,GLV,Gleyed Vertic Dark Brown Chernozem,CH_DB,Typic Boroll,Haplic Kastanozem
+CH,GC,BL,Black Chernozem,O,Orthic Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,R,Rego Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,CA,Calcareous Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,E,Eluviated Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,SZ,Solonetzic Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,V,Vertic Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,GL,Gleyed Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,GLR,Gleyed Rego Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,GLCA,Gleyed Calcareous Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,GLE,Gleyed Eluviated Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,GLSZ,Gleyed Solonetzic Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GC,BL,Black Chernozem,GLV,Gleyed Vertic Black Chernozem,CH_BL,Udic Boroll,Haplic Chernozem
+CH,GD,DG,Dark Gray Chernozem,O,Orthic Dark Gray Chernozem,CH_DG,Boralfic Boroll / Albolls,Greyzem
+CH,GD,DG,Dark Gray Chernozem,R,Rego Dark Gray Chernozem,CH_DG,Boralfic Boroll / Albolls,Greyzem
+CH,GD,DG,Dark Gray Chernozem,CA,Calcareous Dark Gray Chernozem,CH_DG,Boralfic Boroll / Albolls,Greyzem
+CH,GD,DG,Dark Gray Chernozem,SZ,Solonetzic Dark Gray Chernozem,CH_DG,Boralfic Boroll / Albolls,Greyzem
+CH,GD,DG,Dark Gray Chernozem,V,Vertic Dark Gray Chernozem,CH_DG,Boralfic Boroll / Albolls,Greyzem
+CH,GD,DG,Dark Gray Chernozem,GL,Gleyed Dark Gray Chernozem,CH_DG,Boralfic Boroll / Albolls,Greyzem
+CH,GD,DG,Dark Gray Chernozem,GLR,Gleyed Rego Dark Gray Chernozem,CH_DG,Boralfic Boroll / Albolls,Greyzem
+CH,GD,DG,Dark Gray Chernozem,GLCA,Gleyed Calcareous Dark Gray Chernozem,CH_DG,Boralfic Boroll / Albolls,Greyzem
+CH,GD,DG,Dark Gray Chernozem,GLSZ,Gleyed Solonetzic Dark Gray Chernozem,CH_DG,Boralfic Boroll / Albolls,Greyzem
+CH,GD,DG,Dark Gray Chernozem,GLV,Gleyed Vertic Dark Gray Chernozem,CH_DG,Boralfic Boroll / Albolls,Greyzem
+CR,AB,TC,Turbic Cryosol,OE,Orthic Eutric Turbic Cryosol,CR_TC,Turbels,Turbic Cryosol
+CR,AB,TC,Turbic Cryosol,OD,Orthic Dystric Turbic Cryosol,CR_TC,Turbels,Turbic Cryosol
+CR,AB,TC,Turbic Cryosol,BRE,Brunisolic Eutric Turbic Cryosol,CR_TC,Turbels,Turbic Cryosol
+CR,AB,TC,Turbic Cryosol,BRD,Brunisolic Dystric Turbic Cryosol,CR_TC,Turbels,Turbic Cryosol
+CR,AB,TC,Turbic Cryosol,R,Regosolic Turbic Cryosol,CR_TC,Turbels,Turbic Cryosol
+CR,AB,TC,Turbic Cryosol,GL,Gleysolic Turbic Cryosol,CR_TC,Turbels,Turbic Cryosol
+CR,AB,TC,Turbic Cryosol,HE,Histic Eutric Turbic Cryosol,CR_TC,Turbels,Turbic Cryosol
+CR,AB,TC,Turbic Cryosol,HD,Histic Dystric Turbic Cryosol,CR_TC,Turbels,Turbic Cryosol
+CR,AB,TC,Turbic Cryosol,HR,Histic Regosolic Turbic Cryosol,CR_TC,Turbels,Turbic Cryosol
+CR,AC,SC,Static Cryosol,OE,Orthic Eutric Static Cryosol,CR_SC,Orthels,Cryosol
+CR,AC,SC,Static Cryosol,OD,Orthic Dystric Static Cryosol,CR_SC,Orthels,Cryosol
+CR,AC,SC,Static Cryosol,BRE,Brunisolic Eutric Static Cryosol,CR_SC,Orthels,Cryosol
+CR,AC,SC,Static Cryosol,BRD,Brunisolic Dystric Static Cryosol,CR_SC,Orthels,Cryosol
+CR,AC,SC,Static Cryosol,L,Luvisolic Static Cryosol,CR_SC,Orthels,Cryosol
+CR,AC,SC,Static Cryosol,R,Regosolic Static Cryosol,CR_SC,Orthels,Cryosol
+CR,AC,SC,Static Cryosol,GL,Gleysolic Static Cryosol,CR_SC,Orthels,Cryosol
+CR,AC,SC,Static Cryosol,HE,Histic Eutric Static Cryosol,CR_SC,Orthels,Cryosol
+CR,AC,SC,Static Cryosol,HD,Histic Dystric Static Cryosol,CR_SC,Orthels,Cryosol
+CR,AC,SC,Static Cryosol,HR,Histic Regosolic Static Cryosol,CR_SC,Orthels,Cryosol
+CR,AA,OC,Organic Cryosol,FI,Fibric Organic Cryosol,CR_OC,Histels,Cryic Histosol
+CR,AA,OC,Organic Cryosol,ME,Mesic Organic Cryosol,CR_OC,Histels,Cryic Histosol
+CR,AA,OC,Organic Cryosol,HU,Humic Organic Cryosol,CR_OC,Histels,Cryic Histosol
+CR,AA,OC,Organic Cryosol,TFI,Terric Fibric Organic Cryosol,CR_OC,Histels,Cryic Histosol
+CR,AA,OC,Organic Cryosol,TME,Terric Mesic Organic Cryosol,CR_OC,Histels,Cryic Histosol
+CR,AA,OC,Organic Cryosol,THU,Terric Humic Organic Cryosol,CR_OC,Histels,Cryic Histosol
+CR,AA,OC,Organic Cryosol,GC,Glacic Organic Cryosol,CR_OC,Histels,Cryic Histosol
+GL,EB,HG,Humic Gleysol,V,Vertic Humic Gleysol,GL_HG,Aquolls / Humaquepts,Mollic Gleysol / Umbric Gleysol / Calcic Gleysol
+GL,EB,HG,Humic Gleysol,SZ,Solonetzic Humic Gleysol,GL_HG,Aquolls / Humaquepts,Mollic Gleysol / Umbric Gleysol / Calcic Gleysol
+GL,EB,HG,Humic Gleysol,FE,Fera Humic Gleysol,GL_HG,Aquolls / Humaquepts,Mollic Gleysol / Umbric Gleysol / Calcic Gleysol
+GL,EB,HG,Humic Gleysol,O,Orthic Humic Gleysol,GL_HG,Aquolls / Humaquepts,Mollic Gleysol / Umbric Gleysol / Calcic Gleysol
+GL,EB,HG,Humic Gleysol,R,Rego Humic Gleysol,GL_HG,Aquolls / Humaquepts,Mollic Gleysol / Umbric Gleysol / Calcic Gleysol
+GL,EC,G,Gleysol,V,Vertic Gleysol,GL_G,Aquents / Fluvents / Aquepts,Haplic Gleysol
+GL,EC,G,Gleysol,SZ,Solonetzic Gleysol,GL_G,Aquents / Fluvents / Aquepts,Haplic Gleysol
+GL,EC,G,Gleysol,FE,Fera Gleysol,GL_G,Aquents / Fluvents / Aquepts,Haplic Gleysol
+GL,EC,G,Gleysol,O,Orthic Gleysol,GL_G,Aquents / Fluvents / Aquepts,Haplic Gleysol
+GL,EC,G,Gleysol,R,Rego Gleysol,GL_G,Aquents / Fluvents / Aquepts,Haplic Gleysol
+GL,EA,LG,Luvic Gleysol,V,Vertic Luvic Gleysol,GL_LG,Argialbolls / Argiaquolls / Aqualfs,Planosol
+GL,EA,LG,Luvic Gleysol,SZ,Solonetzic Luvic Gleysol,GL_LG,Argialbolls / Argiaquolls / Aqualfs,Planosol
+GL,EA,LG,Luvic Gleysol,FR,Fragic Luvic Gleysol,GL_LG,Argialbolls / Argiaquolls / Aqualfs,Planosol
+GL,EA,LG,Luvic Gleysol,HU,Humic Luvic Gleysol,GL_LG,Argialbolls / Argiaquolls / Aqualfs,Planosol
+GL,EA,LG,Luvic Gleysol,FE,Fera Luvic Gleysol,GL_LG,Argialbolls / Argiaquolls / Aqualfs,Planosol
+GL,EA,LG,Luvic Gleysol,O,Orthic Luvic Gleysol,GL_LG,Argialbolls / Argiaquolls / Aqualfs,Planosol
+LU,HA,GBL,Gray Brown Luvisol,O,Orthic Gray Brown Luvisol,LU_GBL,Hapludalfs / Glossudalfs,Albic Luvisol / Haplic Luvisol
+LU,HA,GBL,Gray Brown Luvisol,BR,Brunisolic Gray Brown Luvisol,LU_GBL,Hapludalfs / Glossudalfs,Albic Luvisol / Haplic Luvisol
+LU,HA,GBL,Gray Brown Luvisol,PZ,Podzolic Gray Brown Luvisol,LU_GBL,Hapludalfs / Glossudalfs,Albic Luvisol / Haplic Luvisol
+LU,HA,GBL,Gray Brown Luvisol,V,Vertic Gray Brown Luvisol,LU_GBL,Hapludalfs / Glossudalfs,Albic Luvisol / Haplic Luvisol
+LU,HA,GBL,Gray Brown Luvisol,GL,Gleyed Gray Brown Luvisol,LU_GBL,Hapludalfs / Glossudalfs,Albic Luvisol / Haplic Luvisol
+LU,HA,GBL,Gray Brown Luvisol,GLBR,Gleyed Brunisolic Gray Brown Luvisol,LU_GBL,Hapludalfs / Glossudalfs,Albic Luvisol / Haplic Luvisol
+LU,HA,GBL,Gray Brown Luvisol,GLPZ,Gleyed Podzolic Gray Brown Luvisol,LU_GBL,Hapludalfs / Glossudalfs,Albic Luvisol / Haplic Luvisol
+LU,HA,GBL,Gray Brown Luvisol,GLV,Gleyed Vertic Gray Brown Luvisol,LU_GBL,Hapludalfs / Glossudalfs,Albic Luvisol / Haplic Luvisol
+LU,HB,GL,Gray Luvisol,O,Orthic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,D,Dark Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,BR,Brunisolic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,PZ,Podzolic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,SZ,Solonetzic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,FR,Fragic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,V,Vertic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,GL,Gleyed Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,GLD,Gleyed Dark Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,GLBR,Gleyed Brunisolic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,GLPZ,Gleyed Podzolic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,GLSZ,Gleyed Solonetzic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,GLFR,Gleyed Fragic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+LU,HB,GL,Gray Luvisol,GLV,Gleyed Vertic Gray Luvisol,LU_GL,Boralfs,Albic Luvisol / Gleyic Luvisol
+OR,BB,F,Fibrisol,TY,Typic Fibrisol,OR_F,Fibrists,Fibric Histosol
+OR,BB,F,Fibrisol,ME,Mesic Fibrisol,OR_F,Fibrists,Fibric Histosol
+OR,BB,F,Fibrisol,HU,Humic Fibrisol,OR_F,Fibrists,Fibric Histosol
+OR,BB,F,Fibrisol,LM,Limnic Fibrisol,OR_F,Fibrists,Fibric Histosol
+OR,BB,F,Fibrisol,CU,Cumulic Fibrisol,OR_F,Fibrists,Fibric Histosol
+OR,BB,F,Fibrisol,T,Terric Fibrisol,OR_F,Fibrists,Fibric Histosol
+OR,BB,F,Fibrisol,TME,Terric Mesic Fibrisol,OR_F,Fibrists,Fibric Histosol
+OR,BB,F,Fibrisol,THU,Terric Humic Fibrisol,OR_F,Fibrists,Fibric Histosol
+OR,BB,F,Fibrisol,HY,Hydric Fibrisol,OR_F,Fibrists,Fibric Histosol
+OR,BC,M,Mesisol,TY,Typic Mesisol,OR_M,Hemists,Hemic Histosol
+OR,BC,M,Mesisol,FI,Fibric Mesisol,OR_M,Hemists,Hemic Histosol
+OR,BC,M,Mesisol,HU,Humic Mesisol,OR_M,Hemists,Hemic Histosol
+OR,BC,M,Mesisol,LM,Limnic Mesisol,OR_M,Hemists,Hemic Histosol
+OR,BC,M,Mesisol,CU,Cumulic Mesisol,OR_M,Hemists,Hemic Histosol
+OR,BC,M,Mesisol,T,Terric Mesisol,OR_M,Hemists,Hemic Histosol
+OR,BC,M,Mesisol,TFI,Terric Fibric Mesisol,OR_M,Hemists,Hemic Histosol
+OR,BC,M,Mesisol,THU,Terric Humic Mesisol,OR_M,Hemists,Hemic Histosol
+OR,BC,M,Mesisol,HY,Hydric Mesisol,OR_M,Hemists,Hemic Histosol
+OR,BD,H,Humisol,TY,Typic Humisol,OR_H,Saprists,Sapric Histosol
+OR,BD,H,Humisol,FI,Fibric Humisol,OR_H,Saprists,Sapric Histosol
+OR,BD,H,Humisol,ME,Mesic Humisol,OR_H,Saprists,Sapric Histosol
+OR,BD,H,Humisol,LM,Limnic Humisol,OR_H,Saprists,Sapric Histosol
+OR,BD,H,Humisol,CU,Cumulic Humisol,OR_H,Saprists,Sapric Histosol
+OR,BD,H,Humisol,T,Terric Humisol,OR_H,Saprists,Sapric Histosol
+OR,BD,H,Humisol,TFI,Terric Fibric Humisol,OR_H,Saprists,Sapric Histosol
+OR,BD,H,Humisol,TME,Terric Mesic Humisol,OR_H,Saprists,Sapric Histosol
+OR,BD,H,Humisol,HY,Hydric Humisol,OR_H,Saprists,Sapric Histosol
+OR,BA,FO,Folisol,HE,Hemic Folisol,OR_FO,Folists,Histosol
+OR,BA,FO,Folisol,HI,Histic Folisol,OR_FO,Folists,Histosol
+OR,BA,FO,Folisol,HU,Humic Folisol,OR_FO,Folists,Histosol
+OR,BA,FO,Folisol,LI,Lignic Folisol,OR_FO,Folists,Histosol
+PO,DA,HP,Humic Podzol,O,Orthic Humic Podzol,PO_HP,Cryaquods / Humods,Humic Podzol
+PO,DA,HP,Humic Podzol,OT,Ortstein Humic Podzol,PO_HP,Cryaquods / Humods,Humic Podzol
+PO,DA,HP,Humic Podzol,P,Placic Humic Podzol,PO_HP,Cryaquods / Humods,Humic Podzol
+PO,DA,HP,Humic Podzol,DU,Duric Humic Podzol,PO_HP,Cryaquods / Humods,Humic Podzol
+PO,DA,HP,Humic Podzol,FR,Fragic Humic Podzol,PO_HP,Cryaquods / Humods,Humic Podzol
+PO,DB,FHP,Ferro-Humic Podzol,O,Orthic Ferro-Humic Podzol,PO_FHP,Humic Cryorthods / Humic Haplorthods,Orthic Podzol
+PO,DB,FHP,Ferro-Humic Podzol,OT,Ortstein Ferro-Humic Podzol,PO_FHP,Humic Cryorthods / Humic Haplorthods,Orthic Podzol
+PO,DB,FHP,Ferro-Humic Podzol,P,Placic Ferro-Humic Podzol,PO_FHP,Humic Cryorthods / Humic Haplorthods,Orthic Podzol
+PO,DB,FHP,Ferro-Humic Podzol,DU,Duric Ferro-Humic Podzol,PO_FHP,Humic Cryorthods / Humic Haplorthods,Orthic Podzol
+PO,DB,FHP,Ferro-Humic Podzol,FR,Fragic Ferro-Humic Podzol,PO_FHP,Humic Cryorthods / Humic Haplorthods,Orthic Podzol
+PO,DB,FHP,Ferro-Humic Podzol,LU,Luvisolic Ferro-Humic Podzol,PO_FHP,Humic Cryorthods / Humic Haplorthods,Orthic Podzol
+PO,DB,FHP,Ferro-Humic Podzol,SM,Sombric Ferro-Humic Podzol,PO_FHP,Humic Cryorthods / Humic Haplorthods,Orthic Podzol
+PO,DB,FHP,Ferro-Humic Podzol,GL,Gleyed Ferro-Humic Podzol,PO_FHP,Humic Cryorthods / Humic Haplorthods,Orthic Podzol
+PO,DB,FHP,Ferro-Humic Podzol,GLSM,Gleyed Sombric Ferro-Humic Podzol,PO_FHP,Humic Cryorthods / Humic Haplorthods,Orthic Podzol
+PO,DB,FHP,Ferro-Humic Podzol,GLOT,Gleyed Ortstein Ferro-Humic Podzol,PO_FHP,Humic Cryorthods / Humic Haplorthods,Orthic Podzol
+PO,DC,HFP,Humo-Ferric Podzol,O,Orthic Humo-Ferric Podzol,PO_HFP,Cryorthods / Haplorthods,Orthic Podzol
+PO,DC,HFP,Humo-Ferric Podzol,OT,Ortstein Humo-Ferric Podzol,PO_HFP,Cryorthods / Haplorthods,Orthic Podzol
+PO,DC,HFP,Humo-Ferric Podzol,P,Placic Humo-Ferric Podzol,PO_HFP,Cryorthods / Haplorthods,Orthic Podzol
+PO,DC,HFP,Humo-Ferric Podzol,DU,Duric Humo-Ferric Podzol,PO_HFP,Cryorthods / Haplorthods,Orthic Podzol
+PO,DC,HFP,Humo-Ferric Podzol,FR,Fragic Humo-Ferric Podzol,PO_HFP,Cryorthods / Haplorthods,Orthic Podzol
+PO,DC,HFP,Humo-Ferric Podzol,LU,Luvisolic Humo-Ferric Podzol,PO_HFP,Cryorthods / Haplorthods,Orthic Podzol
+PO,DC,HFP,Humo-Ferric Podzol,GL,Gleyed Humo-Ferric Podzol,PO_HFP,Cryorthods / Haplorthods,Orthic Podzol
+PO,DC,HFP,Humo-Ferric Podzol,GLSM,Gleyed Sombric Humo-Ferric Podzol,PO_HFP,Cryorthods / Haplorthods,Orthic Podzol
+PO,DC,HFP,Humo-Ferric Podzol,SM,Sombric Humo-Ferric Podzol,PO_HFP,Cryorthods / Haplorthods,Orthic Podzol
+PO,DC,HFP,Humo-Ferric Podzol,GLOT,Gleyed Ortstein Humo-Ferric Podzol,PO_HFP,Cryorthods / Haplorthods,Orthic Podzol
+RE,JB,R,Regosol,O,Orthic Regosol,RE_R,Entisols,Regosol
+RE,JB,R,Regosol,CU,Cumulic Regosol,RE_R,Entisols,Regosol
+RE,JB,R,Regosol,GL,Gleyed Regosol,RE_R,Entisols,Regosol
+RE,JB,R,Regosol,GLCU,Gleyed Cumulic Regosol,RE_R,Entisols,Regosol
+RE,JA,HR,Humic Regosol,O,Orthic Humic Regosol,RE_HR,Entisols,Fluvisol / Regosol
+RE,JA,HR,Humic Regosol,CU,Cumulic Humic Regosol,RE_HR,Entisols,Fluvisol / Regosol
+RE,JA,HR,Humic Regosol,GL,Gleyed Humic Regosol,RE_HR,Entisols,Fluvisol / Regosol
+RE,JA,HR,Humic Regosol,GLCU,Gleyed Cumulic Humic Regosol,RE_HR,Entisols,Fluvisol / Regosol
+SO,FD,SZ,Solonetz,B,Brown Solonetz,SO_SZ,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FD,SZ,Solonetz,DB,Dark Brown Solonetz,SO_SZ,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FD,SZ,Solonetz,BL,Black Solonetz,SO_SZ,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FD,SZ,Solonetz,A,Alkaline Solonetz,SO_SZ,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FD,SZ,Solonetz,GLB,Gleyed Brown Solonetz,SO_SZ,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FD,SZ,Solonetz,GLDB,Gleyed Dark Brown Solonetz,SO_SZ,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FD,SZ,Solonetz,GLBL,Gleyed Black Solonetz,SO_SZ,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FC,SS,Solodized Solonetz,B,Brown Solodized Solonetz,SO_SS,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FC,SS,Solodized Solonetz,DB,Dark Brown Solodized Solonetz,SO_SS,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FC,SS,Solodized Solonetz,BL,Black Solodized Solonetz,SO_SS,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FC,SS,Solodized Solonetz,DG,Dark Gray Solodized Solonetz,SO_SS,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FC,SS,Solodized Solonetz,G,Gray Solodized Solonetz,SO_SS,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FC,SS,Solodized Solonetz,GLB,Gleyed Brown Solodized Solonetz,SO_SS,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FC,SS,Solodized Solonetz,GLDB,Gleyed Dark Brown Solodized Solonetz,SO_SS,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FC,SS,Solodized Solonetz,GLBL,Gleyed Black Solodized Solonetz,SO_SS,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FC,SS,Solodized Solonetz,GLDG,Gleyed Dark Gray Solodized Solonetz,SO_SS,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FC,SS,Solodized Solonetz,GLG,Gleyed Gray Solodized Solonetz,SO_SS,Natraqualf / Natrustoll,Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz
+SO,FB,SO,Solod,B,Brown Solod,SO_SO,Glossic Natriborolls / Natralbolls,Solodic Planosol
+SO,FB,SO,Solod,DB,Dark Brown Solod,SO_SO,Glossic Natriborolls / Natralbolls,Solodic Planosol
+SO,FB,SO,Solod,BL,Black Solod,SO_SO,Glossic Natriborolls / Natralbolls,Solodic Planosol
+SO,FB,SO,Solod,DG,Dark Gray Solod,SO_SO,Glossic Natriborolls / Natralbolls,Solodic Planosol
+SO,FB,SO,Solod,G,Gray Solod,SO_SO,Glossic Natriborolls / Natralbolls,Solodic Planosol
+SO,FB,SO,Solod,GLB,Gleyed Brown Solod,SO_SO,Glossic Natriborolls / Natralbolls,Solodic Planosol
+SO,FB,SO,Solod,GLDB,Gleyed Dark Brown Solod,SO_SO,Glossic Natriborolls / Natralbolls,Solodic Planosol
+SO,FB,SO,Solod,GLBL,Gleyed Black Solod,SO_SO,Glossic Natriborolls / Natralbolls,Solodic Planosol
+SO,FB,SO,Solod,GLDG,Gleyed Dark Gray Solod,SO_SO,Glossic Natriborolls / Natralbolls,Solodic Planosol
+SO,FB,SO,Solod,GLG,Gleyed Gray Solod,SO_SO,Glossic Natriborolls / Natralbolls,Solodic Planosol
+SO,FA,VS,Vertic Solonetz,B,Brown Vertic Solonetz,SO_VS,Haplocryerts,Sodic Vertisol
+SO,FA,VS,Vertic Solonetz,DB,Dark Brown Vertic Solonetz,SO_VS,Haplocryerts,Sodic Vertisol
+SO,FA,VS,Vertic Solonetz,BL,Black Vertic Solonetz,SO_VS,Haplocryerts,Sodic Vertisol
+SO,FA,VS,Vertic Solonetz,GLB,Gleyed Brown Vertic Solonetz,SO_VS,Haplocryerts,Sodic Vertisol
+SO,FA,VS,Vertic Solonetz,GLDB,Gleyed Dark Brown Vertic Solonetz,SO_VS,Haplocryerts,Sodic Vertisol
+SO,FA,VS,Vertic Solonetz,GLBL,Gleyed Black Vertic Solonetz,SO_VS,Haplocryerts,Sodic Vertisol
+VE,CA,V,Vertisol,O,Orthic Vertisol,VE_V,Haplocryerts,Calcic Vertisol / Eutric Vertisol
+VE,CA,V,Vertisol,GL,Gleyed Vertisol,VE_V,Haplocryerts,Calcic Vertisol / Eutric Vertisol
+VE,CA,V,Vertisol,GLC,Gleysolic Vertisol,VE_V,Haplocryerts,Calcic Vertisol / Eutric Vertisol
+VE,CB,HV,Humic Vertisol,O,Orthic Humic Vertisol,VE_HV,Humicryerts,Dystric Vertisol
+VE,CB,HV,Humic Vertisol,GL,Gleyed Humic Vertisol,VE_HV,Humicryerts,Dystric Vertisol
+VE,CB,HV,Humic Vertisol,GLC,Gleysolic Humic Vertisol,VE_HV,Humicryerts,Dystric Vertisol

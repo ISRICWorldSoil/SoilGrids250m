@@ -11,6 +11,7 @@
 library(aqp)
 library(sp)
 library(plyr)
+library(plotKML)
 cols2dms <- function(x,y,z,e){ifelse(is.na(e)|is.na(x), NA, as(char2dms(paste(x, "d", y, "'", z, "\"", e, sep="")), "numeric"))}
 
 ## read exported tables:
@@ -37,9 +38,7 @@ horizons$LHDICM <- ifelse(is.na(horizons$LHDICM)&!is.na(horizons$UHDICM), horizo
 horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
 
 ## Classification:
-CAN_cl <- read.csv("CAN_classes.csv")
-CAN_cor <- read.csv("CAN_correlation.csv")
-pedon_cor <- join(CAN_cor, CAN_cl, by="CSSC_Great_Groups")
+pedon_cor <- read.csv("CAN_classes.csv")
 pedon_id <- read.csv("CAN_pedon_id.csv")
 pedon_class <- read.csv("CAN_pedon_class.csv")
 pedon_class$SOURCEID = paste("CAN", pedon_class$PEDON, sep="_")
@@ -51,17 +50,20 @@ pedon_id$LATWGS84 <- ifelse(pedon_id$LATWGS84<25, NA, pedon_id$LATWGS84)
 pedon_id$TIMESTRR <- as.Date(paste(pedon_id$YEAR_), format="%Y")
 #plot(pedon_id$LONWGS84, pedon_id$LATWGS84)
 str(pedon_id)
-pedon_id$TAX_GTGRP <- join(pedon_id, pedon_class, by="PEDON", type="left")$TAX_GTGRP
-pedon_id[,c("TAXNWRB","TAXOUSDA")] <- join(pedon_id, pedon_cor, by="TAX_GTGRP", type="left", match="first")[,c("WRB_subgroup","USDA_suborder")]
-pedon_id$SOURCEDB = "CanSIS"
-pedon_id$SOURCEID = paste("CAN", pedon_id$PEDON, sep="_")
-pedon_id <- pedon_id[!is.na(pedon_id$LATWGS84)&!is.na(pedon_id$LONWGS84),]
+pedon_id <- join(pedon_id, pedon_class, by="PEDON", type="left", match="first")
+pedon_id$TAX_ID <- paste(pedon_id$TAX_ORDER, pedon_id$TAX_GTGRP, sep="_")
+pedon_merge <- join(pedon_id, pedon_cor[,c("TAX_ID","TAXNWRB","TAXOUSDA")], by="TAX_ID", type="left", match="first")
+pedon_merge$SOURCEDB = "CanSIS"
+pedon_merge$SOURCEID = paste("CAN", pedon_merge$PEDON, sep="_")
+pedon_merge <- pedon_merge[!is.na(pedon_merge$LATWGS84)&!is.na(pedon_merge$LONWGS84),]
+## look at some examples
+pedon_merge[1:5,c("PEDON","TAX_ORDER","TAX_GTGRP","TAX_SBGRP","TAXNWRB","TAXOUSDA")]
 
 # ------------------------------------------------------------
 # export TAXONOMY DATA
 # ------------------------------------------------------------
 
-TAXOUSDA.CanSIS <- pedon_id[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXOUSDA")]
+TAXOUSDA.CanSIS <- pedon_merge[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXOUSDA")]
 TAXOUSDA.CanSIS <- TAXOUSDA.CanSIS[!is.na(TAXOUSDA.CanSIS$TAXOUSDA)&!is.na(TAXOUSDA.CanSIS$LONWGS84)&nchar(paste(TAXOUSDA.CanSIS$TAXOUSDA))>0,]
 str(TAXOUSDA.CanSIS)
 ## 3000 profiles
@@ -70,7 +72,7 @@ proj4string(TAXOUSDA.CanSIS) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXOUSDA.CanSIS["TAXOUSDA"])
 save(TAXOUSDA.CanSIS, file="TAXOUSDA.CanSIS.rda")
 
-TAXNWRB.CanSIS <- pedon_id[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXNWRB")]
+TAXNWRB.CanSIS <- pedon_merge[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXNWRB")]
 TAXNWRB.CanSIS <- TAXNWRB.CanSIS[!is.na(TAXNWRB.CanSIS$TAXNWRB)&!is.na(TAXNWRB.CanSIS$LONWGS84)&nchar(paste(TAXNWRB.CanSIS$TAXNWRB))>0,]
 TAXNWRB.CanSIS$TAXNWRB <- iconv(paste(TAXNWRB.CanSIS$TAXNWRB), "latin1", "UTF-8", "")
 str(TAXNWRB.CanSIS)
@@ -86,6 +88,8 @@ save(TAXNWRB.CanSIS, file="TAXNWRB.CanSIS.rda")
 
 SPROPS.CanSIS <- plyr::join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","PHIKCL","BLD","ORCDRC","CECSUM")], pedon_id[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84")], type="left")
 SPROPS.CanSIS <- SPROPS.CanSIS[!is.na(SPROPS.CanSIS$LONWGS84) & !is.na(SPROPS.CanSIS$LATWGS84) & !is.na(SPROPS.CanSIS$DEPTH),]
+SPROPS.CanSIS$PHIKCL <- ifelse(SPROPS.CanSIS$PHIKCL>11|SPROPS.CanSIS$PHIKCL<2.5, NA, SPROPS.CanSIS$PHIKCL)
+SPROPS.CanSIS$PHIHOX <- ifelse(SPROPS.CanSIS$PHIHOX>11.5|SPROPS.CanSIS$PHIHOX<2.5, NA, SPROPS.CanSIS$PHIHOX)
 View(SPROPS.CanSIS)
 ## 17,535 horizons
 save(SPROPS.CanSIS, file="SPROPS.CanSIS.rda")
