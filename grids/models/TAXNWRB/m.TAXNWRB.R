@@ -30,17 +30,12 @@ col.legend <- read.csv("TAXNWRB_legend.csv")
 col.legend <- col.legend[!is.na(col.legend$R),]
 col.legend$COLOR <- rgb(red=col.legend$R/255, green=col.legend$G/255, blue=col.legend$B/255)
 unlink("TAXNWRB.txt")
-<<<<<<< HEAD
 makeSAGAlegend(x=as.factor(as.character(col.legend$Group)), MINIMUM=1:nrow(col.legend), MAXIMUM=1:nrow(col.legend)+1, col_pal=col.legend$COLOR, filename="TAXNWRB.txt")
-=======
-makeSAGAlegend(x=as.factor(paste(col.legend$Group)), MINIMUM=1:nrow(col.legend), MAXIMUM=1:nrow(col.legend)+1, col_pal=col.legend$COLOR, filename="TAXNWRB.txt")
->>>>>>> origin/master
 des <- read.csv("../SoilGrids250m_COVS250m.csv")
 #load("../cov.lst.rda") ## list of all Geotifs in 'covs' dir
 load("../../profs/TAXNWRB/TAXNWRB.pnts.rda")
 #str(TAXNWRB.pnts)
-## 34915 points!
-#load("../ov.rda") ## check if the values exist already
+## 43222 points!
 
 ## OVERLAY (ca 20+ mins):
 ov <- extract.equi7t3(x=TAXNWRB.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=40) 
@@ -72,9 +67,9 @@ b = attr(cf, "dimnames")[[2]] %in% attr(cf, "dimnames")[[1]]
 c.kappa = psych::cohen.kappa(cf[a,b])
 ac <- sum(diag(cf))/sum(cf)*100
 message(paste("Estimated Cohen Kappa (weighted):", signif(c.kappa$weighted.kappa, 4)))
-## 29%
+## 32%
 message(paste("Map purity:", signif(ac, 3)))
-## 22%
+## 23%
 saveRDS(m_TAXNWRB, file="m_TAXNWRB.rds")
 
 ## subset to complete pairs:
@@ -120,6 +115,6 @@ x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn
 sfStop()
 
 ## clean-up:
-#del.lst <- list.files(path="/data/predicted", pattern=glob2rx("^TAXNWRB*.tif"), full.names=TRUE, recursive=TRUE)
-#unlink(del.lst)
+# del.lst <- list.files(path="/data/predicted", pattern=glob2rx("^TAXNWRB*.tif"), full.names=TRUE, recursive=TRUE)
+# unlink(del.lst)
 

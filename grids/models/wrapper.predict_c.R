@@ -1,7 +1,7 @@
 ## predict soil types using a model "mg" and write GeoTifs out
 ## by: Tom.Hengl@isric.org
 
-wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, check.names=TRUE){ #gm3,
+wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, check.names=TRUE){ 
   out.c <- paste0(out.path, "/", i, "/", varn, "_", i, ".tif")
   if(!file.exists(out.c)){
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
@@ -11,7 +11,6 @@ wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, 
     gc()
     probs2 <- predict(gm2, m, type="prob", na.action = na.pass) ## randomForest
     gc()
-    #probs3 <- attr(predict(gm3, m, probability=TRUE, na.action = na.pass), "probabilities") ## SVM
     lt <- list(probs1[,gm1$lev], probs2[,gm1$lev])
     ## ensemble predictions (simple average):
     probs <- Reduce("+", lt) / length(lt)

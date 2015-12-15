@@ -187,6 +187,7 @@ resample_tif <- function(i, in.path="/data/covs", res=1000, out.dir="covs1km", c
   x <- lapply(in.file, function(x){ if(!file.exists(gsub("covs", out.dir, x))){ try( system(paste0(gdalwarp, ' ', x, ' ', gsub("covs", out.dir, x), ' -r \"near\" -tr ', res, ' ', res, ' -co \"COMPRESS=DEFLATE\"')) ) } }) 
 }
 #resample_tif(i="NA_060_036", cov.lst=cov.lst)
+#resample_tif(i="NA_102_042", cov.lst=cov.lst)
 
 ## this takes only ca 20 mins with 'near' resampling
 sfInit(parallel=TRUE, cpus=40)
@@ -194,7 +195,7 @@ sfExport("resample_tif", "cov.lst", "gdalwarp")
 x <- sfClusterApplyLB(pr.dirs, fun=function(i){ resample_tif(i, cov.lst=cov.lst) })
 sfStop()
 
-#make.covsRDA(i="NA_060_036", in.path="/data/covs1km")
+#make.covsRDA(i="NA_102_042", in.path="/data/covs1km")
 ## RDS files at 1 km
 sfInit(parallel=TRUE, cpus=40)
 sfExport("make.covsRDA")
@@ -204,6 +205,12 @@ sfLibrary(R.utils)
 x <- sfClusterApplyLB(pr.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs1km") ) })
 sfStop()
 
+## Check if everything is OK:
+rds.lst <- list.files(path="/data/covs1km", pattern=glob2rx("*.rds$"), full.names=TRUE, recursive=TRUE)
+pr.dirs[which(!pr.dirs %in% basename(dirname(rds.lst)))]
+# Error in checkForRemoteErrors(val) : 
+#   8 nodes produced errors; first error: Error in .local(.Object, ...) : 
+#   `/data/covs1km/NA_099_000/M03MOD4_NA_099_000.tif' not recognised as a supported file format.
 
 ## clean-up:
 #empty.lst <- list.files(path="/data/covs1km", pattern=glob2rx("*.tif$"), full.names=TRUE, recursive=TRUE)

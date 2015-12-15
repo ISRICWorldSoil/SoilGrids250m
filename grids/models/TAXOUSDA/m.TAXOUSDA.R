@@ -68,7 +68,7 @@ b = attr(cf, "dimnames")[[2]] %in% attr(cf, "dimnames")[[1]]
 c.kappa = psych::cohen.kappa(cf[a,b])
 ac <- sum(diag(cf))/sum(cf)*100
 message(paste("Estimated Cohen Kappa (weighted):", signif(c.kappa$weighted.kappa, 4)))
-## 35%
+## 38%
 message(paste("Map purity:", signif(ac, 3)))
 ## 34%
 saveRDS(m_TAXOUSDA, file="m_TAXOUSDA.rds")
@@ -122,7 +122,7 @@ saveRDS(mrf_TAXOUSDA, file="mrf_TAXOUSDA.rds")
 ## run all predictions in parallel
 ## TH: TAKES ABOUT 8-10 HOURS
 ## THERE IS A PROBLEM WITH RAM (HENCE <25 CORES) -> THE mrf_TAXOUSDA object is LARGE
-pr.dirs <- basename(dirname(list.files(path="/data/covs", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
+pr.dirs <- basename(dirname(list.files(path="/data/covs", pattern=glob2rx("*.rds"), recursive = TRUE, full.names = TRUE)))
 str(pr.dirs)
 ## 2356 dirs
 sfInit(parallel=TRUE, cpus=15)
