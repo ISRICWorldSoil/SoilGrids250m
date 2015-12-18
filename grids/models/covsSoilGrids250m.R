@@ -54,6 +54,9 @@ write.csv(selD, "empty_LMK_tiles.csv")
 ## remove all directories with empty landmask (CAREFULL!)
 x = sapply(selD$name, function(x){unlink(dirname(as.character(x)), recursive = TRUE, force = TRUE)})
 ## 2356 dirs left
+## Additional 3 tiles contain 1-2 pixels only
+#rm.t = c("AS_084_045", "AS_081_075", "OC_069_102")
+
 ## Move land cover images:
 GLC.out.lst <- paste0("C0", 1:9, "GLC5")
 for(i in 1:length(msk.lst)){

@@ -26,6 +26,8 @@ Protic_Arenosol.sim <- spsample(afsoil[afsoil$SU_WRB1_PH=="ARpr",], type="random
 Leptosol.sim <- spsample(afsoil[afsoil$SU_WRB1_PH=="LP",], type="random", n=200)
 Lithic_Leptosol.sim <- spsample(afsoil[afsoil$SU_WRB1_PH=="LPli",], type="random", n=100)
 Rendzic_Leptosol.sim <- spsample(afsoil[afsoil$SU_WRB1_PH=="LPrz",], type="random", n=100)
+## Indonesia:
+load("../../../soilstorage/PolygonMaps/Indonesia/TAX.Indonesia.rda")
 
 n.lst <- c("Protic Arenosols", "Leptosols", "Lithic Leptosols", "Rendzic Leptosols")
 TAXNWRB.sim <- list(Protic_Arenosol.sim, Leptosol.sim, Lithic_Leptosol.sim, Rendzic_Leptosol.sim)
@@ -33,8 +35,9 @@ TAXNWRB.sim.df <- list(NULL)
 for(j in 1:length(TAXNWRB.sim)){
    TAXNWRB.sim.df[[j]] <- cbind(as.data.frame(TAXNWRB.sim[[j]]), TAXNWRB=rep(n.lst[j], length(TAXNWRB.sim[[j]])))
 }
+TAXNWRB.sim.df[[length(n.lst)+1]] <- as.data.frame(TAX.Indonesia["TAXNWRB"])
 TAXNWRB.sim <- do.call(rbind, TAXNWRB.sim.df)
-str(TAXNWRB.sim)
+str(TAXNWRB.sim) ## 848
 TAXNWRB.sim <- plyr::rename(TAXNWRB.sim, c("x"="LONWGS84", "y"="LATWGS84"))
 TAXNWRB.sim$SOURCEID <- paste("SIM", 1:nrow(TAXNWRB.sim), sep="_")
 TAXNWRB.sim$SOURCEDB = "Simulated"
@@ -43,7 +46,7 @@ in.lst[[length(in.lst)+1]] <- TAXNWRB.sim
 ## Bind everything together:
 all.pnts <- dplyr::rbind_all(in.lst)
 str(all.pnts)
-## 46,488
+## 49,574
 all.pnts <- as.data.frame(all.pnts)
 coordinates(all.pnts) <- ~ LONWGS84+LATWGS84
 proj4string(all.pnts) <- "+proj=longlat +datum=WGS84"
@@ -132,22 +135,29 @@ for(j in 1:length(levsf)){
 }
 TAXNWRB.pnts <- do.call(rbind, tax.lst)
 TAXNWRB.pnts$TAXNWRB.f <- as.factor(TAXNWRB.pnts$TAXNWRB.f)
+TAXNWRB.pnts <- TAXNWRB.pnts[,]
 summary(TAXNWRB.pnts$TAXNWRB.f)
 length(TAXNWRB.pnts$TAXNWRB.f)
-## FINAL NUMBER OF POINTS: 42,518 points
+## FINAL NUMBER OF POINTS: 42,448 points
 summary(as.factor(TAXNWRB.pnts$SOURCEDB))
-#      AfSPDB       eSOTER  RadamBrasil     CN-SOTER       HRSPDB       IRSPDB   ISCN2012/N         ISIS 
-#        1863         1854         5359         1272         1812         4412         7830          530 
-#     MX_CDPS     NAMSOTER        SPADE         WISE Russia_EGRPR         OFRA        CIFOR   HILATS2014 
-#        2567         1807           82         7096          439           28          196          334 
-#      CanSIS    Simulated 
-#        5140          500 
+#      AfSPDB       eSOTER  RadamBrasil 
+#        1828         1829         5279 
+#    CN-SOTER       HRSPDB       IRSPDB 
+#        1003         1811         4384 
+#  ISCN2012/N         ISIS      MX_CDPS 
+#        7830          517         2482 
+#    NAMSOTER        SPADE         WISE 
+#        1807           82         6950 
+#Russia_EGRPR       CanSIS   HILATS2014 
+#         355         5943          334 
+#        OFRA        CIFOR    Simulated 
+#          27          196          635 
 
 coordinates(TAXNWRB.pnts) <- ~ LONWGS84+LATWGS84
 proj4string(TAXNWRB.pnts) <- "+proj=longlat +datum=WGS84"
-plotKML(TAXNWRB.pnts["TAXNWRB.f"], file.name="TAXNWRB_Nov_4_2015.kml", kmz=TRUE)
+TAXNWRB.pnts <- TAXNWRB.pnts[!(TAXNWRB.pnts@coords[,2]==0&TAXNWRB.pnts@coords[,1]==0),c("SOURCEDB","SOURCEID","TAXNWRB.f")]
+plotKML(TAXNWRB.pnts["TAXNWRB.f"], file.name="TAXNWRB_Nov_27_2015.kml", kmz=TRUE)
 str(TAXNWRB.pnts@data)
-TAXNWRB.pnts <- TAXNWRB.pnts[c("SOURCEDB","SOURCEID","TAXNWRB.f")]
 save(TAXNWRB.pnts, file="TAXNWRB.pnts.rda")
 
 ## world plot - overlay and plot points and maps:
@@ -155,7 +165,7 @@ country.m <- map('world', plot=FALSE, fill=TRUE)
 IDs <- sapply(strsplit(country.m$names, ":"), function(x) x[1])
 require(maptools)
 country <- as(map2SpatialPolygons(country.m, IDs=IDs), "SpatialLines")
-no.plt <- TAXNWRB.pnts@coords[,2]>-65&TAXNWRB.pnts@coords[,2]<85
+no.plt <- TAXNWRB.pnts@coords[,2]>-65 & TAXNWRB.pnts@coords[,2]<85
 png(file = "Fig_global_distribution_TAXNWRB.png", res = 150, width = 2000, height = 900)
 windows(width = 20, height = 9)
 dev.off()
@@ -163,4 +173,16 @@ par(mar=c(0,0,0,0), oma=c(0,0,0,0))
 plot(country, col="darkgrey", ylim=c(-60, 85))
 points(TAXNWRB.pnts[!TAXNWRB.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("red", 0.6), cex=.8, col="black")
 points(TAXNWRB.pnts[TAXNWRB.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("yellow", 0.6), cex=.6, col="black")
+dev.off()
+
+## world plot - organic vs histosols:
+hist.sel <- grep("Hist", TAXNWRB.pnts$TAXNWRB.f)
+length(hist.sel)
+png(file = "Fig_global_distribution_Histosols.png", res = 150, width = 2000, height = 900)
+windows(width = 20, height = 9)
+dev.off()
+par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+plot(country, col="darkgrey", ylim=c(-60, 85))
+points(TAXNWRB.pnts[-c(hist.sel, which(TAXNWRB.pnts$SOURCEDB=="Simulated"), which(!no.plt)),], pch=21, bg=alpha("yellow", 0.6), cex=.8, col="grey")
+points(TAXNWRB.pnts[c(hist.sel),], pch=21, bg=alpha("red", 0.6), cex=1.5, col="black")
 dev.off()

@@ -23,13 +23,14 @@ wrapper.predict_2D <- function(i, gm_path1, gm_path2, varn, in.path, out.path, z
       v <- rowSums(cbind(v1*gm1.w, v2*gm2.w))/(gm1.w+gm2.w)
       gc()
       if(varn[x]=="BDRLOG"){ v <- v * 100 }
+      if(varn[x]=="logBDTICM"){ v <- expm1(v) }
+      if(varn[x]=="BDRICM"){ v <- ifelse(v>185, 185, v) }
       if(is.na(z.max[x])){ z.max[x] = Inf }
       m$v <- ifelse(v < z.min[x], z.min[x], ifelse(v > z.max[x], z.max[x], v))
-      #plot(raster(m["v"]), col=SAGA_pal[[1]], zlim=c(0,100))
-      if(varn[x]=="BDRLOG"){
+      if(varn[x] %in% c("BDRLOG","BDRICM")){
         writeGDAL(m["v"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
       } else {
-        writeGDAL(m["v"], out.c, type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")  
+        writeGDAL(m["v"], gsub("logBDTICM", "BDTICM", out.c), type="Int32", mvFlag=-32768, options="COMPRESS=DEFLATE")
       }
       gc()
     }

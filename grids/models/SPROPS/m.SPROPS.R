@@ -29,7 +29,16 @@ load("../../profs/SPROPS/all.pnts.rda")
 ov <- extract.equi7t3(x=SPROPS.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=40) 
 #str(ov)
 ovA <- join(all.pnts, ov, type="left", by="LOC_ID")
+## 752,161 obs
 for(i in des$WORLDGRIDS_CODE){ ovA[,i] <- ifelse(ovA[,i]<= -10000, NA, ovA[,i])  }
+## Check values:
+hist(log1p(ovA$CECSUM))
+hist(ovA$BLD)
+summary(ovA$BLD)
+hist(log1p(ovA$ORCDRC))
+hist(ovA$PHIHOX)
+summary(ovA$PHIKCL)
+
 write.csv(ovA, file="ov.SPROPS_SoilGrids250m.csv")
 unlink("ov.SPROPS_SoilGrids250m.csv.gz")
 gzip("ov.SPROPS_SoilGrids250m.csv")
@@ -38,11 +47,6 @@ save(ovA, file="ovA.rda", compression_level="xz")
 ## 1.3GB
 
 t.vars <- c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD", "CECSUM")
-summary(ovA$CECSUM)
-summary(ovA$BLD)
-summary(ovA$ORCDRC)
-summary(ovA$PHIHOX)
-summary(ovA$PHIKCL)
 
 z.min <-c(0,20,20,0,0,0,0,0,0)
 z.max <-c(800,110,110,100,100,100,100,3500,2200)
@@ -67,15 +71,12 @@ for(j in 1:length(t.vars)){
     dfs <- ovA[,all.vars(formulaString.lst[[j]])]
     dfs.hex <- as.h2o(dfs[complete.cases(dfs),], conn = h2o.getConnection(), destination_frame = "dfs.hex")
     #str(dfs.hex@mutable$col_names)
-    mrfX <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString.lst[[j]])), training_frame=dfs.hex, importance=TRUE) ## TAKES ONLY 2-3 MINS even with 1M points - very fast!!
-    print(mrfX)
-    sink(file="resultsFit.txt", append=TRUE, type="output")
-    cat("\n", file="resultsFit.txt", append=TRUE)
-    print(mrfX@model$variable_importances)
-    cat("\n", file="resultsFit.txt", append=TRUE)
+    mrfX <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString.lst[[j]])), training_frame=dfs.hex, importance=TRUE) 
     mdLX <- h2o.deeplearning(y=1, x=2:length(all.vars(formulaString.lst[[j]])), training_frame=dfs.hex)
+    sink(file="resultsFit.txt", append=TRUE, type="output")
+    print(mrfX)
+    print(mrfX@model$variable_importances)
     print(mdLX)
-    cat("\n", file="resultsFit.txt", append=TRUE)
     sink()
     mrfX_path[[j]] = h2o.saveModel(mrfX, path="./", force=TRUE)
     mdLX_path[[j]] = h2o.saveModel(mdLX, path="./", force=TRUE)
@@ -83,6 +84,8 @@ for(j in 1:length(t.vars)){
 }
 names(mrfX_path) = t.vars
 names(mdLX_path) = t.vars
+write.table(mrfX_path, file="mrfX_path.txt")
+write.table(mdLX_path, file="mdLX_path.txt")
 
 ## Predict per tile:
 pr.dirs <- basename(dirname(list.files(path="/data/covs", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
@@ -91,6 +94,8 @@ str(pr.dirs)
 ## 1km resolution (10-15 times faster):
 system.time( wrapper.predict_n(i="NA_075_066", varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min, z.max=z.max) )
 system.time( wrapper.predict_n(i="NA_063_036", varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min, z.max=z.max) )
+## Bulk density only:
+#system.time( wrapper.predict_n(i="NA_063_036", varn=t.vars[8], gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min[8], z.max=z.max[8]) )
 ## Run all tiles one by one:
 x <- lapply(pr.dirs, function(i){try( wrapper.predict_n(i, varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min, z.max=z.max) )})
 
@@ -99,7 +104,7 @@ system.time( wrapper.predict_n(i="NA_060_036", varn=t.vars, gm_path1=mrfX_path, 
 x <- sapply(pr.dirs, function(i){try( wrapper.predict_n(i, varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max) )})
 
 ## clean-up:
-#for(i in t.vars){
-#  del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+# for(i in c("BLD", "ORCDRC", "PHIHOX")){
+#  del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #  unlink(del.lst)
-#}
+# }

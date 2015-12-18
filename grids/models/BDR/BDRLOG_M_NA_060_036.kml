@@ -12,10 +12,10 @@
           <href>BDRLOG_M_NA_060_036.png</href>
         </Icon>
         <LatLonBox>
-          <north>40.5757744261276</north>
-          <south>37.1723444261276</south>
-          <east>-119.931074901552</east>
-          <west>-124.225954901552</west>
+          <north>40.6138144261276</north>
+          <south>37.1324144261276</south>
+          <east>-119.895954901552</east>
+          <west>-124.266854901552</west>
         </LatLonBox>
       </GroundOverlay>
     </Folder>

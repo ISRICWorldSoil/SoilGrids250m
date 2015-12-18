@@ -48,6 +48,8 @@ sfStop()
 ## only dominant class:
 make_mosaick(i="dominant", varn="TAXNWRB", ext=ext, resample1="near", resample2="near", r="near", equi7t3=equi7t3)
 make_mosaick(i="dominant", varn="TAXOUSDA", ext=ext, resample1="near", resample2="near", r="near", equi7t3=equi7t3)
+## Organic soils:
+make_mosaick(i="dominant", varn="HISTPR", ext=ext, equi7t3=equi7t3, ot="Int16", dstnodata=-32768)
 
 ## test soil property:
 #make_mosaick(i="M_sd1", varn="ORCDRC", ext=ext, tr=0.008333333, in.path="/data/predicted1km", r250m=FALSE)
@@ -60,7 +62,7 @@ out <- sfClusterApplyLB(tbdr, function(x){make_mosaick(i="M", varn=x, ext=ext, t
 sfStop()
 
 ## Resample all soil properties:
-tvars = c("ORCDRC", "PHIHOX", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD", "CECSUM")
+tvars = c("ORCDRC", "PHIHOX", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD", "CECSUM", "OCSTHA")
 props = rep(tvars, 6)
 varn.lst =  paste0("M_sd", sapply(1:6, function(x){rep(x, length(tvars))}))
 sfInit(parallel=TRUE, cpus=40)
