@@ -1,0 +1,2 @@
+"BDRICM" "BDRLOG" "BDTICM"
+"1" "/data/models/BDR/DeepLearning_model_R_1450974199915_10" "/data/models/BDR/DeepLearning_model_R_1450371688480_20" "/data/models/BDR/DeepLearning_model_R_1450974199915_20"

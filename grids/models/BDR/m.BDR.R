@@ -40,16 +40,17 @@ load("ovA.rda")
 ## BDRLOG = occurrence of R horizon 0 / 1
 ## BDTICM = absolute depth to bedrock
 hist(ovA$BDRICM)
-ovA$BDTICM <- ifelse(ovA$BDTICM>50000, NA, ovA$BDTICM)
+ovA$BDTICM <- ifelse(ovA$BDTICM>60000, NA, ovA$BDTICM)
 ## use log to put more emphasis on lower values!
 ovA$logBDTICM <- log1p(ovA$BDTICM)
 hist(log1p(ovA$BDTICM), breaks=40, col="grey", xlab="log-BDTICM", main="Histogram")
-z.min <-c(0,0,0)
-z.max <-c(180,100,11)
 ## FIT MODELS:
-t.vars <- c("BDRICM", "BDRLOG", "logBDTICM")
+t.vars <- c("BDRICM", "BDRLOG", "BDTICM")
+z.min <-c(0,0,0)
+z.max <-c(200,100,Inf)
 pr.lst <- des$WORLDGRIDS_CODE
-formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ LATWGS84 + ', paste(pr.lst, collapse="+")))})
+formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ ', paste(pr.lst, collapse="+")))})
+formulaString.lst[[2]] = as.formula(paste(t.vars[2], ' ~ LATWGS84 + ', paste(pr.lst, collapse="+")))
 
 ## H2O package more suited for large data (http://www.r-bloggers.com/benchmarking-random-forest-implementations/)
 library(h2o)
@@ -59,6 +60,8 @@ localH2O = h2o.init(nthreads = -1)
 cat("Results of 'h2o.randomForest':\n\n", file="resultsFit.txt")
 mrfX_path <- rep(list(NULL), length(t.vars))
 mdLX_path <- rep(list(NULL), length(t.vars))
+mrfX_path[[2]] = "/data/models/BDR/DRF_model_R_1450371688480_15"
+mdLX_path[[2]] = "/data/models/BDR/DeepLearning_model_R_1450371688480_20"
 for(j in 1:length(t.vars)){
   if(is.null(mrfX_path[[j]])){
     cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="resultsFit.txt", append=TRUE)
@@ -81,6 +84,8 @@ for(j in 1:length(t.vars)){
 }
 names(mrfX_path) = t.vars
 names(mdLX_path) = t.vars
+write.table(mrfX_path, file="mrfX_path.txt")
+write.table(mdLX_path, file="mdLX_path.txt")
 
 ## Predict per tile:
 pr.dirs <- basename(dirname(list.files(path="/data/covs1km", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
@@ -101,8 +106,8 @@ x <- lapply(pr.dirs, function(i){try( wrapper.predict_2D(i, varn=t.vars, gm_path
 
 h2o.shutdown(localH2O)
 
-## clean-up:
-for(i in c("BDRICM", "BDRLOG", "BDTICM")){
+# ## clean-up:
+for(i in c("BDRICM", "BDTICM")){ ## c("BDRICM", "BDRLOG", "BDTICM")
   del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
   unlink(del.lst)
 }
