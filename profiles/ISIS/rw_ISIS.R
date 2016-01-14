@@ -19,6 +19,7 @@ cGSPD <- odbcConnect(dsn="ISIS")
 sqlTables(cGSPD)$TABLE_NAME  # 245 tables
 ClassificationResults <- sqlFetch(cGSPD, "ClassificationResults", as.is=TRUE)  ## classifications, we need ValueID=209  WRB Soil Group
 ClassificationSamples <- sqlFetch(cGSPD, "ClassificationSamples", as.is=TRUE)
+MorphologySamples <- sqlFetch(cGSPD, "MorphologySamples", as.is=TRUE)
 SitedescriptionResults <- sqlFetch(cGSPD, "SitedescriptionResults", as.is=TRUE)
 str(SitedescriptionResults)
 SitedescriptionSamples <- sqlFetch(cGSPD, "SitedescriptionSamples", as.is=TRUE)
@@ -54,7 +55,7 @@ depth1.tbl <- subset(SitedescriptionResults, ValueId==249)[,c("SampleId","Value"
 xx7 <- merge(SitedescriptionSamples[,c("Id","SiteId")], depth1.tbl, by.x="Id", by.y="SampleId")
 sites$BDRICM <- as.numeric(merge(sites[,c("SiteId","SOURCEID")], xx7[,c("SiteId","Value")], all.x=TRUE)$Value)
 summary(sites$BDRICM)
-sites$BDRICM <- ifelse(is.na(sites$BDRICM)|sites$BDRICM>250, 250, sites$BDRICM)
+sites$BDRICM <- ifelse(sites$BDRICM>250, 250, sites$BDRICM)
 sites$SOURCEDB = "ISIS"
 
 View(sites)
@@ -92,6 +93,8 @@ save(TAXNWRB.ISIS, file="TAXNWRB.ISIS.rda")
 hs <- data.frame(SampleId=AnalyticalSamples$Id, UHDICM=AnalyticalSamples$Top, LHDICM=AnalyticalSamples$Bottom, SiteId=AnalyticalSamples$SiteId)
 hs$LHDICM <- as.numeric(gsub(">", "", hs$LHDICM))
 hs <- join(hs, sites.f[,c("SiteId","SOURCEDB","SOURCEID","LONWGS84","LATWGS84")], type="left")
+HORIZON <- MorphologySamples[,c("Id", "Symbol")]  
+names(HORIZON) <- c("SampleId", "HORIZON")
 pHHO5.tbl <- subset(AnalyticalResults, ValueId==1)[,c("SampleId","Value")]
 names(pHHO5.tbl)[2] <- "PHIHOX"
 pHKCL.tbl <- subset(AnalyticalResults, ValueId==2)[,c("SampleId","Value")]
@@ -111,7 +114,7 @@ names(CEC.tbl)[2] <- "CECSUM"
 BLD.tbl <- subset(AnalyticalResults, ValueId==34)[,c("SampleId","Value")]
 names(BLD.tbl)[2] <- "BLD"
 Dep.tbl <- 
-horizons <- plyr::join_all(list(hs, pHHO5.tbl, pHKCL.tbl, CRF.tbl, ORC.tbl, SND.tbl, SLT.tbl, CLY.tbl, CEC.tbl, BLD.tbl))
+horizons <- plyr::join_all(list(hs, HORIZON,pHHO5.tbl, pHKCL.tbl, CRF.tbl, ORC.tbl, SND.tbl, SLT.tbl, CLY.tbl, CEC.tbl, BLD.tbl))
 str(horizons)
 ## 6497
 for(j in c("PHIKCL","PHIHOX","ORCDRC","CRFVOL","SNDPPT","SLTPPT","CLYPPT","CECSUM","BLD")){
@@ -134,10 +137,33 @@ plot(SPROPS.ISIS$LONWGS84, SPROPS.ISIS$LATWGS84, pch="+")
 # ------------------------------------------------------------
 # Depth to bedrock
 # ------------------------------------------------------------
+levels(as.factor(horizons$HORIZON))
+sel.r <- which(horizons$HORIZON == "R" | horizons$HORIZON == "2R" 
+               | substr(horizons$HORIZON,1,2) == "3R" | substr(horizons$HORIZON,1,2) == "4R"
+               | substr(horizons$HORIZON,1,2) == "5R")
+horizons$BDRICM <- NA
+horizons$BDRICM[sel.r] <- pmax(horizons$UHDICM[sel.r], horizons$LHDICM[sel.r], na.rm=TRUE)
+bdr.d <- aggregate(horizons$BDRICM, list(horizons$SOURCEID), max, na.rm=TRUE)
+names(bdr.d) <- c("SOURCEID", "BDRICM2")
+bdr.d <- bdr.d[bdr.d$BDRICM2>-1, ]
+horizons$BDRICM <- NULL
+sites.f <- merge(sites.f, bdr.d, all.x = T, all.y=FALSE)
+sites.f$BDRICM <- pmax(sites.f$BDRICM, sites.f$BDRICM2, na.rm=TRUE)
 
-BDR.ISIS <- sites[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","BDRICM")]
+#get observation depth
+horizons$OD <- NA
+horizons$OD <- pmax(horizons$UHDICM, horizons$LHDICM, na.rm=TRUE)
+o.d <- aggregate(horizons$OD, list(horizons$SOURCEID), max, na.rm=TRUE)
+names(o.d) <- c("SOURCEID", "OD")
+o.d <- o.d[o.d$OD>-1, ]
+horizons$o.d <- NULL
+sites.f <- merge(sites.f, o.d, all.x = T, all.y=FALSE)
+
+sites.f$BDRICM[is.na(sites.f$BDRICM) & sites.f$OD>250] <- 250
+BDR.ISIS <- sites.f[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","BDRICM")]
+BDR.ISIS <- BDR.ISIS[!is.na(BDR.ISIS$BDRICM),]
 str(BDR.ISIS)
 summary(BDR.ISIS$BDRICM<250)
-## 131 point
+## 205 points
 save(BDR.ISIS, file="BDR.ISIS.rda")
 

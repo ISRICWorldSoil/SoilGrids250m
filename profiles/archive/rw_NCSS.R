@@ -190,7 +190,10 @@ names(h.s)[which(names(h.s)=="ph_kcl")] <- "PHIKCL"
 names(h.s)[which(names(h.s)=="db_od")] <- "BLD"
 summary(h.s$PHIHO5)
 ## Depth to bedrock [http://www.swac.umn.edu/classes/soil2125/doc/s3chap2.htm]:
-sel.r <- grep("r", h.s$hzn_desgn, ignore.case=TRUE, fixed=FALSE)
+levels(h.s$hzn_desgn)
+sel.r <- which(substr(h.s$hzn_desgn,1,1) == "R" | substr(h.s$hzn_desgn,1,2) == "2R"
+    | substr(h.s$hzn_desgn,1,2) == "3R" | substr(h.s$hzn_desgn,1,2) == "4R" )
+
 h.s$BDRICM <- NA
 h.s$BDRICM[sel.r] <- pmax(h.s$UHDICM[sel.r], h.s$LHDICM[sel.r], na.rm=TRUE)
 bdr.d <- aggregate(h.s$BDRICM, list(h.s$SOURCEID), max, na.rm=TRUE)
