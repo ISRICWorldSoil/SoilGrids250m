@@ -47,6 +47,7 @@ save(ovA, file="ovA.rda", compression_level="xz")
 ## 1.3GB
 
 t.vars <- c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD", "CECSUM")
+lapply(ovA[,t.vars], quantile, probs=c(0.01,0.5,0.99), na.rm=TRUE)
 
 z.min <-c(0,20,20,0,0,0,0,0,0)
 z.max <-c(800,110,110,100,100,100,100,3500,2200)
@@ -98,13 +99,24 @@ system.time( wrapper.predict_n(i="NA_063_036", varn=t.vars, gm_path1=mrfX_path, 
 #system.time( wrapper.predict_n(i="NA_063_036", varn=t.vars[8], gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min[8], z.max=z.max[8]) )
 ## Run all tiles one by one:
 x <- lapply(pr.dirs, function(i){try( wrapper.predict_n(i, varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min, z.max=z.max) )})
+## TAKES 3 DAYS!
 
 ## 250m resolution:
 system.time( wrapper.predict_n(i="NA_060_036", varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max) )
+#system.time( wrapper.predict_n(i="SA_087_057", varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max) )
+## all tiles one by one:
 x <- sapply(pr.dirs, function(i){try( wrapper.predict_n(i, varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max) )})
+## TAKES >2 WEEKS!!
 
 ## clean-up:
 # for(i in c("BLD", "ORCDRC", "PHIHOX")){
 #  del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #  unlink(del.lst)
 # }
+
+# for(i in t.vars){
+#  del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+#  unlink(del.lst)
+# }
+
+h2o.shutdown()

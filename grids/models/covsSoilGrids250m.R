@@ -167,6 +167,7 @@ sfInit(parallel=TRUE, cpus=40)
 sfExport("make.covsRDA")
 sfLibrary(rgdal)
 sfLibrary(sp)
+sfLibrary(R.utils)
 x <- sfLapply(pr.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs") ) })
 sfStop()
 

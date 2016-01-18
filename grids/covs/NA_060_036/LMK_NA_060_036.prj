@@ -1,0 +1,1 @@
+PROJCS["Azimuthal_Equidistant",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Azimuthal_Equidistant"],PARAMETER["latitude_of_origin",52],PARAMETER["central_meridian",-97.5],PARAMETER["false_easting",8264722.17686],PARAMETER["false_northing",4867518.35323],UNIT["Meter",1]]
