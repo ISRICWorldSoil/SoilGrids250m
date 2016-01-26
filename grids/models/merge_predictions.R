@@ -52,6 +52,9 @@ sfExport("gdalbuildvrt", "gdalwarp", "gdaladdo", "tile.names", "gdal_translate",
 out <- sfClusterApplyLB(levs, function(i){make_mosaick(i, varn="TAXOUSDA", ext=ext, tile.names=tile.names, in.path="/data/predicted", tr=0.002083333, r250m=TRUE)})
 sfStop()
 
+## Land mask:
+make_mosaick(i="dominant", varn="LMK", ext=ext, resample1="near", resample2="near", r="near", in.path="/data/mask", tile.names=tile.names, tr=0.002083333, r250m=TRUE, ot="Byte")
+
 ## only dominant class:
 make_mosaick(i="dominant", varn="TAXNWRB", ext=ext, resample1="near", resample2="near", r="near", tile.names=tile.names)
 make_mosaick(i="dominant", varn="TAXOUSDA", ext=ext, resample1="near", resample2="near", r="near", tile.names=tile.names)

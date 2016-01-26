@@ -8,24 +8,20 @@ wrapper.predict_2D <- function(i, gm_path1, gm_path2, varn, in.path, out.path, z
     gz.file <- paste0(in.path, "/", i, "/", i, ".csv.gz")
     if(file.exists(gz.file)){
       message("Predicting from csv.gz file.")
-      m.grid <- h2o.importFile(localH2O, path = gz.file)
+      m.grid <- h2o.importFile(path = gz.file)
     } else {
-      m.grid <- as.h2o(m@data, conn=h2o.getConnection(), destination_frame="m.grid")
+      m.grid <- as.h2o(m@data, destination_frame="m.grid")
     }
     for(x in 1:length(varn)){
       out.c <- paste0(out.path, "/", i, "/", varn[x], "_M_", i, ".tif")
-      gm1 <- h2o.loadModel(gm_path1[[x]], h2o.getConnection())
+      gm1 <- h2o.loadModel(gm_path1[[varn[x]]])
       v1 <- as.data.frame(h2o.predict(gm1, m.grid, na.action=na.pass))$predict
       if(missing(gm1.w)){ gm1.w = gm1@model$training_metrics@metrics$r2 }
-      ## for censored data DeepLearning oversmooths
-      if(!varn[x]=="BDRICM"){
-        gm2 <- h2o.loadModel(gm_path2[[x]], h2o.getConnection())
-        if(missing(gm2.w)){ gm2.w = gm2@model$training_metrics@metrics$r2 }
-        v2 <- as.data.frame(h2o.predict(gm2, m.grid, na.action=na.pass))$predict
-        v <- rowSums(cbind(v1*gm1.w, v2*gm2.w))/(gm1.w+gm2.w)
-      } else {
-        v <- v1
-      }
+      ## for censored data DeepLearning oversmooths?
+      gm2 <- h2o.loadModel(gm_path2[[varn[x]]])
+      if(missing(gm2.w)){ gm2.w = gm2@model$training_metrics@metrics$r2 }
+      v2 <- as.data.frame(h2o.predict(gm2, m.grid, na.action=na.pass))$predict
+      v <- rowSums(cbind(v1*gm1.w, v2*gm2.w))/(gm1.w+gm2.w)
       gc()
       if(varn[x]=="BDRLOG"){ v <- v * 100 }
       #if(varn[x]=="logBDTICM"){ v <- expm1(v) }
@@ -40,6 +36,6 @@ wrapper.predict_2D <- function(i, gm_path1, gm_path2, varn, in.path, out.path, z
       gc()
     }
     gc()
-    x = h2o.removeAll(localH2O)
+    #x = h2o.removeAll(localH2O)
   }
 }

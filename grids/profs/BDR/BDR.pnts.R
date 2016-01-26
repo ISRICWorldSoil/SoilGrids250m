@@ -1,5 +1,5 @@
 ## Prepare callibration points for mapping soil depth (SoilGrids250m)
-## Tom.Hengl@isric.org / Wei.Shangguan
+## Wei.Shangguan and Tom.Hengl@isric.org
 ## 250 indicates =>250
 
 library(plyr)
@@ -39,9 +39,12 @@ load("../TAXOUSDA/barerock.pnt.rda")
 d <- as.data.frame(spTransform(deserts.pnt, CRS("+proj=longlat +datum=WGS84")))
 d <- plyr::rename(d, c("desertPR_sin"="BDRICM", "x"="LONWGS84", "y"="LATWGS84"))
 d$BDRICM <- 250
+## Absolute depth of soil in Sahara (http://piecubed.co.uk/sand-facts/):
+d$BDTICM <- 15000
 b <- as.data.frame(spTransform(barerock.pnt, CRS("+proj=longlat +datum=WGS84")))
 b <- plyr::rename(b, c("barerockPR_sin"="BDRICM", "x"="LONWGS84", "y"="LATWGS84"))
 b$BDRICM <- 5
+b$BDTICM <- 5
 BDR.sim <- rbind(d,b)
 BDR.sim$SOURCEID <- paste("SIM", 1:nrow(BDR.sim), sep="_")
 BDR.sim$SOURCEDB = "Simulated"
@@ -66,13 +69,13 @@ BDR_all.pnts$BDRLOG <- ifelse(BDR_all.pnts$BDRICM<250, 1, 0)
 str(BDR_all.pnts)
 summary(as.factor(BDR_all.pnts$BDRLOG))
 #      0       1 
-#1,319,148  387,161
+# 1320190  387620
 save(BDR_all.pnts, file="BDR_all.pnts.rda")
 BDR_all.pnts <- as.data.frame(BDR_all.pnts)
 BDR_all.pnts[1,]
 BDR_all.pnts[800000,]
 ## BDRLOG = 0
-## BDTICM = 609
+## BDTICM = 3810
 ## BDRICM = 250
 
 BDR.pnts <- BDR_all.pnts[!duplicated(BDR_all.pnts$LOC_ID),c("LOC_ID","SOURCEID","SOURCEDB","LONWGS84","LATWGS84")]
