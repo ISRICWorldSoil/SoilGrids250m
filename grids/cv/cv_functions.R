@@ -28,11 +28,17 @@ cv_factor <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold){
   error <- plyr::rbind.fill(lapply(out, function(x){x[["error"]]}))
   obs <- plyr::rbind.fill(lapply(out, function(x){ as.data.frame(x[["obs.pred"]][[1]])}))
   pred <- plyr::rbind.fill(lapply(out, function(x){ as.data.frame(x[["obs.pred"]][[2]])}))
+  cl <- parallel::makeCluster(getOption("cl.cores", cpus))
+  ranks.pred <- parallel::parApply(cl, pred, MARGIN=1, which.max)
+  ranks.obs <- parallel::parApply(cl, obs, MARGIN=1, which.max)
+  parallel::stopCluster(cl)
+  cf <- mda::confusion(names(obs)[ranks.obs], names(pred)[ranks.pred])
+  c.kappa <- psych::cohen.kappa(cf)
+  purity <- sum(diag(cf))/sum(cf)*100  
   RMSE <- sapply(1:ncol(obs), function(c){mean(performance( prediction(pred[,c], obs[,c]), measure="tpr")@y.values[[1]])})
   AUC <- sapply(1:ncol(obs), function(c){performance( prediction(pred[,c], obs[,c]), measure="auc")@y.values[[1]]})
-  cv.r <- list(obs, pred, error, data.frame(TPR=do.call(rbind, lapply(out, function(x){x[["rmse.l"]]})), AUC=do.call(rbind, lapply(out, function(x){x[["acc.l"]]}))), data.frame(ME=mean.error, TPR=RMSE, AUC=AUC, N=N.tot))
-  names(cv.r) <- c("Observed", "Predicted", "CV_residuals", "Points", "Classes")
-  cv.r[["Points"]][,idcol] <- error[,idcol]
+  cv.r <- list(obs, pred, error, data.frame(ME=mean.error, TPR=RMSE, AUC=AUC, N=N.tot), cf, c.kappa, purity)
+  names(cv.r) <- c("Observed", "Predicted", "CV_residuals", "Classes", "Confusion.matrix", "Cohen.Kappa", "Purity")
   return(cv.r)
 }
 
@@ -65,11 +71,11 @@ predict_parallel <- function(j, sel, varn, formulaString, rmatrix, idcol){
   error[,idcol] <- paste(s.test[,idcol])
   ## Accuracy for Binomial var [http://www.r-bloggers.com/evaluating-logistic-regression-models/]:
   pred.l <- lapply(1:nrow(obs.pred[[2]]), function(i){prediction(obs.pred[[2]][i,], obs.pred[[1]][i,])})
-  ## prediction error per point
-  rmse.l <- do.call(rbind, lapply(1:length(pred.l), function(i){mean(performance( pred.l[[i]], measure="tpr")@y.values[[1]])}))
-  acc.l <- do.call(rbind, lapply(1:length(pred.l), function(i){performance( pred.l[[i]], measure="auc")@y.values[[1]]}))
-  out <- list(n.l, obs.pred, error, error.l, rmse.l, acc.l)
-  names(out) <- c("n.l", "obs.pred", "error", "error.l", "rmse.l", "acc.l")
+  ## prediction error per point:
+  tpr.l <- do.call(rbind, lapply(1:length(pred.l), function(i){mean(performance( pred.l[[i]], measure="tpr")@y.values[[1]])}))
+  auc.l <- do.call(rbind, lapply(1:length(pred.l), function(i){performance( pred.l[[i]], measure="auc")@y.values[[1]]}))
+  out <- list(n.l, obs.pred, error, error.l, tpr.l, auc.l)
+  names(out) <- c("n.l", "obs.pred", "error", "error.l", "tpr.l", "auc.l")
   return(out)
 }
 

@@ -9,6 +9,8 @@ library(GSIF)
 library(plyr)
 library(ROCR)
 library(snowfall)
+library(mda)
+library(psych)
 source("cv_functions.R")
 
 ## load the data
@@ -43,18 +45,6 @@ formulaString = as.formula(paste('soiltype ~ ', paste(cov.lst, collapse="+")))
 test.CLASS <- cv_factor(formulaString, rmatrix=m, nfold=5, idcol="ID")
 str(test.CLASS)
 test.CLASS[["Classes"]]
-hist(test.CLASS[["Points"]]$TPR)
-## plot most problematic points in Google Earth:
-sel <- test.CLASS[["Points"]]$TPR < 0.3
-cv.pnts <- join(test.CLASS[["Points"]][sel,], as.data.frame(eberg["ID"]))
-coordinates(cv.pnts) <- ~X+Y
-proj4string(cv.pnts) <- CRS("+init=epsg:31467")
-plotKML(cv.pnts["TPR"])
-## Example of points very off:
-id3364 = which(test.CLASS[["Points"]]$ID=="id3364")
-test.CLASS[["Observed"]][id3364,]; test.CLASS[["Predicted"]][id3364,]
-id2166 = which(test.CLASS[["Points"]]$ID=="id2166")
-test.CLASS[["Observed"]][id2166,]; test.CLASS[["Predicted"]][id2166,]
 
 ## Soil properties
 ovP <- over(eberg, eberg_grid)
