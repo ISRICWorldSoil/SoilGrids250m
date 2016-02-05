@@ -11,7 +11,10 @@ library(rgdal)
 library(randomForest)
 library(nnet)
 library(dplyr)
+library(ROCR)
 library(snowfall)
+library(mda)
+library(psych)
 library(rgdal)
 library(utils)
 library(plotKML)
@@ -46,7 +49,6 @@ write.csv(ov, file="ov.TAXOUSDA_SoilGrids250m.csv")
 unlink("ov.TAXOUSDA_SoilGrids250m.csv.gz")
 gzip("ov.TAXOUSDA_SoilGrids250m.csv")
 save(ov, file="ov.TAXOUSDA.rda")
-#save(ov, file="../ov.rda")
 summary(ov$TAXOUSDA.f)
 
 ## FIT MODELS:
@@ -75,7 +77,7 @@ saveRDS(m_TAXOUSDA, file="m_TAXOUSDA.rds")
 
 ## subset to complete pairs:
 ovA <- ov[-m_TAXOUSDA$na.action,]
-## 37973 points
+## 57050 points:
 ovA$TAXOUSDA.f <- as.factor(paste(ovA$TAXOUSDA.f))
 
 ## run in parallel?
@@ -144,3 +146,28 @@ sfStop()
 #   kml(r, folder.name=i, file.name=file.name, colour=band1, layer.name="TAXOUSDA", subfolder.name="SoilGrids: USDA Soil suborder", colour_scale=col.legend$COLOR, raster_name=paste0("./TAXOUSDA_", i, ".png"))
 # }
 
+## Cross-validation 10-fold:
+source("../../cv/cv_functions.R")
+## Remove classes with too little observations:
+summary(ovA$TAXOUSDA.f)
+ovA$TAXOUSDA.f2 <- NA
+for(i in levels(ovA$TAXOUSDA.f)){
+  sel <- grep(pattern=i, ovA$TAXOUSDA.f)
+  if(length(sel)>15){
+    ovA$TAXOUSDA.f2[sel] <- i
+  }
+}
+ovA$TAXOUSDA.f2 <- as.factor(ovA$TAXOUSDA.f2)
+
+## TAKES CA 1hr
+formulaString2.USDA = as.formula(paste('TAXOUSDA.f2 ~ LATWGS84 + ', paste(pr.lst, collapse="+")))
+test.USDA <- cv_factor(formulaString2.USDA, ovA[complete.cases(ovA[,all.vars(formulaString2.USDA)]),], nfold=10, idcol="SOURCEID")
+str(test.USDA)
+test.USDA[["Cohen.Kappa"]]
+test.USDA[["Classes"]]
+save(test.USDA, file="test.USDA.rda")
+write.csv(test.USDA[["Classes"]], "cv_TAXOUSDA_classes.csv")
+write.csv(test.USDA[["Observed"]], "cv_TAXOUSDA_observed.csv")
+gzip("cv_TAXOUSDA_observed.csv")
+write.csv(test.USDA[["Predicted"]], "cv_TAXOUSDA_predicted.csv")
+gzip("cv_TAXOUSDA_predicted.csv")

@@ -10,7 +10,10 @@ library(rgdal)
 library(randomForest)
 library(nnet)
 library(dplyr)
+library(ROCR)
 library(snowfall)
+library(mda)
+library(psych)
 library(rgdal)
 library(utils)
 library(R.utils)
@@ -35,13 +38,12 @@ des <- read.csv("../SoilGrids250m_COVS250m.csv")
 #load("../cov.lst.rda") ## list of all Geotifs in 'covs' dir
 load("../../profs/TAXNWRB/TAXNWRB.pnts.rda")
 #str(TAXNWRB.pnts)
-## 43222 points!
 
 ## OVERLAY (ca 20+ mins):
 ov <- extract.equi7t3(x=TAXNWRB.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=40) 
 ## TAKES ca 10 MINS FOR 40k points
 str(ov)
-## 42121 x 162 vars
+## 43222 x 162 vars
 #ov$LATWGS84 <- TAXNWRB.pnts@coords[,2]
 ## remove all NA values:
 for(i in des$WORLDGRIDS_CODE){ ov[,i] <- ifelse(ov[,i]<= -10000, NA, ov[,i])  }
@@ -75,7 +77,7 @@ saveRDS(m_TAXNWRB, file="m_TAXNWRB.rds")
 ## subset to complete pairs:
 ovA <- ov[-m_TAXNWRB$na.action,]
 nrow(ovA)
-## 34491 points
+## 42789 points
 ovA$TAXNWRB.f <- as.factor(paste(ovA$TAXNWRB.f))
 ## 2nd model:
 mrf_TAXNWRB <- randomForest(formulaString.FAO, data=ovA)
@@ -96,7 +98,7 @@ saveRDS(mrf_TAXNWRB, file="mrf_TAXNWRB.rds")
 
 ## run all predictions in parallel
 ## TH: TAKES ABOUT 12-14 HOURS
-## THERE IS A PROBLEM WITH RAM (HENCE <25 CORES) BECAUSE THE prediction location/data objects are LARGE
+## PROBLEMS WITH RAM (HENCE <25 CORES) BECAUSE THE prediction location/data objects are LARGE
 ## 'Error in unserialize(socklist[[n]]) : error reading from connection'
 ## http://gforge.se/2015/02/how-to-go-parallel-in-r-basics-tips/#Memory_load
 ## 'Error in unserialize(socklist[[n]]) : error reading from connection'
@@ -118,3 +120,16 @@ sfStop()
 # del.lst <- list.files(path="/data/predicted", pattern=glob2rx("^TAXNWRB*.tif"), full.names=TRUE, recursive=TRUE)
 # unlink(del.lst)
 
+## Cross-validation 10-fold:
+source("../../cv/cv_functions.R")
+## TAKES CA 1hr
+test.WRB <- cv_factor(formulaString.FAO, ovA, nfold=10, idcol="SOURCEID")
+str(test.WRB)
+test.WRB[["Cohen.Kappa"]]
+test.WRB[["Classes"]]
+save(test.WRB, file="test.WRB.rda")
+write.csv(test.WRB[["Classes"]], "cv_TAXNWRB_classes.csv")
+write.csv(test.WRB[["Observed"]], "cv_TAXNWRB_observed.csv")
+gzip("cv_TAXNWRB_observed.csv")
+write.csv(test.WRB[["Predicted"]], "cv_TAXNWRB_predicted.csv")
+gzip("cv_TAXNWRB_predicted.csv")

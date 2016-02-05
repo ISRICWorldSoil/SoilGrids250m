@@ -1,6 +1,11 @@
 ## function for the ensemble predictions for Cross Validation
 ## by: Tom.Hengl@isric.org and Maria.RuiperezGonzales@wur.nl
 
+
+list.of.packages <- c("nnet", "plyr", "ROCR", "randomForest", "plyr", "parallel", "psych", "mda", "h2o", "dismo", "grDevices", "snowfall", "hexbin", "lattice")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
 ## --------------------------------------------------------------
 ## Classes:
 ## --------------------------------------------------------------
@@ -23,8 +28,11 @@ cv_factor <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold){
   out <- snowfall::sfLapply(1:nfold, function(j){predict_parallel(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol)})
   snowfall::sfStop()
   ## calculate totals per soil type
-  N.tot <- Reduce("+", lapply(out, function(x){x[["n.l"]]}))
-  mean.error <- Reduce("/", list(Reduce("+", lapply(out, function(x){x[["error.l"]]})), N.tot))
+  N.tot <- plyr::rbind.fill(lapply(out, function(x){x[["n.l"]]}))
+  N.tot <- colSums(N.tot)
+  ## mean error per soil type:
+  mean.error <- plyr::rbind.fill(lapply(out, function(x){x[["error.l"]]}))
+  mean.error <- colSums(mean.error)/N.tot
   error <- plyr::rbind.fill(lapply(out, function(x){x[["error"]]}))
   obs <- plyr::rbind.fill(lapply(out, function(x){ as.data.frame(x[["obs.pred"]][[1]])}))
   pred <- plyr::rbind.fill(lapply(out, function(x){ as.data.frame(x[["obs.pred"]][[2]])}))
@@ -38,47 +46,46 @@ cv_factor <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold){
   c.kappa <- psych::cohen.kappa(cf)
   purity <- sum(diag(cf))/sum(cf)*100  
   ## Accuracy for Binomial var [http://www.r-bloggers.com/evaluating-logistic-regression-models/]: 
-  RMSE <- sapply(1:ncol(obs), function(c){mean(performance( prediction(pred[,c], obs[,c]), measure="tpr")@y.values[[1]])})
+  TPR <- sapply(1:ncol(obs), function(c){mean(performance( prediction(pred[,c], obs[,c]), measure="tpr")@y.values[[1]])})
   AUC <- sapply(1:ncol(obs), function(c){performance( prediction(pred[,c], obs[,c]), measure="auc")@y.values[[1]]})
-  cv.r <- list(obs, pred, error, data.frame(ME=mean.error, TPR=RMSE, AUC=AUC, N=N.tot), cf, c.kappa, purity)
+  cv.r <- list(obs, pred, error, data.frame(ME=mean.error, TPR=TPR, AUC=AUC, N=N.tot), cf, c.kappa, purity)
   names(cv.r) <- c("Observed", "Predicted", "CV_residuals", "Classes", "Confusion.matrix", "Cohen.Kappa", "Purity")
   return(cv.r)
 }
 
 ## factor-type vars:
 ensemble.predict <- function(formulaString, s.train, s.test, MaxNWts = 19000, ...){ 
- gm1 <- nnet::multinom(formulaString, s.train, MaxNWts = MaxNWts)
- gm2 <- randomForest(formulaString, data=s.train, ...)
- probs1 <- predict(gm1, s.test, type="probs", na.action = na.pass) ## nnet
- probs2 <- predict(gm2, s.test, type="prob", na.action = na.pass) ## randomForest
- lt <- list(probs1[,gm1$lev], probs2[,gm1$lev])
- probs <- Reduce("+", lt) / length(lt)
- return(probs)
+  ## drop empty levels to avoid errors:
+  s.train[,all.vars(formulaString)[1]] <- droplevels(s.train[,all.vars(formulaString)[1]])
+  gm1 <- nnet::multinom(formulaString, s.train, MaxNWts = MaxNWts)
+  gm2 <- randomForest(formulaString, data=s.train, ...)
+  probs1 <- predict(gm1, s.test, type="probs", na.action = na.pass) ## nnet
+  probs2 <- predict(gm2, s.test, type="prob", na.action = na.pass) ## randomForest
+  lt <- list(probs1[,gm1$lev], probs2[,gm1$lev])
+  probs <- Reduce("+", lt) / length(lt)
+  return(probs)
 }   
 
 ## ensemble prediction in parallel (for parallelization):
 predict_parallel <- function(j, sel, varn, formulaString, rmatrix, idcol){
   s.train <- rmatrix[!sel==j,]
   s.test <- rmatrix[sel==j,]
-  N <- plyr::count(s.test[,varn])
-  n.l <- N$freq
+  n.l <- plyr::count(s.test[,varn])
+  n.l <- data.frame(matrix(n.l$freq, nrow=1, dimnames = list(1, paste(n.l$x))))
   probs <- ensemble.predict(formulaString=formulaString, s.train=s.train, s.test=s.test)
   names <- colnames(probs)
   obs <- data.frame(lapply(names, FUN=function(i){ifelse(s.test[, varn]==i, 1, 0)}))
   names(obs) = names
   obs.pred <- list(as.matrix(obs[,names]), probs[,names])
   error <- Reduce("-", obs.pred)
-  error.l <- signif(colSums(error), 3)
+  error.l <- as.data.frame(t(signif(colSums(error), 3)))
   ## copy ID of the point
   error <- as.data.frame(error)
   error[,idcol] <- paste(s.test[,idcol])
   ## Accuracy for Binomial var [http://www.r-bloggers.com/evaluating-logistic-regression-models/]:
   pred.l <- lapply(1:nrow(obs.pred[[2]]), function(i){prediction(obs.pred[[2]][i,], obs.pred[[1]][i,])})
-  ## prediction error per point:
-  tpr.l <- do.call(rbind, lapply(1:length(pred.l), function(i){mean(performance( pred.l[[i]], measure="tpr")@y.values[[1]])}))
-  auc.l <- do.call(rbind, lapply(1:length(pred.l), function(i){performance( pred.l[[i]], measure="auc")@y.values[[1]]}))
-  out <- list(n.l, obs.pred, error, error.l, tpr.l, auc.l)
-  names(out) <- c("n.l", "obs.pred", "error", "error.l", "tpr.l", "auc.l")
+  out <- list(n.l, obs.pred, error, error.l)
+  names(out) <- c("n.l", "obs.pred", "error", "error.l")
   return(out)
 }
 
@@ -150,7 +157,7 @@ cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold, h2o=FAL
     snowfall::sfStop()
   }
   ## calculate mean accuracy:
-  N <- Reduce("+", lapply(out, function(x){x[["N"]]}))
+  N <- sum(sapply(out, function(x){x[["N"]]}), na.rm=TRUE)
   mean.error <- Reduce("/", list(Reduce("+", lapply(out, function(x){x[["Error"]]})), N))
   mean.error2 <- Reduce("/", list(Reduce("+", lapply(out, function(x){x[["SquaredError"]]})), N))
   mae.error <- Reduce("/", list(Reduce("+", lapply(out, function(x){x[["AbsError"]]})), N))
