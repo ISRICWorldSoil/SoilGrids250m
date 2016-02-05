@@ -1,5 +1,5 @@
 ## function for the ensemble predictions for Cross Validation
-## by: Maria.RuiperezGonzales@wur.nl and Tom.Hengl@isric.org
+## by: Tom.Hengl@isric.org and Maria.RuiperezGonzales@wur.nl
 
 ## --------------------------------------------------------------
 ## Classes:
@@ -28,13 +28,16 @@ cv_factor <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold){
   error <- plyr::rbind.fill(lapply(out, function(x){x[["error"]]}))
   obs <- plyr::rbind.fill(lapply(out, function(x){ as.data.frame(x[["obs.pred"]][[1]])}))
   pred <- plyr::rbind.fill(lapply(out, function(x){ as.data.frame(x[["obs.pred"]][[2]])}))
+  ## Get the most probable class:
   cl <- parallel::makeCluster(getOption("cl.cores", cpus))
   ranks.pred <- parallel::parApply(cl, pred, MARGIN=1, which.max)
   ranks.obs <- parallel::parApply(cl, obs, MARGIN=1, which.max)
   parallel::stopCluster(cl)
+  ## derive confusion matrix:
   cf <- mda::confusion(names(obs)[ranks.obs], names(pred)[ranks.pred])
   c.kappa <- psych::cohen.kappa(cf)
   purity <- sum(diag(cf))/sum(cf)*100  
+  ## Accuracy for Binomial var [http://www.r-bloggers.com/evaluating-logistic-regression-models/]: 
   RMSE <- sapply(1:ncol(obs), function(c){mean(performance( prediction(pred[,c], obs[,c]), measure="tpr")@y.values[[1]])})
   AUC <- sapply(1:ncol(obs), function(c){performance( prediction(pred[,c], obs[,c]), measure="auc")@y.values[[1]]})
   cv.r <- list(obs, pred, error, data.frame(ME=mean.error, TPR=RMSE, AUC=AUC, N=N.tot), cf, c.kappa, purity)
@@ -53,7 +56,7 @@ ensemble.predict <- function(formulaString, s.train, s.test, MaxNWts = 19000, ..
  return(probs)
 }   
 
-## prediction in a loop:
+## ensemble prediction in parallel (for parallelization):
 predict_parallel <- function(j, sel, varn, formulaString, rmatrix, idcol){
   s.train <- rmatrix[!sel==j,]
   s.test <- rmatrix[sel==j,]
@@ -83,12 +86,29 @@ predict_parallel <- function(j, sel, varn, formulaString, rmatrix, idcol){
 ## Properties:
 ## --------------------------------------------------------------
 
-predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol){ 
+## predict soil properties in parallel:
+predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, h2o){ 
   s.train <- rmatrix[!sel==j,]
   s.test <- rmatrix[sel==j,]
   n.l <- dim(s.test)[1]
-  gm <- randomForest(formulaString, data=s.train, na.action=na.omit)
-  pred <- predict(gm, s.test, na.action = na.pass) 
+  if(h2o==TRUE){
+    train.hex <- as.h2o(s.train[complete.cases(s.train),all.vars(formulaString)], destination_frame = "train.hex")
+    #str(dfs.hex@mutable$col_names)
+    gm1 <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString)), training_frame=train.hex) 
+    gm2 <- h2o.deeplearning(y=1, x=2:length(all.vars(formulaString)), training_frame=train.hex)
+    test.hex <- as.h2o(s.test, destination_frame = "test.hex")
+    v1 <- as.data.frame(h2o.predict(gm1, test.hex, na.action=na.pass))$predict
+    gm1.w = gm1@model$training_metrics@metrics$r2
+    v2 <- as.data.frame(h2o.predict(gm2, test.hex, na.action=na.pass))$predict
+    gm2.w = gm2@model$training_metrics@metrics$r2
+    ## mean prediction based on accuracy:
+    pred <- rowSums(cbind(v1*gm1.w, v2*gm2.w))/(gm1.w+gm2.w)
+    gc()
+    h2o.removeAll()
+  } else {
+    gm <- randomForest(formulaString, data=s.train, na.action=na.omit)
+    pred <- predict(gm, s.test, na.action = na.pass) 
+  }
   error <- list(s.test[,varn], as.data.frame(pred))
   error.l <- colSums(Reduce("-", error))      
   error.labs <- colSums(abs(Reduce("-", error)))      
@@ -102,23 +122,34 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol){
   return(out)
 }
 
-cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold){ 
+cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold, h2o=FALSE){ 
   varn = all.vars(formulaString)[1]
   sel <- dismo::kfold(rmatrix, k=nfold)  
   message(paste("Running ", nfold, "-fold cross validation with model re-fitting...", sep=""))
   if(nfold > nrow(rmatrix)){ 
     stop("'nfold' argument must not exceed total number of points") 
   }
-  if(missing(cpus)){ 
-    cpus <- parallel::detectCores(all.tests = FALSE, logical = FALSE) 
+  if(h2o==TRUE){
+    cpus = 1
+  } else {
+    if(missing(cpus)){ 
+      cpus <- parallel::detectCores(all.tests = FALSE, logical = FALSE) 
+    }
   }
-  snowfall::sfInit(parallel=TRUE, cpus=cpus)
-  snowfall::sfExport("predict_parallelP","idcol","formulaString","rmatrix","sel","varn")
-  snowfall::sfLibrary(package="plyr", character.only=TRUE)
-  snowfall::sfLibrary(package="randomForest", character.only=TRUE)
-  out <- snowfall::sfLapply(1:nfold, function(j){predict_parallelP(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol)})
-  snowfall::sfStop()
-  ## calculate totals
+  if(cpus==1){
+    out <- list()
+    for(j in 1:nfold){ 
+      out[[j]] <- predict_parallelP(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, h2o=h2o)
+    }
+  } else {
+    snowfall::sfInit(parallel=TRUE, cpus=cpus)
+    snowfall::sfExport("predict_parallelP","idcol","formulaString","rmatrix","sel","varn","h2o")
+    snowfall::sfLibrary(package="plyr", character.only=TRUE)
+    snowfall::sfLibrary(package="randomForest", character.only=TRUE)
+    out <- snowfall::sfLapply(1:nfold, function(j){predict_parallelP(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, h2o=h2o)})
+    snowfall::sfStop()
+  }
+  ## calculate mean accuracy:
   N <- Reduce("+", lapply(out, function(x){x[["N"]]}))
   mean.error <- Reduce("/", list(Reduce("+", lapply(out, function(x){x[["Error"]]})), N))
   mean.error2 <- Reduce("/", list(Reduce("+", lapply(out, function(x){x[["SquaredError"]]})), N))
