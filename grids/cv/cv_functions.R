@@ -159,3 +159,9 @@ cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold, h2o=FAL
   names(cv.r) <- c("CV_residuals", "Summary")
   return(cv.r)
 }
+
+## correlation plot:
+pfun <- function(x,y, ...){ 
+         panel.hexbinplot(x,y, ...)  
+         panel.abline(0,1,lty=1,lw=2,col="black") 
+}

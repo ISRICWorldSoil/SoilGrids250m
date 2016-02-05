@@ -11,6 +11,10 @@ library(ROCR)
 library(snowfall)
 library(mda)
 library(psych)
+library(hexbin)
+library(gridExtra)
+library(lattice)
+library(grDevices)
 source("cv_functions.R")
 
 ## load the data
@@ -62,5 +66,9 @@ library(h2o)
 h2o.init(nthreads = -1)
 test.prop <- cv_numeric(formulaStringP, rmatrix=mP, nfold=5, idcol="ID", h2o=TRUE)
 str(test.prop)
-plot(test.prop[[1]][,1:2], xlim=c(0,100), ylim=c(0,100), asp=1)
+#plot(test.prop[[1]][,1:2], xlim=c(0,100), ylim=c(0,100), asp=1)
+## correlation plot:
+hexbinplot(test.prop[[1]]$Predicted~test.prop[[1]]$Observed, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main="Sand content", xlab="measured", ylab="predicted (ensemble)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, asp=1, xbins=25, density=40, xlim=c(0,90), ylim=c(0,90), panel=pfun)
 h2o.shutdown()
+
+
