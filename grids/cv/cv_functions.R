@@ -1,7 +1,6 @@
 ## function for the ensemble predictions for Cross Validation
 ## by: Tom.Hengl@isric.org and Maria.RuiperezGonzales@wur.nl
 
-
 list.of.packages <- c("nnet", "plyr", "ROCR", "randomForest", "plyr", "parallel", "psych", "mda", "h2o", "dismo", "grDevices", "snowfall", "hexbin", "lattice")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
@@ -103,7 +102,7 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, h2o){
     #str(dfs.hex@mutable$col_names)
     gm1 <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString)), training_frame=train.hex) 
     gm2 <- h2o.deeplearning(y=1, x=2:length(all.vars(formulaString)), training_frame=train.hex)
-    test.hex <- as.h2o(s.test, destination_frame = "test.hex")
+    test.hex <- as.h2o(s.test[,all.vars(formulaString)], destination_frame = "test.hex")
     v1 <- as.data.frame(h2o.predict(gm1, test.hex, na.action=na.pass))$predict
     gm1.w = gm1@model$training_metrics@metrics$r2
     v2 <- as.data.frame(h2o.predict(gm2, test.hex, na.action=na.pass))$predict
@@ -116,17 +115,11 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, h2o){
     gm <- randomForest(formulaString, data=s.train, na.action=na.omit)
     pred <- predict(gm, s.test, na.action = na.pass) 
   }
-  error <- list(s.test[,varn], as.data.frame(pred))
-  error.l <- colSums(Reduce("-", error))      
-  error.labs <- colSums(abs(Reduce("-", error)))      
-  error.l2 <- colSums((Reduce("-", error))**2)
-  obs.pred <- as.data.frame(error)
+  obs.pred <- as.data.frame(list(s.test[,varn], as.data.frame(pred)))
   names(obs.pred) = c("Observed", "Predicted")
   obs.pred[,idcol] <- s.test[,idcol]
   obs.pred$fold = j
-  out <- list(obs.pred, error.l, error.labs, error.l2, n.l)
-  names(out) = c("Observed", "Error", "AbsError", "SquaredError", "N")
-  return(out)
+  return(obs.pred)
 }
 
 cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold, h2o=FALSE){ 
@@ -157,18 +150,18 @@ cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold, h2o=FAL
     snowfall::sfStop()
   }
   ## calculate mean accuracy:
-  N <- sum(sapply(out, function(x){x[["N"]]}), na.rm=TRUE)
-  mean.error <- Reduce("/", list(Reduce("+", lapply(out, function(x){x[["Error"]]})), N))
-  mean.error2 <- Reduce("/", list(Reduce("+", lapply(out, function(x){x[["SquaredError"]]})), N))
-  mae.error <- Reduce("/", list(Reduce("+", lapply(out, function(x){x[["AbsError"]]})), N))
-  rmse <- sqrt(Reduce("/", list(Reduce("+", lapply(out, function(x){x[["SquaredError"]]})), N)))
-  cv.r <- list(plyr::rbind.fill(lapply(out, function(x){x[["Observed"]]})), data.frame(ME=mean.error, MAE=mae.error, RMSE=rmse))
+  out <- plyr::rbind.fill(out)
+  ME = mean(out$Observed - out$Predicted, na.rm=TRUE) 
+  MAE = mean(abs(out$Observed - out$Predicted), na.rm=TRUE)
+  RMSE = sqrt(mean((out$Observed - out$Predicted)^2, na.rm=TRUE))
+  R.squared = summary(lm(out$Observed ~ out$Predicted))$r.squared
+  cv.r <- list(out, data.frame(ME=ME, MAE=MAE, RMSE=RMSE, R.squared=R.squared))
   names(cv.r) <- c("CV_residuals", "Summary")
   return(cv.r)
 }
 
 ## correlation plot:
-pfun <- function(x,y, ...){ 
-         panel.hexbinplot(x,y, ...)  
-         panel.abline(0,1,lty=1,lw=2,col="black") 
+pfun <- function(x,y, ...){ ## conf.interval=FALSE,breaks
+  panel.hexbinplot(x,y, ...)  
+  panel.abline(0,1,lty=1,lw=2,col="black")
 }

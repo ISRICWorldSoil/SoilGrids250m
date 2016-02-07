@@ -1,0 +1,37 @@
+Results of Cross-validation:
+
+Variable: ORCDRC
+          ME      MAE     RMSE  R.squared
+1 0.09936022 16.48212 50.28542 0.04401179
+
+Variable: PHIHOX
+         ME      MAE  RMSE R.squared
+1 0.3953911 0.883223 1.121 0.3885775
+
+Variable: PHIKCL
+        ME       MAE     RMSE R.squared
+1 0.288817 0.8672157 1.142574 0.1964583
+
+Variable: CRFVOL
+         ME      MAE     RMSE R.squared
+1 0.9361187 9.513564 16.04828 0.0878674
+
+Variable: SNDPPT
+         ME      MAE     RMSE R.squared
+1 0.2672146 20.95927 27.52084 0.1360937
+
+Variable: SLTPPT
+          ME      MAE     RMSE R.squared
+1 -0.3187568 14.52001 18.41411 0.2729009
+
+Variable: CLYPPT
+         ME      MAE    RMSE R.squared
+1 -1.595572 13.57187 18.2169 0.1037398
+
+Variable: BLD
+         ME     MAE     RMSE R.squared
+1 -60.13798 200.317 308.5392  0.170854
+
+Variable: CECSUM
+         ME      MAE     RMSE  R.squared
+1 -4.636446 11.98158 17.46515 0.08736654
