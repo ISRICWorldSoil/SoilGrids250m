@@ -1,5 +1,5 @@
-## function for the ensemble predictions for Cross Validation
-## by: Tom.Hengl@isric.org and Maria.RuiperezGonzales@wur.nl
+## function for the ensemble predictions for Cross Validation (runs in parallel hence can be run on large data sets)
+## by: Tom.Hengl@isric.org, Gerard.Heuvelink@wur.nl and Maria.RuiperezGonzales@wur.nl
 
 list.of.packages <- c("nnet", "plyr", "ROCR", "randomForest", "plyr", "parallel", "psych", "mda", "h2o", "dismo", "grDevices", "snowfall", "hexbin", "lattice")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
