@@ -99,7 +99,6 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, h2o){
   n.l <- dim(s.test)[1]
   if(h2o==TRUE){
     train.hex <- as.h2o(s.train[complete.cases(s.train),all.vars(formulaString)], destination_frame = "train.hex")
-    #str(dfs.hex@mutable$col_names)
     gm1 <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString)), training_frame=train.hex) 
     gm2 <- h2o.deeplearning(y=1, x=2:length(all.vars(formulaString)), training_frame=train.hex)
     test.hex <- as.h2o(s.test[,all.vars(formulaString)], destination_frame = "test.hex")
