@@ -45,7 +45,7 @@ range(ovA$BDTICM, na.rm=TRUE)
 #ovA$BDTICM <- ifelse(ovA$BDTICM>300000, NA, ovA$BDTICM)
 ## use log to put more emphasis on lower values?
 #ovA$logBDTICM <- log1p(ovA$BDTICM)
-hist(log1p(ovA$BDTICM), breaks=40, col="grey", xlab="log-BDTICM", main="Histogram")
+#hist(log1p(ovA$BDTICM), breaks=40, col="grey", xlab="log-BDTICM", main="Histogram")
 ## FIT MODELS:
 t.vars <- c("BDRICM", "BDRLOG", "BDTICM")
 z.min <- c(0,0,0)
@@ -75,7 +75,7 @@ for(j in 1:length(t.vars)){
     sel <- complete.cases(dfs)
     dfs <- dfs[sel,]
     dfs.hex <- as.h2o(dfs, destination_frame = "dfs.hex")
-    mrfX <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString.lst[[j]])), training_frame=dfs.hex)  # , importance=TRUE
+    mrfX <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString.lst[[j]])), training_frame=dfs.hex) 
     mdLX <- h2o.deeplearning(y=1, x=2:length(all.vars(formulaString.lst[[j]])), training_frame=dfs.hex)
     sink(file="resultsFit.txt", append=TRUE, type="output")
     print(mrfX)
@@ -90,6 +90,7 @@ for(j in 1:length(t.vars)){
     mdLX_path[[j]] = h2o.saveModel(mdLX, path="./", force=TRUE)
     ## save fitting success:
     fit.df <- data.frame(LOC_ID=LOC_ID[sel], observed=dfs[,1], predicted=as.data.frame(h2o.predict(mrfX, dfs.hex, na.action=na.pass))$predict)
+    unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
     write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
     gzip(paste0("RF_fit_", t.vars[j], ".csv"))
   }
@@ -98,6 +99,8 @@ names(mrfX_path) = t.vars
 names(mdLX_path) = t.vars
 write.table(mrfX_path, file="mrfX_path.txt")
 write.table(mdLX_path, file="mdLX_path.txt")
+#mrfX_path = as.list(read.table("mrfX_path.txt"))
+#mdLX_path = as.list(read.table("mdLX_path.txt"))
 
 ## Predict per tile:
 #pr.dirs <- basename(dirname(list.files(path="/data/covs1km", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
@@ -111,21 +114,50 @@ wrapper.predict_2D(i="NA_060_036", varn=t.vars, gm_path1=mrfX_path, gm_path2=mdL
 #x <- lapply(pr.dirs, function(i){try( wrapper.predict_2D(i, varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min, z.max=z.max) )})
 x <- lapply(pr.dirs, function(i){try( wrapper.predict_2D(i, varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max) )})
 
-# x <- readGDAL("/data/predicted1km/NA_060_036/BDRLOG_M_NA_060_036.tif")
+# x <- readGDAL("/data/predicted/NA_060_036/BDRLOG_M_NA_060_036.tif")
 # x.ll <- reproject(x)
 # kml(x.ll, file.name="BDRLOG_M_NA_060_036.kml", folder.name="R horizon", colour=band1, z.lim=c(0,100), colour_scale=SAGA_pal[["SG_COLORS_YELLOW_RED"]], raster_name="BDRLOG_M_NA_060_036.png")
-# x <- readGDAL("/data/predicted1km/NA_060_036/BDTICM_M_NA_060_036.tif")
+# x <- readGDAL("/data/predicted/NA_060_036/BDTICM_M_NA_060_036.tif")
 # x.ll <- reproject(x)
 # kml(x.ll, file.name="BDTICM_M_NA_060_036.kml", folder.name="Absolute depth in cm", colour=band1, colour_scale=SAGA_pal[[1]], raster_name="BDTICM_M_NA_060_036.png") ## z.lim=c(0,5000), 
 
-h2o.shutdown(localH2O)
+## Cross-validation 10-fold:
+source("../../cv/cv_functions.R")
+
+cat("Results of Cross-validation:\n\n", file="resultsCV_BDR.txt")
+cv_lst <- rep(list(NULL), length(t.vars))
+for(j in 1:length(t.vars)){
+  if(!file.exists(paste0("CV_", t.vars[j], ".rda"))){
+    cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="resultsCV_BDR.txt", append=TRUE)
+    cat("\n", file="resultsCV_BDR.txt", append=TRUE)
+    cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA, nfold=10, idcol="SOURCEID", h2o=TRUE)
+    sink(file="resultsCV_BDR.txt", append=TRUE, type="output")
+    print(cv_lst[[j]]$Summary)
+    cat("\n", file="resultsCV_BDR.txt", append=TRUE)
+    sink()
+    assign(paste0("CV_", t.vars[j]), cv_lst[[j]])
+    save(list=paste0("CV_", t.vars[j]), file=paste0("CV_", t.vars[j], ".rda"))
+  }
+}
+
+source("../plot_hexbin.R")
+plt.names <- c("Depth to bedrock (up to 250 cm)", "Occurrence of the R horizon", "Absolute depth to bedrock (in cm)")
+names(plt.names) = t.vars
+breaks.lst <- list(c(seq(0,250,length=50)), seq(0,1,length=50), seq(0,50000))
+names(breaks.lst) = t.vars
+
+for(j in 1:length(t.vars)){
+  plot_hexbin(j, breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"))
+}
+
+h2o.shutdown()
 
 ## clean-up:
-for(i in c("BDRICM", "BDRLOG", "BDTICM")){ ## c("BDRICM", "BDRLOG", "BDTICM")
+for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
   del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
   unlink(del.lst)
 }
-for(i in c("BDRICM", "BDRLOG", "BDTICM")){ ## c("BDRICM", "BDRLOG", "BDTICM")
+for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
   unlink(del.lst)
 }
