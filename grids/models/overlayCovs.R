@@ -15,6 +15,7 @@ check.RDA <- function(i){
     } 
   }
 }
+
 sfInit(parallel=TRUE, cpus=40)
 sfLibrary(raster)
 sfLibrary(rgdal)
