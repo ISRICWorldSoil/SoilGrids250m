@@ -169,7 +169,9 @@ cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold, h2o=FAL
 }
 
 ## correlation plot:
-pfun <- function(x,y, ...){ ## conf.interval=FALSE,breaks
+pfun <- function(x,y, ...){
   panel.hexbinplot(x,y, ...)  
   panel.abline(0,1,lty=1,lw=2,col="black")
+  panel.abline(0+RMSE,1,lty=2,lw=2,col="black")
+  panel.abline(0-RMSE,1,lty=2,lw=2,col="black")
 }
