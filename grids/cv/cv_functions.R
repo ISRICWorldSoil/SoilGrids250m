@@ -98,7 +98,8 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, h2o){
   s.test <- rmatrix[sel==j,]
   n.l <- dim(s.test)[1]
   if(h2o==TRUE){
-    train.hex <- as.h2o(s.train[complete.cases(s.train),all.vars(formulaString)], destination_frame = "train.hex")
+    ## select only complete point pairs
+    train.hex <- as.h2o(s.train[complete.cases(s.train[,all.vars(formulaString)]),all.vars(formulaString)], destination_frame = "train.hex")
     gm1 <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString)), training_frame=train.hex) 
     gm2 <- h2o.deeplearning(y=1, x=2:length(all.vars(formulaString)), training_frame=train.hex)
     test.hex <- as.h2o(s.test[,all.vars(formulaString)], destination_frame = "test.hex")
@@ -114,14 +115,14 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, h2o){
     gm <- randomForest(formulaString, data=s.train, na.action=na.omit)
     pred <- predict(gm, s.test, na.action = na.pass) 
   }
-  obs.pred <- as.data.frame(list(s.test[,varn], as.data.frame(pred)))
+  obs.pred <- as.data.frame(list(s.test[,varn], pred))
   names(obs.pred) = c("Observed", "Predicted")
   obs.pred[,idcol] <- s.test[,idcol]
   obs.pred$fold = j
   return(obs.pred)
 }
 
-cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold, h2o=FALSE){ 
+cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold, h2o=FALSE, Log=FALSE){ 
   varn = all.vars(formulaString)[1]
   sel <- dismo::kfold(rmatrix, k=nfold)  
   message(paste("Running ", nfold, "-fold cross validation with model re-fitting...", sep=""))
@@ -153,8 +154,16 @@ cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold, h2o=FAL
   ME = mean(out$Observed - out$Predicted, na.rm=TRUE) 
   MAE = mean(abs(out$Observed - out$Predicted), na.rm=TRUE)
   RMSE = sqrt(mean((out$Observed - out$Predicted)^2, na.rm=TRUE))
-  R.squared = summary(lm(out$Observed ~ out$Predicted))$r.squared
-  cv.r <- list(out, data.frame(ME=ME, MAE=MAE, RMSE=RMSE, R.squared=R.squared))
+  ## https://en.wikipedia.org/wiki/Coefficient_of_determination
+  R.squared = 1-sum((out$Observed - out$Predicted)^2, na.rm=TRUE)/(var(out$Observed, na.rm=TRUE)*sum(!is.na(out$Observed)))
+  if(Log==TRUE){
+    ## If the variable is log-normal then logR.squared is probably more correct
+    logRMSE = sqrt(mean((log1p(out$Observed) - log1p(out$Predicted))^2, na.rm=TRUE))
+    logR.squared = 1-sum((log1p(out$Observed) - log1p(out$Predicted))^2, na.rm=TRUE)/(var(log1p(out$Observed), na.rm=TRUE)*sum(!is.na(out$Observed)))
+    cv.r <- list(out, data.frame(ME=ME, MAE=MAE, RMSE=RMSE, R.squared=R.squared, logRMSE=logRMSE, logR.squared=logR.squared)) 
+  } else {
+    cv.r <- list(out, data.frame(ME=ME, MAE=MAE, RMSE=RMSE, R.squared=R.squared))
+  }
   names(cv.r) <- c("CV_residuals", "Summary")
   return(cv.r)
 }

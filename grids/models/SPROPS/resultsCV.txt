@@ -1,37 +1,37 @@
 Results of Cross-validation:
 
 Variable: ORCDRC
-          ME      MAE     RMSE  R.squared
-1 0.09936022 16.48212 50.28542 0.04401179
+         ME      MAE    RMSE R.squared   logRMSE logR.squared
+1 -3.495653 13.88718 38.8788 0.3921547 0.9949029    0.2292253
 
 Variable: PHIHOX
-         ME      MAE  RMSE R.squared
-1 0.3953911 0.883223 1.121 0.3885775
+           ME       MAE      RMSE R.squared    logRMSE logR.squared
+1 -0.02757983 0.4835979 0.6577122 0.7574556 0.09229535    0.7442046
 
 Variable: PHIKCL
-        ME       MAE     RMSE R.squared
-1 0.288817 0.8672157 1.142574 0.1964583
+           ME       MAE      RMSE R.squared   logRMSE logR.squared
+1 -0.02582631 0.5018223 0.6791742 0.6964669 0.1110671    0.6829452
 
 Variable: CRFVOL
-         ME      MAE     RMSE R.squared
-1 0.9361187 9.513564 16.04828 0.0878674
+          ME      MAE     RMSE R.squared logRMSE logR.squared
+1 -0.2006448 6.495557 11.80004 0.4863765 1.18531    0.2866062
 
 Variable: SNDPPT
-         ME      MAE     RMSE R.squared
-1 0.2672146 20.95927 27.52084 0.1360937
+          ME      MAE     RMSE R.squared   logRMSE logR.squared
+1 -0.7028391 11.86078 16.32037 0.6672355 0.6656299    0.5690207
 
 Variable: SLTPPT
-          ME      MAE     RMSE R.squared
-1 -0.3187568 14.52001 18.41411 0.2729009
+          ME      MAE    RMSE R.squared   logRMSE logR.squared
+1 -0.4416294 8.456269 11.5286 0.7140314 0.5436067    0.6040878
 
 Variable: CLYPPT
-         ME      MAE    RMSE R.squared
-1 -1.595572 13.57187 18.2169 0.1037398
+          ME     MAE     RMSE R.squared logRMSE logR.squared
+1 -0.2634898 8.47214 11.65814 0.5914677 0.62416    0.5081414
 
 Variable: BLD
-         ME     MAE     RMSE R.squared
-1 -60.13798 200.317 308.5392  0.170854
+          ME      MAE     RMSE R.squared   logRMSE logR.squared
+1 -0.1252793 117.6479 171.7057 0.6971156 0.1855466    0.6134049
 
 Variable: CECSUM
-         ME      MAE     RMSE  R.squared
-1 -4.636446 11.98158 17.46515 0.08736654
+         ME      MAE     RMSE R.squared   logRMSE logR.squared
+1 -1.936158 8.437266 14.57604 0.2543747 0.7042113    0.2530378

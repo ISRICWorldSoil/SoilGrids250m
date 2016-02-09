@@ -122,21 +122,21 @@ x <- sapply(pr.dirs, function(i){try( wrapper.predict_n(i, varn=t.vars, gm_path1
 #  del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #  unlink(del.lst)
 # }
-
 h2o.shutdown()
 
-## Cross-validation 10-fold:
-source("../../cv/cv_functions.R")
+
+## Cross-validation 10-fold (TH: this does not account for high spatial clustering!):
 library(h2o)
 h2o.init(nthreads = -1)
 
+source("../../cv/cv_functions.R")
 cat("Results of Cross-validation:\n\n", file="resultsCV.txt")
 cv_lst <- rep(list(NULL), length(t.vars))
 for(j in 1:length(t.vars)){
   if(!file.exists(paste0("CV_", t.vars[j], ".rda"))){
     cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="resultsCV.txt", append=TRUE)
     cat("\n", file="resultsCV.txt", append=TRUE)
-    cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA, nfold=10, idcol="SOURCEID", h2o=TRUE)
+    cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA, nfold=10, idcol="SOURCEID", h2o=TRUE, Log=TRUE)
     sink(file="resultsCV.txt", append=TRUE, type="output")
     print(cv_lst[[j]]$Summary)
     cat("\n", file="resultsCV.txt", append=TRUE)
@@ -148,33 +148,14 @@ for(j in 1:length(t.vars)){
 h2o.shutdown()
 
 ## correlation plots:
+source("../plot_hexbin.R")
 plt.names <- c("Soil organic carbon (g/kg)", "Soil pH x 10 in H2O ", "Soil pH x 10 in KCl", "Coarse fragments volumetric in percent", "Soil texture fraction sand in percent", "Soil texture fraction silt in percent", "Soil texture fraction clay in percent", "Bulk density (fine earth) in kg / cubic-meter", "Cation exchange capacity in cmolc/kg") 
 names(plt.names) = t.vars
 breaks.lst <- list(c(0,5,10,seq(20,1000,length=47)), seq(3.5,9.5,length=50), seq(2.5,9.5,length=50), c(0,1,2,5,seq(8,100,length=46)), seq(0,100,length=50), seq(0,100,length=50), seq(0,100,length=50), seq(150,2500,length=50), c(0,1,2,5,seq(8,800,length=26)))
 names(breaks.lst) = t.vars
-
-plot_CV <- function(j, breaks, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1)){
-  out.file = paste0("plot_CV_", t.vars[j], ".png")
-  if(!file.exists(out.file)){
-    load(paste0("CV_", t.vars[j], ".rda"))
-    assign("m", get(paste0("CV_", t.vars[j]))[[1]])
-    png(file = out.file, res = 150, width=850, height=850, type="cairo")
-    if(any(t.vars[j] %in% c("ORCDRC","CECSUM","CRFVOL"))){
-      d.meas <- min(m$Observed, na.rm=TRUE)
-      out <- m$Predicted+ifelse(d.meas==0, 1, d.meas)
-      meas <- m$Observed+ifelse(d.meas==0, 1, d.meas)
-      lim <- range(breaks)+ifelse(d.meas==0, 1, d.meas)
-      plt <- hexbinplot(out~meas, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main=plt.names[t.vars[j]], xlab="measured", ylab="predicted (SoilGrids250m)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, scales=list(x = list(log = 2, equispaced.log = FALSE), y = list(log = 2, equispaced.log = FALSE)), asp=1, xbins=25, density=40, xlim=lim, ylim=lim, panel=pfun, colorcut=colorcut)
-    } else {
-      lim <- range(breaks)
-      plt <- hexbinplot(m$Predicted~m$Observed, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main=plt.names[t.vars[j]], xlab="measured", ylab="predicted (SoilGrids250m)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, xlim=lim, ylim=lim, asp=1, xbins=25, density=40, panel=pfun, colorcut=colorcut)
-    }
-    print(plt)
-    dev.off()
-  }
-}
+plt.log <- c(TRUE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE)
+names(plt.log) = t.vars
 
 for(j in 1:length(t.vars)){
-  plot_CV(j, breaks.lst[[t.vars[j]]])
+  plot_hexbin(j, breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"), log.plot=plt.log[t.vars[j]])
 }
-

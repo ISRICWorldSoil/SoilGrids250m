@@ -14,6 +14,7 @@ library(GSIF)
 #library(randomForestSRC)
 
 plotKML.env(convert="convert", show.env=FALSE)
+options(bitmapType='cairo')
 gdalwarp = "/usr/local/bin/gdalwarp"
 gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
 system("/usr/local/bin/gdal-config --version")
@@ -114,12 +115,12 @@ wrapper.predict_2D(i="NA_060_036", varn=t.vars, gm_path1=mrfX_path, gm_path2=mdL
 #x <- lapply(pr.dirs, function(i){try( wrapper.predict_2D(i, varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min, z.max=z.max) )})
 x <- lapply(pr.dirs, function(i){try( wrapper.predict_2D(i, varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max) )})
 
-# x <- readGDAL("/data/predicted/NA_060_036/BDRLOG_M_NA_060_036.tif")
-# x.ll <- reproject(x)
-# kml(x.ll, file.name="BDRLOG_M_NA_060_036.kml", folder.name="R horizon", colour=band1, z.lim=c(0,100), colour_scale=SAGA_pal[["SG_COLORS_YELLOW_RED"]], raster_name="BDRLOG_M_NA_060_036.png")
-# x <- readGDAL("/data/predicted/NA_060_036/BDTICM_M_NA_060_036.tif")
-# x.ll <- reproject(x)
-# kml(x.ll, file.name="BDTICM_M_NA_060_036.kml", folder.name="Absolute depth in cm", colour=band1, colour_scale=SAGA_pal[[1]], raster_name="BDTICM_M_NA_060_036.png") ## z.lim=c(0,5000), 
+x <- readGDAL("/data/predicted/NA_060_036/BDRLOG_M_NA_060_036.tif")
+x.ll <- reproject(x)
+kml(x.ll, file.name="BDRLOG_M_NA_060_036.kml", folder.name="R horizon", colour=band1, z.lim=c(0,100), colour_scale=SAGA_pal[["SG_COLORS_YELLOW_RED"]], raster_name="BDRLOG_M_NA_060_036.png")
+x <- readGDAL("/data/predicted/NA_060_036/BDTICM_M_NA_060_036.tif")
+x.ll <- reproject(x)
+kml(x.ll, file.name="BDTICM_M_NA_060_036.kml", folder.name="Absolute depth in cm", colour=band1, colour_scale=SAGA_pal[[1]], raster_name="BDTICM_M_NA_060_036.png", z.lim=c(0,5000))
 
 ## Cross-validation 10-fold:
 source("../../cv/cv_functions.R")
@@ -130,7 +131,7 @@ for(j in 1:length(t.vars)){
   if(!file.exists(paste0("CV_", t.vars[j], ".rda"))){
     cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="resultsCV_BDR.txt", append=TRUE)
     cat("\n", file="resultsCV_BDR.txt", append=TRUE)
-    cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA, nfold=10, idcol="SOURCEID", h2o=TRUE)
+    cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA, nfold=10, idcol="SOURCEID", h2o=TRUE, Log=TRUE)
     sink(file="resultsCV_BDR.txt", append=TRUE, type="output")
     print(cv_lst[[j]]$Summary)
     cat("\n", file="resultsCV_BDR.txt", append=TRUE)
@@ -145,9 +146,11 @@ plt.names <- c("Depth to bedrock (up to 250 cm)", "Occurrence of the R horizon",
 names(plt.names) = t.vars
 breaks.lst <- list(c(seq(0,250,length=50)), seq(0,1,length=50), seq(0,50000))
 names(breaks.lst) = t.vars
+plt.log <- c(FALSE, FALSE, TRUE)
+names(plt.log) = t.vars
 
 for(j in 1:length(t.vars)){
-  plot_hexbin(j, breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"))
+  plot_hexbin(j, breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"), log.plot=plt.log[t.vars[j]])
 }
 
 h2o.shutdown()

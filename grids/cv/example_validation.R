@@ -71,4 +71,29 @@ str(test.prop)
 hexbinplot(test.prop[[1]]$Predicted~test.prop[[1]]$Observed, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main="Sand content", xlab="measured", ylab="predicted (ensemble)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, asp=1, xbins=25, density=40, xlim=c(0,90), ylim=c(0,90), panel=pfun)
 h2o.shutdown()
 
-
+## Edgeroi data set:
+data(edgeroi)
+edgeroi.spc <- join(edgeroi$sites, edgeroi$horizons, type='inner')
+coordinates(edgeroi.spc) <- ~ LONGDA94 + LATGDA94
+proj4string(edgeroi.spc) <- CRS("+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs")
+edgeroi.spc <- spTransform(edgeroi.spc, CRS("+init=epsg:28355"))
+## load the 250 m grids:
+con <- url("http://gsif.isric.org/lib/exe/fetch.php?media=edgeroi.grids.rda")
+load(con)
+gridded(edgeroi.grids) <- ~x+y
+proj4string(edgeroi.grids) <- CRS("+init=epsg:28355")
+## overlay points and grids:
+ov2 <- over(edgeroi.spc, edgeroi.grids)
+m2 <- cbind(ov2, edgeroi.spc@data)
+m2$DEPTH <- m2$UHDICM + (m2$LHDICM - m2$UHDICM)/2
+formulaStringP2 = ORCDRC ~ DEMSRT5+TWISRT5+PMTGEO5+EV1MOD5+EV2MOD5+EV3MOD5+DEPTH
+mP2 <- m2[complete.cases(m2[,all.vars(formulaStringP2)]),]
+test.ORC <- cv_numeric(formulaStringP2, rmatrix=mP2, nfold=5, idcol="SOURCEID", h2o=TRUE, Log=TRUE)
+str(test.ORC)
+## Plot CV results:
+d.meas <- min(test.ORC[[1]]$Observed, na.rm=TRUE)
+pred <- test.ORC[[1]]$Predicted+ifelse(d.meas==0, 1, d.meas)
+meas <- test.ORC[[1]]$Observed+ifelse(d.meas==0, 1, d.meas)
+lim <- range(test.ORC[[1]]$Observed, na.rm=TRUE)
+hexbinplot(pred~pred, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main="Organic carbon in g/kg", xlab="measured", ylab="predicted (ensemble)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, scales=list(x = list(log = 2, equispaced.log = FALSE), y = list(log = 2, equispaced.log = FALSE)), asp=1, xbins=25, density=40, xlim=lim, ylim=lim, panel=pfun)
+## relatively high accuracy
