@@ -16,6 +16,7 @@ library(gridExtra)
 library(lattice)
 library(grDevices)
 library(h2o)
+library(scales)
 source("cv_functions.R")
 
 ## load the data
@@ -89,19 +90,24 @@ h2o.init(nthreads = -1)
 test.ORC <- cv_numeric(formulaStringP2, rmatrix=mP2, nfold=5, idcol="SOURCEID", h2o=TRUE, Log=TRUE)
 str(test.ORC)
 ## Plot CV results (use log-scale):
+plt0 <- xyplot(test.ORC[[1]]$Predicted~test.ORC[[1]]$Observed, asp=1, par.settings=list(plot.symbol = list(col=alpha("black", 0.6), fill=alpha("red", 0.6), pch=21, cex=0.9)), scales=list(x=list(log=TRUE, equispaced.log=FALSE), y=list(log=TRUE, equispaced.log=FALSE)), xlab="measured", ylab="predicted (machine learning)")
+plt0 <- plt0 + layer(panel.abline(0,1,lty=1,lw=2,col="black"))
+plt0
+
+## Hexbin plot
 d.meas <- min(test.ORC[[1]]$Observed, na.rm=TRUE)
 pred <- test.ORC[[1]]$Predicted+ifelse(d.meas==0, 1, d.meas)
 meas <- test.ORC[[1]]$Observed+ifelse(d.meas==0, 1, d.meas)
 lim <- range(test.ORC[[1]]$Observed, na.rm=TRUE)
-## plot lines on top:
+## Correlation plot:
 pfun <- function(x,y, ...){
   panel.hexbinplot(x,y, ...)  
   panel.abline(0,1,lty=1,lw=2,col="black")
-  panel.abline(0+test.ORC$Summary$logRMSE,1,lty=2,lw=2,col="black")
-  panel.abline(0-test.ORC$Summary$logRMSE,1,lty=2,lw=2,col="black")
+  ## To plot RMSE around the 1:1 line:
+  #panel.abline(0+test.ORC$Summary$logRMSE,1,lty=2,lw=2,col="black")
+  #panel.abline(0-test.ORC$Summary$logRMSE,1,lty=2,lw=2,col="black")
 }
-
-hexbinplot(pred~meas, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main="Organi carbon in g/kg", xlab="measured", ylab="predicted (ensemble)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, scales=list(x = list(log = 2, equispaced.log = FALSE), y = list(log = 2, equispaced.log = FALSE)), asp=1, xbins=25, density=40, xlim=lim, ylim=lim, panel=pfun)
-## predictions with confidence limits
+plt <- hexbinplot(pred~meas, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main="Organic carbon in g/kg (accuracy assessment)", xlab="measured", ylab="predicted (ensemble)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, scales=list(x = list(log = 2, equispaced.log = FALSE), y = list(log = 2, equispaced.log = FALSE)), asp=1, xbins=25, density=40, xlim=lim, ylim=lim, panel=pfun)
+plt
 
 h2o.shutdown()
