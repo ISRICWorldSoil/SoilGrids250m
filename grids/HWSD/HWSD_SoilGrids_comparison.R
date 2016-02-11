@@ -23,6 +23,7 @@ w.shp <- c("geoserver_bulk_density_fine_earth", "geoserver_organic_carbon", "geo
 #for(j in c(w.shp)){
 #  system(paste0(ogr2ogr, ' -f \"ESRI Shapefile\" ', j, '.shp WFS:\"http://wfs.isric.org/geoserver/wosis/wfs" ', j, ' -clipsrc -180 -90 180 90'))
 #}
+## uncompress:
 #for(j in w.shp){  system(paste0('7za e ', j, '.zip -y')) }
 pnt.lst <- lapply(w.shp, function(x){readOGR(paste0(x,".shp"), x)})
 names(pnt.lst) = var.lst
@@ -37,6 +38,7 @@ wa_depths <- function(sp, depths=c(0,30,100)){
   x$cl <- cut(x$depth, breaks=depths)
   x <- x[!is.na(x$cl)&x$thickness>0&!is.na(x$thickness),]
   #summary(x$cl)
+  ## TH: we could also use weigthed average, but a simple average is probably also fine
   ## weigthed mean for top/sub soil:
   #df <- ddply(x, .(cl,profile_id), summarize, aggregated = sum(value*thickness)/sum(thickness))
   df <- ddply(x, .(cl,profile_id), summarize, aggregated = mean(value))
@@ -56,7 +58,7 @@ summary(out.WoSIS[["OC"]]$aggregated) ## permilles
 save(out.WoSIS, file="out.WoSIS.rda")
 levels(out.WoSIS_SG[[1]]$cl)
 
-## WoSIS average values for GlobalSoilMap depths:
+## WoSIS average values for GlobalSoilMap depths (5):
 sfInit(parallel=TRUE, cpus=3)
 sfExport("pnt.lst", "wa_depths")
 sfLibrary(dplyr)
@@ -67,7 +69,7 @@ sfStop()
 names(out.WoSIS_SG) <- var.lst
 save(out.WoSIS_SG, file="out.WoSIS_SG.rda")
 
-## overlay WoSIS HWSD:
+## overlay WoSIS and HWSD:
 hwsd.lst <- sapply(c("s","t"), function(x){paste0(x, "_", var.lst)})
 #for(j in hwsd.lst){  try( system(paste0('7za e ', j, '.7z -y')) ) }
 ts.lst <- unlist(lapply(c("s","t"), function(x){list.files(pattern=glob2rx(paste0(x, "_*.tif$")), full.names=TRUE, recursive=TRUE)}))
@@ -108,7 +110,7 @@ names(ovHWSD.lst) <- var.lst
 hist(ovHWSD.lst[["BD"]]$BD)
 save(ovHWSD.lst, file="ovHWSD.lst.rda")
 
-## overlay with SoilGrids250m (first 5 depths)
+## overlay WoSIS with SoilGrids250m (we focus on first 5 depths)
 extract_SG <- function(j, sp, depths=5, classes=c("(0,5]",  "(5,15]", "(15,30]", "(30,60]", "(60,100]")){
   sp.xy <- sp[!duplicated(sp$profile_id),c("profile_id","coords.x1","coords.x2")]
   coordinates(sp.xy) <- ~ coords.x1 + coords.x2
@@ -141,9 +143,6 @@ names(ovSG.lst) <- var.lst
 save(ovSG.lst, file="ovSG.lst.rda")
 #plot(ovSG.lst[["ph"]][,c("WoSIS_ph","ph")], asp=1, xlim=c(3,9.5))
 #plot(ovHWSD.lst[["ph"]][,c("WoSIS_ph","ph")], asp=1, xlim=c(3,9.5))
-
-## WISE 30arcmin:
-#system('7za e wise30sec_fin1.7z -y')
 
 ## plot comparisons next to each other:
 sel.plt <- list(
@@ -183,5 +182,7 @@ for(i in 1:length(sel.plt)){
 do.call(grid.arrange, c(plotList[c(1,4)], ncol=2))
 do.call(grid.arrange, c(plotList[c(2,5)], ncol=2))
 do.call(grid.arrange, c(plotList[c(3,6)], ncol=2))
+## Conclusions: HWSD estimates of BD and SOC critically low when compared to WoSIS points
 
-## Comparison with ISRIC WISE
+## WISE 30arcmin:
+#system('7za e wise30sec_fin1.7z -y')
