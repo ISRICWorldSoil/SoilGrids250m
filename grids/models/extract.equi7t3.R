@@ -1,7 +1,8 @@
 ## Overlay and extract values of covs on multiple tiles (EQUI7)
 ## Tom.Hengl@isric.org
 
-extract.equi7t3 <- function(x, y, path=".", equi7t3, ID="SOURCEID", cpus, silent=TRUE, fromTif=FALSE, cov.lst=NULL){
+extract.equi7t3 <- function(x, y, path=".", equi7t3, ID="SOURCEID", cpus, silent=TRUE, fromTif=FALSE, cov.lst=NULL, strip.names=1){
+  if(is.null(cov.lst)){ cov.lst <- as.vector(unlist(lapply(y, function(i){list.files(path=path, pattern=glob2rx(paste0(i, "*.tif$")), recursive=TRUE, full.names=TRUE)}))) }
   x$row.index <- 1:nrow(x)
   ## get continents: 
   ov.c <- lapply(equi7t3, function(t){over(spTransform(x, CRS(proj4string(t))), t)})
@@ -32,10 +33,10 @@ extract.equi7t3 <- function(x, y, path=".", equi7t3, ID="SOURCEID", cpus, silent
   }
   ## extract using snowfall
   snowfall::sfInit(parallel=TRUE, cpus=cpus)
-  snowfall::sfExport("x", "path", "ov.c", "cov.c", "cov.lst", ".extract.tile", "equi7t3", "fromTif")
+  snowfall::sfExport("x", "path", "ov.c", "cov.c", "cov.lst", ".extract.tile", "equi7t3", "fromTif", "strip.names")
   snowfall::sfLibrary(package="raster", character.only=TRUE)
   snowfall::sfLibrary(package="rgdal", character.only=TRUE)
-  ov.lst <- snowfall::sfClusterApplyLB(1:length(cov.c), function(i){try(.extract.tile(i, x=x, path=path, ov.c=ov.c, cov.c=cov.c, equi7t3=equi7t3, fromTif=fromTif))}) 
+  ov.lst <- snowfall::sfClusterApplyLB(1:length(cov.c), function(i){try(.extract.tile(i, x=x, path=path, ov.c=ov.c, cov.c=cov.c, equi7t3=equi7t3, fromTif=fromTif, strip.names=strip.names))}) 
   snowfall::sfStop()
   ## bind:
   out <- dplyr::rbind_all(ov.lst)
@@ -43,7 +44,7 @@ extract.equi7t3 <- function(x, y, path=".", equi7t3, ID="SOURCEID", cpus, silent
   return(out)
 }
 
-.extract.tile <- function(i, x, path, ov.c, cov.c, equi7t3, fromTif=FALSE){
+.extract.tile <- function(i, x, path, ov.c, cov.c, equi7t3, fromTif=FALSE, strip.names){
   row.index <- ov.c$row.index[ov.c$TILENAME==names(cov.c)[i]]
   pnts <- x[row.index,]
   prj <- CRS(proj4string(equi7t3[[strsplit(names(cov.c)[i], "_")[[1]][1]]]))
@@ -51,8 +52,12 @@ extract.equi7t3 <- function(x, y, path=".", equi7t3, ID="SOURCEID", cpus, silent
   if(fromTif==TRUE){
     s <- stack(cov.lst[cov.c[[i]]])
     out <- data.frame(extract(s, pnts))
-    ## shorten the name to allow for binding
-    names(out) <- sapply(names(out), function(i){strsplit(i, "_")[[1]][1]})
+    ## shorten name to allow for binding:
+    if(strip.names==1){
+      names(out) <- sapply(names(out), function(i){strsplit(i, "_")[[1]][strip.names]})
+    } else {
+      names(out) <- sapply(names(out), function(i){paste(strsplit(i, "_")[[1]][1:strip.names], collapse="_")})
+    }
   } else {
     m <- readRDS(paste0(path, "/", names(cov.c)[i], "/", names(cov.c)[i], ".rds"))
     out <- sp::over(y=m, x=pnts)

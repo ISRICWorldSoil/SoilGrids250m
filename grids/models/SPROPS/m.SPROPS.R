@@ -149,7 +149,7 @@ h2o.shutdown()
 
 ## correlation plots:
 source("../plot_hexbin.R")
-plt.names <- c("Soil organic carbon (g/kg)", "Soil pH x 10 in H2O ", "Soil pH x 10 in KCl", "Coarse fragments volumetric in percent", "Soil texture fraction sand in percent", "Soil texture fraction silt in percent", "Soil texture fraction clay in percent", "Bulk density (fine earth) in kg / cubic-meter", "Cation exchange capacity in cmolc/kg") 
+plt.names <- c("SOC in g/kg", "Soil pH x 10 in H2O", "Soil pH x 10 in KCl", "Coarse fragments in %vol", "Sand fraction in %", "Silt fraction in %", "Clay fraction in %", "Bulk density (FE) in kg / m3", "CEC soil in cmolc/kg") 
 names(plt.names) = t.vars
 breaks.lst <- list(c(0,5,10,seq(20,1000,length=47)), seq(2.5,9.5,length=50), seq(2.5,9.5,length=50), c(0,1,2,5,seq(8,100,length=46)), seq(0,100,length=50), seq(0,100,length=50), seq(0,100,length=50), seq(450,2200,length=50), c(0,1,2,5,seq(8,450,length=26)))
 names(breaks.lst) = t.vars
@@ -159,3 +159,13 @@ names(plt.log) = t.vars
 for(j in 1:length(t.vars)){
   plot_hexbin(j, breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"), log.plot=plt.log[t.vars[j]])
 }
+
+## export to shapefile:
+sel <- CV_CECSUM[[1]]$Predicted>40 & CV_CECSUM[[1]]$Predicted<90 & CV_CECSUM[[1]]$Observed>2 & CV_CECSUM[[1]]$Observed<40 
+summary(sel)
+CEC.res <- join(CV_CECSUM[[1]][sel,], all.pnts, type="left", by="SOURCEID")
+CEC.res <- CEC.res[!is.na(CEC.res$LONWGS84),]
+coordinates(CEC.res) <- ~LONWGS84+LATWGS84
+writeOGR(CEC.res, "CEC.res.shp", "CEC.res", "ESRI Shapefile")
+hist(CEC.res$DEPTH)
+#zip("CEC.res.*", files="CEC.res.zip")
