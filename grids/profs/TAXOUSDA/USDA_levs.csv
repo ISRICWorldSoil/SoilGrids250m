@@ -22,7 +22,7 @@ Number,Group,Description,Generic,R,G,B
 20,Aquands,Andisols with a water table at or near the surface for much of the year.,Andisols,255,0,255
 21,Cryands,Andisols of cold climates.,Andisols,250,2,250
 22,Torrands,Andisols of very dry climates.,Andisols,252,5,250
-23,Xerrands,Temperate Andisols with very dry summers and moist winters.,Andisols,255,10,255
+23,Xerands,Temperate Andisols with very dry summers and moist winters.,Andisols,255,10,255
 24,Vitrands,Relatively young Andisols that are coarse-textured and dominated by glass.,Andisols,252,4,245
 25,Ustands,Andisols of semiarid and sub humid climates.,Andisols,245,12,240
 26,Udands,Andisols of humid climates.,Andisols,241,0,241

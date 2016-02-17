@@ -1,4 +1,7 @@
 ## Comparison HWSD and SoilGrids250 using WoSIS points
+## Two versions of polygon-based soil property maps:
+## (1) Regridded Harmonized World Soil Database v1.2 (http://dx.doi.org/10.3334/ORNLDAAC/1247)
+## (2) ISRIC-WISE soil property maps at 1 km (http://www.isric.org/data/isric-wise-derived-soil-property-estimates-30-30-arcsec-global-grid-wise30sec)
 ## Tom.Hengl@isric.org and Maria.RuiperezGonzales@wur.nl
 
 library(sp)
@@ -18,16 +21,21 @@ load("/data/models/equi7t3.rda")
 system(paste(ogrinfo, '-ro WFS:\"http://wfs.isric.org/geoserver/wosis/wfs\"'))
 
 var.lst = c("BD","OC","ph")
+var_DAAC.lst = c("BULK_DEN","OC","PH_H2O")
 w.shp <- c("geoserver_bulk_density_fine_earth", "geoserver_organic_carbon", "geoserver_ph_h2o")
 ## download WoSIS points (focus on Bulk density soil, ph in H2O and Organic carbon)
 #for(j in c(w.shp)){
 #  system(paste0(ogr2ogr, ' -f \"ESRI Shapefile\" ', j, '.shp WFS:\"http://wfs.isric.org/geoserver/wosis/wfs" ', j, ' -clipsrc -180 -90 180 90'))
 #}
 ## uncompress:
-#for(j in w.shp){  system(paste0('7za e ', j, '.zip -y')) }
+for(j in w.shp){  system(paste0('7za e ', j, '.zip -y')) }
 pnt.lst <- lapply(w.shp, function(x){readOGR(paste0(x,".shp"), x)})
 names(pnt.lst) = var.lst
 #plot(pnt.lst[[1]])
+summary(pnt.lst[["BD"]]$value) ## Bulk densities < 100 kg/cubic-m?
+summary(pnt.lst[["ph"]]$value)
+summary(pnt.lst[["OC"]]$value)
+hist(log1p(pnt.lst[["OC"]]$value), col="grey") ## Are all "0" OC measured?
 
 ## aggregate: get WoSIS average values for depths 0-30 and 30-100 cm:
 wa_depths <- function(sp, depths=c(0,30,100)){
@@ -56,7 +64,6 @@ names(out.WoSIS) <- var.lst
 hist(out.WoSIS[["BD"]]$aggregated)
 summary(out.WoSIS[["OC"]]$aggregated) ## permilles
 save(out.WoSIS, file="out.WoSIS.rda")
-levels(out.WoSIS_SG[[1]]$cl)
 
 ## WoSIS average values for GlobalSoilMap depths (5):
 sfInit(parallel=TRUE, cpus=3)
@@ -67,17 +74,27 @@ sfLibrary(rgdal)
 out.WoSIS_SG <- sfClusterApplyLB(pnt.lst, wa_depths, depths=c(0,5,15,30,60,100))
 sfStop()
 names(out.WoSIS_SG) <- var.lst
+levels(out.WoSIS_SG[[1]]$cl)
 save(out.WoSIS_SG, file="out.WoSIS_SG.rda")
 
 ## overlay WoSIS and HWSD:
-hwsd.lst <- sapply(c("s","t"), function(x){paste0(x, "_", var.lst)})
+#hwsd.lst <- sapply(c("s","t"), function(x){paste0(x, "_", var.lst)})
 #for(j in hwsd.lst){  try( system(paste0('7za e ', j, '.7z -y')) ) }
+## Rasters downloaded from: http://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=1247 
+ts_DAAC.lst <- unlist(lapply(c("S","T"), function(x){list.files(pattern=glob2rx(paste0(x, "_*.nc4$")), full.names=TRUE, recursive=TRUE)}))
+r.lst <- stack(ts_DAAC.lst)
+names(r.lst) <- unlist(lapply(c("s","t"), function(x){paste(x, var.lst, sep="_")})) 
+#plot(r.lst) ## Many missing pixels
+lapply(names(r.lst), function(i){writeRaster(r.lst[[i]], filename=paste0(i, ".tif"), options=c("COMPRESS=DEFLATE"), overwrite=TRUE)})
+rm(r.lst)
+## convert to Geotifs:
 ts.lst <- unlist(lapply(c("s","t"), function(x){list.files(pattern=glob2rx(paste0(x, "_*.tif$")), full.names=TRUE, recursive=TRUE)}))
 
-extract_tif <- function(x, sp){
+## Overlay and aggregate values from HWSD tifs:
+extract_raster <- function(x, sp, OC.corf=10){
   pr <- strsplit(basename(x), "_")[[1]][1]
-  r <- raster(x)
   varn <- strsplit(strsplit(basename(x),".tif")[[1]][1], "_")[[1]][2]
+  r <- raster(x)
   names(r) <- varn
   if(pr=="s"){
     sp <- sp[sp$cl=="(30,100]",]
@@ -92,22 +109,24 @@ extract_tif <- function(x, sp){
   ov <- extract(r, sp, sp=TRUE)
   ov$depth = d
   ov <- as.data.frame(ov)
-  if(varn=="OC"){ ov[,varn] <- ov[,varn]*10 } ## permilles
+  if(varn=="OC"){ ov[,varn] <- ov[,varn]*OC.corf } ## permilles
   names(ov)[which(names(ov)=="aggregated")] = paste("WoSIS", varn, sep="_")
   return(ov)
 }
 ## overlay in parallel:
 sfInit(parallel=TRUE, cpus=6)
-sfExport("out.WoSIS", "ts.lst", "extract_tif")
+sfExport("out.WoSIS", "ts.lst", "extract_raster")
 sfLibrary(raster)
 sfLibrary(rgdal)
-ovHWSD.lst <- sfClusterApplyLB(1:length(ts.lst), function(i){extract_tif(ts.lst[i], sp=out.WoSIS[[strsplit(strsplit(basename(ts.lst[i]),".tif")[[1]][1], "_")[[1]][2]]])})
+ovHWSD.lst <- sfClusterApplyLB(1:length(ts.lst), function(i){extract_raster(ts.lst[i], sp=out.WoSIS[[strsplit(strsplit(basename(ts.lst[i]),".tif")[[1]][1], "_")[[1]][2]]])})
 sfStop()
+
 ## bind everything together per property:
 ovHWSD.lst <- lapply(1:3, function(i){rbind.fill(ovHWSD.lst[c(i,i+3)])})
 str(ovHWSD.lst)
 names(ovHWSD.lst) <- var.lst
 hist(ovHWSD.lst[["BD"]]$BD)
+hist(ovHWSD.lst[["OC"]]$OC)
 save(ovHWSD.lst, file="ovHWSD.lst.rda")
 
 ## overlay WoSIS with SoilGrids250m (we focus on first 5 depths)
@@ -167,8 +186,9 @@ for(i in 1:length(sel.plt)){
   meas = sel.plt[[i]][,2]
   xlab = names(sel.plt[[i]])[2]
   ylab = names(sel.plt[[i]])[1]
+  ## https://en.wikipedia.org/wiki/Coefficient_of_determination
   R.squared = signif(1-var(meas - pred, na.rm=TRUE)/var(meas, na.rm=TRUE), 2)
-  main = paste0(varn, " (R-squared: ", R.squared, ")")
+  main = paste0(varn, " (A.V.E.: ", R.squared, ")")
   if(!varn == "SOC in g/kg"){  
     plotList[[i]] <- hexbinplot(pred ~ meas, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main=main, type="g", xlab=xlab, ylab=ylab, lwd=1, lcex=8, inner=.2, cex.labels=.8, xlim=xlim.lst[[i]], ylim=xlim.lst[[i]], asp=1, xbins=30, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1)) ## 
   } else {
