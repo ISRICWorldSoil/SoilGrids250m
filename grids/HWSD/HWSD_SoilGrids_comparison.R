@@ -18,7 +18,7 @@ ogr2ogr <- "/usr/local/bin/ogr2ogr"
 ogrinfo <- "/usr/local/bin/ogrinfo"
 source("/data/models/extract.equi7t3.R")
 load("/data/models/equi7t3.rda")
-system(paste(ogrinfo, '-ro WFS:\"http://wfs.isric.org/geoserver/wosis/wfs\"'))
+#system(paste(ogrinfo, '-ro WFS:\"http://wfs.isric.org/geoserver/wosis/wfs\"'))
 
 var.lst = c("BD","OC","ph")
 var_DAAC.lst = c("BULK_DEN","OC","PH_H2O")
@@ -77,21 +77,33 @@ names(out.WoSIS_SG) <- var.lst
 levels(out.WoSIS_SG[[1]]$cl)
 save(out.WoSIS_SG, file="out.WoSIS_SG.rda")
 
+## WoSIS average values for WISE depths (D1= 0-20 cm, D2=20-40, D3=40-60, D4=40-80, D5=80-100, D6=100-150, D7=150-200 cm):
+sfInit(parallel=TRUE, cpus=3)
+sfExport("pnt.lst", "wa_depths")
+sfLibrary(dplyr)
+sfLibrary(plyr)
+sfLibrary(rgdal)
+out.WoSIS_WISE <- sfClusterApplyLB(pnt.lst, wa_depths, depths=c(0,20,40,60,80,100,150,200))
+sfStop()
+names(out.WoSIS_WISE) <- var.lst
+summary(out.WoSIS_SG[[1]]$cl)
+#(0,5]   (5,15]  (15,30]  (30,60] (60,100] 
+#5374    14334    12566    16636    14681 
+save(out.WoSIS_WISE, file="out.WoSIS_WISE.rda")
+
 ## overlay WoSIS and HWSD:
-#hwsd.lst <- sapply(c("s","t"), function(x){paste0(x, "_", var.lst)})
-#for(j in hwsd.lst){  try( system(paste0('7za e ', j, '.7z -y')) ) }
-## Rasters downloaded from: http://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=1247 
+## Rasters downloaded from http://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=1247 
 ts_DAAC.lst <- unlist(lapply(c("S","T"), function(x){list.files(pattern=glob2rx(paste0(x, "_*.nc4$")), full.names=TRUE, recursive=TRUE)}))
 r.lst <- stack(ts_DAAC.lst)
 names(r.lst) <- unlist(lapply(c("s","t"), function(x){paste(x, var.lst, sep="_")})) 
-#plot(r.lst) ## Many missing pixels
+#plot(r.lst, col=SAGA_pal[[1]]) ## Many missing pixels
+## convert to Geotifs:
 lapply(names(r.lst), function(i){writeRaster(r.lst[[i]], filename=paste0(i, ".tif"), options=c("COMPRESS=DEFLATE"), overwrite=TRUE)})
 rm(r.lst)
-## convert to Geotifs:
 ts.lst <- unlist(lapply(c("s","t"), function(x){list.files(pattern=glob2rx(paste0(x, "_*.tif$")), full.names=TRUE, recursive=TRUE)}))
 
 ## Overlay and aggregate values from HWSD tifs:
-extract_raster <- function(x, sp, OC.corf=10){
+extract_HWSD <- function(x, sp, OC.corf=10){
   pr <- strsplit(basename(x), "_")[[1]][1]
   varn <- strsplit(strsplit(basename(x),".tif")[[1]][1], "_")[[1]][2]
   r <- raster(x)
@@ -115,10 +127,10 @@ extract_raster <- function(x, sp, OC.corf=10){
 }
 ## overlay in parallel:
 sfInit(parallel=TRUE, cpus=6)
-sfExport("out.WoSIS", "ts.lst", "extract_raster")
+sfExport("out.WoSIS", "ts.lst", "extract_HWSD")
 sfLibrary(raster)
 sfLibrary(rgdal)
-ovHWSD.lst <- sfClusterApplyLB(1:length(ts.lst), function(i){extract_raster(ts.lst[i], sp=out.WoSIS[[strsplit(strsplit(basename(ts.lst[i]),".tif")[[1]][1], "_")[[1]][2]]])})
+ovHWSD.lst <- sfClusterApplyLB(1:length(ts.lst), function(i){extract_HWSD(ts.lst[i], sp=out.WoSIS[[strsplit(strsplit(basename(ts.lst[i]),".tif")[[1]][1], "_")[[1]][2]]])})
 sfStop()
 
 ## bind everything together per property:
@@ -129,8 +141,41 @@ hist(ovHWSD.lst[["BD"]]$BD)
 hist(ovHWSD.lst[["OC"]]$OC)
 save(ovHWSD.lst, file="ovHWSD.lst.rda")
 
+## WISE rasters (BULK, ORGC and PHAQ):
+ts2.lst <- list.files(pattern=glob2rx("*_D?.tif$"), full.names=TRUE, recursive=TRUE)
+in2.lst <- unlist(lapply(var.lst, rep, 7))
+extract_WISE <- function(x, sp, dp=c(0,20,40,60,80,100,150,200)){
+  j <- as.numeric(strsplit(strsplit(basename(x), "_D")[[1]][2], ".tif")[[1]][1])
+  varn <- strsplit(basename(x),"_")[[1]][1]
+  r <- raster(x)
+  if(varn=="ORGC"){ names(r) <- "OC" }
+  if(varn=="BULK"){ names(r) <- "BD" }
+  if(varn=="PHAQ"){ names(r) <- "ph" }
+  sp <- sp[sp$cl==paste0("(",dp[j],",",dp[j+1],"]"),]
+  d = dp[j]+(dp[j+1]-dp[j])/2
+  coordinates(sp) <- ~ coords.x1 + coords.x2
+  proj4string(sp) = proj4string(r)
+  ov <- extract(r, sp, sp=TRUE)
+  ov$depth = d
+  ov <- as.data.frame(ov)
+  ## filter negative values:
+  ov[,names(r)] <- ifelse(ov[,names(r)]<0, NA, ov[,names(r)])
+  names(ov)[which(names(ov)=="aggregated")] = paste("WoSIS", names(r), sep="_")
+  return(ov)
+}
+
+sfInit(parallel=TRUE, cpus=21)
+sfExport("out.WoSIS_WISE", "ts2.lst", "in2.lst", "extract_WISE")
+sfLibrary(raster)
+sfLibrary(rgdal)
+ovWISE.lst <- sfClusterApplyLB(1:length(ts2.lst), function(i){extract_WISE(ts2.lst[i], sp=out.WoSIS_WISE[[in2.lst[i]]])})
+sfStop()
+ovWISE.lst <- lapply(1:3, function(i){rbind.fill(ovWISE.lst[c((i-1)*7+1:7)])})
+names(ovWISE.lst) <- var.lst
+save(ovWISE.lst, file="ovWISE.lst.rda")
+
 ## overlay WoSIS with SoilGrids250m (we focus on first 5 depths)
-extract_SG <- function(j, sp, depths=5, classes=c("(0,5]",  "(5,15]", "(15,30]", "(30,60]", "(60,100]")){
+extract_SG <- function(j, sp, depths=6, classes=c("(0,5]",  "(5,15]", "(15,30]", "(30,60]", "(60,100]", "(100,200]")){
   sp.xy <- sp[!duplicated(sp$profile_id),c("profile_id","coords.x1","coords.x2")]
   coordinates(sp.xy) <- ~ coords.x1 + coords.x2
   proj4string(sp.xy) = CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
@@ -162,17 +207,21 @@ names(ovSG.lst) <- var.lst
 save(ovSG.lst, file="ovSG.lst.rda")
 #plot(ovSG.lst[["ph"]][,c("WoSIS_ph","ph")], asp=1, xlim=c(3,9.5))
 #plot(ovHWSD.lst[["ph"]][,c("WoSIS_ph","ph")], asp=1, xlim=c(3,9.5))
+#plot(ovWISE.lst[["ph"]][,c("WoSIS_ph","ph")], asp=1, xlim=c(3,9.5))
 
 ## plot comparisons next to each other:
 sel.plt <- list(
   data.frame(HWSD=ovHWSD.lst[["BD"]]$BD, WoSIS=ovHWSD.lst[["BD"]]$WoSIS_BD), 
+  data.frame(WISE=ovWISE.lst[["BD"]]$BD, WoSIS=ovWISE.lst[["BD"]]$WoSIS_BD), 
+  data.frame(SoilGrids=ovSG.lst[["BD"]]$BD, WoSIS=ovSG.lst[["BD"]]$WoSIS_BD),
   data.frame(HWSD=ovHWSD.lst[["ph"]]$ph, WoSIS=ovHWSD.lst[["ph"]]$WoSIS_ph), 
-  data.frame(HWSD=ovHWSD.lst[["OC"]]$OC, WoSIS=ovHWSD.lst[["OC"]]$WoSIS_OC), 
-  data.frame(SoilGrids=ovSG.lst[["BD"]]$BD, WoSIS=ovSG.lst[["BD"]]$WoSIS_BD), 
+  data.frame(WISE=ovWISE.lst[["ph"]]$ph, WoSIS=ovWISE.lst[["ph"]]$WoSIS_ph), 
   data.frame(SoilGrids=ovSG.lst[["ph"]]$ph, WoSIS=ovSG.lst[["ph"]]$WoSIS_ph), 
+  data.frame(HWSD=ovHWSD.lst[["OC"]]$OC, WoSIS=ovHWSD.lst[["OC"]]$WoSIS_OC), 
+  data.frame(WISE=ovWISE.lst[["OC"]]$OC, WoSIS=ovWISE.lst[["OC"]]$WoSIS_OC),
   data.frame(SoilGrids=ovSG.lst[["OC"]]$OC, WoSIS=ovSG.lst[["OC"]]$WoSIS_OC))
-names(sel.plt) <- rep(c("BD fine earth t / cubic-m", "pH in water", "SOC in g/kg"), 2)
-xlim.lst <- list(c(0.4,2.5), c(3.5,9.5), c(1,600), c(0.4,2.5), c(3.5,9.5), c(1,600))
+names(sel.plt) <- unlist(lapply(c("BD fine earth t / cubic-m", "pH in water", "SOC in g/kg"), rep, 3))
+xlim.lst <- c(rep(list(c(0.4,2.5)), 3), rep(list(c(3.5,9.5)), 3), rep(list(c(1,600)), 3))
 
 pfun <- function(x,y, ...){ 
   panel.hexbinplot(x,y, ...)  
@@ -195,14 +244,11 @@ for(i in 1:length(sel.plt)){
     d.meas <- min(meas, na.rm=TRUE)
     pred <- pred+ifelse(d.meas==0, 1, d.meas)
     meas <- meas+ifelse(d.meas==0, 1, d.meas)
-    plotList[[i]] <- hexbinplot(pred ~ meas, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main=main, type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, scales=list(x = list(log = 2, equispaced.log = FALSE), y = list(log = 2, equispaced.log = FALSE)), asp=1, xbins=30, xlim=xlim.lst[[i]], ylim=xlim.lst[[i]], xlab=xlab, ylab=ylab, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1)) ## 
+    plotList[[i]] <- hexbinplot(pred ~ meas, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main=main, type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, scales=list(x = list(log = 2, equispaced.log = FALSE), y = list(log = 2, equispaced.log = FALSE)), asp=1, xbins=30, xlim=xlim.lst[[i]], ylim=xlim.lst[[i]], xlab=xlab, ylab=ylab, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1))  
   }
 }
 
-do.call(grid.arrange, c(plotList[c(1,4)], ncol=2))
-do.call(grid.arrange, c(plotList[c(2,5)], ncol=2))
-do.call(grid.arrange, c(plotList[c(3,6)], ncol=2))
-## Conclusions: HWSD estimates of BD and SOC critically low when compared to WoSIS points
-
-## WISE 30arcmin:
-#system('7za e wise30sec_fin1.7z -y')
+do.call(grid.arrange, c(plotList[c(1:3)], ncol=3))
+do.call(grid.arrange, c(plotList[c(4:6)], ncol=3))
+do.call(grid.arrange, c(plotList[c(7:9)], ncol=3))
+## Conclusion: HWSD/WISE estimates of BD and SOC of critically low accuracy when compared to WoSIS points (ground truth)
