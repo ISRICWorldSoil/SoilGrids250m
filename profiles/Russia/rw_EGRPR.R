@@ -49,7 +49,7 @@ s <- summary(as.factor(ru.xy$WRB06), maxsum=90)
 soiltype <- data.frame(WRB06=attr(s, "names"), count=s)
 write.csv(soiltype, "soiltype_count.csv")
 legUSDA <- read.csv("cleanup_Russia.csv", fileEncoding="UTF-8")
-ru.xy$TAXNUSDA <- join(ru.xy, legUSDA, by="WRB06", type="left")$USDA_suborder
+ru.xy$TAXOUSDA <- join(ru.xy, legUSDA, by="WRB06", type="left")$USDA_suborder
 
 TAXNWRB.EGRPR <- rename(ru.xy[,c("SOURCEID","LONG","LAT","WRB06")], replace=c("LONG"="LONWGS84","LAT"="LATWGS84","WRB06"="TAXNWRB"))
 TAXNWRB.EGRPR$SOURCEDB = "Russia_EGRPR"
@@ -61,14 +61,14 @@ proj4string(TAXNWRB.EGRPR) <- "+proj=longlat +datum=WGS84"
 #plotKML(TAXNWRB.EGRPR["TAXNWRB"])
 save(TAXNWRB.EGRPR, file="TAXNWRB.EGRPR.rda")
 
-TAXOUSDA.EGRPR <- rename(ru.xy[,c("SOURCEID","LONG","LAT","TAXNUSDA")], replace=c("LONG"="LONWGS84","LAT"="LATWGS84"))
+TAXOUSDA.EGRPR <- rename(ru.xy[,c("SOURCEID","LONG","LAT","TAXOUSDA")], replace=c("LONG"="LONWGS84","LAT"="LATWGS84"))
 TAXOUSDA.EGRPR$SOURCEDB = "Russia_EGRPR"
-TAXOUSDA.EGRPR <- TAXOUSDA.EGRPR[!is.na(TAXOUSDA.EGRPR$TAXNUSDA)&!is.na(TAXOUSDA.EGRPR$LONWGS84)&nchar(paste(TAXOUSDA.EGRPR$TAXNUSDA))>0,]
+TAXOUSDA.EGRPR <- TAXOUSDA.EGRPR[!is.na(TAXOUSDA.EGRPR$TAXOUSDA)&!is.na(TAXOUSDA.EGRPR$LONWGS84)&nchar(paste(TAXOUSDA.EGRPR$TAXOUSDA))>0,]
 str(TAXOUSDA.EGRPR)
 ## 598 profiles
 coordinates(TAXOUSDA.EGRPR) <- ~ LONWGS84+LATWGS84
 proj4string(TAXOUSDA.EGRPR) <- "+proj=longlat +datum=WGS84"
-plotKML(TAXOUSDA.EGRPR["TAXNUSDA"])
+plotKML(TAXOUSDA.EGRPR["TAXOUSDA"])
 save(TAXOUSDA.EGRPR, file="TAXOUSDA.EGRPR.rda")
 
 # ------------------------------------------------------------
@@ -114,7 +114,7 @@ nrow(horizons)
 
 SPROPS.EGRPR <- join(horizons[!is.na(horizons$DEPTH),c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","CRFVOL","BLD","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM")], as.data.frame(TAXNWRB.EGRPR)[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
 str(SPROPS.EGRPR)
-## 11,232
+## 4568
 save(SPROPS.EGRPR, file="SPROPS.EGRPR.rda")
 plot(SPROPS.EGRPR$LONWGS84, SPROPS.EGRPR$LATWGS84, pch="+")
 

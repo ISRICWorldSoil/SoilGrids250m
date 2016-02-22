@@ -39,6 +39,50 @@ horizons <- rename(Layers[,c("ProfileID","LayerID","UpDpth","LowDpth","CfPc","Sa
 horizons$SAMPLEID <- make.unique(as.character(horizons$SAMPLEID))
 ## 74,961 layer
 
+## hits on visual check:
+## 39 negative UHDICM values (likely 'mulch' layer records as LHDICM = 0)
+hist(log1p(horizons$UHDICM))
+str(horizons[which(horizons$UHDICM<0),])
+## 7 UHDICM values < 800cm 
+str(horizons[which(horizons$UHDICM>800),])
+## 16 LHDICM values < 800cm 
+str(horizons[which(horizons$LHDICM>800),])
+## 2 obs with deeper 'upper' horizons
+str(horizons[which(horizons$LHDICM-horizons$UHDICM<=0),])
+##13 obs with messy texture fractions  
+TexSum <- rowSums(horizons[,c("CLYPPT","SNDPPT","SLTPPT")], na.rm=TRUE)
+hist(TexSum)
+selTex <- TexSum > 110 | TexSum < 90
+str(horizons[which(TexSum>0&TexSum<90),])
+##61 obs above pH 10.5 - rare potential for EXTREME sodic soils (but above 10.5 is questionable calibration?? Or an arid mineral spring ;P) check spatial location for clustering.
+str(horizons[which(horizons$PHIHOX>=10.5),])
+## as above but 46 obs. Check spatial location and with soil chemist.
+str(horizons[which(horizons$PHIKCL>=9.5),])
+#94 obs with 0 OC but values for CEC 
+str(horizons[which(horizons$ORCDRC<=0),])
+View(horizons[which(horizons$ORCDRC<=0),])
+##3 obs of CEC = 0
+str(horizons[which(horizons$CECSUM<=0),])
+
+## issues with BLD in gm per cm3 rather than kg per m3? - check
+
+
+##No hits 
+str(horizons[which(horizons$CRFVOL>100),])
+str(horizons[which(horizons$SNDPPT>100),])
+str(horizons[which(horizons$SNDPPT<0),])
+str(horizons[which(horizons$SLTPPT>100),])
+str(horizons[which(horizons$SLTPPT<0),])
+str(horizons[which(horizons$CLYPPT>100),])
+str(horizons[which(horizons$CLYPPT<0),])
+str(horizons[which(horizons$BLD==0),])
+str(horizons[which(horizons$BLD<0),])
+str(horizons[which(horizons$BLD>2300),])
+str(horizons[which(horizons$PHIHOX<2),])
+str(horizons[which(horizons$ORCDRC>=600),])
+str(horizons[which(horizons$CECSUM>=300),]) 
+
+
 ## clean up sites:
 sites <- Profiles[!duplicated(Profiles$ProfileID),]
 sites <- sites[!is.na(sites$X_LonDD)&!is.na(sites$Y_LatDD), s.lst]
@@ -53,7 +97,7 @@ sites$LocalCls[which(sites$LocalCls=="NA")] <- NA
 sites$Location[which(sites$Location=="NA")] <- NA
 sites$Drain[which(sites$Drain=="NA")] <- NA
 sites$SOURCEDB = "AfSPDB"
-sites <- rename(sites, c("ProfileID"="SOURCEID", "X_LonDD"="LONWGS84", "Y_LatDD"="LATWGS84", "T_Year"="TIMESTRR", "WRB06"="TAXNWRB", "USDA"="TAXOUSDA"))
+sites <- rename(sites, c("ProfileID"="SOURCEID", "X_LonDD"="LONWGS84", "Y_LatDD"="LATWGS84", "T_Year"="TIMESTRR", "WRB06"="TAXNWRB", "USDA"="TAXNUSDA"))
 
 # ------------------------------------------------------------
 # Depth to bedrock
@@ -80,13 +124,13 @@ save(BDR.AfSPDB, file="BDR.AfSPDB.rda")
 # export TAXONOMY DATA
 # ------------------------------------------------------------
 
-TAXOUSDA.AfSPDB <- sites[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXOUSDA")]
-TAXOUSDA.AfSPDB <- TAXOUSDA.AfSPDB[!is.na(TAXOUSDA.AfSPDB$TAXOUSDA)&!is.na(TAXOUSDA.AfSPDB$LONWGS84)&nchar(paste(TAXOUSDA.AfSPDB$TAXOUSDA))>0,]
+TAXOUSDA.AfSPDB <- sites[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXNUSDA")]
+TAXOUSDA.AfSPDB <- TAXOUSDA.AfSPDB[!is.na(TAXOUSDA.AfSPDB$TAXNUSDA)&!is.na(TAXOUSDA.AfSPDB$LONWGS84)&nchar(paste(TAXOUSDA.AfSPDB$TAXNUSDA))>0,]
 str(TAXOUSDA.AfSPDB)
 ## 2577 profiles
 coordinates(TAXOUSDA.AfSPDB) <- ~ LONWGS84+LATWGS84
 proj4string(TAXOUSDA.AfSPDB) <- "+proj=longlat +datum=WGS84"
-plotKML(TAXOUSDA.AfSPDB["TAXOUSDA"])
+plotKML(TAXOUSDA.AfSPDB["TAXNUSDA"])
 save(TAXOUSDA.AfSPDB, file="TAXOUSDA.AfSPDB.rda")
 
 TAXNWRB.AfSPDB <- sites[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXNWRB")]
@@ -98,6 +142,14 @@ coordinates(TAXNWRB.AfSPDB) <- ~ LONWGS84+LATWGS84
 proj4string(TAXNWRB.AfSPDB) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXNWRB.AfSPDB["TAXNWRB"])
 save(TAXNWRB.AfSPDB, file="TAXNWRB.AfSPDB.rda")
+
+##visual check 
+View(TAXNWRB.AfSPDB$TAXNWRB)
+##22 obs with potential non-ascii characters
+print(showNonASCII(TAXNWRB.AfSPDB$TAXNWRB))
+## no other detected issues 
+View(TAXOUSDA.AfSPDB$TAXNUSDA)
+print(showNonASCII(as.character(TAXOUSDA.AfSPDB$TAXNUSDA)))
 
 # ------------------------------------------------------------
 # Organic soils

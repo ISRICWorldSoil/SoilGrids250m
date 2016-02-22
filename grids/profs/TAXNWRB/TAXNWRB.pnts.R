@@ -9,7 +9,6 @@ library(rgdal)
 library(lattice)
 library(scales)
 library(plotKML)
-library(maps)
 library(stringr)
 
 ## list of input data sets:
@@ -62,7 +61,6 @@ in.lst[[length(tax.lst)+1]] <- TAXNWRB.sim
 
 all.pnts <- dplyr::rbind_all(in.lst)
 str(all.pnts)
-## 51184
 all.pnts <- as.data.frame(all.pnts)
 coordinates(all.pnts) <- ~ LONWGS84+LATWGS84
 proj4string(all.pnts) <- "+proj=longlat +datum=WGS84"
@@ -74,6 +72,7 @@ summary(!duplicated(all.pnts$LOC_ID))
 #all.pnts <- all.pnts[!duplicated(all.pnts$LOC_ID),]
 ## TH: We keep the duplicates because there are indeed many points with approximate geocoordinates
 length(all.pnts)
+## 52742
 
 ## clean-up names:
 FAO_levs <- read.csv("WRB_versions.csv")
@@ -112,13 +111,13 @@ write.csv(soiltype, "soiltype_count.csv")
 
 ## Import the clean-up tables (clean-up by Maria and Tom)
 legFAO <- read.csv("TAXNWRB_cleanup.csv", fileEncoding="UTF-8")
-soiltype$WRB_2006_NAMEf <- as.character(join(soiltype[,c("TAXNWRB","count")], legFAO, type="left", by="TAXNWRB")$WRB_2006_NAME)
-soiltype$WRB_2006_NAMEf <- ifelse(is.na(soiltype$WRB_2006_NAMEf), soiltype$WRB_2006_NAME, soiltype$WRB_2006_NAMEf)
-all.pnts$WRB_2006_NAMEf <- join(all.pnts@data["TAXNWRB"], soiltype, type="left", by="TAXNWRB")$WRB_2006_NAMEf
+soiltype$WRB_2006_NAMEf <- as.character(plyr::join(soiltype[,c("TAXNWRB","count")], legFAO, type="left", by="TAXNWRB", match="first")$WRB_2006_NAME)
+#soiltype$WRB_2006_NAMEf <- ifelse(is.na(soiltype$WRB_2006_NAMEf), soiltype$WRB_2006_NAME, soiltype$WRB_2006_NAMEf)
+all.pnts$WRB_2006_NAMEf <- plyr::join(all.pnts@data["TAXNWRB"], soiltype, type="left", by="TAXNWRB")$WRB_2006_NAMEf
 soiltype.leg <- aggregate(soiltype[,c("count")], by=list(soiltype$WRB_2006_NAMEf), FUN=sum)
 str(soiltype.leg)
 names(soiltype.leg) = c("WRB_2006_NAMEf","count")
-soiltype.leg <- soiltype.leg[rank(1/soiltype.leg$count)<100,]
+#soiltype.leg <- soiltype.leg[rank(1/soiltype.leg$count)<100,]
 soiltype.leg$Group <- sapply(as.character(soiltype.leg$WRB_2006_NAMEf), function(x){strsplit(x, " ")[[1]][2]})
 write.csv(soiltype.leg, file="soiltype_legend.csv")
 
@@ -128,15 +127,15 @@ write.csv(soiltype.leg, file="soiltype_legend.csv")
 
 ## Selection of soil types for SoilGrids250m
 levsf0 <- levels(as.factor(soiltype.leg$WRB_2006_NAMEf))
-levsf <- c(levsf0, "Sapric Histosols", "Hemic Histosols", "Alic Nitisols", "Haplic Albeluvisols", "Cutanic Alisols", "Regic Anthrosols", "Petric Durisols", "Cryic Histosols", "Leptic Umbrisols", "Haplic Umbrisols", "Luvic Stagnosols", "Lixic Plinthosols", "Vitric Cryosols", "Histic Albeluvisols")
+levsf <- c(levsf0, "Sapric Histosols", "Hemic Histosols", "Alic Nitisols", "Haplic Albeluvisols", "Cutanic Alisols", "Petric Durisols", "Cryic Histosols", "Leptic Umbrisols", "Haplic Umbrisols", "Luvic Stagnosols", "Lixic Plinthosols", "Vitric Cryosols", "Histic Albeluvisols")
 levsf <- unique(str_trim(as.character(unlist(sapply(levsf, function(x){strsplit(x, "/")[[1]]})))))
-levsf <- levsf[-c(grep(pattern="Anthrosol", levsf), grep(pattern="Technic", levsf))]
+#levsf <- levsf[-c(grep(pattern="Anthrosol", levsf), grep(pattern="Technic", levsf))]
 ## remove Anthrosols because there are still too difficult to map in automated manner
 str(levsf)
 soiltype.leg2 <- data.frame(WRB_2006_NAMEf=levsf)
 soiltype.leg2$Group <- sapply(as.character(soiltype.leg2$WRB_2006_NAMEf), function(x){strsplit(x, " ")[[1]][2]})
 write.csv(soiltype.leg2, file="TAXNWRB_legend2.csv")
-## 107 classes on the end
+## 118 classes on the end
 
 ## One by one subgroup name --> try to located them in the raw names
 tax.lst <- list(NULL)
@@ -144,8 +143,10 @@ for(j in 1:length(levsf)){
   ## remove "s" if at the end of the class name:
   pat <- gsub("chaks", "chak", gsub("zems", "zem", gsub("sols", "sol", levsf[j])))  
   sel1 <- grep(pat, all.pnts$WRB_2006_NAMEf, ignore.case=TRUE)
-  sel2 <- grep(pat, all.pnts$TAXNWRB, ignore.case=TRUE)
-  sel <- unique(c(sel1, sel2))
+  sel2 <- which(all.pnts$WRB_2006_NAMEf==levsf[j])
+  sel3 <- grep(pat, all.pnts$TAXNWRB, ignore.case=TRUE)
+  sel4 <- which(all.pnts$TAXNWRB==levsf[j])
+  sel <- unique(c(sel1, sel2, sel3, sel4))
   ## there can be multiple soil taxa at the same location
   if(length(sel)>0){
     tax.lst[[j]] <- data.frame(all.pnts[sel,])
@@ -156,26 +157,37 @@ TAXNWRB.pnts <- do.call(rbind, tax.lst)
 TAXNWRB.pnts$TAXNWRB.f <- as.factor(TAXNWRB.pnts$TAXNWRB.f)
 TAXNWRB.pnts <- TAXNWRB.pnts[,]
 summary(TAXNWRB.pnts$TAXNWRB.f)
+xS <- summary(as.factor(TAXNWRB.pnts$TAXNWRB.f), maxsum = 118)
+soiltype_count <- data.frame(Group=attr(xS, "names"), count=xS)
+write.csv(soiltype_count, file="soiltype_count2.csv")
 length(TAXNWRB.pnts$TAXNWRB.f)
-## FINAL NUMBER OF POINTS: 47,433 points
+## FINAL NUMBER OF POINTS: 64,733 points
 
 ###################################
 ## Export points
 ###################################
 
 summary(as.factor(TAXNWRB.pnts$SOURCEDB))
-#      AfSPDB       eSOTER  RadamBrasil 
-#        1828         1829         5279 
-#    CN-SOTER       HRSPDB       IRSPDB 
-#        1003         1811         4384 
-#  ISCN2012/N         ISIS      MX_CDPS 
-#        7830          517         2482 
-#    NAMSOTER        SPADE         WISE 
-#        1807           82         6950 
-#Russia_EGRPR       CanSIS   HILATS2014 
-#         355         5943          334 
-#        OFRA        CIFOR    Simulated 
-#          27          196          635 
+#         AfSPDB            eSOTER 
+#             3184              2132 
+#      RadamBrasil              ISIS 
+#             6448               809 
+#             WISE          Can_FECD 
+#            10831              1878 
+#           CanSIS          CN-SOTER 
+#             8765              1626 
+#           HRSPDB           MX_CDPS 
+#             2854              5018 
+#     Russia_EGRPR Alterra-BODEMDATA 
+#              867               402 
+#       ISCN2012/N        HILATS2014 
+#             9025               334 
+#           IRSPDB          NAMSOTER 
+#             5223              2431 
+#             OFRA             SPADE 
+#               98               134 
+#            CIFOR         Simulated 
+#              207              2467
 
 coordinates(TAXNWRB.pnts) <- ~ LONWGS84+LATWGS84
 proj4string(TAXNWRB.pnts) <- "+proj=longlat +datum=WGS84"
@@ -185,30 +197,3 @@ writeOGR(TAXNWRB.pnts, "TAXNWRB.pnts.shp", "TAXNWRB.pnts", "ESRI Shapefile")
 #plotKML(TAXNWRB.pnts["TAXNWRB.f"], file.name="TAXNWRB_Feb_15_2016.kml", kmz=TRUE)
 str(TAXNWRB.pnts@data)
 save(TAXNWRB.pnts, file="TAXNWRB.pnts.rda")
-
-## world plot - overlay and plot points and maps:
-country.m <- map('world', plot=FALSE, fill=TRUE)
-IDs <- sapply(strsplit(country.m$names, ":"), function(x) x[1])
-require(maptools)
-country <- as(map2SpatialPolygons(country.m, IDs=IDs), "SpatialLines")
-no.plt <- TAXNWRB.pnts@coords[,2]>-65 & TAXNWRB.pnts@coords[,2]<85
-png(file = "Fig_global_distribution_TAXNWRB.png", res = 150, width = 2000, height = 900)
-windows(width = 20, height = 9)
-dev.off()
-par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-plot(country, col="darkgrey", ylim=c(-60, 85))
-points(TAXNWRB.pnts[TAXNWRB.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("yellow", 0.6), cex=.6, col="black")
-points(TAXNWRB.pnts[!TAXNWRB.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("red", 0.6), cex=.8, col="black")
-dev.off()
-
-## world plot - organic vs histosols:
-hist.sel <- grep("Hist", TAXNWRB.pnts$TAXNWRB.f)
-length(hist.sel)
-png(file = "Fig_global_distribution_Histosols.png", res = 150, width = 2000, height = 900)
-windows(width = 20, height = 9)
-dev.off()
-par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-plot(country, col="darkgrey", ylim=c(-60, 85))
-points(TAXNWRB.pnts[-c(hist.sel, which(TAXNWRB.pnts$SOURCEDB=="Simulated"), which(!no.plt)),], pch=21, bg=alpha("yellow", 0.6), cex=.8, col="grey")
-points(TAXNWRB.pnts[c(hist.sel),], pch=21, bg=alpha("red", 0.6), cex=1.5, col="black")
-dev.off()

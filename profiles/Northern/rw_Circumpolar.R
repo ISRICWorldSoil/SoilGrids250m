@@ -1,4 +1,5 @@
 ## A new data set for estimating organic carbon storage to 3m depth in soils of the northern circumpolar permafrost region; doi:10.5194/essd-5-393-2013
+## Download from: http://bolin.su.se/data/ncscd/pedon.php
 ## Tom.Hengl@isric.org
 
 library(aqp)
@@ -41,10 +42,13 @@ summary(artic$BLD)
 artic$BLD <- ifelse(artic$BLD < 100 | artic$BLD > 3000, NA, artic$BLD)
 artic$SOURCEDB = "Artic"
 artic$DEPTH <- artic$UHDICM + (artic$LHDICM - artic$UHDICM)/2
+artic$SOURCEDB <- "Artic"
 
-SPROPS.artic <- artic[,c("SOURCEID","SAMPLEID","LONWGS84","LATWGS84","UHDICM","LHDICM","DEPTH","ORCDRC","BLD")]
+SPROPS.artic <- artic[,c("SOURCEID","SAMPLEID","SOURCEDB","LONWGS84","LATWGS84","UHDICM","LHDICM","DEPTH","ORCDRC","BLD")]
 SPROPS.artic <- SPROPS.artic[!is.na(SPROPS.artic$LONWGS84) & !is.na(SPROPS.artic$LATWGS84) & !is.na(SPROPS.artic$DEPTH),]
 str(SPROPS.artic)
 ## 7457
-save(SPROPS.artic, file="SPROPS.artic.rda")
+## Needs to be checked! the histograms show some 5000 measurements >40% of SOC
+## Most likely the authors have over-represented histosols / peatlands
+#save(SPROPS.artic, file="SPROPS.artic.rda")
 plot(SPROPS.artic$LONWGS84, SPROPS.artic$LATWGS84, pch="+")

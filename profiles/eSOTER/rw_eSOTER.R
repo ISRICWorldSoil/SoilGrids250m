@@ -88,7 +88,7 @@ save(TAXOUSDA.eSOTER, file="TAXOUSDA.eSOTER.rda")
 # All soil properties
 # ------------------------------------------------------------
 
-SPROPS.eSOTER <- join(HOR.s[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","ORCDRC")], SITE.s[,c("SOURCEID","LONWGS84","LATWGS84")], type="left")
+SPROPS.eSOTER <- join(HOR.s[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","ORCDRC")], SITE.s[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
 SPROPS.eSOTER <- SPROPS.eSOTER[!is.na(SPROPS.eSOTER$LONWGS84) & !is.na(SPROPS.eSOTER$LATWGS84),]
 View(SPROPS.eSOTER)
 ## 5899

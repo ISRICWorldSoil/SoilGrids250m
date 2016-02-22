@@ -25,6 +25,12 @@ horizons$BLD <- horizons$BD * 1000
 horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
 ## many missing values...
 
+## hits on visual check:
+## 3 LHDICM values < 800cm
+str(horizons[which(horizons$LHDICM>800),])
+## 4 obs with ORC higher than 600
+str(horizons[which(horizons$ORCDRC>=600),])
+
 # ------------------------------------------------------------
 # export TAXONOMY DATA
 # ------------------------------------------------------------
@@ -47,11 +53,13 @@ proj4string(TAXNWRB.CIFOR) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXNWRB.CIFOR["TAXNWRB"])
 save(TAXNWRB.CIFOR, file="TAXNWRB.CIFOR.rda")
 
+##visual check - no detected issues 
+
 # ------------------------------------------------------------
 # All soil properties
 # ------------------------------------------------------------
 
-SPROPS.CIFOR <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","BLD","ORCDRC")], CIFOR[,c("SOURCEID","LONWGS84","LATWGS84")], type="left")
+SPROPS.CIFOR <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","BLD","ORCDRC")], CIFOR[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
 SPROPS.CIFOR <- SPROPS.CIFOR[!is.na(SPROPS.CIFOR$LONWGS84) & !is.na(SPROPS.CIFOR$LATWGS84) & !is.na(SPROPS.CIFOR$DEPTH),]
 View(SPROPS.CIFOR)
 ## only 840 left, but all very high values!

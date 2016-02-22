@@ -61,10 +61,11 @@ horizons$PHIHOX[horizons$PHIHOX<2|horizons$PHIHOX>11] <- NA
 summary(horizons$PHIHOX)
 summary(horizons$SNDPPT)
 horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
+horizons$SOURCEDB = "RadamBrasil"
 nrow(horizons)
 ## 11232
 
-SPROPS.SolosBR <- horizons[!is.na(horizons$DEPTH),c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","CRFVOL","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","LONWGS84","LATWGS84")]
+SPROPS.SolosBR <- horizons[!is.na(horizons$DEPTH),c("SOURCEID","SAMPLEID","SOURCEDB","UHDICM","LHDICM","DEPTH","CLYPPT","CRFVOL","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","LONWGS84","LATWGS84")]
 str(SPROPS.SolosBR)
 ## 11,232
 save(SPROPS.SolosBR, file="SPROPS.SolosBR.rda")

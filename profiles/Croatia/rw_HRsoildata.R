@@ -49,7 +49,7 @@ horizon$PHIKCL <- as.numeric(horizon$PH2)
 horizon$SNDPPT <- as.numeric(horizon$MSP)*0.8 + as.numeric(horizon$MKP)
 horizon$SLTPPT <- as.numeric(horizon$MP) + as.numeric(horizon$MSP)*0.2
 horizon$CLYPPT <- as.numeric(horizon$MG)
-horizon$ORCDRC <- as.numeric(horizon$HUM)*10/1.724
+horizon$ORCDRC <- signif(as.numeric(horizon$HUM)*10/1.724, 3)
 horizon$CRFVOL <- join(horizon, site[,c("SOURCEID","STIJENA")], type="left")$STIJENA
 horizon$LHDICM <- ifelse(is.na(horizon$LHDICM), horizon$UHDICM+50, horizon$LHDICM)
 horizon$DEPTH <- horizon$UHDICM + (horizon$LHDICM - horizon$UHDICM)/2
@@ -69,6 +69,20 @@ sumTex <- rowSums(horizon[,c("SLTPPT","CLYPPT","SNDPPT")])
 horizon$SNDPPT <- horizon$SNDPPT / ((sumTex - horizon$CLYPPT) /(100 - horizon$CLYPPT))
 horizon$SLTPPT <- horizon$SLTPPT / ((sumTex - horizon$CLYPPT) /(100 - horizon$CLYPPT))
 
+## hits on visual check:
+## 21 obs with deeper 'upper' horizon
+str(horizon[which(horizon$LHDICM-horizon$UHDICM<=0),])
+##3 obs with messy texture fractions
+TexSum <- rowSums(horizon[,c("CLYPPT","SNDPPT","SLTPPT")], na.rm=TRUE)
+hist(TexSum)
+selTex <- TexSum > 110 | TexSum < 90
+str(horizon[which(TexSum>0&TexSum<90),])
+## 1 obs above pH 9.5 in KCl.  Check spatial location and with soil chemist.
+str(horizon[which(horizon$PHIKCL>=9.5),])
+#7 obs with 0 OC 
+str(horizon[which(horizon$ORCDRC<=0),])
+View(horizon[which(horizon$ORCDRC<=0),])
+
 # ------------------------------------------------------------
 # export TAXONOMY DATA
 # ------------------------------------------------------------
@@ -82,11 +96,16 @@ proj4string(TAXNWRB.HRSPDB) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXNWRB.HRSPDB["TAXNWRB"])
 save(TAXNWRB.HRSPDB, file="TAXNWRB.HRSPDB.rda")
 
+##visual check
+## 333 obs with potential non-ascii characters
+print(showNonASCII(TAXNWRB.HRSPDB$TAXNWRB))
+
+
 # ------------------------------------------------------------
 # All soil properties
 # ------------------------------------------------------------
 
-SPROPS.HRSPDB <- join(horizon[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","ORCDRC")], site[,c("SOURCEID","LONWGS84","LATWGS84")], type="left")
+SPROPS.HRSPDB <- join(horizon[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","ORCDRC")], site[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
 SPROPS.HRSPDB <- SPROPS.HRSPDB[!is.na(SPROPS.HRSPDB$LONWGS84) & !is.na(SPROPS.HRSPDB$LATWGS84),]
 View(SPROPS.HRSPDB)
 ## 5899

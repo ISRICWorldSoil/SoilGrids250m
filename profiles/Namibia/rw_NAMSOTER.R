@@ -56,6 +56,9 @@ summary(horizons$DEPTH)
 horizons$BLD <- ifelse(horizons$BLD == 9999, NA, horizons$BLD*1000)
 summary(horizons$BLD)
 ## 6208
+## negative values for silt?
+horizons[horizons$SOURCEID=="NAM-531",]
+horizons$SLTPPT <- ifelse(horizons$SLTPPT <0, NA, horizons$SLTPPT)
 
 SPROPS.NAMSOTER <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","BLD")], SITE[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
 SPROPS.NAMSOTER <- SPROPS.NAMSOTER[!is.na(SPROPS.NAMSOTER$LONWGS84) & !is.na(SPROPS.NAMSOTER$LATWGS84) & !is.na(SPROPS.NAMSOTER$DEPTH),]

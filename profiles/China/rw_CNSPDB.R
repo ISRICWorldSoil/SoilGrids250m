@@ -29,6 +29,10 @@ str(horizons)
 horizons$SAMPLEID <- make.unique(paste("CN", horizons$SOURCEID, horizons$shn, sep="_"))
 horizons$SOURCEID <- paste("CN", horizons$SOURCEID, sep="_")
 horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
+horizons$BLD <- horizons$BLD*1000
+## Total carbon?
+horizons$ORCDRC <- horizons$ORCDRC*10
+
 sites <- read.csv("china_wosis_sites.csv")
 #sites$TIMESTRR <- as.Date(paste(sites$TIMESTR), format="%m-%d-%Y")
 sites$SOURCEID <- paste("CN", sites$SOURCEID, sep="_")
@@ -61,6 +65,10 @@ summary(HOR.s$CRFVOL)
 #sel.r <- grep(pattern="R", HOR.s$HODE, ignore.case=FALSE, fixed=FALSE)
 ## only two horizons?
 
+## hits on visual check:
+## 18 obs with deeper 'upper' HOR.s
+str(HOR.s[which(HOR.s$LHDICM-HOR.s$UHDICM<=0),])
+
 # ------------------------------------------------------------
 # export TAXONOMY DATA
 # ------------------------------------------------------------
@@ -74,6 +82,9 @@ proj4string(TAXNWRB.CHINA_SOTERv1) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXNWRB.CHINA_SOTERv1["TAXNWRB"])
 save(TAXNWRB.CHINA_SOTERv1, file="TAXNWRB.CHINA_SOTERv1.rda")
 
+##visual check
+## no detected issues
+
 # ------------------------------------------------------------
 # All soil properties
 # ------------------------------------------------------------
@@ -83,6 +94,8 @@ SPROPS.CSPBNU <- SPROPS.CSPBNU[!is.na(SPROPS.CSPBNU$LONWGS84) & !is.na(SPROPS.CS
 #View(SPROPS.CSPBNU)
 str(SPROPS.CSPBNU)
 ## 32208 horizons
+summary(SPROPS.CSPBNU$BLD)
+summary(SPROPS.CSPBNU$ORCDRC)
 save(SPROPS.CSPBNU, file="SPROPS.CSPBNU.rda")
 
 # ------------------------------------------------------------

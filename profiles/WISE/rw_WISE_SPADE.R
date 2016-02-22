@@ -54,7 +54,7 @@ summary(SITE.s$LATWGS84); summary(SITE.s$LONWGS84)
 # add columns:
 SITE.s$SOURCEID <- as.factor(SITE.s$WISE3_id)
 SITE.s$TAXGWRB <- as.factor(SITE.s$WRB2006)
-SITE.s$TAXNUSDA <- as.factor(SITE.s$USCL)
+SITE.s$TAXOUSDA <- as.factor(SITE.s$USCL)
 SITE.s$TIMESTRR <- as.Date(paste0(SITE.s$DATEYR, "-", ifelse(is.na(SITE.s$DATEMON), m.lst[1], m.lst[SITE.s$DATEMON]), "-1"), format="%Y-%b-%d")
 ## classification key:
 legFAO_90 <- read.csv("cleanup_SU_SYM90.csv")
@@ -215,13 +215,13 @@ proj4string(TAXNWRB.WISE) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXNWRB.WISE["TAXNWRB"])
 save(TAXNWRB.WISE, file="TAXNWRB.WISE.rda")
 
-TAXOUSDA.WISE <- SITE.s[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXNUSDA")]
-TAXOUSDA.WISE <- TAXOUSDA.WISE[!is.na(TAXOUSDA.WISE$TAXNUSDA)&nchar(paste(TAXOUSDA.WISE$TAXNUSDA))>0,]
+TAXOUSDA.WISE <- SITE.s[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXOUSDA")]
+TAXOUSDA.WISE <- TAXOUSDA.WISE[!is.na(TAXOUSDA.WISE$TAXOUSDA)&nchar(paste(TAXOUSDA.WISE$TAXOUSDA))>0,]
 str(TAXOUSDA.WISE)
 ## 3491 profiles
 coordinates(TAXOUSDA.WISE) <- ~ LONWGS84+LATWGS84
 proj4string(TAXOUSDA.WISE) <- "+proj=longlat +datum=WGS84"
-plotKML(TAXOUSDA.WISE["TAXNUSDA"])
+plotKML(TAXOUSDA.WISE["TAXOUSDA"])
 save(TAXOUSDA.WISE, file="TAXOUSDA.WISE.rda")
 
 # end of script;

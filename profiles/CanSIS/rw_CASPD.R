@@ -12,6 +12,7 @@ library(aqp)
 library(sp)
 library(plyr)
 library(plotKML)
+library(foreign)
 cols2dms <- function(x,y,z,e){ifelse(is.na(e)|is.na(x), NA, as(char2dms(paste(x, "d", y, "'", z, "\"", e, sep="")), "numeric"))}
 
 ## read exported tables:
@@ -37,6 +38,34 @@ horizons$BLD <- horizons$BLD*1000
 horizons$LHDICM <- ifelse(is.na(horizons$LHDICM)&!is.na(horizons$UHDICM), horizons$UHDICM+30, horizons$LHDICM)
 horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
 
+## hits on visual check:
+## 5 UHDICM values < 800cm
+str(horizons[which(horizons$UHDICM>800),])
+## 8 LHDICM values < 800cm
+str(horizons[which(horizons$LHDICM>800),])
+## 599 obs with deeper 'upper' horizons
+View(horizons[which(horizons$LHDICM-horizons$UHDICM<=0),])
+##987 obs with messy texture fractions
+TexSum <- rowSums(horizons[,c("CLYPPT","SNDPPT","SLTPPT")], na.rm=TRUE)
+hist(TexSum)
+selTex <- TexSum > 110 | TexSum < 90
+str(horizons[which(TexSum>0&TexSum<90),])
+##4 obs above pH 10.5 - rare potential for EXTREME sodic soils (but above 10.5 is questionable calibration?? Or an arid mineral spring ;P) check spatial location for clustering.
+str(horizons[which(horizons$PHIHOX>=10.5),])
+## as above but 3 obs. Check spatial location and with soil chemist.
+str(horizons[which(horizons$PHIKCL>=9.5),])
+#104 obs with 0 OC but values for CEC
+str(horizons[which(horizons$ORCDRC<=0),])
+View(horizons[which(horizons$ORCDRC<=0),])
+##2 obs of CEC = 0
+str(horizons[which(horizons$CECSUM<=0),])
+##23 obs with BLD = 0
+str(horizons[which(horizons$BLD==0),])
+##9 obs with < 2 pH 
+str(horizons[which(horizons$PHIHOX<2),])
+## 2 obs > 300 (but close...) - check
+str(horizons[which(horizons$CECSUM>=300),])
+ 
 ## Classification:
 pedon_cor <- read.csv("CAN_classes.csv")
 pedon_id <- read.csv("CAN_pedon_id.csv")
@@ -58,6 +87,10 @@ pedon_merge$SOURCEID = paste("CAN", pedon_merge$PEDON, sep="_")
 pedon_merge <- pedon_merge[!is.na(pedon_merge$LATWGS84)&!is.na(pedon_merge$LONWGS84),]
 ## look at some examples
 pedon_merge[1:5,c("PEDON","TAX_ORDER","TAX_GTGRP","TAX_SBGRP","TAXNWRB","TAXOUSDA")]
+#pedon_merge.xy <- pedon_merge[,c("LONWGS84","LATWGS84","TAX_ID")]
+#coordinates(pedon_merge.xy) <- ~ LONWGS84 + LATWGS84 
+#proj4string(pedon_merge.xy) <- "+proj=longlat +datum=WGS84"
+#plotKML(pedon_merge.xy["TAX_ID"])
 
 # ------------------------------------------------------------
 # export TAXONOMY DATA
@@ -70,13 +103,16 @@ str(TAXOUSDA.CanSIS)
 coordinates(TAXOUSDA.CanSIS) <- ~ LONWGS84+LATWGS84
 proj4string(TAXOUSDA.CanSIS) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXOUSDA.CanSIS["TAXOUSDA"])
+## REMOVE SOME NON-SENSICAL POINTS FALLING IN THE OCEAN?
+#rem <- which(TAXOUSDA.CanSIS$SOURCEID %in% c("CAN_4408","CAN_4407","CAN_5285","CAN_5288"))
 save(TAXOUSDA.CanSIS, file="TAXOUSDA.CanSIS.rda")
 
 TAXNWRB.CanSIS <- pedon_merge[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","TAXNWRB")]
 TAXNWRB.CanSIS <- TAXNWRB.CanSIS[!is.na(TAXNWRB.CanSIS$TAXNWRB)&!is.na(TAXNWRB.CanSIS$LONWGS84)&nchar(paste(TAXNWRB.CanSIS$TAXNWRB))>0,]
 TAXNWRB.CanSIS$TAXNWRB <- iconv(paste(TAXNWRB.CanSIS$TAXNWRB), "latin1", "UTF-8", "")
 str(TAXNWRB.CanSIS)
-## 3360 profiles
+
+## 5938 profiles
 coordinates(TAXNWRB.CanSIS) <- ~ LONWGS84+LATWGS84
 proj4string(TAXNWRB.CanSIS) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXNWRB.CanSIS["TAXNWRB"])
@@ -91,6 +127,10 @@ SPROPS.CanSIS <- SPROPS.CanSIS[!is.na(SPROPS.CanSIS$LONWGS84) & !is.na(SPROPS.Ca
 SPROPS.CanSIS$PHIKCL <- ifelse(SPROPS.CanSIS$PHIKCL>11|SPROPS.CanSIS$PHIKCL<2.5, NA, SPROPS.CanSIS$PHIKCL)
 SPROPS.CanSIS$PHIHOX <- ifelse(SPROPS.CanSIS$PHIHOX>11.5|SPROPS.CanSIS$PHIHOX<2.5, NA, SPROPS.CanSIS$PHIHOX)
 View(SPROPS.CanSIS)
+hist(SPROPS.CanSIS$CECSUM)
+hist(SPROPS.CanSIS$ORCDRC, breaks=30)
+SPROPS.CanSIS$BLD <- ifelse(SPROPS.CanSIS$BLD<100, NA, SPROPS.CanSIS$BLD)
+hist(SPROPS.CanSIS$BLD, breaks=30)
 ## 17,535 horizons
 save(SPROPS.CanSIS, file="SPROPS.CanSIS.rda")
 
@@ -113,3 +153,85 @@ summary(BDR.CanSIS$BDRICM<250)
 ## 209 points
 str(BDR.CanSIS)
 save(BDR.CanSIS, file="BDR.CanSIS.rda")
+
+# ------------------------------------------------------------
+# Forest Ecosystem Carbon Database (FECD)
+# ------------------------------------------------------------
+
+## http://www.cfs.nrcan.gc.ca/bookstore_pdfs/25626.pdf
+spd <- read.csv("SPD_JOIN.csv")
+str(spd)
+spd$SNDPPT <- 100-(spd$silt+spd$clay)
+summary(spd$cec)
+spd$BLD <- spd$bulkdens * 1000
+spd$ORCDRC <- spd$orgcarb * 10
+summary(spd$ORCDRC)
+spd$SOURCEID <- paste("FECD", spd$prov, spd$csite, sep="_")
+spd$SAMPLEID <- make.unique(paste("FECD", spd$prov, spd$csite, sep="_"))
+## longitudes miss "-"??
+spd$long <- -spd$long
+horizons2a <- rename(spd, replace=c("long"="LONWGS84", "lat"="LATWGS84", "hor"="HZDTXT", "top"="UHDICM", "bottom"="LHDICM", "silt"="SLTPPT", "clay"="CLYPPT", "cec"="CECSUM"))
+
+fecd <- read.delim("FECD_JOIN_ALL.csv")
+str(fecd)
+summary(fecd$ORG_C_TOT.N.11.0)
+hist(fecd$ORG_C_TOT.N.11.0)
+summary(fecd$BD.N.9.0) ## many zeros / rounded numbers from conversion to DBF
+fecd$SOURCEID <- paste("FECD", fecd$PROFILE_ID.N.12.0, sep="")
+
+horizons2 <- rename(fecd, replace=c("LONG_DD.N.10.2"="LONWGS84", "LAT_DD.N.8.2"="LATWGS84", "PH_H2O.C.9"="PHIHOX", "PH_CACL2.C.9"="PHIKCL", "HORIZON.C.9"="HZDTXT", "SAND.C.9"="SNDPPT", "SILT.C.9"="SLTPPT", "CLAY.C.9"="CLYPPT", "CEC.C.9"="CECSUM", "UPPER.N.9.0"="UHDICM", "LOWER.N.9.0"="LHDICM"))
+horizons2$SAMPLEID <- make.unique(paste("FECD", horizons2$PROFILE_ID.N.12.0, horizons2$HORIZON_ID.N.9.0, sep="_"))
+summary(horizons2$PHIHOX)
+summary(horizons2$SNDPPT)
+## Soil organic carbon in g/kg (-CACO3):
+horizons2$ORCDRC <- signif(10* ifelse((horizons2$PHIHOX > 7)&!is.na(horizons2$CACO3.C.9), horizons2$ORG_C_TOT.N.11.0 - .12 * horizons2$CACO3.C.9, horizons2$ORG_C_TOT.N.11.0), 3)
+summary(horizons2$ORCDRC)
+#horizons2$BLD <- ifelse(horizons2$BD<.15, NA, horizons2$BD*1000)
+#hist(horizons2$BLD)
+summary(horizons2$CF_CLASS.C.9)
+CRF.tbl <- data.frame(CF_CLASS.C.9=levels(horizons2$CF_CLASS.C.9), CRFVOL=c(NA,5,70,20,23,48))
+horizons2$CRFVOL <- join(horizons2, CRF.tbl, type="left")$CRFVOL
+horizons2$TIMESTRR <- as.Date(paste(horizons2$DATE.N.9.0), format="%Y")
+
+SPROPS.FECD <- rbind.fill(list(horizons2[,c("SOURCEID","TIMESTRR","LONWGS84","LATWGS84","SAMPLEID","HZDTXT","UHDICM","LHDICM","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","PHIKCL","ORCDRC","CECSUM")], horizons2a[,c("SOURCEID","LONWGS84","LATWGS84","SAMPLEID","HZDTXT","UHDICM","LHDICM","CLYPPT","SNDPPT","SLTPPT","ORCDRC","CECSUM","BLD")]))
+SPROPS.FECD$DEPTH <- SPROPS.FECD$UHDICM + (SPROPS.FECD$LHDICM - SPROPS.FECD$UHDICM)/2
+SPROPS.FECD <- SPROPS.FECD[!is.na(SPROPS.FECD$LONWGS84) & !is.na(SPROPS.FECD$LATWGS84) & !is.na(SPROPS.FECD$DEPTH),]
+SPROPS.FECD$PHIKCL <- ifelse(SPROPS.FECD$PHIKCL>11|SPROPS.FECD$PHIKCL<2.5, NA, SPROPS.FECD$PHIKCL)
+SPROPS.FECD$PHIHOX <- ifelse(SPROPS.FECD$PHIHOX>11.5|SPROPS.FECD$PHIHOX<2.5, NA, SPROPS.FECD$PHIHOX)
+SPROPS.FECD$BLD <- ifelse(SPROPS.FECD$BLD<100, NA, SPROPS.FECD$BLD)
+hist(SPROPS.FECD$CECSUM, breaks=30)
+hist(SPROPS.FECD$ORCDRC)
+hist(SPROPS.FECD$PHIHOX, breaks=30)
+hist(SPROPS.FECD$CLYPPT, breaks=30)
+hist(SPROPS.FECD$BLD, breaks=30)
+SPROPS.FECD$SOURCEDB = "Can_FECD"
+str(SPROPS.FECD)
+## 10,761 horizons
+save(SPROPS.FECD, file="SPROPS.FECD.rda")
+write.csv(SPROPS.FECD, file="SPROPS.FECD.csv")
+
+horizons2a$LOC_ID <- paste("ID", horizons2a$LONWGS84, horizons2a$LATWGS84, sep="_")
+sites2a <- horizons2a[!duplicated(horizons2a$LOC_ID),c("SOURCEID","LONWGS84","LATWGS84","taxa_can")]
+sites2a$SOURCEDB = "Can_FECD"
+summary(sites2a$taxa_can)
+str(sites2a)
+## merge with correlation table:
+pedon_cor$taxa_can <- paste(pedon_cor$TAX_SBGRP, pedon_cor$TAX_GTGRP, sep=".")
+
+TAXNWRB.FECD <- join(sites2a, pedon_cor, type="left", match="first")[,c("SOURCEID","LONWGS84","LATWGS84","SOURCEDB","TAXNWRB")]
+TAXNWRB.FECD <- TAXNWRB.FECD[!is.na(TAXNWRB.FECD$TAXNWRB)&!is.na(TAXNWRB.FECD$LONWGS84)&nchar(paste(TAXNWRB.FECD$TAXNWRB))>0,]
+str(TAXNWRB.FECD)
+## 1214 profiles
+coordinates(TAXNWRB.FECD) <- ~ LONWGS84+LATWGS84
+proj4string(TAXNWRB.FECD) <- "+proj=longlat +datum=WGS84"
+plotKML(TAXNWRB.FECD["TAXNWRB"])
+save(TAXNWRB.FECD, file="TAXNWRB.FECD.rda")
+
+TAXOUSDA.FECD <- join(sites2a, pedon_cor, type="left", match="first")[,c("SOURCEID","LONWGS84","LATWGS84","SOURCEDB","TAXOUSDA")]
+TAXOUSDA.FECD <- TAXOUSDA.FECD[!is.na(TAXOUSDA.FECD$TAXOUSDA)&!is.na(TAXOUSDA.FECD$LONWGS84)&nchar(paste(TAXOUSDA.FECD$TAXOUSDA))>0,]
+str(TAXOUSDA.FECD)
+## 1214 profiles
+coordinates(TAXOUSDA.FECD) <- ~ LONWGS84+LATWGS84
+proj4string(TAXOUSDA.FECD) <- "+proj=longlat +datum=WGS84"
+plotKML(TAXOUSDA.FECD["TAXOUSDA"])
+save(TAXOUSDA.FECD, file="TAXOUSDA.FECD.rda")

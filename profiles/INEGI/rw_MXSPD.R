@@ -65,6 +65,7 @@ horizons <- horizons[!horizons$PHIHOX==0&!horizons$SNDPPT==0,]
 horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
 ## 13,939
 str(horizons)
+horizons$SOURCEDB = "MX_edaf_puntos"
 
 horizons2 <- as.data.frame(perfilv12)[,c("NHORIZON","HLIMSUPE","HLIMINFE","ARCILLA","LIMO","ARENA","PH","MO","CIC","coords.x1","coords.x2","SOURCEID")]
 horizons2 <- rename(horizons2, c("HLIMSUPE"="UHDICM","HLIMINFE"="LHDICM","ARCILLA"="SNDPPT","LIMO"="SLTPPT","ARENA"="CLYPPT","PH"="PHIHOX","MO"="ORCDRC","CIC"="CECSUM","coords.x1"="LONWGS84","coords.x2"="LATWGS84"))
@@ -75,8 +76,9 @@ horizons2$DEPTH <- horizons2$UHDICM + (horizons2$LHDICM - horizons2$UHDICM)/2
 horizons2 <- horizons2[!is.na(horizons2$DEPTH),]
 ## 10,890
 horizons2$SAMPLEID <- make.unique(paste(horizons2$SOURCEID, horizons2$NHORIZON, sep="_"))
+horizons2$SOURCEDB = "MX_perfilv12"
 
-sel.n <- c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","LONWGS84","LATWGS84")
+sel.n <- c("SOURCEID","SOURCEDB","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","LONWGS84","LATWGS84")
 SPROPS.MX_PdS <- rbind(horizons[,sel.n], horizons2[,sel.n])
 str(SPROPS.MX_PdS)
 ## 24,829

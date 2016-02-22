@@ -29,6 +29,9 @@ View(SITE.s)
 horizons <- read.csv("Aardewerk-Vlaanderen-2010_Horizont.csv")
 str(horizons)
 horizons$ORCDRC <- horizons$Humus*10 /1.724     ## OC in permilles
+hist(horizons$ORCDRC)
+## few typoes:
+horizons$ORCDRC <- ifelse(horizons$ORCDRC>600, NA, horizons$ORCDRC)
 horizons$SAMPLEID <- make.unique(paste(horizons$Profiel_ID, horizons$Hor_nr, sep="_"))
 horizons <- rename(horizons, c("Profiel_ID"="SOURCEID", "pH_KCl"="PHIKCL", "pH_H2O"="PHIHOX", "Tgroter_dan_2000"="CRFVOL", "T0_2"="CLYPPT", "Sorptiecapaciteit_Totaal"="CECSUM"))
 horizons$UHDICM <- rowSums(horizons[,c("Diepte_grens_boven1", "Diepte_grens_boven2")], na.rm=TRUE)/2

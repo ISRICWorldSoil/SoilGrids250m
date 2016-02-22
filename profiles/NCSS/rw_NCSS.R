@@ -139,13 +139,31 @@ hs$BLD <- hs$db_od*1000
 #coordinates(hs) <- ~ longitude_decimal_degrees + latitude_decimal_degrees
 #proj4string(hs) <- CRS("+proj=longlat +datum=NAD83")
 #hs <- spTransform(hs, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84"))
-SPROPS.NCSS <- plyr::rename(hs, replace=c("hzn_top"="UHDICM", "hzn_bot"="LHDICM", "longitude_decimal_degrees"="LONWGS84", "latitude_decimal_degrees"="LATWGS84", "ph_h2o"="PHIHO5", "cec_sum"="CECSUM", "clay_tot_psa"="CLYPPT", "sand_tot_psa"="SNDPPT", "silt_tot_psa"="SLTPPT", "ph_kcl"="PHIKCL"))
-SPROPS.NCSS <- SPROPS.NCSS[!is.na(SPROPS.NCSS$DEPTH),c("SOURCEID","SAMPLEID","LONWGS84","LATWGS84","TIMESTRR","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHO5","PHIKCL","BLD","ORCDRC","CECSUM")]
+SPROPS.NCSS <- plyr::rename(hs, replace=c("hzn_top"="UHDICM", "hzn_bot"="LHDICM", "longitude_decimal_degrees"="LONWGS84", "latitude_decimal_degrees"="LATWGS84", "ph_h2o"="PHIHOX", "cec_sum"="CECSUM", "clay_tot_psa"="CLYPPT", "sand_tot_psa"="SNDPPT", "silt_tot_psa"="SLTPPT", "ph_kcl"="PHIKCL"))
+SPROPS.NCSS <- SPROPS.NCSS[!is.na(SPROPS.NCSS$DEPTH),c("SOURCEID","SAMPLEID","LONWGS84","LATWGS84","TIMESTRR","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","PHIKCL","BLD","ORCDRC","CECSUM")]
 SPROPS.NCSS$SOURCEDB <- "NCSS"
+## Fix textures where necessary e.g. negative CLY content:
+SPROPS.NCSS[SPROPS.NCSS$SOURCEID=="VPI-Acred-2",]
+SPROPS.NCSS[SPROPS.NCSS$SOURCEID=="VPI-Acred-3",]
+SPROPS.NCSS$CLYPPT <- ifelse(SPROPS.NCSS$CLYPPT<0, NA, SPROPS.NCSS$CLYPPT)
+SPROPS.NCSS$SLTPPT <- ifelse(SPROPS.NCSS$SLTPPT<0, NA, SPROPS.NCSS$SLTPPT)
+SPROPS.NCSS$SNDPPT <- ifelse(SPROPS.NCSS$SNDPPT<0, NA, SPROPS.NCSS$SNDPPT)
+TexSum <- rowSums(SPROPS.NCSS[,c("CLYPPT","SNDPPT","SLTPPT")], na.rm=TRUE)
+hist(TexSum)
+selTex <- TexSum > 120 | TexSum < 80
+summary(selTex)
+SPROPS.NCSS$SLTPPT[selTex] <- NA
+## filter pH typos:
+SPROPS.NCSS$PHIKCL <- ifelse(SPROPS.NCSS$PHIKCL>11|SPROPS.NCSS$PHIKCL<2.5, NA, SPROPS.NCSS$PHIKCL)
+SPROPS.NCSS$PHIHOX <- ifelse(SPROPS.NCSS$PHIHOX>11.5|SPROPS.NCSS$PHIHOX<2.5, NA, SPROPS.NCSS$PHIHOX)
+summary(SPROPS.NCSS$PHIHOX)
+hist(SPROPS.NCSS$CECSUM)
+SPROPS.NCSS$CECSUM <- ifelse(SPROPS.NCSS$CECSUM>500, NA, SPROPS.NCSS$CECSUM)
+
 str(SPROPS.NCSS)
 ## 348400
-summary(SPROPS.NCSS$BLD)
 SPROPS.NCSS$BLD <- ifelse(SPROPS.NCSS$BLD<100, NA, SPROPS.NCSS$BLD)
+summary(SPROPS.NCSS$BLD) ## 1502
 summary(SPROPS.NCSS$ORCDRC)  ## 1.6%
 ## 322,446 records!
 save(SPROPS.NCSS, file="SPROPS.NCSS.rda")
