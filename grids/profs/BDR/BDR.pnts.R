@@ -15,6 +15,10 @@ IDs <- sapply(strsplit(country.m$names, ":"), function(x) x[1])
 require(maptools)
 country <- as(map2SpatialPolygons(country.m, IDs=IDs), "SpatialLines")
 
+###################################
+## Soil profiles and well data
+###################################
+
 ## list of input data sets:
 tax.lst <- list.files(path="G:\\soilstorage\\SoilData", pattern=glob2rx("BDR.*.rda"), full.names=TRUE, recursive=TRUE)
 tax.lst
@@ -33,9 +37,16 @@ BDR.wells$SOURCEDB = "Wells"
 nrow(BDR.wells)
 ## 1.5M points
 
-## Simulated desert soils:
+###################################
+## Pseudo-points
+###################################
+
+## Simulated desert/barerock soils:
 load("../TAXOUSDA/deserts.pnt.rda")
 load("../TAXOUSDA/barerock.pnt.rda")
+## soils on steep slopes:
+load("../TAXOUSDA/steepslopes.pnt.rda")
+
 d <- as.data.frame(spTransform(deserts.pnt, CRS("+proj=longlat +datum=WGS84")))
 d <- plyr::rename(d, c("desertPR_sin"="BDRICM", "x"="LONWGS84", "y"="LATWGS84"))
 d$BDRICM <- 250
@@ -45,14 +56,18 @@ b <- as.data.frame(spTransform(barerock.pnt, CRS("+proj=longlat +datum=WGS84")))
 b <- plyr::rename(b, c("barerockPR_sin"="BDRICM", "x"="LONWGS84", "y"="LATWGS84"))
 b$BDRICM <- 5
 b$BDTICM <- 5
-BDR.sim <- rbind(d,b)
+ss <- as.data.frame(spTransform(steepslopes.pnt, CRS("+proj=longlat +datum=WGS84")))
+ss <- plyr::rename(ss, c("SLP"="BDRICM", "x"="LONWGS84", "y"="LATWGS84"))
+ss$BDRICM <- 10
+ss$BDTICM <- 10
+BDR.sim <- rbind.fill(list(d,b,ss))
 BDR.sim$SOURCEID <- paste("SIM", 1:nrow(BDR.sim), sep="_")
 BDR.sim$SOURCEDB = "Simulated"
-str(BDR.sim) ## 541 point
+str(BDR.sim) ## 1791 point
 
 ## add to the list:
-in.lst[[length(in.lst)+1]] <- BDR.sim
-in.lst[[length(in.lst)+1]] <- BDR.wells
+in.lst[[length(tax.lst)+1]] <- BDR.sim
+in.lst[[length(tax.lst)+2]] <- BDR.wells
 ## Bind everything together:
 BDR_all.pnts <- dplyr::rbind_all(in.lst)
 str(BDR_all.pnts)
@@ -69,11 +84,12 @@ BDR_all.pnts$BDRLOG <- ifelse(BDR_all.pnts$BDRICM<250, 1, 0)
 str(BDR_all.pnts)
 summary(as.factor(BDR_all.pnts$BDRLOG))
 #      0       1 
-# 1320190  387620
+#1321244  389057
 save(BDR_all.pnts, file="BDR_all.pnts.rda")
 BDR_all.pnts <- as.data.frame(BDR_all.pnts)
 BDR_all.pnts[1,]
 BDR_all.pnts[800000,]
+## Example:
 ## BDRLOG = 0
 ## BDTICM = 3810
 ## BDRICM = 250
@@ -85,17 +101,3 @@ proj4string(BDR.pnts) <- "+proj=longlat +datum=WGS84"
 length(BDR.pnts) ## 1.5M points
 summary(as.factor(BDR.pnts$SOURCEDB))
 save(BDR.pnts, file="BDR.pnts.rda")
-
-## world plot - overlay and plot points and maps:
-no.plt <- BDR.pnts@coords[,2]>-65&BDR.pnts@coords[,2]<85
-png(file = "Fig_global_distribution_BDR.png", res = 150, width = 2000, height = 900)
-windows(width = 20, height = 9)
-dev.off()
-par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-plot(country, col="darkgrey", ylim=c(-60, 85))
-## profile data:
-points(BDR.pnts[-which(BDR.pnts$SOURCEDB=="Wells"|BDR.pnts$SOURCEDB=="Simulated"&!no.plt),], pch=21, bg=alpha("red", 0.6), cex=.8, col="black")
-## Wells data
-points(BDR.pnts[-which(!BDR.pnts$SOURCEDB=="Wells"|BDR.pnts$SOURCEDB=="Simulated"&no.plt),], pch=21, bg=alpha("blue", 0.6), cex=.8, col="black")
-points(BDR.pnts[which(BDR.pnts$SOURCEDB=="Simulated"&no.plt),], pch=21, bg=alpha("yellow", 0.6), cex=.6, col="black")
-dev.off()

@@ -47,7 +47,9 @@ range(ovA$BDTICM, na.rm=TRUE)
 ## use log to put more emphasis on lower values?
 #ovA$logBDTICM <- log1p(ovA$BDTICM)
 #hist(log1p(ovA$BDTICM), breaks=40, col="grey", xlab="log-BDTICM", main="Histogram")
-## FIT MODELS:
+
+## ------------- MODEL FITTING -----------
+
 t.vars <- c("BDRICM", "BDRLOG", "BDTICM")
 z.min <- c(0,0,0)
 z.max <- c(250,100,Inf)
@@ -103,11 +105,13 @@ write.table(mdLX_path, file="mdLX_path.txt")
 #mrfX_path = as.list(read.table("mrfX_path.txt"))
 #mdLX_path = as.list(read.table("mdLX_path.txt"))
 
+## ------------- PREDICTIONS -----------
+
 ## Predict per tile:
 #pr.dirs <- basename(dirname(list.files(path="/data/covs1km", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
 pr.dirs <- basename(dirname(list.files(path="/data/covs", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
 str(pr.dirs)
-## 2356 dirs
+## 2353 dirs
 ## test predictions:
 wrapper.predict_2D(i="NA_060_036", varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max)
 #wrapper.predict_2D(i="NA_060_036", varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min, z.max=z.max)
@@ -122,7 +126,27 @@ x <- readGDAL("/data/predicted/NA_060_036/BDTICM_M_NA_060_036.tif")
 x.ll <- reproject(x)
 kml(x.ll, file.name="BDTICM_M_NA_060_036.kml", folder.name="Absolute depth in cm", colour=band1, colour_scale=SAGA_pal[[1]], raster_name="BDTICM_M_NA_060_036.png", z.lim=c(0,5000))
 
-## Cross-validation 10-fold:
+## world plot - overlay and plot points and maps:
+xy.pnts <- join(ovA[complete.cases(ovA[,all.vars(formulaString.lst[[1]])[-1]]),c("SOURCEID","SOURCEDB","BDTICM")], as.data.frame(BDR.pnts[c("SOURCEID")]), type="left", match="first")
+xy.pnts <- xy.pnts[!is.na(xy.pnts$LONWGS84),]
+coordinates(xy.pnts) = ~ LONWGS84+LATWGS84
+proj4string(xy.pnts) = proj4string(BDR.pnts)
+require(maptools)
+country.m <- map('world', plot=FALSE, fill=TRUE)
+IDs <- sapply(strsplit(country.m$names, ":"), function(x) x[1])
+country <- as(map2SpatialPolygons(country.m, IDs=IDs), "SpatialLines")
+no.plt <- xy.pnts@coords[,2]>-65 & xy.pnts@coords[,2]<85
+png(file = "Fig_global_distribution_BDR.png", res = 150, width = 2000, height = 900)
+par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+plot(country, col="darkgrey", ylim=c(-60, 85))
+## profile data:
+points(xy.pnts[-which(xy.pnts$SOURCEDB=="Wells"|xy.pnts$SOURCEDB=="Simulated"&!no.plt),], pch=21, bg=alpha("red", 0.6), cex=.8, col="black")
+## Wells data
+points(xy.pnts[-which(!xy.pnts$SOURCEDB=="Wells"|xy.pnts$SOURCEDB=="Simulated"&no.plt),], pch=21, bg=alpha("blue", 0.6), cex=.8, col="black")
+points(xy.pnts[which(xy.pnts$SOURCEDB=="Simulated"&no.plt),], pch=21, bg=alpha("yellow", 0.6), cex=.6, col="black")
+dev.off()
+
+## ------------- CROSS-VALIDATION -----------
 source("../../cv/cv_functions.R")
 
 cat("Results of Cross-validation:\n\n", file="resultsCV_BDR.txt")
@@ -131,6 +155,7 @@ for(j in 1:length(t.vars)){
   if(!file.exists(paste0("CV_", t.vars[j], ".rda"))){
     cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="resultsCV_BDR.txt", append=TRUE)
     cat("\n", file="resultsCV_BDR.txt", append=TRUE)
+    ## exclude simulated points from Cross-validation:
     cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA, nfold=10, idcol="SOURCEID", h2o=TRUE, Log=TRUE)
     sink(file="resultsCV_BDR.txt", append=TRUE, type="output")
     print(cv_lst[[j]]$Summary)
@@ -156,11 +181,11 @@ for(j in 1:length(t.vars)){
 h2o.shutdown()
 
 ## clean-up:
-for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
-  del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
-  unlink(del.lst)
-}
-for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
-  del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
-  unlink(del.lst)
-}
+# for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
+#   del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+#   unlink(del.lst)
+# }
+# for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
+#   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+#   unlink(del.lst)
+# }

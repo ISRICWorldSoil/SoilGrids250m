@@ -159,7 +159,8 @@ for(j in 1:length(levs)){
   pat2 <- strip_s(paste(levsGG[which(levsGG$Suborder %in% levs[j]),"Great_Group"]))
   sel2 <- unlist(sapply(pat2, function(x){grep(x, paste(all.pnts$TAXNUSDA), ignore.case=TRUE)}))
   sel3 <- unlist(sapply(pat2, function(x){grep(x, paste(all.pnts$TAXOUSDA), ignore.case=TRUE)}))
-  sel <- unique(c(sel1, sel2, sel3))
+  sel4 <- which(all.pnts$TAXOUSDA == levs[j])
+  sel <- unique(c(sel1, sel2, sel3, sel4))
   ## bind together
   ## there can be multiple soil orders at the same location
   if(length(sel)>0){
@@ -169,10 +170,12 @@ for(j in 1:length(levs)){
 }
 TAXOUSDA.pnts <- do.call(rbind, taxn.lst)
 TAXOUSDA.pnts$TAXOUSDA.f <- as.factor(TAXOUSDA.pnts$TAXOUSDA.f)
+## examples:
 TAXOUSDA.pnts[TAXOUSDA.pnts$SOURCEID=="S1995AK185018",]
 TAXOUSDA.pnts[TAXOUSDA.pnts$SOURCEID=="IranSoil_54.48415_36.85611111",]
 summary(TAXOUSDA.pnts$TAXOUSDA.f)
 c.TAXOUSDA.f <- summary(TAXOUSDA.pnts$TAXOUSDA.f)
+## Cryids and Gelepts <10 observations
 write.csv(c.TAXOUSDA.f, "summary_TAXOUSDA.csv")
 
 ###################################
@@ -180,64 +183,29 @@ write.csv(c.TAXOUSDA.f, "summary_TAXOUSDA.csv")
 ###################################
 
 length(TAXOUSDA.pnts$TAXOUSDA.f)
-## FINAL NUMBER OF POINTS: 56,436 points
+## FINAL NUMBER OF POINTS: 58,124 points
 summary(as.factor(TAXOUSDA.pnts$SOURCEDB))
-#                                   AfSPDB 
-#                                     1700 
-#                                   Alaska 
-#                                      371 
-#                                    Artic 
-#                                      275 
-#                               AU_NatSoil 
-#                                     2076 
-#                                   CanSIS 
-#                                     5915 
-#                                    CIFOR 
-#                                      212 
-#                                   eSOTER 
-#                                      109 
-#                                 IranSoil 
-#                                     1314 
-#                                     ISIS 
-#                                      445 
-#                                     NCSS 
-#                                    31468 
-#                              RadamBrasil 
-#                                     6305 
-#                             Russia_EGRPR 
-#                                      486 
-#                                Simulated 
-#                                     2461 
-#                                     WISE 
-#                                     2233
+#    Can_FECD                                    CanSIS 
+#         1086                                      6545 
+#         ISIS                                      NCSS 
+#          445                                     31468 
+#    Russia_EGRPR                                USGS_Buell 
+#          486                                      1060 
+#         WISE                                    AfSPDB 
+#         2233                                      1700 
+#        CIFOR                                    eSOTER 
+#          212                                       109 
+#    RadamBrasil                                    Alaska 
+#         6305                                       371 
+#    Simulated                                  IranSoil 
+#         2433                                      1314 
+#    AU_NatSoil                                     Artic 
+#         2076                                       275 
 coordinates(TAXOUSDA.pnts) <- ~ LONWGS84+LATWGS84
 proj4string(TAXOUSDA.pnts) <- "+proj=longlat +datum=WGS84"
 unlink("TAXOUSDA.pnts.shp")
 writeOGR(TAXOUSDA.pnts, "TAXOUSDA.pnts.shp", "TAXOUSDA.pnts", "ESRI Shapefile")
-plotKML(TAXOUSDA.pnts["TAXOUSDA.f"], file.name="TAXOUSDA_Feb_12_2016.kml", kmz=TRUE)
+#plotKML(TAXOUSDA.pnts["TAXOUSDA.f"], file.name="TAXOUSDA_Feb_12_2016.kml", kmz=TRUE)
 #str(TAXOUSDA.pnts@data)
 #TAXOUSDA.pnts <- TAXOUSDA.pnts[c("SOURCEDB","SOURCEID","TAXOUSDA.f")]
 save(TAXOUSDA.pnts, file="TAXOUSDA.pnts.rda")
-
-## world plot - overlay and plot points and maps:
-no.plt <- TAXOUSDA.pnts@coords[,2]>-65&TAXOUSDA.pnts@coords[,2]<85
-png(file = "Fig_global_distribution_TAXOUSDA.png", res = 150, width = 2000, height = 900)
-windows(width = 20, height = 9)
-dev.off()
-par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-plot(country, col="darkgrey", ylim=c(-60, 85))
-points(TAXOUSDA.pnts[TAXOUSDA.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("yellow", 0.6), cex=.6, col="black")
-points(TAXOUSDA.pnts[!TAXOUSDA.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("blue", 0.6), cex=.8, col="black")
-dev.off()
-
-## world plot - organic vs histosols:
-hist.sel <- grep("ists", TAXOUSDA.pnts$TAXOUSDA.f)
-length(hist.sel)
-png(file = "Fig_global_distribution_Histosols_USDA.png", res = 150, width = 2000, height = 900)
-windows(width = 20, height = 9)
-dev.off()
-par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-plot(country, col="darkgrey", ylim=c(-60, 85))
-points(TAXOUSDA.pnts[-c(hist.sel, which(TAXOUSDA.pnts$SOURCEDB=="Simulated"), which(!no.plt)),], pch=21, bg=alpha("yellow", 0.6), cex=.8, col="grey")
-points(TAXOUSDA.pnts[c(hist.sel),], pch=21, bg=alpha("blue", 0.6), cex=1.5, col="black")
-dev.off()

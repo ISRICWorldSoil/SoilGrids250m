@@ -5,68 +5,68 @@ Model Details:
 ==============
 
 H2ORegressionModel: drf
-Model ID:  DRF_model_R_1454926531579_1 
+Model ID:  DRF_model_R_1456164095482_1 
 Model Summary: 
-  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves
-1              50            29867934        20        20   20.00000      46343      57723
-  mean_leaves
-1 51626.38000
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves
+1              50            28856339        20        20   20.00000      44358
+  max_leaves mean_leaves
+1      54443 49878.38000
 
 
 H2ORegressionMetrics: drf
 ** Reported on training data. **
 Description: Metrics reported on Out-Of-Bag training samples
 
-MSE:  2459.121
-R2 :  0.3679649
-Mean Residual Deviance :  2459.121
+MSE:  2468.194
+R2 :  0.370192
+Mean Residual Deviance :  2468.194
 
 
 
 
 Variable Importances: 
    variable relative_importance scaled_importance percentage
-1  LATWGS84   8539887616.000000          1.000000   0.070356
-2   I04MOD4   4899586560.000000          0.573730   0.040365
-3   T09MOD3   2680760832.000000          0.313911   0.022086
-4   VW3MOD1   2232402944.000000          0.261409   0.018392
-5   VBFMRG5   2007754624.000000          0.235103   0.016541
-6   T10MOD3   1948351232.000000          0.228147   0.016052
-7   P05MRG3   1912867072.000000          0.223992   0.015759
-8   T06MOD3   1910640896.000000          0.223731   0.015741
-9   P06MRG3   1847788416.000000          0.216372   0.015223
-10  DVMMRG5   1820065024.000000          0.213125   0.014995
-11  T12MOD3   1759595776.000000          0.206044   0.014497
-12  VDPMRG5   1646181760.000000          0.192764   0.013562
-13  N10MOD3   1642082816.000000          0.192284   0.013528
-14  P07MRG3   1608653824.000000          0.188369   0.013253
-15  T04MOD3   1574849152.000000          0.184411   0.012974
+1  LATWGS84   8184630272.000000          1.000000   0.067419
+2   I04MOD4   4921287680.000000          0.601284   0.040538
+3   T05MOD3   2836101376.000000          0.346516   0.023362
+4   VW3MOD1   2779622912.000000          0.339615   0.022897
+5   T10MOD3   2256940288.000000          0.275753   0.018591
+6   VBFMRG5   2136827264.000000          0.261078   0.017602
+7   T09MOD3   1857324416.000000          0.226928   0.015299
+8   DVMMRG5   1781749504.000000          0.217695   0.014677
+9   P05MRG3   1675814144.000000          0.204751   0.013804
+10  VW5MOD1   1591279744.000000          0.194423   0.013108
+11  T04MOD3   1536648192.000000          0.187748   0.012658
+12  TWIMRG5   1495854720.000000          0.182764   0.012322
+13  VDPMRG5   1487120640.000000          0.181697   0.012250
+14  SLPMRG5   1487039360.000000          0.181687   0.012249
+15  T06MOD3   1402594304.000000          0.171369   0.011554
 
 Model Details:
 ==============
 
 H2ORegressionModel: deeplearning
-Model ID:  DeepLearning_model_R_1454926531579_2 
-Status of Neuron Layers: predicting BDRICM, regression, gaussian distribution, Quadratic loss, 71,401 weights/biases, 864.4 KB, 9,299,450 training samples, mini-batch size 1
-  layer units      type dropout       l1       l2 mean_rate rate_RMS momentum mean_weight
-1     1   154     Input  0.00 %                                                          
-2     2   200 Rectifier  0.00 % 0.000000 0.000000  0.136507 0.188725 0.000000    0.023500
-3     3   200 Rectifier  0.00 % 0.000000 0.000000  0.017837 0.027746 0.000000   -0.043184
-4     4     1    Linear         0.000000 0.000000  0.000286 0.000242 0.000000   -0.008326
-  weight_RMS mean_bias bias_RMS
-1                              
-2   0.596174 -0.827628 0.626320
-3   0.115325  0.900317 0.117349
-4   0.047898 -0.746321 0.000000
+Model ID:  DeepLearning_model_R_1456164095482_2 
+Status of Neuron Layers: predicting BDRICM, regression, gaussian distribution, Quadratic loss, 72,201 weights/biases, 874.3 KB, 3,500,220 training samples, mini-batch size 1
+  layer units      type dropout       l1       l2 mean_rate rate_RMS momentum
+1     1   158     Input  0.00 %                                              
+2     2   200 Rectifier  0.00 % 0.000000 0.000000  0.119465 0.187498 0.000000
+3     3   200 Rectifier  0.00 % 0.000000 0.000000  0.023524 0.037520 0.000000
+4     4     1    Linear         0.000000 0.000000  0.000400 0.000286 0.000000
+  mean_weight weight_RMS mean_bias bias_RMS
+1                                          
+2    0.010299   0.383616 -0.314211 0.427877
+3   -0.034762   0.097842  0.930500 0.061401
+4   -0.005956   0.052430 -0.649150 0.000000
 
 
 H2ORegressionMetrics: deeplearning
 ** Reported on training data. **
-Description: Metrics reported on temporary training frame with 9970 samples
+Description: Metrics reported on temporary training frame with 9979 samples
 
-MSE:  2739.688
-R2 :  0.2749593
-Mean Residual Deviance :  2739.688
+MSE:  2937.628
+R2 :  0.2448147
+Mean Residual Deviance :  2937.628
 
 
 
@@ -76,68 +76,68 @@ Model Details:
 ==============
 
 H2ORegressionModel: drf
-Model ID:  DRF_model_R_1454926531579_3 
+Model ID:  DRF_model_R_1456164095482_3 
 Model Summary: 
-  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves
-1              50            23861005        20        20   20.00000      36295      46162
-  mean_leaves
-1 41247.06000
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves
+1              50            23964334        20        20   20.00000      36193
+  max_leaves mean_leaves
+1      46274 41424.10000
 
 
 H2ORegressionMetrics: drf
 ** Reported on training data. **
 Description: Metrics reported on Out-Of-Bag training samples
 
-MSE:  0.1114066
-R2 :  0.3648273
-Mean Residual Deviance :  0.1114066
+MSE:  0.1113723
+R2 :  0.365951
+Mean Residual Deviance :  0.1113723
 
 
 
 
 Variable Importances: 
    variable relative_importance scaled_importance percentage
-1   I04MOD4       330962.468750          1.000000   0.063549
-2   T05MOD3       187343.921875          0.566058   0.035972
-3  LATWGS84       161076.859375          0.486692   0.030929
-4   VW3MOD1       131736.343750          0.398040   0.025295
-5   I10MOD4       128423.757812          0.388031   0.024659
-6   P05MRG3       125486.062500          0.379155   0.024095
-7   I05MOD4       103423.757812          0.312494   0.019859
-8   DVMMRG5        88714.835938          0.268051   0.017034
-9   T06MOD3        85842.484375          0.259372   0.016483
-10  VBFMRG5        80394.570312          0.242911   0.015437
-11  P07MRG3        68622.671875          0.207343   0.013176
-12  T04MOD3        68090.007812          0.205733   0.013074
-13  M05MOD4        63040.539062          0.190476   0.012105
-14  VW2MOD1        62887.601562          0.190014   0.012075
-15  TWIMRG5        60140.769531          0.181715   0.011548
+1   I04MOD4       328019.437500          1.000000   0.062570
+2  LATWGS84       144114.890625          0.439349   0.027490
+3   I10MOD4       132809.671875          0.404884   0.025334
+4   T05MOD3       118905.015625          0.362494   0.022681
+5   T06MOD3       104626.304688          0.318964   0.019958
+6   VW3MOD1       103459.195312          0.315406   0.019735
+7   I05MOD4        94460.031250          0.287971   0.018018
+8   DVMMRG5        92543.562500          0.282128   0.017653
+9   VBFMRG5        88078.226562          0.268515   0.016801
+10  P05MRG3        83906.671875          0.255798   0.016005
+11  M05MOD4        83071.765625          0.253253   0.015846
+12  P11MRG3        75536.890625          0.230282   0.014409
+13  T10MOD3        69963.562500          0.213291   0.013346
+14  ASSDAC3        66338.070312          0.202238   0.012654
+15  T04MOD3        62864.386719          0.191648   0.011991
 
 Model Details:
 ==============
 
 H2ORegressionModel: deeplearning
-Model ID:  DeepLearning_model_R_1454926531579_4 
-Status of Neuron Layers: predicting BDRLOG, regression, gaussian distribution, Quadratic loss, 71,401 weights/biases, 864.4 KB, 5,097,091 training samples, mini-batch size 1
-  layer units      type dropout       l1       l2 mean_rate rate_RMS momentum mean_weight
-1     1   154     Input  0.00 %                                                          
-2     2   200 Rectifier  0.00 % 0.000000 0.000000  0.124043 0.180651 0.000000    0.003613
-3     3   200 Rectifier  0.00 % 0.000000 0.000000  0.027983 0.031113 0.000000   -0.052809
-4     4     1    Linear         0.000000 0.000000  0.000624 0.000480 0.000000   -0.000904
-  weight_RMS mean_bias bias_RMS
-1                              
-2   0.390356 -0.808990 0.387885
-3   0.106352  0.767082 0.142360
-4   0.046685  0.538137 0.000000
+Model ID:  DeepLearning_model_R_1456164095482_4 
+Status of Neuron Layers: predicting BDRLOG, regression, gaussian distribution, Quadratic loss, 72,201 weights/biases, 874.0 KB, 5,603,462 training samples, mini-batch size 1
+  layer units      type dropout       l1       l2 mean_rate rate_RMS momentum
+1     1   158     Input  0.00 %                                              
+2     2   200 Rectifier  0.00 % 0.000000 0.000000  0.086838 0.149723 0.000000
+3     3   200 Rectifier  0.00 % 0.000000 0.000000  0.027983 0.030287 0.000000
+4     4     1    Linear         0.000000 0.000000  0.000581 0.000486 0.000000
+  mean_weight weight_RMS mean_bias bias_RMS
+1                                          
+2    0.034328   0.477219 -1.004862 0.479433
+3   -0.065258   0.129650  0.636564 0.242401
+4    0.004434   0.048558  0.382977 0.000000
 
 
 H2ORegressionMetrics: deeplearning
 ** Reported on training data. **
-Description: Metrics reported on temporary training frame with 9970 samples
+Description: Metrics reported on temporary training frame with 9979 samples
 
-MSE:  0.1309631
-R2 :  0.2455473
-Mean Residual Deviance :  0.1309631
+MSE:  0.1303872
+R2 :  0.2545474
+Mean Residual Deviance :  0.1303872
 
 
 
@@ -147,68 +147,68 @@ Model Details:
 ==============
 
 H2ORegressionModel: drf
-Model ID:  DRF_model_R_1454926531579_5 
+Model ID:  DRF_model_R_1456164095482_5 
 Model Summary: 
-  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves max_leaves
-1              50            34267639        20        20   20.00000      47922      74710
-  mean_leaves
-1 59247.04000
+  number_of_trees model_size_in_bytes min_depth max_depth mean_depth min_leaves
+1              50            35924083        20        20   20.00000      51104
+  max_leaves mean_leaves
+1      74215 62108.90000
 
 
 H2ORegressionMetrics: drf
 ** Reported on training data. **
 Description: Metrics reported on Out-Of-Bag training samples
 
-MSE:  1456363
-R2 :  0.5620869
-Mean Residual Deviance :  1456363
+MSE:  1434689
+R2 :  0.5684407
+Mean Residual Deviance :  1434689
 
 
 
 
 Variable Importances: 
-   variable  relative_importance scaled_importance percentage
-1   P01MRG3 8906400071680.000000          1.000000   0.067488
-2   M04MOD4 7256703762432.000000          0.814774   0.054987
-3   M05MOD4 5207977099264.000000          0.584745   0.039463
-4   VDPMRG5 3774788403200.000000          0.423829   0.028603
-5   DEMMRG5 3395614670848.000000          0.381256   0.025730
-6   M10MOD4 3013200314368.000000          0.338319   0.022832
-7   M06MOD4 2892036833280.000000          0.324714   0.021914
-8   VBFMRG5 2429390422016.000000          0.272769   0.018409
-9   T03MSD3 2211788095488.000000          0.248337   0.016760
-10  I10MOD4 2149991841792.000000          0.241399   0.016291
-11  VW5MOD1 2076889186304.000000          0.233191   0.015737
-12  VW3MOD1 1958890831872.000000          0.219942   0.014843
-13  T11MSD3 1851333017600.000000          0.207865   0.014028
-14  T12MSD3 1780726497280.000000          0.199938   0.013493
-15  P06MRG3 1614305427456.000000          0.181252   0.012232
+   variable   relative_importance scaled_importance percentage
+1   P01MRG3 12118523904000.000000          1.000000   0.091153
+2   M04MOD4  7461820432384.000000          0.615737   0.056126
+3   M10MOD4  3971510960128.000000          0.327722   0.029873
+4   VDPMRG5  3378818318336.000000          0.278814   0.025415
+5   DEMMRG5  3203468361728.000000          0.264345   0.024096
+6   M05MOD4  3121392386048.000000          0.257572   0.023478
+7   ASSDAC3  2719399280640.000000          0.224400   0.020455
+8   VBFMRG5  2178431451136.000000          0.179760   0.016386
+9   PRSMRG3  2078411456512.000000          0.171507   0.015633
+10  I10MOD4  2071195418624.000000          0.170912   0.015579
+11  P10MRG3  1950061690880.000000          0.160916   0.014668
+12  T11MSD3  1940878917632.000000          0.160158   0.014599
+13  T03MSD3  1927761887232.000000          0.159076   0.014500
+14  P07MRG3  1861491621888.000000          0.153607   0.014002
+15  VW5MOD1  1833142845440.000000          0.151268   0.013788
 
 Model Details:
 ==============
 
 H2ORegressionModel: deeplearning
-Model ID:  DeepLearning_model_R_1454926531579_6 
-Status of Neuron Layers: predicting BDTICM, regression, gaussian distribution, Quadratic loss, 71,201 weights/biases, 862.0 KB, 6,399,339 training samples, mini-batch size 1
-  layer units      type dropout       l1       l2 mean_rate rate_RMS momentum mean_weight
-1     1   153     Input  0.00 %                                                          
-2     2   200 Rectifier  0.00 % 0.000000 0.000000  0.132521 0.195736 0.000000   -0.000029
-3     3   200 Rectifier  0.00 % 0.000000 0.000000  0.010149 0.023856 0.000000   -0.031903
-4     4     1    Linear         0.000000 0.000000  0.000202 0.000202 0.000000    0.031763
-  weight_RMS mean_bias bias_RMS
-1                              
-2   0.405539  0.113064 0.464211
-3   0.122265  0.975181 0.113416
-4   0.094722  0.900269 0.000000
+Model ID:  DeepLearning_model_R_1456164095482_6 
+Status of Neuron Layers: predicting BDTICM, regression, gaussian distribution, Quadratic loss, 72,001 weights/biases, 871.9 KB, 8,101,707 training samples, mini-batch size 1
+  layer units      type dropout       l1       l2 mean_rate rate_RMS momentum
+1     1   157     Input  0.00 %                                              
+2     2   200 Rectifier  0.00 % 0.000000 0.000000  0.080893 0.162141 0.000000
+3     3   200 Rectifier  0.00 % 0.000000 0.000000  0.010993 0.028237 0.000000
+4     4     1    Linear         0.000000 0.000000  0.000261 0.000381 0.000000
+  mean_weight weight_RMS mean_bias bias_RMS
+1                                          
+2    0.006109   0.497704  0.124882 0.609325
+3   -0.031480   0.129116  0.967417 0.103071
+4    0.042982   0.097187  0.890205 0.000000
 
 
 H2ORegressionMetrics: deeplearning
 ** Reported on training data. **
-Description: Metrics reported on temporary training frame with 9960 samples
+Description: Metrics reported on temporary training frame with 9989 samples
 
-MSE:  1577521
-R2 :  0.4882574
-Mean Residual Deviance :  1577521
+MSE:  1967720
+R2 :  0.4333723
+Mean Residual Deviance :  1967720
 
 
 
