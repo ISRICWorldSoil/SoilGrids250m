@@ -108,6 +108,7 @@ saveRDS(mrf_TAXNWRB, file="mrf_TAXNWRB.rds")
 
 ## predict for sample locations:
 wrapper.predict_c(i="NA_060_036", varn="TAXNWRB", gm1=m_TAXNWRB, gm2=mrf_TAXNWRB, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend, soil.fix=soil.fix)
+#wrapper.predict_c(i="NA_060_036", varn="TAXNWRB", gm1="/data/models/TAXNWRB/m_TAXNWRB.rds", gm2="/data/models/TAXNWRB/mrf_TAXNWRB.rds", in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend, soil.fix=soil.fix)
 
 ## TH: TAKES ABOUT 12-14 HOURS
 ## PROBLEMS WITH RAM (HENCE <25 CORES) BECAUSE THE prediction location/data objects are LARGE
@@ -122,13 +123,13 @@ pr.dirs <- basename(dirname(list.files(path="/data/covs", pattern=glob2rx("*.rds
 str(pr.dirs)
 ## 2353 dirs
 sfInit(parallel=TRUE, cpus=15)
-sfExport("wrapper.predict_c", "predict_df", "m_TAXNWRB", "mrf_TAXNWRB", "pr.dirs", "col.legend", "soil.fix")
+sfExport("wrapper.predict_c", "predict_df", "pr.dirs", "col.legend", "soil.fix")
 sfLibrary(rgdal)
 sfLibrary(sp)
 sfLibrary(plyr)
 sfLibrary(nnet)
 sfLibrary(randomForest)
-x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn="TAXNWRB", gm1=m_TAXNWRB, gm2=mrf_TAXNWRB, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend, soil.fix=soil.fix) )  } )
+x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn="TAXNWRB", gm1="/data/models/TAXNWRB/m_TAXNWRB.rds", gm2="/data/models/TAXNWRB/mrf_TAXNWRB.rds", in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend, soil.fix=soil.fix) )  } )
 sfStop()
 
 ## world plot - overlay and plot points and maps:
