@@ -4,8 +4,10 @@ library(rgdal)
 library(gdalUtils)
 library(raster)
 library(RSAGA)
+library(plotKML)
 library(gridExtra)
 library(lattice)
+library(hexbin)
 
 data(R_pal, package = "plotKML")
 
@@ -26,21 +28,28 @@ comparedepth <- function(r0, r1, tname)
     r1$cl <- toclass(r1$band1, dclass)
     com.c <- getcor(r0$cl, r1$cl, length(dclass$class))
     plotList <- NULL
-    p.at <- sapply(sapply(seq(0,5,0.5), function(x)10^x), log1p)
-    plotList[[1]] <- spplot(r1, zcol = "band1", scales=list(draw = TRUE), at = p.at,
-        main = "Predicted", formula = as.formula(log1p(band1)~x+y) 
-     )
+    p.at <- sapply(sapply(seq(0,5,0.25), function(x)10^x), log1p)
+    x1 <- ceiling(r0@bbox[1,1]/100000)*100000
+    x2 <- floor(r0@bbox[1,2]/100000)*100000
+    y1 <- ceiling(r0@bbox[2,1]/100000)*100000
+    y2 <- floor(r0@bbox[2,2]/100000)*100000
+    plotList[[1]] <- spplot(r1, zcol = "band1", 
+        scales=list(draw = TRUE,x=list(at=seq(x1,x2, 100000),labels=seq(x1,x2, 100000)/1000),
+                    y=list(at=seq(y1,y2, 100000),labels=seq(y1,y2, 100000)/1000)), at = p.at,
+        main = "Predicted", formula = as.formula(log1p(band1)~s1+s2) , colorkey = list(space = "right", height = 0.4),xlab="Easting (km)", ylab = "Northing (km)")
     plotList[[1]]$legend$right$args$key$labels$at <- sapply(sapply(seq(0,5,1), function(x)10^x), log1p)
     plotList[[1]]$legend$right$args$key$labels$labels <- c(0,10,100,1000,10000,"100000")
-    plotList[[2]] <- spplot(r0, zcol = "band1", scales=list(draw = TRUE), at = p.at, 
-        main = "Regional study", formula = as.formula(log1p(band1)~x+y) )
-    plotList[[2]]$legend$right$args$key$labels$at <- sapply(sapply(seq(0,5,1), function(x)10^x), log1p)
-    plotList[[2]]$legend$right$args$key$labels$labels <- c(0,10,100,1000,10000,"100000")
+    plotList[[3]] <- spplot(r0, zcol = "band1", 
+              scales=list(draw = TRUE,x=list(at=seq(x1,x2, 100000),labels=seq(x1,x2, 100000)/1000),
+              y=list(at=seq(y1,y2, 100000),labels=seq(y1,y2, 100000)/1000)), at = p.at, 
+        main = "Regional study", formula = as.formula(log1p(band1)~s1+s2),xlab="Easting (km)", ylab = "Northing (km)" )
+    plotList[[3]]$legend$right$args$key$labels$at <- sapply(sapply(seq(0,5,1), function(x)10^x), log1p)
+    plotList[[3]]$legend$right$args$key$labels$labels <- c(0,10,100,1000,10000,"100000")
     #plotList[[3]] <- spplot(r1, zcol =c("dif"),  xlab = "Difference")
     out <- r1$band1+1
     meas <- r0$band1+1
-    plotList[[3]] <- hexbinplot(out~meas,
-                 colramp=colorRampPalette(R_pal[["bpy_colors"]]), main= "Absolute depth to bedrock (cm)",
+    plotList[[2]] <- hexbinplot(out~meas,
+                 colramp=colorRampPalette(R_pal[["bpy_colors"]]), main= "",
                  xlab="Regional study", ylab="Predicted",
                  type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8,
                  scales=list(x = list(log = 2, equispaced.log = FALSE), y = list(log = 2, equispaced.log = FALSE)),
@@ -49,9 +58,9 @@ comparedepth <- function(r0, r1, tname)
                  asp=1, xbins=20, density=40, panel=pfun
                  , colorcut=c(0,0.002,0.01,0.03,0.07,0.15,0.25,0.5,1)
                  )    
-    do.call(grid.arrange, c(plotList, ncol=2, nrow =2))
+    do.call(grid.arrange, c(plotList, ncol=3, nrow =1))
     #plot(plotList)
-    dev.copy(png,paste0("../", tname, ".png"),  width = 1000, height = 700, units = "px")
+    dev.copy(png,paste0("../", tname, ".png"),  width = 1500, height = 700, units = "px")
     dev.off()
     return(list(r2 = r2, me = me, rmse =rmse, com.c = com.c))
 }
@@ -90,6 +99,9 @@ system(paste("gdalwarp  -te ",
 
 tmp1 <- readGDAL("./tmp/tmp1.tif")
 #tmp1$band1 <- expm1(tmp1$band1)
+prj <- CRS("+proj=utm +zone=15 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+tmp0 <- reproject(tmp0, prj )
+tmp1 <- reproject(tmp1, prj )
 st[[1]] <- comparedepth(tmp0, tmp1, tname)
 del_unzip()
 tmp0$dtb <- tmp0$band1
@@ -114,6 +126,9 @@ system(paste("gdalwarp  -te ",
              src_d," ./tmp1.tif"))   
 
 tmp1 <- readGDAL("./tmp1.tif")
+prj <- CRS("+proj=utm +zone=15 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+tmp0 <- reproject(tmp0, prj )
+tmp1 <- reproject(tmp1, prj )
 #tmp1$band1 <- expm1(tmp1$band1)
 st[[2]] <- comparedepth(tmp0, tmp1, tname)
 del_unzip()
