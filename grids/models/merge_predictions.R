@@ -64,11 +64,17 @@ make_mosaick(i="dominant", varn="HISTPR", ext=ext, tile.names=tile.names, ot="In
 ## test soil property:
 #make_mosaick(i="M_sd1", varn="ORCDRC", ext=ext, tr=0.008333333, in.path="/data/predicted1km", r250m=FALSE)
 
-## Soil depths:
+## Soil depths 1km:
 tbdr = c("BDRICM", "BDRLOG", "BDTICM")
 sfInit(parallel=TRUE, cpus=3)
 sfExport("equi7t3", "gdalbuildvrt", "gdalwarp", "gdaladdo", "gdal_translate", "ext", "tbdr", "mosaick.equi7t3", "make_mosaick")
 out <- sfClusterApplyLB(tbdr, function(x){make_mosaick(i="M", varn=x, ext=ext, tr=0.008333333, in.path="/data/predicted1km", r250m=FALSE, ot="Int32", dstnodata=-99999, tile.names=tile.names)})
+sfStop()
+
+## Soil depths 250m:
+sfInit(parallel=TRUE, cpus=3)
+sfExport("equi7t3", "gdalbuildvrt", "gdalwarp", "gdaladdo", "gdal_translate", "ext", "tbdr", "mosaick.equi7t3", "make_mosaick", "tile.names")
+out <- sfClusterApplyLB(tbdr, function(x){make_mosaick(i="M", varn=x, ext=ext, tr=0.002083333, in.path="/data/predicted", r250m=TRUE, ot="Int32", dstnodata=-99999, tile.names=tile.names)})
 sfStop()
 
 ## Resample all soil properties 1km:
@@ -85,7 +91,7 @@ sfStop()
 tvars = c("ORCDRC", "PHIHOX", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD", "CECSUM") ## , "OCSTHA"
 props = rep(tvars, 6)
 varn.lst =  paste0("M_sd", sapply(1:6, function(x){rep(x, length(tvars))}))
-## TAKES A LOT OF HARD DISK SPACE
+## without compression TAKES A LOT OF HARD DISK SPACE
 sfInit(parallel=TRUE, cpus=40)
 sfExport("equi7t3", "gdalbuildvrt", "gdalwarp", "tile.names", "gdaladdo", "gdal_translate", "ext", "props", "varn.lst", "mosaick.equi7t3", "make_mosaick")
 out <- sfClusterApplyLB(1:length(props), function(x){make_mosaick(varn.lst[x], varn=props[x], ext=ext, in.path="/data/predicted", ot="Int16", dstnodata=-32768, tile.names=tile.names, tr=0.002083333, r250m=TRUE, compress=TRUE)})

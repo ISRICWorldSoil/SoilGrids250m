@@ -43,7 +43,9 @@ save(ovA, file="ovA.rda", compression_level="xz")
 hist(ovA$BDRICM)
 ## TH: filter out few very high values?
 range(ovA$BDTICM, na.rm=TRUE)
-#ovA$BDTICM <- ifelse(ovA$BDTICM>300000, NA, ovA$BDTICM)
+## Remove any negative values:
+summary(ovA$BDTICM)
+ovA$BDTICM <- ifelse(ovA$BDTICM<0, NA, ovA$BDTICM)
 ## use log to put more emphasis on lower values?
 #ovA$logBDTICM <- log1p(ovA$BDTICM)
 #hist(log1p(ovA$BDTICM), breaks=40, col="grey", xlab="log-BDTICM", main="Histogram")
@@ -54,8 +56,11 @@ t.vars <- c("BDRICM", "BDRLOG", "BDTICM")
 z.min <- c(0,0,0)
 z.max <- c(250,100,Inf)
 pr.lst <- des$WORLDGRIDS_CODE
+## remove some predictors that might lead to artifacts (buffer maps and land cover):
+pr.lst <- pr.lst[-sapply(c("QUAUEA3","VOLNOA3","C??GLC5"), function(x){grep(
+  glob2rx(x), pr.lst)})]
 formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ LATWGS84 + ', paste(pr.lst, collapse="+")))})
-## For BDTICM we can not use latitude as predictor because points are somewhat clustered in space 
+## For BDTICM we can not use latitude as predictor because points are somewhat clustered in LAT space 
 formulaString.lst[[3]] = as.formula(paste(t.vars[3], ' ~ ', paste(pr.lst, collapse="+")))
 
 ## H2O package more suited for large data (http://www.r-bloggers.com/benchmarking-random-forest-implementations/)
@@ -105,6 +110,16 @@ write.table(mdLX_path, file="mdLX_path.txt")
 #mrfX_path = as.list(read.table("mrfX_path.txt"))
 #mdLX_path = as.list(read.table("mdLX_path.txt"))
 
+## world plot - overlay and plot points and maps:
+shp.pnts <- ovA[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84",t.vars)]
+shp.pnts <- xy.pnts[complete.cases(xy.pnts[,c("LONWGS84","LATWGS84")]),]
+coordinates(xy.pnts) = ~ LONWGS84+LATWGS84
+proj4string(xy.pnts) = proj4string(BDR.pnts)
+unlink("Soil_depth_training_points.shp")
+writeOGR(xy.pnts, "Soil_depth_training_points.shp", "Soil_depth_training_points", "ESRI Shapefile")
+unlink("Soil_depth_training_points.zip")
+system("7za a Soil_depth_training_points.zip Soil_depth_training_points.*")
+
 ## ------------- PREDICTIONS -----------
 
 ## Predict per tile:
@@ -127,7 +142,7 @@ x.ll <- reproject(x)
 kml(x.ll, file.name="BDTICM_M_NA_060_036.kml", folder.name="Absolute depth in cm", colour=band1, colour_scale=SAGA_pal[[1]], raster_name="BDTICM_M_NA_060_036.png", z.lim=c(0,5000))
 
 ## world plot - overlay and plot points and maps:
-xy.pnts <- join(ovA[complete.cases(ovA[,all.vars(formulaString.lst[[1]])[-1]]),c("SOURCEID","SOURCEDB","BDTICM")], as.data.frame(BDR.pnts[c("SOURCEID")]), type="left", match="first")
+xy.pnts <- join(ovA[complete.cases(ovA[,c("SOURCEID","SOURCEDB")]),], as.data.frame(BDR.pnts[c("SOURCEID")]), type="left", match="first")
 xy.pnts <- xy.pnts[!is.na(xy.pnts$LONWGS84),]
 coordinates(xy.pnts) = ~ LONWGS84+LATWGS84
 proj4string(xy.pnts) = proj4string(BDR.pnts)

@@ -1,10 +1,14 @@
 Results of Cross-validation:
 
+Variable: BDRICM
+         ME      MAE     RMSE R.squared   logRMSE logR.squared
+1 0.8736909 32.02141 50.92621 0.3393077 0.6807419    0.1965035
+
 Variable: BDRLOG
-           ME       MAE     RMSE R.squared   logRMSE logR.squared
-1 0.002660889 0.2399199 0.339321 0.3438289 0.2371599    0.3328443
+             ME       MAE      RMSE R.squared   logRMSE logR.squared
+1 -0.0009230927 0.2421621 0.3398606 0.3427247 0.2379907    0.3417688
 
 Variable: BDTICM
-         ME      MAE     RMSE R.squared  logRMSE logR.squared
-1 -9.202127 678.7339 1255.382 0.5249877 1.249769    0.2894053
+        ME      MAE    RMSE R.squared  logRMSE logR.squared
+1 -28.9641 677.5983 1235.62 0.5399007 1.259034    0.3989213
 
