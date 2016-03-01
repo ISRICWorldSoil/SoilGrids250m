@@ -95,17 +95,18 @@ cs <- getcross(xst, yst,xst2, yst2, cellsize, gkm, xy1, xy2, wells.depth,prj)
 
 # set the distance by lonlat or by the actual values
 dis <- ((xy1[1]-xy2[1])^2 +(xy1[2]-xy2[2])^2)^0.5/cellsize
-dnum <- dim(cs$spp)[1]
+dis <- 357
+dnum <- sum(!is.na(cs$spp$bdt))
 pat <- seq(0,dnum,100*dnum/dis)
 plot(cs$spp[,c(1,4)], type = "l", xlab = paste("Distance from", attr(xy1, "name") ,"(km)") , 
-     ylim= range(c(cs$spp$dem,cs$spp$bdd,cs$spp$bdd2,cs$spo$bdd),na.rm = T), 
+     ylim=c(range(c(cs$spp$dem,cs$spp$bdd,cs$spp$bdd2,cs$spo$bdd),na.rm = T)[1], 450),  
      ylab = "Elevation (m)", xaxt = "n")
 axis(1, at = c(pat,dnum),
      labels = c(attr(xy1, "name"), (1:(length(pat)-1))*100,attr(xy2, "name")))
 points(cs$spo[,c(1,4)])
 lines(cs$spp[,c(1,5)],col="red")
 lines(cs$spp[,c(1,6)],col="blue")
-dev.copy(png,paste0(tname, "_cs.png"),  width = 1000, height = 700, units = "px")
+dev.copy(tiff,paste0(tname, "_cs.tif"),  width = 1000, height = 400,  units = "px")
 dev.off()
 
 
@@ -143,19 +144,20 @@ cs <- getcross(xst, yst, xst2, yst2,cellsize, gkm, xy1, xy2, wells.depth,prj)
 
 # set the distance by lonlat or by the actual values
 dis <- ((xy1[1]-xy2[1])^2 +(xy1[2]-xy2[2])^2)^0.5/cellsize
-dnum <- dim(cs$spp)[1]
+dis <- 515
+dnum <- sum(!is.na(cs$spp$bdt))
 pat <- seq(0,dnum,100*dnum/dis)
 plot(cs$spp[,c(1,4)], type = "l", xlab = paste("Distance from", attr(xy1, "name") ,"(km)") , 
-     ylim= range(c(cs$spp$dem,cs$spp$bdd,cs$spp$bdd2,cs$spo$bdd),na.rm = T), 
+     ylim=c(range(c(cs$spp$dem,cs$spp$bdd,cs$spp$bdd2,cs$spo$bdd),na.rm = T)[1], 500),  
      ylab = "Elevation (m)", xaxt = "n")
-axis(1, at = c(pat,dnum),
-     labels = c(attr(xy1, "name"), (1:(length(pat)-1))*100,attr(xy2, "name")))
+axis(1, at = c(pat[1:(length(pat)-1)],dnum),
+     labels = c(attr(xy1, "name"), (1:(length(pat)-2))*100, attr(xy2, "name")))
+
 points(cs$spo[,c(1,4)])
 lines(cs$spp[,c(1,5)],col="red")
 lines(cs$spp[,c(1,6)],col="blue")
-dev.copy(png,paste0(tname, "_cs.png"),  width = 1000, height = 700, units = "px")
+dev.copy(tiff,paste0(tname, "_cs.tif"),  width = 1000, height = 300,  units = "px")
 dev.off()
-
 
 
 

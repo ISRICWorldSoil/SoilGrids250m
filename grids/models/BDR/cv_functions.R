@@ -10,46 +10,63 @@ if(length(new.packages)) install.packages(new.packages)
 ## --------------------------------------------------------------
 
 ## prediction error for predicting probs:
-cv_factor <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold){ 
+cv_factor <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold, h2o){ 
   varn <- all.vars(formulaString)[1]
   sel <- dismo::kfold(rmatrix, k=nfold, by=rmatrix[,varn])
   message(paste("Running ", nfold, "-fold cross validation with model re-fitting...", sep=""))
   ## run in parallel:
-  if(missing(cpus)){ 
-    cpus <- parallel::detectCores(all.tests = FALSE, logical = FALSE) 
+  if(h2o==TRUE){
+    cpus = 1
+  } else {
+    if(missing(cpus)){ 
+      cpus <- parallel::detectCores(all.tests = FALSE, logical = FALSE) 
+    }
   }
-  snowfall::sfInit(parallel=TRUE, cpus=cpus)
-  snowfall::sfExport("ensemble.predict","idcol","formulaString","rmatrix","sel","varn","predict_parallel")
-  snowfall::sfLibrary(package="ROCR", character.only=TRUE)
-  snowfall::sfLibrary(package="nnet", character.only=TRUE)
-  snowfall::sfLibrary(package="plyr", character.only=TRUE)
-  snowfall::sfLibrary(package="randomForest", character.only=TRUE)
-  out <- snowfall::sfLapply(1:nfold, function(j){predict_parallel(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol)})
-  snowfall::sfStop()
+  if(cpus==1){
+    out <- list()
+    for(j in 1:nfold){ 
+      out[[j]] <- predict_parallel(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, h2o=h2o)
+    }
+  } else {
+    snowfall::sfInit(parallel=TRUE, cpus=cpus)
+    snowfall::sfExport("ensemble.predict","idcol","formulaString","rmatrix","sel","varn","predict_parallel")
+    snowfall::sfLibrary(package="ROCR", character.only=TRUE)
+    snowfall::sfLibrary(package="nnet", character.only=TRUE)
+    snowfall::sfLibrary(package="plyr", character.only=TRUE)
+    snowfall::sfLibrary(package="randomForest", character.only=TRUE)
+    out <- snowfall::sfLapply(1:nfold, function(j){predict_parallel(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, h2o=h2o)})
+    snowfall::sfStop()
+  }
+  
+  
   ## calculate totals per soil type
   N.tot <- plyr::rbind.fill(lapply(out, function(x){x[["n.l"]]}))
   N.tot <- colSums(N.tot, na.rm = T)
+  
   ## mean error per soil type:
   mean.error <- plyr::rbind.fill(lapply(out, function(x){x[["error.l"]]}))
   mean.error <- colSums(mean.error)/N.tot
   error <- plyr::rbind.fill(lapply(out, function(x){x[["error"]]}))
   obs <- plyr::rbind.fill(lapply(out, function(x){ as.data.frame(x[["obs.pred"]][[1]])}))
   pred <- plyr::rbind.fill(lapply(out, function(x){ as.data.frame(x[["obs.pred"]][[2]])}))
+  
   #get rid of NA in pred
   error <- error[which(!is.na(pred[,1])&!is.na(pred[,2])),]
   obs <- obs[which(!is.na(pred[,1])&!is.na(pred[,2])),]
   pred <- pred[which(!is.na(pred[,1])&!is.na(pred[,2])),]
+  
   ## Get the most probable class:
-
   cl <- parallel::makeCluster(getOption("cl.cores", cpus))
   ranks.pred <- parallel::parApply(cl, pred, MARGIN=1, which.max)
   ranks.obs <- parallel::parApply(cl, obs, MARGIN=1, which.max)
   parallel::stopCluster(cl)
+  
   ## derive confusion matrix:
   cf <- mda::confusion(names(pred)[ranks.pred], names(obs)[ranks.obs])
   c.kappa <- psych::cohen.kappa(cf)
   purity <- sum(diag(cf))/sum(cf)*100  
   ## Accuracy for Binomial var [http://www.r-bloggers.com/evaluating-logistic-regression-models/]: 
+  library(ROCR)
   ROC <- performance( prediction(pred[,1], obs[,1]), measure="tpr", x.measure = "fpr")
   TPR <- sapply(1:ncol(obs), function(c){mean(performance( prediction(pred[,c], obs[,c]), measure="tpr")@y.values[[1]])})
   AUC <- sapply(1:ncol(obs), function(c){performance( prediction(pred[,c], obs[,c]), measure="auc")@y.values[[1]]})
@@ -59,30 +76,42 @@ cv_factor <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold){
 }
 
 ## factor-type vars:
-ensemble.predict <- function(formulaString, s.train, s.test, MaxNWts = 19000, ...){ 
+ensemble.predict <- function(formulaString, s.train, s.test, MaxNWts = 19000, h2o=h2o, ...){ 
   ## drop empty levels to avoid errors:
   s.train[,all.vars(formulaString)[1]] <- droplevels(s.train[,all.vars(formulaString)[1]])
-  gm1 <- nnet::multinom(formulaString, s.train, MaxNWts = MaxNWts)
-  gm2 <- randomForest(formulaString, data=s.train, na.action= na.omit, ...)
-  probs1 <- predict(gm1, s.test, type="probs", na.action = na.pass) ## nnet
-  probs2 <- predict(gm2, s.test, type="prob", na.action = na.pass) ## randomForest
-  if(length(levels(s.train$BDRLOG))==2)
-  {
-    probs1 <- cbind(1-probs1,probs1)
-    colnames(probs1) <- gm1$lev
-  }
-  lt <- list(probs1[,gm1$lev], probs2[,gm1$lev])
-  probs <- Reduce("+", lt) / length(lt)
+  
+  if(h2o==TRUE){
+    ## select only complete point pairs
+    train.hex <- as.h2o(s.train[complete.cases(s.train[,all.vars(formulaString)]),all.vars(formulaString)], destination_frame = "train.hex")    
+    test.hex <- as.h2o(s.test[,all.vars(formulaString)], destination_frame = "test.hex")
+    gm2 <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString)), training_frame=train.hex)
+    probs2 <- as.data.frame(h2o.predict(gm2, test.hex, type="probs", na.action=na.pass))[, c("p0","p1")]
+    colnames(probs2) <- substring(names(probs2),2)
+    probs <- probs2
+    h2o.removeAll()
+  } else {
+    gm1 <- nnet::multinom(formulaString, s.train, MaxNWts = MaxNWts)
+    probs1 <- predict(gm1, s.test, type="probs", na.action = na.pass) ## nnet
+    gm2 <- randomForest(formulaString, data=s.train, na.action= na.omit)
+    probs2 <- predict(gm2, s.test, type="prob", na.action = na.pass) ## randomForest 
+    if(length(levels(s.train$BDRLOG))==2)
+    {
+      probs1 <- cbind(1-probs1,probs1)
+      colnames(probs1) <- gm1$lev
+    }
+    lt <- list(probs1[,gm1$lev], probs2[,gm1$lev])
+    probs <- Reduce("+", lt) / length(lt)  
+  } 
   return(probs)
 }   
 
 ## ensemble prediction in parallel (for parallelization):
-predict_parallel <- function(j, sel, varn, formulaString, rmatrix, idcol){
+predict_parallel <- function(j, sel, varn, formulaString, rmatrix, idcol,h2o){
   s.train <- rmatrix[!sel==j,]
   s.test <- rmatrix[sel==j,]
   n.l <- plyr::count(s.test[,varn])
   n.l <- data.frame(matrix(n.l$freq, nrow=1, dimnames = list(1, paste(n.l$x))))
-  probs <- ensemble.predict(formulaString=formulaString, s.train=s.train, s.test=s.test)
+  probs <- ensemble.predict(formulaString=formulaString, s.train=s.train, s.test=s.test, h2o=h2o)
   names <- colnames(probs)
   obs <- data.frame(lapply(names, FUN=function(i){ifelse(s.test[, varn]==i, 1, 0)}))
   names(obs) = names

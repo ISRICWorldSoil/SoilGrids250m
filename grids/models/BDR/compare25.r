@@ -49,7 +49,7 @@ comparedepth <- function(r0, r1, tname)
     out <- r1$band1+1
     meas <- r0$band1+1
     plotList[[2]] <- hexbinplot(out~meas,
-                 colramp=colorRampPalette(R_pal[["bpy_colors"]]), main= "",
+                 colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main= "",
                  xlab="Regional study", ylab="Predicted",
                  type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8,
                  scales=list(x = list(log = 2, equispaced.log = FALSE), y = list(log = 2, equispaced.log = FALSE)),
