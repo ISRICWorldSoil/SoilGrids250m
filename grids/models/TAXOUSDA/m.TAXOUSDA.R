@@ -31,13 +31,21 @@ load("../equi7t3.rda")
 col.legend <- read.csv("TAXOUSDA_legend.csv")
 col.legend <- col.legend[!is.na(col.legend$R),]
 col.legend$COLOR <- rgb(red=col.legend$R/255, green=col.legend$G/255, blue=col.legend$B/255)
-#makeSAGAlegend(x=as.factor(paste(col.legend$Group)), MINIMUM=col.legend$Number, MAXIMUM=col.legend$Number+1, col_pal=col.legend$COLOR, filename="TAXOUSDA.txt")
+unlink("TAXOUSDA.txt")
+makeSAGAlegend(x=as.factor(paste(col.legend$Group)), MINIMUM=col.legend$Number, MAXIMUM=col.legend$Number+1, col_pal=col.legend$COLOR, filename="TAXOUSDA.txt")
 des <- read.csv("../SoilGrids250m_COVS250m.csv")
 load("../../profs/TAXOUSDA/TAXOUSDA.pnts.rda")
-## 54,311 points!
+## 58,124 points!
+## Post-processing filter:
+soil.clim <- read.csv("../SOIL_CLIMATE_MATRIX.csv")
+soil.clim <- soil.clim[soil.clim$Classification_system=="TAXOUSDA",-which(names(soil.clim) %in% c("Classification_system","COUNT_training","Min_lat","Max_lat","Max_elevation"))]
+soil.fix <- data.frame(t(soil.clim[,-1]))
+names(soil.fix) = gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\.\\.", soil.clim$Name)))
+soil.fix <- lapply(soil.fix, function(i){grep("x",i)})
+soil.fix <- soil.fix[sapply(soil.fix, function(i){length(i)>0})]
 
 ## OVERLAY AND FIT MODELS:
-ov <- extract.equi7t3(x=TAXOUSDA.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=40)
+ov <- extract.equi7t3(x=TAXOUSDA.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=48)
 ## TAKES ca 10 MINS FOR 40k points
 #str(ov)
 ## remove all NA values:
@@ -51,14 +59,14 @@ gzip("ov.TAXOUSDA_SoilGrids250m.csv")
 save(ov, file="ov.TAXOUSDA.rda")
 summary(ov$TAXOUSDA.f)
 
-## FIT MODELS:
+## ------------- MODEL FITTING -----------
+
 pr.lst <- des$WORLDGRIDS_CODE
 formulaString.USDA = as.formula(paste('TAXOUSDA.f ~ LATWGS84 + ', paste(pr.lst, collapse="+")))
 formulaString.USDA
 
 ## TAKES > 20 mins to fit...
 m_TAXOUSDA <- nnet::multinom(formulaString.USDA, ov, MaxNWts = 11000)
-# group ‘Gelands’ is empty
 #str(fitted(m_TAXOUSDA))
 #head(signif(fitted(m_TAXOUSDA),3))
 ## goodness of fit:
@@ -70,9 +78,9 @@ b = attr(cf, "dimnames")[[2]] %in% attr(cf, "dimnames")[[1]]
 c.kappa = psych::cohen.kappa(cf[a,b])
 ac <- sum(diag(cf))/sum(cf)*100
 message(paste("Estimated Cohen Kappa (weighted):", signif(c.kappa$weighted.kappa, 4)))
-## 38%
+## 39%
 message(paste("Map purity:", signif(ac, 3)))
-## 34%
+## 35%
 saveRDS(m_TAXOUSDA, file="m_TAXOUSDA.rds")
 
 ## subset to complete pairs:
@@ -103,6 +111,8 @@ saveRDS(mrf_TAXOUSDA, file="mrf_TAXOUSDA.rds")
 #ss <- sample(1:nrow(ov), size=1000)
 #mkk_TAXOUSDA <- kknn(formulaString.USDA, train=ov, test=ov, distance=1, kernel="triangular")
 
+## ------------- PREDICTIONS -----------
+
 ## predict for sample locations:
 #wrapper.predict_c(i="NA_060_036", varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend) ## gm3=svm_TAXOUSDA,
 #wrapper.predict_c(i="EU_036_015", varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend)
@@ -120,23 +130,55 @@ saveRDS(mrf_TAXOUSDA, file="mrf_TAXOUSDA.rds")
 ## clean-up:
 #del.lst <- list.files(path="/data/predicted", pattern=glob2rx("^TAXOUSDA*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
+#del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx("^TAXOUSDA*.tif"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
 
 ## run all predictions in parallel
 ## TH: TAKES ABOUT 8-10 HOURS
 ## THERE IS A PROBLEM WITH RAM (HENCE <25 CORES) -> THE mrf_TAXOUSDA object is LARGE
 pr.dirs <- basename(dirname(list.files(path="/data/covs", pattern=glob2rx("*.rds"), recursive = TRUE, full.names = TRUE)))
 str(pr.dirs)
-## 2356 dirs
-sfInit(parallel=TRUE, cpus=15)
-sfExport("wrapper.predict_c", "mrf_TAXOUSDA", "m_TAXOUSDA", "pr.dirs", "col.legend")
+## 2353 dirs
+sfInit(parallel=TRUE, cpus=45) ## cpus=15
+sfExport("wrapper.predict_c", "predict_df", "mrf_TAXOUSDA", "m_TAXOUSDA", "pr.dirs", "col.legend", "soil.fix")
 sfLibrary(rgdal)
 sfLibrary(sp)
 sfLibrary(plyr)
 sfLibrary(nnet)
 sfLibrary(randomForest)
 ## must be 'sfClusterApplyLB' otherwise 2-3 times slower
-x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend) )  } )
+x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs1km", out.path="/data/predicted1km", col.legend=col.legend, soil.fix=soil.fix) )  } )
+#x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn="TAXOUSDA", gm1=m_TAXOUSDA, gm2=mrf_TAXOUSDA, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend) )  } )
 sfStop()
+
+## world plot - overlay and plot points and maps:
+xy.pnts <- join(ovA[,c("SOURCEID","SOURCEDB","TAXOUSDA.f")], as.data.frame(TAXOUSDA.pnts[c("SOURCEID")]), type="left", match="first")
+coordinates(xy.pnts) = ~ LONWGS84+LATWGS84
+proj4string(xy.pnts) = proj4string(TAXOUSDA.pnts)
+plotKML(xy.pnts["TAXOUSDA.f"], folder.name="USDA classifications", file.name="TAXOUSDA_observed.kml")
+zip(zipfile="TAXOUSDA_observed.kmz", files="TAXOUSDA_observed.kml", zip="zip")
+
+require(maptools)
+country.m <- map('world', plot=FALSE, fill=TRUE)
+IDs <- sapply(strsplit(country.m$names, ":"), function(x) x[1])
+country <- as(map2SpatialPolygons(country.m, IDs=IDs), "SpatialLines")
+no.plt <- xy.pnts@coords[,2]>-65 & xy.pnts@coords[,2]<85
+png(file = "Fig_global_distribution_TAXOUSDA.png", res = 150, width = 2000, height = 900)
+par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+plot(country, col="darkgrey", ylim=c(-60, 85))
+points(xy.pnts[xy.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("yellow", 0.6), cex=.6, col="black")
+points(xy.pnts[!xy.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("red", 0.6), cex=.8, col="black")
+dev.off()
+
+## world plot - organic vs histosols:
+hist.sel <- grep("Hist", xy.pnts$TAXOUSDA.f)
+length(hist.sel)
+png(file = "Fig_global_distribution_Histosols_USDA.png", res = 150, width = 2000, height = 900)
+par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+plot(country, col="darkgrey", ylim=c(-60, 85))
+points(xy.pnts[-c(hist.sel, which(xy.pnts$SOURCEDB=="Simulated"), which(!no.plt)),], pch=21, bg=alpha("yellow", 0.6), cex=.8, col="grey")
+points(xy.pnts[c(hist.sel),], pch=21, bg=alpha("red", 0.6), cex=1.5, col="black")
+dev.off()
 
 ## plot in Google Earth:
 # tmp.dir <- c("NA_060_036","NA_063_036","AF_072_048","OC_087_063","AS_072_087","AS_048_003","EU_051_012","SA_072_066","SA_090_048")

@@ -4,7 +4,7 @@ prepareCovsSoilGrids250m <- function(nms=c("DEM","MOD13Q1","MCD43A4","MOD11A2","
   
   if(missing(s.zone)){ s.zone <- 1:7 }
   
-  ## some close gaps runs in SAGA GIS result in infinite loops, hence limit to 120secs
+  ## some close gaps runs in SAGA GIS result in infinite loops, hence limit to 120secs?
   #evalWithTimeout( {
   if(any(nms %in% "DEM")){    
     for(k in 1:length(DEM.out.lst)){
@@ -91,13 +91,13 @@ prepareCovsSoilGrids250m <- function(nms=c("DEM","MOD13Q1","MCD43A4","MOD11A2","
     for(k in 1:length(LIT.out.lst)){
       for(i in s.zone){ 
         if(missing(s.lst)){ s.lst <- 1:length(equi7t3[[i]]) }
-        sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input=LIT.lst[[k]][i], nm=LIT.out.lst[k], resample.type="near", ot="Byte", nodata="255", srcnodata=255, dstnodata=255, zmin=0, close.gap=close.gap)})
+        sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input=LIT.lst[[k]][i], nm=LIT.out.lst[k], resample.type="near", ot="Byte", nodata="255", srcnodata=255, dstnodata=255, zmin=-1, close.gap=close.gap)})
       }
     }
     for(k in 1:length(LFO.out.lst)){
       for(i in s.zone){ 
         if(missing(s.lst)){ s.lst <- 1:length(equi7t3[[i]]) }
-        sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input=LFO.lst[[k]][i], nm=LFO.out.lst[k], resample.type="near", ot="Byte", nodata="255", srcnodata=255, dstnodata=255, zmin=0, close.gap=close.gap)})
+        sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input=LFO.lst[[k]][i], nm=LFO.out.lst[k], resample.type="near", ot="Byte", nodata="255", srcnodata=255, dstnodata=255, zmin=-1, close.gap=close.gap)})
       }
     }
   }
@@ -128,6 +128,22 @@ prepareCovsSoilGrids250m <- function(nms=c("DEM","MOD13Q1","MCD43A4","MOD11A2","
     for(i in s.zone){ 
       if(missing(s.lst)){ s.lst <- 1:length(equi7t3[[i]]) }
       sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input="/data/mangroves/MANGPRf_500m.sdat", nm="MNGUSG", resample.type="bilinear", ot="Byte", nodata="255", srcnodata=255, zmin=0, close.gap=close.gap)})
+    }
+    for(i in s.zone){ 
+      if(missing(s.lst)){ s.lst <- 1:length(equi7t3[[i]]) }
+      sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input="/data/earthquakes/dens.MAG.tif", nm="QUAUEA3", resample.type="cubicspline", ot="Int16", nodata="-32767", srcnodata=-32768, zmin=-1, close.gap=close.gap)})
+    }
+    for(i in s.zone){ 
+      if(missing(s.lst)){ s.lst <- 1:length(equi7t3[[i]]) }
+      sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input="/data/earthquakes/volcanoes5km.tif", nm="VOLNOA3", resample.type="cubicspline", ot="Int16", nodata="-32767", srcnodata=-32768, zmin=-1, close.gap=close.gap)})
+    }
+    for(i in s.zone){ 
+      if(missing(s.lst)){ s.lst <- 1:length(equi7t3[[i]]) }
+      sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input="/data/DAAC/average_soil_and_sedimentary-deposit_thickness.sdat", nm="ASSDAC3", resample.type="cubicspline", ot="Int16", nodata="-32767", zmin=-1, srcnodata=-32768, zmin=-1, close.gap=close.gap)})
+    }
+    for(i in s.zone){ 
+      if(missing(s.lst)){ s.lst <- 1:length(equi7t3[[i]]) }
+      sapply(s.lst, function(x){tile.tif(t=equi7t3[[i]][x,], input="/data/EcoTapestry/EF_Bio_Des_250m.tif", nm="BICUSG5", resample.type="near", ot="Byte", nodata="255", srcnodata=255, zmin=-1, close.gap=FALSE)})
     }
   }
   #} , timeout=120, onTimeout="silent")

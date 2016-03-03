@@ -7,7 +7,7 @@ wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, 
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
     mfix <- m$BICUSG5
     lfix <- levels(as.factor(paste(mfix)))
-    probs <- predict_df(gm1, gm2, m)
+    probs <- predict_df(gm1, gm2, m) 
     if(any(unique(unlist(soil.fix)) %in% lfix)){
       ## correct probabilities using soil-climate matrix:
       for(k in lfix){
@@ -19,6 +19,7 @@ wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, 
       rs <- rowSums(probs, na.rm=TRUE)
       m@data <- data.frame(lapply(probs, function(i){i/rs}))
     } else {
+      rs <- rowSums(probs, na.rm=TRUE)
       m@data <- probs
     }
     if(sum(rs,na.rm=TRUE)>0&length(rs)>0){

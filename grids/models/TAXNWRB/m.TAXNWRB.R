@@ -93,7 +93,7 @@ ovA$TAXNWRB.f <- as.factor(paste(ovA$TAXNWRB.f))
 ## 2nd model:
 mrf_TAXNWRB <- randomForest(formulaString.FAO, data=ovA)
 #mrf_TAXNWRB 
-## OOB estimate of error rate: ??%
+## OOB estimate of error rate?
 varImpPlot(mrf_TAXNWRB)
 #object.size(mrf_TAXNWRB)
 saveRDS(mrf_TAXNWRB, file="mrf_TAXNWRB.rds")
@@ -106,7 +106,8 @@ saveRDS(mrf_TAXNWRB, file="mrf_TAXNWRB.rds")
 
 ## ------------- PREDICTIONS -----------
 
-## predict for sample locations:
+## test predictions for sample areas:
+wrapper.predict_c(i="NA_060_036", varn="TAXNWRB", gm1=m_TAXNWRB, gm2=mrf_TAXNWRB, in.path="/data/covs1km", out.path="/data/predicted1km", col.legend=col.legend, soil.fix=soil.fix)
 wrapper.predict_c(i="NA_060_036", varn="TAXNWRB", gm1=m_TAXNWRB, gm2=mrf_TAXNWRB, in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend, soil.fix=soil.fix)
 #wrapper.predict_c(i="NA_060_036", varn="TAXNWRB", gm1="/data/models/TAXNWRB/m_TAXNWRB.rds", gm2="/data/models/TAXNWRB/mrf_TAXNWRB.rds", in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend, soil.fix=soil.fix)
 
@@ -118,18 +119,21 @@ wrapper.predict_c(i="NA_060_036", varn="TAXNWRB", gm1=m_TAXNWRB, gm2=mrf_TAXNWRB
 ## clean-up:
 #del.lst <- list.files(path="/data/predicted", pattern=glob2rx("^TAXNWRB*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
+#del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx("*.tif$"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
 
 pr.dirs <- basename(dirname(list.files(path="/data/covs", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
 str(pr.dirs)
 ## 2353 dirs
-sfInit(parallel=TRUE, cpus=15)
-sfExport("wrapper.predict_c", "predict_df", "pr.dirs", "col.legend", "soil.fix")
+sfInit(parallel=TRUE, cpus=45) ## cpus=15
+sfExport("wrapper.predict_c", "predict_df", "pr.dirs", "col.legend", "soil.fix", "m_TAXNWRB", "mrf_TAXNWRB")
 sfLibrary(rgdal)
 sfLibrary(sp)
 sfLibrary(plyr)
 sfLibrary(nnet)
 sfLibrary(randomForest)
-x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn="TAXNWRB", gm1="/data/models/TAXNWRB/m_TAXNWRB.rds", gm2="/data/models/TAXNWRB/mrf_TAXNWRB.rds", in.path="/data/covs", out.path="/data/predicted", col.legend=col.legend, soil.fix=soil.fix) )  } )
+x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn="TAXNWRB", gm1=m_TAXNWRB, gm2=mrf_TAXNWRB, in.path="/data/covs1km", out.path="/data/predicted1km", col.legend=col.legend, soil.fix=soil.fix) )  } )
+#x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_c(i=x, varn="TAXNWRB", gm1="/data/models/TAXNWRB/m_TAXNWRB.rds", gm2="/data/models/TAXNWRB/mrf_TAXNWRB.rds", in.path="/data/covs1km", out.path="/data/predicted1km", col.legend=col.legend, soil.fix=soil.fix) )  } )
 sfStop()
 
 ## world plot - overlay and plot points and maps:
@@ -176,3 +180,5 @@ write.csv(test.WRB[["Observed"]], "cv_TAXNWRB_observed.csv")
 gzip("cv_TAXNWRB_observed.csv")
 write.csv(test.WRB[["Predicted"]], "cv_TAXNWRB_predicted.csv")
 gzip("cv_TAXNWRB_predicted.csv")
+## Confusion matrix:
+write.csv(test.WRB[["Confusion.matrix"]], "cv_TAXNWRB_Confusion.matrix.csv")
