@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SAGA_METADATA>
+  <HISTORY saga-version="2.1.4">
+    <MODULE library="shapes_polygons" id="14" name="Intersect">
+      <OPTION type="boolean" id="SPLIT" name="Split Parts">TRUE</OPTION>
+      <INPUT type="shapes" id="A" name="Layer A">
+        <FILE>E:\WORLDGRIDS\NaturalEarth\ne_10m_admin_0_countries.shp</FILE>
+      </INPUT>
+      <INPUT type="shapes" id="B" name="Layer B">
+        <MODULE library="shapes_tools" id="0" name="Create New Shapes Layer">
+          <OPTION type="text" id="NAME" name="Name">boundingbox</OPTION>
+          <OPTION type="choice" id="TYPE" name="Shape Type" index="3">Polygon</OPTION>
+          <OPTION type="choice" id="VERTEX" name="Vertex Type" index="0">x, y</OPTION>
+          <OPTION type="integer" id="NFIELDS" name="Number of Attributes">2</OPTION>
+          <PARAMETERS name="Attributes" id="FIELDS" type="parameters">
+            <OPTION type="text" id="NAME000" name="Name" parms="FIELDS">ID</OPTION>
+            <OPTION type="choice" id="TYPE000" name="Type" parms="FIELDS" index="3">4 byte integer</OPTION>
+            <OPTION type="text" id="NAME001" name="Name" parms="FIELDS">Name</OPTION>
+            <OPTION type="choice" id="TYPE001" name="Type" parms="FIELDS" index="0">character string</OPTION>
+          </PARAMETERS>
+          <OUTPUT type="data_object" id="SHAPES" name="Shapes">boundingbox</OUTPUT>
+        </MODULE>
+      </INPUT>
+      <OUTPUT type="shapes" id="RESULT" name="Intersect">Intersect [ne_10m_admin_0_countries]-[boundingbox]</OUTPUT>
+    </MODULE>
+  </HISTORY>
+  <SOURCE>
+    <FILE>H:\Wetlands\final\admin_tropics.shp</FILE>
+    <DATABASE></DATABASE>
+    <PROJECTION>
+      <OGC_WKT>GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]</OGC_WKT>
+      <PROJ4>+proj=longlat +a=6378137.000000 +b=6356752.314245 +no_defs</PROJ4>
+      <EPSG>-1</EPSG>
+    </PROJECTION>
+  </SOURCE>
+  <DESCRIPTION></DESCRIPTION>
+</SAGA_METADATA>

@@ -14,11 +14,16 @@ library(R.utils)
 library(utils)
 library(snowfall)
 library(raster)
-gdal.dir <- shortPathName("C:/Program files/GDAL")
-gdal_setInstallation(search_path=gdal.dir, rescan=TRUE)
-gdal_translate <- paste0(gdal.dir, "/gdal_translate.exe")
-gdalwarp <- paste0(gdal.dir, "/gdalwarp.exe")
+if(.Platform$OS.type == "windows"){
+  gdal.dir <- shortPathName("C:/Program files/GDAL")
+  gdal_translate <- paste0(gdal.dir, "/gdal_translate.exe")
+  gdalwarp <- paste0(gdal.dir, "/gdalwarp.exe") 
+} else {
+  gdal_translate = "gdal_translate"
+  gdalwarp = "gdalwarp"
+}
 load("E:\\EQUI7\\equi7t3.rda")
+load("E:\\EQUI7\\equi7t1.rda")
 
 classes <- c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
 classes.t <- c("01", "02", "03", "04", "05", "06", "07", "08", "09", "10")
@@ -158,10 +163,80 @@ tile.tif <- function(t, t_srs = proj4string(t)){
   }
 }
 sfInit(parallel=TRUE, cpus=6)
-sfLibrary(gdalUtils)
 sfLibrary(sp)
 sfExport("equi7t3", "tile.tif", "gdalwarp")
 x <- sfLapply(equi7t3, tile.tif)
+sfStop() ## end of parallel processing
+
+## Land mask in MODIS sinusoidal projection
+load("../MOD13Q1/modis_grid_land.rda")
+str(modis_grid_land)
+tile.sin <- function(j, grid=modis_grid_land, t_srs = "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m+no_defs"){
+  nfile <- paste0("sinusoidal/LMK_", grid$TILEh[j], ".tif")
+  te <- as.vector(grid[j,c(1,3,2,4)])
+  if(!file.exists(nfile)){
+    system(paste0(gdalwarp, ' lmask.vrt ', nfile, ' -t_srs \"', t_srs, '\" -ts 4800 4800 -r \"near\" -srcnodata 0 -dstnodata 0 -te ', paste(te, collapse=" "), ' -ot \"Byte\" -co \"COMPRESS=DEFLATE\"')) ## 
+  }
+  dfile <- paste0("sinusoidal/DEM_", grid$TILEh[j], ".tif")
+  if(!file.exists(dfile)){
+    system(paste0(gdalwarp, ' H:/srtm15_plus/GMTED2010_250m.tif ', dfile, ' -t_srs \"', t_srs, '\" -ts 4800 4800 -te ', paste(te, collapse=" "), ' -co \"COMPRESS=DEFLATE\"'))  ## -r \"near\" -ot \"Byte\"
+  }
+  kfile <- paste0("sinusoidal/MOD44W_", grid$TILEh[j], ".tif")
+  if(!file.exists(kfile)){
+    system(paste0(gdalwarp, ' E:/WORLDGRIDS/MOD44W/MOD44W.vrt ', kfile, ' -t_srs \"', t_srs, '\" -ts 4800 4800 -te ', paste(te, collapse=" "), ' -dstnodata 255 -ot \"Byte\" -co \"COMPRESS=DEFLATE\"'))
+    try( m <- as(stack(c(nfile, dfile, kfile)), "SpatialGridDataFrame") )
+    if(!class(.Last.value)[1]=="try-error"){
+      ## Filter lines and artifacts in the sea (GLC30):
+      sel <- m@data[,1]==1 & ( !m@data[,3]==100 | (!m@data[,2]==0|is.na(m@data[,2])) )
+      if(sum(sel, na.rm=TRUE)>0){
+        m$d <- ifelse(sel, 1, NA) ## | is.na(m@data[,3])
+        writeGDAL(m["d"], nfile, type="Byte", mvFlag=0, options="COMPRESS=DEFLATE")
+      }
+    }
+  }
+}
+sfInit(parallel=TRUE, cpus=3)
+sfLibrary(sp)
+sfExport("modis_grid_land", "tile.sin", "gdalwarp")
+x <- sfLapply(1:nrow(modis_grid_land), function(j){try(tile.sin(j))})
+sfStop() ## end of parallel processing
+
+## Land mask in MODIS sinusoidal projection 500 m resolution
+load("../MCD43A4/modis_grid_land500m.rda")
+str(modis_grid_land500m)
+lst.rem <- list.files(path="./sinusoidal", pattern=glob2rx("LMK_*_500m.tif"), full.names = TRUE)
+unlink(lst.rem)
+
+tile.sin500m <- function(j, grid=modis_grid_land500m, t_srs = "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m+no_defs", replace=TRUE){
+  nfile <- paste0("sinusoidal/LMK_", grid$TILEh[j], "_500m.tif")
+  te <- as.vector(grid[j,c(1,3,2,4)])
+  if(!file.exists(nfile)){
+    system(paste0(gdalwarp, ' lmask.vrt ', nfile, ' -t_srs \"', t_srs, '\" -ts 2400 2400 -r \"near\" -srcnodata 0 -dstnodata 0 -te ', paste(te, collapse=" "), ' -ot \"Byte\" -co \"COMPRESS=DEFLATE\"')) ## 
+  }
+  dfile <- paste0("sinusoidal/DEM_", grid$TILEh[j], "_500m.tif")
+  if(!file.exists(dfile)){
+    system(paste0(gdalwarp, ' H:/srtm15_plus/GMTED2010_250m.tif ', dfile, ' -t_srs \"', t_srs, '\" -ts 2400 2400 -te ', paste(te, collapse=" "), ' -co \"COMPRESS=DEFLATE\"'))  ## -r \"near\" -ot \"Byte\"
+  }
+  kfile <- paste0("sinusoidal/MOD44W_", grid$TILEh[j], "_500m.tif")
+  if(!file.exists(kfile)){
+    system(paste0(gdalwarp, ' E:/WORLDGRIDS/MOD44W/MOD44W.vrt ', kfile, ' -t_srs \"', t_srs, '\" -ts 2400 2400 -te ', paste(te, collapse=" "), ' -dstnodata 255 -ot \"Byte\" -co \"COMPRESS=DEFLATE\"'))
+  }
+  if(replace==TRUE){  
+    try( m <- as(stack(c(nfile, dfile, kfile)), "SpatialGridDataFrame") )
+    if(!class(.Last.value)[1]=="try-error"){
+      ## Filter lines and artifacts in the sea (GLC30):
+      sel <- m@data[,1]==1 & ( !m@data[,3]==100 | (!m@data[,2]==0|is.na(m@data[,2])) )
+      if(sum(sel, na.rm=TRUE)>0){
+        m$d <- ifelse(sel, 1, NA) ## | is.na(m@data[,3])
+        writeGDAL(m["d"], nfile, type="Byte", mvFlag=0, options="COMPRESS=DEFLATE")
+      }
+    }
+  }
+}
+sfInit(parallel=TRUE, cpus=10)
+sfLibrary(sp)
+sfExport("modis_grid_land500m", "tile.sin500m", "gdalwarp")
+x <- sfLapply(1:nrow(modis_grid_land500m), tile.sin500m)
 sfStop() ## end of parallel processing
 
 ## landmask per continent:
@@ -172,17 +247,41 @@ gdalbuildvrt(input_file_list="my_liste.txt", output.vrt="lmask.vrt")
 
 tile2.tif <- function(t, t_srs = proj4string(t)){
   for(j in 1:nrow(t)){
-    nfile <- paste0("stiled/LMK_", strsplit(paste(t@data[j,"SHORTNAME"]), " ")[[1]][2], "_", t@data[j,"TILE"], ".tif")
+    cn = strsplit(paste(t@data[j,"SHORTNAME"]), " ")[[1]][2]
     te <- as.vector(bbox(t[j,]))
-    system(paste0(gdalwarp, ' lmask.vrt ', nfile, ' -t_srs \"', t_srs, '\" -tr 250 250 -r \"near\" -srcnodata 0 -dstnodata 0 -te ', paste(te, collapse=" "), ' -ot \"Byte\"'))
+    nfile <- paste0("stiled/LMK_", cn, "_", t@data[j,"TILE"], ".tif")
+    if(!file.exists(nfile)){
+      system(paste0(gdalwarp, ' lmask.vrt ', nfile, ' -t_srs \"', t_srs, '\" -tr 250 250 -r \"near\" -srcnodata 0 -dstnodata 0 -te ', paste(te, collapse=" "), ' -ot \"Byte\" -co \"COMPRESS=DEFLATE\"'))
+    }
+    dfile <- paste0("stiled/DEM_", cn, "_", t@data[j,"TILE"], ".tif")
+    if(!file.exists(dfile)){
+      system(paste0(gdalwarp, ' X:/DEMs/MDEM_', cn, '_250m.sdat ', dfile, ' -t_srs \"', t_srs, '\" -tr 250 250 -te ', paste(te, collapse=" "), ' -co \"COMPRESS=DEFLATE\"')) 
+    }
+    kfile <- paste0("stiled/MOD44W_", cn, "_", t@data[j,"TILE"], ".tif")
+    if(!file.exists(kfile)){
+      system(paste0(gdalwarp, ' E:/WORLDGRIDS/MOD44W/MOD44W.vrt ', kfile, ' -t_srs \"', t_srs, '\" -tr 250 250 -te ', paste(te, collapse=" "), ' -dstnodata 255 -ot \"Byte\" -co \"COMPRESS=DEFLATE\"'))  ## -r \"bilinear\"
+      ## Filter lines and artifacts in the sea (GLC30):
+      ## needs to be land mask by at least 2 sources:
+      if(!cn=="AN"){
+        try( m <- as(stack(c(nfile, dfile, kfile)), "SpatialGridDataFrame") , silent = TRUE)
+        if(!class(.Last.value)[1]=="try-error"){
+          sel <- m@data[,1]==1 & ( !m@data[,3]==100 | (!m@data[,2]==0|is.na(m@data[,2])) )
+          if(sum(sel, na.rm=TRUE)>0){
+            m$d <- ifelse(sel, 1, NA) ## | is.na(m@data[,3])
+            writeGDAL(m["d"], nfile, type="Byte", mvFlag=0, options="COMPRESS=DEFLATE")
+          }
+        }
+      }             
+    }
   }
 }
-sfInit(parallel=TRUE, cpus=6)
+sfInit(parallel=TRUE, cpus=7)
 sfLibrary(gdalUtils)
 sfLibrary(sp)
 sfExport("equi7t3", "tile2.tif", "gdalwarp")
-x <- sfLapply(equi7t3, tile2.tif)
+x <- sfLapply(equi7t3, function(t){try(tile2.tif(t))})
 sfStop() ## end of parallel processing
+tile2.tif(t=equi7t3[[4]])
 
 ## Mosaics (per continent):
 for(j in 1:length(equi7t3)){
@@ -203,11 +302,14 @@ for(j in 1:length(equi7t3)){
     cat(t.lst, sep="\n", file="my_liste.txt")
     gdalbuildvrt(input_file_list="my_liste.txt", output.vrt=paste0(names(equi7t3)[j], ".vrt"))
     system(paste0(gdalwarp, ' ', paste0(names(equi7t3)[j], ".vrt"), ' ', paste0("LMK_", names(equi7t3)[j], "_250m.tif"), ' -r \"near\" -srcnodata 0 -dstnodata 0 -ot \"Byte\"'))
-    gzip(paste0("LMK_", names(equi7t3)[j], "_250m.tif"))
+    gzip(paste0("LMK_", names(equi7t3)[j], "_250m.tif"), overwrite=TRUE)
   }
 }
 ## 1km:
-system(paste0(gdalwarp, ' lmask.vrt LMKGLC3a.tif -t_srs \"+proj=longlat +datum=WGS84\" -r \"near\" -tr 0.008333333 0.008333333 -te -180 -90 180 90 -ot \"Byte\"'))
+unlink("LMKGLC3a.tif")
+system(paste0(gdalwarp, ' lmask.vrt LMKGLC3a.tif -t_srs \"+proj=longlat +datum=WGS84\" -r \"near\" -tr 0.008333333 0.008333333 -te -180 -90 180 90 -ot \"Byte\" -co \"COMPRESS=DEFLATE\"'))
+unlink("LMKGLC4a.tif")
+system(paste0(gdalwarp, ' lmask.vrt LMKGLC4a.tif -t_srs \"+proj=longlat +datum=WGS84\" -r \"near\" -tr 0.004166667 0.004166667 -te -180 -90 180 90 -ot \"Byte\" -co \"COMPRESS=DEFLATE\"'))
 
 ## GLC classes:
 tile_glc.tif <- function(t, t_srs = proj4string(t), cl){
