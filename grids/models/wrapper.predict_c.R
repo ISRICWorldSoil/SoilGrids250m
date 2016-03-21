@@ -1,12 +1,21 @@
 ## predict soil types using a model "mg" and write GeoTifs out
 ## by: Tom.Hengl@isric.org
 
-wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, check.names=TRUE, soil.fix){ 
+wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, check.names=TRUE, soil.fix, mask_value){ 
   out.c <- paste0(out.path, "/", i, "/", varn, "_", i, ".tif")
   if(!file.exists(out.c)){
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
+    ## filter any missing layers:
+    sel.na <- colSums(sapply(m@data, function(x){!is.na(x)}))==0 
     mfix <- m$BICUSG5
     lfix <- levels(as.factor(paste(mfix)))
+    ## filter any missing columns:
+    if(any(sel.na==TRUE)){
+      sel.na <- attr(sel.na, "names")[which(sel.na)]
+      for(i in 1:length(sel.na)){
+        m@data[,sel.na[i]] = mask_value[[sel.na[i]]]
+      }
+    }
     probs <- predict_df(gm1, gm2, m) 
     if(any(unique(unlist(soil.fix)) %in% lfix)){
       ## correct probabilities using soil-climate matrix:
@@ -53,11 +62,10 @@ predict_df <- function(gm1, gm2, m){
   if(is.character(gm2)){ gm2 <- readRDS(file=gm2) }
   ## predict probabilities
   ## the following two comands take a lot of RAM e.g. >15GB
-  probs1 <- predict(gm1, m, type="probs", na.action = na.pass) ## nnet
+  probs1 <- predict(gm1, m, type="prob", na.action = na.pass) ## nnet
   probs2 <- predict(gm2, m, type="prob", na.action = na.pass) ## randomForest
   lt <- list(probs1[,gm1$lev], probs2[,gm1$lev])
   ## ensemble predictions (simple average):
   probs <- data.frame(Reduce("+", lt) / length(lt))
   return(probs)
-  gc()
 }

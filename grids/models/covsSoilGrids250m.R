@@ -16,6 +16,7 @@ gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
 system("/usr/local/bin/gdal-config --version")
 system('/usr/local/bin/saga_cmd --version')
 saga_cmd <- "/usr/local/bin/saga_cmd"
+load("equi7t1.rda")
 load("equi7t3.rda")
 names(equi7t3)
 source("tiler.R")
@@ -141,7 +142,7 @@ for(i in 1:7){
 #prepareCovsSoilGrids250m(s.zone=1, s.lst=1:length(equi7t3[[1]]))
 
 ## plot in GE:
-# tif.lst <- list.files(path="/data/covs/NA_060_036/", pattern=glob2rx("*_*_*_*.tif$"), full.names=TRUE)
+tif.lst <- list.files(path="/data/covs/NA_060_036/", pattern=glob2rx("*_*_*_*.tif$"), full.names=TRUE)
 # des <- read.csv("SoilGrids250m_COVS250m.csv")
 # varn <- sapply(basename(tif.lst), function(x){strsplit(x, "_")[[1]][1]})
 # no <- match(varn, des$WORLDGRIDS_CODE)
@@ -179,8 +180,82 @@ sfStop()
 #gz files for h2o (ca 2 hrs to make):
 #make.csv.gz(i="NA_060_036", in.path="/data/covs")
 
+
+## ------------ 1 degree tiles --------
+
+varn.lst <- rep(sapply(tif.lst, function(x){strsplit(basename(x), "_")[[1]][1]}), 7)
+j.lst <- as.vector(sapply(names(equi7t1), function(i){rep(i,160)}))
+
+mosaic_covs <- function(varn, j, in.path="/data/covs", out.path="/data/tmp/covs1t/"){
+  tmp.lst <- list.files(path=in.path, pattern=glob2rx(paste0(varn, "_", j, "_*_*.tif$")), full.names=TRUE, recursive=TRUE)
+  out.tmp <- paste0(out.path, varn, "_", j, ".txt")
+  vrt.tmp <- paste0(out.path, varn, "_", j, ".vrt")
+  cat(tmp.lst, sep="\n", file=out.tmp)
+  system(paste0(gdalbuildvrt, ' -input_file_list ', out.tmp, ' ', vrt.tmp))
+}
+
+sfInit(parallel=TRUE, cpus=48)
+sfExport("mosaic_covs", "gdalbuildvrt", "varn.lst", "j.lst")
+sfLibrary(rgdal)
+sfLibrary(sp)
+x <- sfClusterApplyLB(1:length(varn.lst), function(i){mosaic_covs(varn.lst[i], j=j.lst[i])})
+sfStop()
+
+## Create new directories:
+new.dirs <- lapply(equi7t1, function(x){sapply(1:length(x), function(i){paste(x[i,]$TILE)})})
+new.dirs <- paste0("/data/covs1t/", unlist(sapply(1:length(new.dirs), function(i){paste0(names(new.dirs)[i], "_", new.dirs[[i]])})))
+x <- lapply(new.dirs, dir.create, recursive=TRUE, showWarnings=FALSE)
+x <- lapply(gsub("covs1t", "predicted", new.dirs), dir.create, recursive=TRUE, showWarnings=FALSE)
+
+## resample to 1 degree grid (no need to fil the gaps)
+covs.lst = paste(sapply(tif.lst, function(x){strsplit(basename(x), "_")[[1]][1]}))
+
+resample_t1 <- function(covs.lst, j, tile.pol, in.path="/data/tmp/covs1t/", out.path="/data/covs1t/"){
+  vrt.tmp <- paste0(in.path, covs.lst, "_", j, ".vrt")
+  tname <- paste(tile.pol$TILE)
+  out.file <- paste0(out.path, j, "_", tname, '/', covs.lst, '_', j, "_", tname, '.tif')
+  x <- lapply(1:length(out.file), function(x){ if(!file.exists(out.file[x])){ try( system(paste0(gdalwarp, ' ', vrt.tmp[x], ' ', out.file[x], ' -r \"near\" -te ', paste(as.vector(tile.pol@bbox), collapse=" "), ' -co \"COMPRESS=DEFLATE\"')) ) } })
+}
+
+## TAKES 2+ hours
+for(j in names(equi7t1)){
+  sfInit(parallel=TRUE, cpus=48)
+  sfLibrary(raster)
+  sfLibrary(rgdal)
+  sfExportAll()
+  lst <- 1:length(equi7t1[[j]])
+  x <- sfClusterApplyLB(lst, function(x){ try( resample_t1(covs.lst, j, equi7t1[[j]][x,]) ) })
+  sfStop()
+}
+
+# ## clean up empty dirs:
+# mskt1.lst <- list.files(path="/data/covs1t", pattern=glob2rx("LMK_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
+# sfInit(parallel=TRUE, cpus=48)
+# sfLibrary(raster)
+# sfLibrary(rgdal)
+# sfExport("check.LMK", "mskt1.lst")
+# selL <- sfLapply(mskt1.lst, check.LMK)
+# sfStop()
+# ## 1987 empty tiles on 12th March 2016
+# selDt1 <- data.frame(name=mskt1.lst[which(selL==0)])
+# write.csv(selDt1, "empty_LMK_tiles_t1.csv")
+# ## remove all directories with empty landmask (CAREFULL!)
+# x = sapply(selDt1$name, function(x){unlink(dirname(as.character(x)), recursive = TRUE, force = TRUE)})
+# length(mskt1.lst)-length(selDt1$name)
+# ## 16,561 dirs left
+
+## Create prediction files:
+prt1.dirs <- basename(list.dirs("/data/covs1t")[-1])
+sfInit(parallel=TRUE, cpus=48)
+sfExport("make.covsRDA", "prt1.dirs")
+sfLibrary(rgdal)
+sfLibrary(sp)
+sfLibrary(R.utils)
+x <- sfClusterApplyLB(prt1.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs1t") ) })
+sfStop()
+
 ## create prediction dirs:
-#x <- lapply(gsub("covs", "predicted", pr.dirs), dir.create, recursive=TRUE, showWarnings=FALSE)
+x <- lapply(gsub("covs1t", "predicted", list.dirs("/data/covs1t")[-1]), dir.create, recursive=TRUE, showWarnings=FALSE)
 
 ## ------------ 1 km ------------------
 
@@ -236,6 +311,8 @@ pr.dirs[which(!pr.dirs %in% basename(dirname(rds.lst)))]
 #empty.lst <- list.files(path="/data/covs1km", pattern=glob2rx("*.tif$"), full.names=TRUE, recursive=TRUE)
 #del.lst <- empty.lst[which(file.size(empty.lst)==0)]
 
+#del.lst <- list.files(path="/data/covs", pattern=glob2rx("ASSDAC3_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
 #del.lst <- list.files(path="/data/covs", pattern=glob2rx("P??MRG3_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 #del.lst <- list.files(path="/data/covs1km", pattern=glob2rx("P??MRG3_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
