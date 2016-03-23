@@ -29,7 +29,8 @@ wrapper.predict_np <- function(i, gm1, gm2, sd=c(0, 5, 15, 30, 60, 100, 200), va
     ## Predict at 7 depths so that after predictions we can average to get block estimates st=c(2.5, 7.5, 22.5, 45, 80, 150)
     for(j in 1:length(sd)){
       newdata$DEPTH.f = sd[j]
-      v1 <- predict(gm1, newdata@data, na.action=na.pass)$predictions # 
+      v1 <- predict(gm1, newdata@data, na.action=na.pass, num.threads=1)$predictions #  
+      ## Default for number of threads is otherwise anything that is available
       v2 <- predict(gm2, newdata@data, na.action=na.pass)
       v <- rowSums(cbind(v1*gm1.w, v2*gm2.w))/(gm1.w+gm2.w)
       ## For pH -> convert to integers:

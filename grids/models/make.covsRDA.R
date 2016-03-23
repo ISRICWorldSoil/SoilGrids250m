@@ -3,7 +3,7 @@
 ## List of covariates is at: https://goo.gl/FWD15V
 ## Tom.Hengl@isric.org
 
-make.covsRDA <- function(in.path, i, csv=TRUE, fix.sums=TRUE){
+make.covsRDA <- function(in.path, i, csv=FALSE, fix.sums=TRUE, d.min=-9999, d.max=65000){
   out.rda <- paste0(in.path, "/", i, "/", i, ".rds")
   if(!file.exists(out.rda)){
     cov.lst <- list.files(path=paste(in.path, i, sep="/"), glob2rx("*_*_*_*.tif$"), full.names=TRUE)
@@ -14,9 +14,10 @@ make.covsRDA <- function(in.path, i, csv=TRUE, fix.sums=TRUE){
     for(k in 1:length(cov.lst)){
       if(!k==mask){
         covn = strsplit(basename(cov.lst[k]), "_")[[1]][1]
-        ## filter out values outside of physical range and round up:
+        ## filter out values outside physical range:
         d <- readGDAL(cov.lst[k], silent=TRUE)$band1[m@grid.index]
-        dn <- which(is.na(d)|d<= -10000|d>= 65535)
+        d <- ifelse(d<= d.min|d> d.max, NA, d)
+        dn <- which(is.na(d))
         if(length(dn)>0){ 
           ## replace all missing values with median value
           ## TH: this could lead to artifacts

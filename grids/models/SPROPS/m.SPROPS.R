@@ -10,6 +10,7 @@ library(rgdal)
 library(devtools)
 #devtools::install_github('dmlc/xgboost')
 library(xgboost)
+#devtools::install_github("imbs-hl/ranger/ranger-r-package/ranger", ref="forest_memory") ## version to deal with Memory problems
 library(ranger)
 library(caret)
 library(hexbin)
@@ -75,7 +76,6 @@ names(z.max) = t.vars
 pr.lst <- des$WORLDGRIDS_CODE
 formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ LATWGS84 + DEPTH.f +', paste(pr.lst, collapse="+")))})
 all.vars(formulaString.lst[[1]])
-Nsub <- 1e4 ## sub-sample to speed up model fitting
 
 ## Median value per cov:
 cov.m <- lapply(ovA[,all.vars(formulaString.lst[[1]])[-1]], function(x){quantile(x, probs=c(0.01,0.5,0.99), na.rm=TRUE)})
@@ -83,6 +83,8 @@ col.m <- as.data.frame(cov.m)
 mask_value <- as.list(des$MASK_VALUE)
 names(mask_value) = des$WORLDGRIDS_CODE
 
+## sub-sample to speed up model fitting:
+Nsub <- 1.5e4 
 ## Initiate cluster
 cl <- makeCluster(48)
 registerDoParallel(cl)
@@ -102,11 +104,12 @@ for(j in 1:length(t.vars)){
     dfs <- ovA[,all.vars(formulaString.lst[[j]])]
     sel <- complete.cases(dfs)
     dfs <- dfs[sel,]
-    ## optimize ntree and mtry:
-    t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid) ## 
-    ## fit RF model (fully parallelized)
+    ## optimize mtry parameter:
+    t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid) 
+    ## fit RF model using 'ranger' (fully parallelized)
     ## reduce number of trees so the output objects do not get TOO LARGE i.e. >5GB
-    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=251)
+    saveRDS(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
+    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=291) ## 
     saveRDS(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
     ## Top 15 covariates:
     sink(file="SPROPS_resultsFit.txt", append=TRUE, type="output")
@@ -119,7 +122,7 @@ for(j in 1:length(t.vars)){
     unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
     write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
     gzip(paste0("RF_fit_", t.vars[j], ".csv"))
-    ## fit XGBoost model:
+    ## fit XGBoost model (uses all points):
     mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
     saveRDS(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
     ## save also binary model for prediction purposes:
@@ -133,20 +136,13 @@ for(j in 1:length(t.vars)){
     sink()
   }
 }
-stopCluster(cl)
 rm(mrfX); rm(mgbX)
 
 mrfX_lst <- list.files(pattern="mrf.")
 mgbX_lst <- list.files(pattern="mgb.")
 names(mrfX_lst) <- paste(sapply(mrfX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
 names(mgbX_lst) <- paste(sapply(mgbX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
-## load all models to RAM:
-#gm_lst1 <- lapply(1:length(mrfX_lst), function(i){assign(names(mrfX_lst)[[i]], readRDS(mrfX_lst[[i]]))})
-#names(gm_lst1) <- names(mrfX_lst)
-#gm_lst2 <- lapply(1:length(mgbX_lst), function(i){assign(names(mgbX_lst)[[i]], readRDS(mgbX_lst[[i]]))})
-#names(gm_lst2) <- names(mgbX_lst)
-## 60GB in memory
-  
+
 ## ------------- PREDICTIONS -----------
 
 ## Predict per tile:
@@ -166,8 +162,9 @@ for(j in t.vars){
   gm1 <- readRDS(mrfX_lst[[j]])
   gm2 <- readRDS(mgbX_lst[[j]])
   ## divide RAM by size of model:
-  cpus = unclass(round(256/(3.5*(object.size(gm1)/1e9+object.size(gm2)/1e9))))
-  #cl <- makeCluster(48-cpus)
+  cpus = unclass(round(256/(3*(object.size(gm1)/1e9+object.size(gm2)/1e9))))
+  cpus <- ifelse(cpus>48, 48, cpus)
+  #cl <- makeCluster(s48-cpus)
   #registerDoParallel(cl)
   sfInit(parallel=TRUE, cpus=cpus) # cpus=48, type="MPI"
   ## Error in mpi.send(x = serialize(obj, NULL), type = 4, dest = dest, tag = tag, : long vectors not supported yet: memory.c:3361
@@ -177,12 +174,13 @@ for(j in t.vars){
   sfLibrary(ranger)
   sfLibrary(xgboost)
   sfLibrary(caret)
-  ## exach process up to 12GB (gm1 largest object)
+  ## exach process up to 5GB (gm1 largest object)
   ## Can take up to an hour to export all objects to all CPUs
   x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_np(i=x, varn=j, gm1=gm1, gm2=gm2, in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[[j]], zmax=z.max[[j]], mask_value=mask_value) )  } )
   sfStop()
   #stopCluster(cl)
 }
+stopCluster(cl)
 
 ## clean-up:
 # for(i in t.vars){ ## c("BLD", "ORCDRC", "PHIHOX") 

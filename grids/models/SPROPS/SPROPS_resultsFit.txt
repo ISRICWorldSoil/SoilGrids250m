@@ -5,35 +5,35 @@ Variable: ORCDRC
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 251) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 291) 
 
 Type:                             Regression 
-Number of trees:                  251 
+Number of trees:                  291 
 Sample size:                      605034 
 Number of independent variables:  159 
 Mtry:                             22 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             1009.119 
-R squared:                        0.6579298 
+OOB prediction error:             1003.437 
+R squared:                        0.6598562 
 
  Variable importance:
               [,1]
-DEPTH.f  280270617
-LATWGS84  35219188
-T10MOD3   32816855
-M11MOD4   26948964
-M03MOD4   25242480
-TMDMOD3   23907536
-T09MOD3   23033899
-TWIMRG5   21523063
-T04MOD3   20559313
-M12MOD4   20368826
-M02MOD4   18111357
-VBFMRG5   17362508
-DEMMRG5   17343708
-T03MOD3   15451046
-M01MOD4   14077809
+DEPTH.f  282713275
+LATWGS84  33485378
+T10MOD3   30918795
+M03MOD4   26162397
+T09MOD3   24036315
+M11MOD4   22759021
+T04MOD3   22282518
+TMDMOD3   22227523
+M12MOD4   21942707
+TWIMRG5   21874514
+VBFMRG5   17353829
+M02MOD4   17314637
+DEMMRG5   17074829
+M01MOD4   16233784
+I09MOD4   13976141
 
 eXtreme Gradient Boosting 
 
@@ -42,18 +42,18 @@ eXtreme Gradient Boosting
 
 No pre-processing
 Resampling: Cross-Validated (3 fold, repeated 1 times) 
-Summary of sample sizes: 403354, 403357, 403357 
+Summary of sample sizes: 403355, 403356, 403357 
 Resampling results across tuning parameters:
 
   eta  max_depth  nrounds  RMSE      Rsquared 
-  0.3  2           50      44.79675  0.3224300
-  0.3  2          100      43.90063  0.3488709
-  0.3  3           50      42.88854  0.3789955
-  0.3  3          100      41.79470  0.4098880
-  0.4  2           50      44.43069  0.3323431
-  0.4  2          100      43.54206  0.3586202
-  0.4  3           50      42.76859  0.3812173
-  0.4  3          100      41.55363  0.4158828
+  0.3  2           50      44.94807  0.3172645
+  0.3  2          100      43.98248  0.3464443
+  0.3  3           50      42.91995  0.3778758
+  0.3  3          100      41.82665  0.4089685
+  0.4  2           50      44.62008  0.3271183
+  0.4  2          100      43.69456  0.3541533
+  0.4  3           50      42.68774  0.3836819
+  0.4  3          100      41.42245  0.4193958
 
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
@@ -65,57 +65,57 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta =
  0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
-     Feature        Gain        Cover   Frequence
- 1:  DEPTH.f 0.286150885 6.667909e-02 0.111756168
- 2:  T10MOD3 0.116167015 2.668858e-02 0.013062409
- 3:  T03MOD3 0.074998532 1.925698e-02 0.015965167
- 4:  I10MOD4 0.059043982 9.303288e-03 0.008708273
- 5:  M03MOD4 0.055993223 3.972720e-03 0.007256894
- 6: LATWGS84 0.047674918 7.593968e-02 0.065312046
- 7:  TWIMRG5 0.028240582 2.068380e-02 0.029027576
- 8:  P07MRG3 0.014341953 4.557872e-05 0.001451379
- 9:  C05GLC5 0.011641645 1.666893e-02 0.020319303
-10:  I03MOD4 0.011289999 1.205609e-02 0.014513788
-11:  M02MOD4 0.010618400 9.698505e-03 0.004354136
-12:  VBFMRG5 0.009863585 1.010303e-02 0.015965167
-13:  I12MOD4 0.009683871 7.682579e-03 0.005805515
-14:  N01MOD3 0.009189606 1.156605e-02 0.008708273
-15:  VW4MOD1 0.008184950 1.557109e-02 0.013062409
+     Feature       Gain       Cover   Frequence
+ 1:  DEPTH.f 0.31383857 0.065699115 0.117561684
+ 2:  T10MOD3 0.11656341 0.024097013 0.013062409
+ 3:  M03MOD4 0.05854233 0.018239059 0.014513788
+ 4:  I10MOD4 0.05611357 0.010101111 0.010159652
+ 5:  T03MOD3 0.03984720 0.000322858 0.004354136
+ 6: LATWGS84 0.02751082 0.065490163 0.074020319
+ 7:  T09MOD3 0.02576795 0.014289886 0.008708273
+ 8:  TWIMRG5 0.02224866 0.015741634 0.024673440
+ 9:  I09MOD4 0.01601873 0.013543966 0.011611030
+10:  C05GLC5 0.01551629 0.020033818 0.026124819
+11:  VW6MOD1 0.01469935 0.020763012 0.014513788
+12:  VBFMRG5 0.01454057 0.004337174 0.015965167
+13:  P10MRG3 0.01446119 0.012162120 0.011611030
+14:  M11MOD4 0.01411386 0.004589678 0.007256894
+15:  N01MOD3 0.00912099 0.013724055 0.010159652
 --------------------------------------
 
 Variable: PHIHOX
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 251) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 291) 
 
 Type:                             Regression 
-Number of trees:                  251 
+Number of trees:                  291 
 Sample size:                      604012 
 Number of independent variables:  159 
 Mtry:                             22 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             0.2675614 
-R squared:                        0.8503055 
+OOB prediction error:             0.2673922 
+R squared:                        0.8504002 
 
  Variable importance:
             [,1]
-PRSMRG3 62716.57
-P07MRG3 46628.51
-DEPTH.f 46577.06
-M04MOD4 36711.90
-M05MOD4 32205.70
-P10MRG3 31790.83
-P05MRG3 26942.02
-T07MOD3 23474.87
-P03MRG3 20310.60
-M09MOD4 18703.63
-M10MOD4 17897.40
-M06MOD4 16474.08
-T06MOD3 15770.11
-I09MOD4 15676.22
-P09MRG3 15229.00
+PRSMRG3 65112.65
+P07MRG3 50850.03
+DEPTH.f 46416.35
+M04MOD4 35460.46
+T07MOD3 29492.27
+P10MRG3 29048.71
+M05MOD4 27779.81
+M09MOD4 20353.71
+P03MRG3 19475.10
+T06MOD3 18804.29
+P05MRG3 17319.85
+M06MOD4 16768.30
+P09MRG3 15517.84
+M10MOD4 15439.65
+I09MOD4 14562.45
 
 eXtreme Gradient Boosting 
 
@@ -124,18 +124,18 @@ eXtreme Gradient Boosting
 
 No pre-processing
 Resampling: Cross-Validated (3 fold, repeated 1 times) 
-Summary of sample sizes: 402674, 402676, 402674 
+Summary of sample sizes: 402674, 402674, 402676 
 Resampling results across tuning parameters:
 
   eta  max_depth  nrounds  RMSE       Rsquared 
-  0.3  2           50      0.9157959  0.5311765
-  0.3  2          100      0.8918831  0.5553950
-  0.3  3           50      0.8820825  0.5651209
-  0.3  3          100      0.8553033  0.5911108
-  0.4  2           50      0.9082044  0.5387835
-  0.4  2          100      0.8841267  0.5628697
-  0.4  3           50      0.8752476  0.5715990
-  0.4  3          100      0.8479541  0.5979062
+  0.3  2           50      0.9163758  0.5306021
+  0.3  2          100      0.8929538  0.5542650
+  0.3  3           50      0.8823306  0.5649169
+  0.3  3          100      0.8554828  0.5909184
+  0.4  2           50      0.9091853  0.5377340
+  0.4  2          100      0.8847294  0.5622349
+  0.4  3           50      0.8751022  0.5717027
+  0.4  3          100      0.8493569  0.5965270
 
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
@@ -147,57 +147,57 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta =
  0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
-    Feature        Gain       Cover   Frequence
- 1: PRSMRG3 0.426537721 0.035270264 0.038904899
- 2: M10MOD4 0.067276805 0.016691544 0.010086455
- 3: I05MOD4 0.062520554 0.012049201 0.012968300
- 4: P07MRG3 0.047122407 0.014361772 0.008645533
- 5: DEPTH.f 0.039133349 0.051623763 0.054755043
- 6: I09MOD4 0.032938810 0.009943906 0.011527378
- 7: T09MOD3 0.024906707 0.003775997 0.005763689
- 8: T07MOD3 0.022297789 0.009495366 0.011527378
- 9: P05MRG3 0.019498560 0.002479361 0.007204611
-10: VBFMRG5 0.014664430 0.024583443 0.023054755
-11: T05MOD3 0.013298527 0.013142475 0.007204611
-12: EX6MOD5 0.011083948 0.013913734 0.015850144
-13: I08MOD4 0.010631717 0.008277399 0.005763689
-14: ASSDAC3 0.008630659 0.011776442 0.008645533
-15: DEMMRG5 0.008185965 0.019323297 0.017291066
+     Feature       Gain       Cover   Frequence
+ 1:  P07MRG3 0.26756247 0.021513405 0.014306152
+ 2:  PRSMRG3 0.20293719 0.029530956 0.035765379
+ 3:  M05MOD4 0.05854602 0.016250650 0.010014306
+ 4:  M10MOD4 0.04938938 0.012001440 0.010014306
+ 5:  DEPTH.f 0.03935848 0.051220052 0.048640916
+ 6:  T09MOD3 0.03005748 0.004686188 0.007153076
+ 7:  P03MRG3 0.02292256 0.007972232 0.014306152
+ 8: LATWGS84 0.02281360 0.046975313 0.051502146
+ 9:  EX6MOD5 0.02265725 0.010083686 0.008583691
+10:  I08MOD4 0.02065304 0.011072827 0.011444921
+11:  M11MOD4 0.01580726 0.004547101 0.005722461
+12:  I05MOD4 0.01305967 0.004504469 0.007153076
+13:  I09MOD4 0.01256886 0.007335175 0.008583691
+14:  P08MRG3 0.01212064 0.024504146 0.021459227
+15:  I04MOD4 0.01157131 0.005234356 0.008583691
 --------------------------------------
 
 Variable: PHIKCL
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 251) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 291) 
 
 Type:                             Regression 
-Number of trees:                  251 
+Number of trees:                  291 
 Sample size:                      156437 
 Number of independent variables:  159 
 Mtry:                             22 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             0.3267345 
-R squared:                        0.7888349 
+OOB prediction error:             0.3264024 
+R squared:                        0.7890496 
 
  Variable importance:
               [,1]
-DEPTH.f  10412.927
-I07MOD4   7428.958
-I08MOD4   6095.987
-PRSMRG3   5984.773
-VW2MOD1   4707.903
-M09MOD4   4482.537
-P07MRG3   4443.295
-I09MOD4   4384.436
-LATWGS84  4248.485
-DEMMRG5   4086.265
-C02GLC5   4059.143
-VW1MOD1   3984.353
-VW5MOD1   3713.892
-M08MOD4   3537.087
-I06MOD4   3417.376
+DEPTH.f  10419.208
+I07MOD4   6705.207
+PRSMRG3   6097.270
+I09MOD4   5571.396
+VW2MOD1   5514.776
+M09MOD4   5229.784
+I08MOD4   5101.760
+LATWGS84  4598.370
+P07MRG3   4520.136
+C02GLC5   4482.773
+DEMMRG5   3911.753
+VW1MOD1   3372.756
+P05MRG3   3228.165
+M08MOD4   3174.813
+I06MOD4   3135.233
 
 eXtreme Gradient Boosting 
 
@@ -206,18 +206,18 @@ eXtreme Gradient Boosting
 
 No pre-processing
 Resampling: Cross-Validated (3 fold, repeated 1 times) 
-Summary of sample sizes: 104292, 104290, 104292 
+Summary of sample sizes: 104290, 104292, 104292 
 Resampling results across tuning parameters:
 
   eta  max_depth  nrounds  RMSE       Rsquared 
-  0.3  2           50      0.9345113  0.4375867
-  0.3  2          100      0.9071833  0.4693178
-  0.3  3           50      0.8950670  0.4835254
-  0.3  3          100      0.8633155  0.5193448
-  0.4  2           50      0.9256153  0.4470049
-  0.4  2          100      0.8981169  0.4793265
-  0.4  3           50      0.8909377  0.4875224
-  0.4  3          100      0.8582055  0.5244830
+  0.3  2           50      0.9364117  0.4352877
+  0.3  2          100      0.9079974  0.4682667
+  0.3  3           50      0.8967637  0.4816984
+  0.3  3          100      0.8644802  0.5180764
+  0.4  2           50      0.9275935  0.4447457
+  0.4  2          100      0.8998039  0.4773528
+  0.4  3           50      0.8899342  0.4887000
+  0.4  3          100      0.8570460  0.5258909
 
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
@@ -230,56 +230,56 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta =
 
  XGBoost variable importance:
      Feature       Gain       Cover   Frequence
- 1:  I07MOD4 0.12546315 0.021065223 0.013196481
- 2:  VW2MOD1 0.09135764 0.023880554 0.016129032
- 3:  C02GLC5 0.05896328 0.016570659 0.010263930
- 4:  DEMMRG5 0.05572392 0.018393636 0.027859238
- 5:  P07MRG3 0.04484191 0.013300276 0.011730205
- 6:  M09MOD4 0.04020486 0.021526646 0.016129032
- 7:  EX1MOD5 0.03818894 0.010168523 0.008797654
- 8:  P12MRG3 0.03585724 0.012305047 0.007331378
- 9:  DEPTH.f 0.03402184 0.049625551 0.063049853
-10:  P05MRG3 0.02691017 0.002614524 0.005865103
-11:  L05USG5 0.02148325 0.007254409 0.004398827
-12:  PRSMRG3 0.02066947 0.015230923 0.010263930
-13: LATWGS84 0.02017528 0.041573884 0.039589443
-14:  P06MRG3 0.02017524 0.014381824 0.014662757
-15:  P02MRG3 0.01556927 0.008501477 0.008797654
+ 1:  I07MOD4 0.12276196 0.003333344 0.001461988
+ 2:  VW1MOD1 0.09662503 0.017604952 0.014619883
+ 3:  P07MRG3 0.08807566 0.013018085 0.008771930
+ 4:  M09MOD4 0.05954331 0.018002195 0.017543860
+ 5:  DEMMRG5 0.04795221 0.015616094 0.020467836
+ 6:  I08MOD4 0.04116158 0.021727989 0.014619883
+ 7:  DEPTH.f 0.03560360 0.059691939 0.062865497
+ 8:  P02MRG3 0.02866896 0.010082666 0.011695906
+ 9: LATWGS84 0.02812012 0.049594103 0.045321637
+10:  L05USG5 0.02469840 0.007291160 0.004385965
+11:  T07MOD3 0.02430002 0.005185087 0.005847953
+12:  PRSMRG3 0.02069598 0.013331034 0.013157895
+13:  SN6MOD4 0.01781468 0.009500789 0.010233918
+14:  EX1MOD5 0.01767915 0.014535655 0.016081871
+15:  VW2MOD1 0.01760150 0.009571638 0.013157895
 --------------------------------------
 
 Variable: CRFVOL
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 251) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 291) 
 
 Type:                             Regression 
-Number of trees:                  251 
+Number of trees:                  291 
 Sample size:                      302407 
 Number of independent variables:  159 
 Mtry:                             22 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             109.9463 
-R squared:                        0.5934717 
+OOB prediction error:             109.8477 
+R squared:                        0.5938363 
 
  Variable importance:
               [,1]
-DEPTH.f  6515741.3
-TWIMRG5  2281536.9
-DEMMRG5  1584613.1
-VW3MOD1  1432670.7
-VBFMRG5  1143312.5
-SLPMRG5  1042908.6
-VW2MOD1  1040999.3
-GTDHYS3   927467.3
-VW5MOD1   918835.7
-LATWGS84  902189.0
-NEGMRG5   768584.8
-EX3MOD5   755136.5
-ES3MOD5   722765.2
-ASSDAC3   714569.1
-POSMRG5   707804.9
+DEPTH.f  6517898.2
+TWIMRG5  2287925.4
+DEMMRG5  1482557.0
+VW3MOD1  1327945.7
+VBFMRG5  1207582.5
+VW5MOD1  1097277.5
+SLPMRG5  1078984.4
+VW2MOD1   982573.0
+LATWGS84  916253.7
+GTDHYS3   896866.8
+EX3MOD5   820778.5
+POSMRG5   781030.0
+NEGMRG5   741578.6
+ES3MOD5   739471.9
+ASSDAC3   734508.0
 
 eXtreme Gradient Boosting 
 
@@ -288,18 +288,18 @@ eXtreme Gradient Boosting
 
 No pre-processing
 Resampling: Cross-Validated (3 fold, repeated 1 times) 
-Summary of sample sizes: 201604, 201605, 201605 
+Summary of sample sizes: 201606, 201604, 201604 
 Resampling results across tuning parameters:
 
   eta  max_depth  nrounds  RMSE      Rsquared 
-  0.3  2           50      14.25746  0.2504076
-  0.3  2          100      14.01727  0.2751234
-  0.3  3           50      13.84027  0.2939894
-  0.3  3          100      13.52641  0.3260265
-  0.4  2           50      14.15785  0.2602071
-  0.4  2          100      13.92135  0.2848742
-  0.4  3           50      13.73691  0.3038967
-  0.4  3          100      13.43028  0.3347361
+  0.3  2           50      14.23243  0.2533937
+  0.3  2          100      14.00494  0.2767406
+  0.3  3           50      13.80899  0.2975201
+  0.3  3          100      13.51411  0.3272220
+  0.4  2           50      14.16715  0.2590481
+  0.4  2          100      13.93107  0.2834131
+  0.4  3           50      13.71782  0.3057620
+  0.4  3          100      13.41061  0.3366145
 
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
@@ -312,56 +312,56 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta =
 
  XGBoost variable importance:
      Feature       Gain       Cover   Frequence
- 1:  VW3MOD1 0.14308871 0.029450963 0.024602026
- 2:  TWIMRG5 0.11081895 0.029197518 0.028943560
- 3:  DEPTH.f 0.08425903 0.048323084 0.068017366
- 4:  T03MOD3 0.04794696 0.016943791 0.010130246
- 5:  T05MOD3 0.04771901 0.009013787 0.008683068
- 6:  ASSDAC3 0.04403370 0.006794469 0.011577424
- 7:  ES1MOD5 0.03067269 0.006254622 0.021707670
- 8:  DEMMRG5 0.02532412 0.033553307 0.027496382
- 9:  VW6MOD1 0.02402382 0.004109785 0.004341534
-10: LATWGS84 0.02379212 0.034183595 0.046309696
-11:  F02USG5 0.01498050 0.002718171 0.002894356
-12:  I08MOD4 0.01356081 0.006190327 0.008683068
-13:  VBFMRG5 0.01323321 0.017681616 0.020260492
-14:  T07MOD3 0.01276974 0.006397057 0.004341534
-15:  L10USG5 0.01269223 0.004879003 0.004341534
+ 1:  VW3MOD1 0.14012458 0.034453728 0.020231214
+ 2:  TWIMRG5 0.10964665 0.027562083 0.030346821
+ 3:  DEPTH.f 0.09019723 0.051909996 0.065028902
+ 4:  T05MOD3 0.06286823 0.011014679 0.010115607
+ 5:  T03MOD3 0.05125012 0.012213054 0.014450867
+ 6:  ASSDAC3 0.04530397 0.005751867 0.011560694
+ 7:  DEMMRG5 0.02831477 0.034349508 0.037572254
+ 8:  VW6MOD1 0.02785842 0.004825983 0.004335260
+ 9:  ES1MOD5 0.02392549 0.009379630 0.014450867
+10:  I07MOD4 0.02209483 0.009572240 0.008670520
+11: LATWGS84 0.01633681 0.026199415 0.028901734
+12:  GTDHYS3 0.01362809 0.010925980 0.010115607
+13:  T12MSD3 0.01286943 0.012679446 0.011560694
+14:  P02MRG3 0.01227039 0.009133901 0.005780347
+15:  VBFMRG5 0.01137762 0.023948010 0.017341040
 --------------------------------------
 
 Variable: SNDPPT
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 251) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 291) 
 
 Type:                             Regression 
-Number of trees:                  251 
+Number of trees:                  291 
 Sample size:                      616711 
 Number of independent variables:  159 
 Mtry:                             22 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             158.859 
-R squared:                        0.8019023 
+OOB prediction error:             158.7714 
+R squared:                        0.8020116 
 
  Variable importance:
              [,1]
-DEPTH.f  17559139
-LATWGS84 14601984
-VW4MOD1  10899428
-P04MRG3  10116560
-VW1MOD1   7244593
-VBFMRG5   7184684
-VDPMRG5   6944424
-DEMMRG5   6899255
-P11MRG3   6699744
-TWIMRG5   6215910
-N05MSD3   6014554
-VW3MOD1   5855219
-VW6MOD1   5302274
-VW5MOD1   5195633
-M11MOD4   5130819
+DEPTH.f  17567333
+LATWGS84 13977497
+VW4MOD1  12688190
+P04MRG3   9305074
+VBFMRG5   7324474
+DEMMRG5   7237549
+VDPMRG5   7041595
+VW1MOD1   6570053
+TWIMRG5   6406820
+VW3MOD1   6094628
+N05MSD3   5827689
+P11MRG3   5569461
+VW6MOD1   5163400
+T02MSD3   5127995
+VW5MOD1   5114387
 
 eXtreme Gradient Boosting 
 
@@ -370,18 +370,18 @@ eXtreme Gradient Boosting
 
 No pre-processing
 Resampling: Cross-Validated (3 fold, repeated 1 times) 
-Summary of sample sizes: 411141, 411140, 411141 
+Summary of sample sizes: 411140, 411141, 411141 
 Resampling results across tuning parameters:
 
   eta  max_depth  nrounds  RMSE      Rsquared 
-  0.3  2           50      23.55899  0.3133999
-  0.3  2          100      22.87039  0.3519145
-  0.3  3           50      22.57503  0.3686152
-  0.3  3          100      21.81533  0.4094494
-  0.4  2           50      23.31347  0.3251901
-  0.4  2          100      22.63214  0.3634115
-  0.4  3           50      22.36134  0.3788697
-  0.4  3          100      21.58731  0.4204419
+  0.3  2           50      23.55501  0.3127317
+  0.3  2          100      22.86487  0.3517162
+  0.3  3           50      22.56862  0.3693422
+  0.3  3          100      21.80114  0.4105624
+  0.4  2           50      23.33743  0.3238647
+  0.4  2          100      22.64970  0.3621491
+  0.4  3           50      22.32455  0.3807924
+  0.4  3          100      21.56855  0.4212583
 
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
@@ -394,56 +394,56 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta =
 
  XGBoost variable importance:
      Feature       Gain       Cover   Frequence
- 1:  P04MRG3 0.12986687 0.023748160 0.015736767
- 2:  VW4MOD1 0.08232021 0.019458225 0.024320458
- 3:  VW1MOD1 0.05782317 0.020183762 0.014306152
- 4:  T02MSD3 0.05519222 0.010162378 0.005722461
- 5: LATWGS84 0.04479693 0.019546132 0.032904149
- 6:  DEMMRG5 0.04021303 0.027097157 0.032904149
- 7:  VW3MOD1 0.03894911 0.016271507 0.022889843
- 8:  VBFMRG5 0.02540998 0.023337665 0.027181688
- 9:  VDPMRG5 0.02375749 0.015181715 0.022889843
-10:  ES4MOD5 0.02064990 0.003350262 0.002861230
-11:  T09MOD3 0.02014540 0.009071884 0.007153076
-12:  I11MOD4 0.01859364 0.007544777 0.008583691
-13:  ASSDAC3 0.01772400 0.016296073 0.012875536
-14:  TWIMRG5 0.01726145 0.022485186 0.024320458
-15:  N02MOD3 0.01447170 0.009304727 0.007153076
+ 1: LATWGS84 0.11935761 0.031987223 0.041547278
+ 2:  P11MRG3 0.10040797 0.004259683 0.004297994
+ 3:  T02MSD3 0.08608719 0.008650698 0.011461318
+ 4:  P04MRG3 0.05345308 0.023292815 0.017191977
+ 5:  VW1MOD1 0.03967617 0.024275350 0.022922636
+ 6:  I09MOD4 0.03369081 0.019825642 0.021489971
+ 7:  VW4MOD1 0.02628276 0.024379904 0.022922636
+ 8:  VDPMRG5 0.02357090 0.009644800 0.020057307
+ 9:  VW2MOD1 0.02105653 0.008518464 0.010028653
+10:  DEMMRG5 0.02091539 0.015138222 0.024355301
+11:  T09MOD3 0.02023027 0.012765289 0.010028653
+12:  ES5MOD5 0.01756015 0.008320743 0.007163324
+13:  VW3MOD1 0.01622624 0.027514582 0.024355301
+14:  VBFMRG5 0.01617133 0.013452883 0.018624642
+15:  N08MSD3 0.01553141 0.004263716 0.008595989
 --------------------------------------
 
 Variable: SLTPPT
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 251) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 291) 
 
 Type:                             Regression 
-Number of trees:                  251 
+Number of trees:                  291 
 Sample size:                      613699 
 Number of independent variables:  159 
-Mtry:                             20 
+Mtry:                             22 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             89.31596 
-R squared:                        0.8077974 
+OOB prediction error:             88.55989 
+R squared:                        0.8094244 
 
  Variable importance:
              [,1]
-DEPTH.f  12360543
-N02MOD3  10148301
-LATWGS84  8529391
-T01MOD3   7484431
-N12MOD3   7152076
-T12MOD3   6399036
-N03MOD3   5473036
-T02MOD3   5248522
-VW4MOD1   4927626
-VW6MOD1   4302423
-VW1MOD1   4046850
-P04MRG3   3785070
-VW3MOD1   3719082
-N01MOD3   3713055
-VBFMRG5   3595165
+DEPTH.f  13030646
+LATWGS84 10248833
+N02MOD3   8545708
+N12MOD3   7667327
+T12MOD3   6752272
+T01MOD3   6646172
+N01MOD3   6109201
+VW4MOD1   5172779
+T02MOD3   4904239
+P04MRG3   4810305
+VW1MOD1   4491748
+N03MOD3   3965961
+VBFMRG5   3552253
+VW6MOD1   3462204
+VDPMRG5   3273279
 
 eXtreme Gradient Boosting 
 
@@ -452,18 +452,18 @@ eXtreme Gradient Boosting
 
 No pre-processing
 Resampling: Cross-Validated (3 fold, repeated 1 times) 
-Summary of sample sizes: 409133, 409132, 409133 
+Summary of sample sizes: 409132, 409134, 409132 
 Resampling results across tuning parameters:
 
   eta  max_depth  nrounds  RMSE      Rsquared 
-  0.3  2           50      16.53177  0.4146868
-  0.3  2          100      16.06921  0.4465043
-  0.3  3           50      15.81575  0.4637731
-  0.3  3          100      15.30243  0.4976889
-  0.4  2           50      16.36776  0.4252379
-  0.4  2          100      15.87838  0.4587743
-  0.4  3           50      15.63138  0.4753731
-  0.4  3          100      15.13129  0.5081695
+  0.3  2           50      16.53403  0.4144922
+  0.3  2          100      16.04181  0.4487543
+  0.3  3           50      15.81040  0.4643539
+  0.3  3          100      15.29598  0.4979560
+  0.4  2           50      16.34828  0.4265221
+  0.4  2          100      15.89774  0.4573442
+  0.4  3           50      15.64876  0.4743706
+  0.4  3          100      15.11790  0.5088886
 
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
@@ -476,56 +476,56 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta =
 
  XGBoost variable importance:
      Feature        Gain       Cover   Frequence
- 1:  N02MOD3 0.240369822 0.009671605 0.008595989
- 2:  T02MOD3 0.127253340 0.010451858 0.005730659
- 3: LATWGS84 0.089626945 0.039435639 0.053008596
- 4:  P04MRG3 0.082912519 0.017141577 0.011461318
- 5:  VW4MOD1 0.034521351 0.018341558 0.021489971
- 6:  DEPTH.f 0.032779015 0.043756563 0.037249284
- 7:  VBFMRG5 0.024206009 0.012526779 0.020057307
- 8:  I09MOD4 0.019649203 0.008662261 0.011461318
- 9:  C01GLC5 0.016296079 0.003187399 0.004297994
-10:  TMDMOD3 0.015799528 0.004486755 0.002865330
-11:  TWIMRG5 0.015104639 0.017606393 0.017191977
-12:  M01MOD4 0.013838726 0.004599020 0.007163324
-13:  VW1MOD1 0.010963317 0.012984734 0.014326648
-14:  VW5MOD1 0.009508134 0.012730152 0.012893983
-15:  EX3MOD5 0.009309898 0.025220045 0.018624642
+ 1:  N02MOD3 0.242953907 0.010009711 0.005738881
+ 2:  P04MRG3 0.115285894 0.015939727 0.014347202
+ 3:  T02MOD3 0.108989385 0.007460219 0.005738881
+ 4: LATWGS84 0.058496875 0.035683355 0.037302726
+ 5:  T12MOD3 0.036850135 0.012640469 0.005738881
+ 6:  VBFMRG5 0.035617945 0.023634034 0.031563845
+ 7:  DEPTH.f 0.034045301 0.040048217 0.037302726
+ 8:  I09MOD4 0.016172570 0.016059416 0.010043042
+ 9:  M01MOD4 0.015910381 0.005242214 0.005738881
+10:  VDPMRG5 0.015489014 0.008067270 0.015781923
+11:  C01GLC5 0.015443061 0.005103307 0.004304161
+12:  TWIMRG5 0.013119367 0.014431826 0.022955524
+13:  VW4MOD1 0.011656470 0.011825433 0.018651363
+14:  DEMMRG5 0.009772819 0.016307138 0.020086083
+15:  N10MSD3 0.008811949 0.010491733 0.010043042
 --------------------------------------
 
 Variable: CLYPPT
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 251) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 291) 
 
 Type:                             Regression 
-Number of trees:                  251 
+Number of trees:                  291 
 Sample size:                      625107 
 Number of independent variables:  159 
 Mtry:                             22 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             85.48986 
-R squared:                        0.7430877 
+OOB prediction error:             85.3176 
+R squared:                        0.7436054 
 
  Variable importance:
              [,1]
-DEPTH.f  13357854
-LATWGS84  4463013
-T10MOD3   3303961
-T09MOD3   3058676
-DEMMRG5   2987857
-VW1MOD1   2636215
-VBFMRG5   2574532
-VW4MOD1   2550420
-T01MOD3   2312522
-TWIMRG5   2278522
-T11MOD3   2251984
-T04MOD3   2038573
-VW5MOD1   2004652
-VW2MOD1   1965992
-T12MOD3   1952536
+DEPTH.f  13338675
+LATWGS84  4798506
+T10MOD3   3113360
+DEMMRG5   3092459
+T09MOD3   2765184
+VBFMRG5   2603710
+VW1MOD1   2497092
+VW4MOD1   2434200
+T04MOD3   2360068
+T01MOD3   2283795
+TWIMRG5   2235857
+VW5MOD1   2062817
+T11MOD3   2041296
+VW2MOD1   1888117
+VDPMRG5   1880792
 
 eXtreme Gradient Boosting 
 
@@ -534,18 +534,18 @@ eXtreme Gradient Boosting
 
 No pre-processing
 Resampling: Cross-Validated (3 fold, repeated 1 times) 
-Summary of sample sizes: 416738, 416737, 416739 
+Summary of sample sizes: 416738, 416738, 416738 
 Resampling results across tuning parameters:
 
   eta  max_depth  nrounds  RMSE      Rsquared 
-  0.3  2           50      15.69311  0.2671542
-  0.3  2          100      15.29657  0.3013107
-  0.3  3           50      15.09500  0.3199369
-  0.3  3          100      14.64509  0.3587778
-  0.4  2           50      15.57118  0.2759475
-  0.4  2          100      15.17250  0.3106259
-  0.4  3           50      14.96141  0.3299072
-  0.4  3          100      14.50877  0.3692133
+  0.3  2           50      15.69152  0.2670761
+  0.3  2          100      15.29903  0.3009792
+  0.3  3           50      15.10754  0.3190025
+  0.3  3          100      14.65186  0.3581108
+  0.4  2           50      15.56560  0.2764034
+  0.4  2          100      15.16542  0.3115573
+  0.4  3           50      14.97565  0.3285607
+  0.4  3          100      14.51661  0.3684985
 
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
@@ -558,56 +558,56 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta =
 
  XGBoost variable importance:
      Feature       Gain        Cover   Frequence
- 1:  T10MOD3 0.11494129 0.0127311964 0.010000000
- 2:  DEPTH.f 0.08187650 0.0419257450 0.050000000
- 3:  T12MOD3 0.06446499 0.0134805828 0.010000000
- 4:  T09MOD3 0.04423668 0.0069744540 0.004285714
- 5:  VW1MOD1 0.03993048 0.0197643977 0.014285714
- 6: LATWGS84 0.03267525 0.0345701029 0.047142857
- 7:  DEMMRG5 0.03142576 0.0301533284 0.031428571
- 8:  P04MRG3 0.02957713 0.0173050960 0.014285714
- 9:  P01MRG3 0.02697077 0.0058119543 0.014285714
-10:  VBFMRG5 0.02632481 0.0094506860 0.017142857
-11:  VW4MOD1 0.01990053 0.0357583528 0.024285714
-12:  M12MOD4 0.01868546 0.0003565523 0.001428571
-13:  T11MSD3 0.01850980 0.0045079162 0.005714286
-14:  P03MRG3 0.01749093 0.0107688284 0.017142857
-15:  VW5MOD1 0.01663946 0.0153483964 0.015714286
+ 1:  T10MOD3 0.11158855 0.0160897734 0.008571429
+ 2:  DEPTH.f 0.08362127 0.0409471872 0.055714286
+ 3:  T09MOD3 0.04816765 0.0100432246 0.007142857
+ 4:  T01MOD3 0.04399633 0.0068130416 0.007142857
+ 5:  VW1MOD1 0.04162474 0.0170538111 0.017142857
+ 6:  P04MRG3 0.03428428 0.0144479052 0.011428571
+ 7: LATWGS84 0.03263879 0.0353642603 0.042857143
+ 8:  VBFMRG5 0.03183907 0.0150625200 0.022857143
+ 9:  P01MRG3 0.02854431 0.0124398276 0.017142857
+10:  T12MOD3 0.02586693 0.0108470017 0.007142857
+11:  DEMMRG5 0.02529715 0.0256153960 0.024285714
+12:  P02MRG3 0.02050665 0.0073681519 0.007142857
+13:  M12MOD4 0.01960297 0.0003827185 0.002857143
+14:  M11MOD4 0.01887923 0.0098265630 0.007142857
+15:  VW5MOD1 0.01655262 0.0204298197 0.015714286
 --------------------------------------
 
 Variable: BLD
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 251) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 291) 
 
 Type:                             Regression 
-Number of trees:                  251 
+Number of trees:                  291 
 Sample size:                      140580 
 Number of independent variables:  159 
 Mtry:                             22 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             23799.16 
-R squared:                        0.7874661 
+OOB prediction error:             23806.5 
+R squared:                        0.7874006 
 
  Variable importance:
                [,1]
-DEPTH.f  2049936436
-M03MOD4   420397598
-M04MOD4   360825642
-T04MOD3   272980017
-T05MOD3   265972195
-LATWGS84  256715701
-T09MOD3   236065012
-TWIMRG5   212458848
-VW6MOD1   205399698
-DEMMRG5   193982519
-M12MOD4   185326710
-T10MOD3   179392330
-T06MOD3   177730228
-VDPMRG5   173444473
-TMDMOD3   165289213
+DEPTH.f  2040785257
+M03MOD4   376929507
+T05MOD3   356858662
+LATWGS84  284103885
+M04MOD4   277772040
+T09MOD3   233402696
+TWIMRG5   207546494
+T04MOD3   198757486
+VW6MOD1   191740911
+DEMMRG5   190342642
+TMDMOD3   187508083
+VW2MOD1   183686181
+VW1MOD1   175114389
+T06MOD3   171075636
+T10MOD3   170405410
 
 eXtreme Gradient Boosting 
 
@@ -616,18 +616,18 @@ eXtreme Gradient Boosting
 
 No pre-processing
 Resampling: Cross-Validated (3 fold, repeated 1 times) 
-Summary of sample sizes: 93721, 93721, 93718 
+Summary of sample sizes: 93721, 93720, 93719 
 Resampling results across tuning parameters:
 
   eta  max_depth  nrounds  RMSE      Rsquared 
-  0.3  2           50      233.8884  0.5140176
-  0.3  2          100      225.7834  0.5459659
-  0.3  3           50      222.3267  0.5599316
-  0.3  3          100      212.9925  0.5955085
-  0.4  2           50      232.3069  0.5190034
-  0.4  2          100      223.3347  0.5551568
-  0.4  3           50      218.9775  0.5723770
-  0.4  3          100      209.7832  0.6072854
+  0.3  2           50      232.8946  0.5183916
+  0.3  2          100      224.9724  0.5493673
+  0.3  3           50      221.3642  0.5638941
+  0.3  3          100      212.1412  0.5990054
+  0.4  2           50      230.5580  0.5262374
+  0.4  2          100      222.0764  0.5601167
+  0.4  3           50      219.1835  0.5714691
+  0.4  3          100      209.8672  0.6069208
 
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
@@ -640,56 +640,56 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta =
 
  XGBoost variable importance:
      Feature       Gain       Cover   Frequence
- 1:  DEPTH.f 0.21919594 0.071039787 0.101156069
- 2:  M03MOD4 0.12815968 0.017810144 0.020231214
- 3:  T05MOD3 0.05684782 0.010777721 0.011560694
- 4: LATWGS84 0.03876765 0.038273632 0.040462428
- 5:  CRVMRG5 0.03143562 0.010156887 0.008670520
- 6:  P05MRG3 0.03069398 0.009290594 0.005780347
- 7:  N07MOD3 0.03058061 0.012412142 0.010115607
- 8:  VDPMRG5 0.02877115 0.019739392 0.015895954
- 9:  T02MOD3 0.02625392 0.002244988 0.002890173
-10:  SN4MOD4 0.01998933 0.015347557 0.008670520
-11:  ES2MOD5 0.01990352 0.011487685 0.015895954
-12:  VW6MOD1 0.01966083 0.013587394 0.010115607
-13:  N11MSD3 0.01777397 0.011642568 0.017341040
-14:  VBFMRG5 0.01744646 0.014422151 0.014450867
-15:  TWIMRG5 0.01540409 0.016672925 0.011560694
+ 1:  DEPTH.f 0.21895953 0.061397981 0.089985486
+ 2:  M03MOD4 0.12543034 0.013206648 0.010159652
+ 3:  T05MOD3 0.05471236 0.006558035 0.004354136
+ 4: LATWGS84 0.03695071 0.028432507 0.044992743
+ 5:  SN4MOD4 0.03497810 0.013063764 0.011611030
+ 6:  VDPMRG5 0.03492734 0.020037957 0.023222061
+ 7:  NEGMRG5 0.03169287 0.001537372 0.004354136
+ 8:  P05MRG3 0.03132840 0.006334888 0.004354136
+ 9:  N07MOD3 0.02908268 0.008493829 0.005805515
+10:  T02MOD3 0.02767729 0.006842477 0.007256894
+11:  ES2MOD5 0.02158641 0.013616736 0.008708273
+12:  VW4MOD1 0.01698621 0.023392874 0.017416546
+13:  L09USG5 0.01595915 0.005878089 0.002902758
+14:  P01MRG3 0.01091894 0.013150618 0.014513788
+15:  VW6MOD1 0.01080650 0.020114805 0.013062409
 --------------------------------------
 
 Variable: CECSUM
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 251) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 291) 
 
 Type:                             Regression 
-Number of trees:                  251 
+Number of trees:                  291 
 Sample size:                      393538 
 Number of independent variables:  159 
-Mtry:                             12 
+Mtry:                             18 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             132.6881 
-R squared:                        0.6686844 
+OOB prediction error:             128.3673 
+R squared:                        0.6794733 
 
  Variable importance:
             [,1]
-DEPTH.f  6391242
-LATWGS84 3974570
-DEMMRG5  2478288
-TWIMRG5  2266836
-VW4MOD1  1924002
-VW1MOD1  1761111
-VW3MOD1  1753538
-VW2MOD1  1654568
-VBFMRG5  1611729
-VW5MOD1  1485924
-N09MSD3  1483727
-EX5MOD5  1426722
-VW6MOD1  1415312
-SN1MOD4  1390023
-N11MSD3  1283767
+DEPTH.f  7924035
+LATWGS84 4487841
+DEMMRG5  2504614
+TWIMRG5  2483747
+VW3MOD1  2233946
+VW4MOD1  2135049
+VW1MOD1  1920086
+VW5MOD1  1792962
+N09MSD3  1684089
+VW6MOD1  1568809
+VBFMRG5  1553368
+VW2MOD1  1527286
+EX5MOD5  1439569
+VDPMRG5  1388233
+N11MSD3  1361453
 
 eXtreme Gradient Boosting 
 
@@ -698,18 +698,18 @@ eXtreme Gradient Boosting
 
 No pre-processing
 Resampling: Cross-Validated (3 fold, repeated 1 times) 
-Summary of sample sizes: 262358, 262359, 262359 
+Summary of sample sizes: 262360, 262358, 262358 
 Resampling results across tuning parameters:
 
   eta  max_depth  nrounds  RMSE      Rsquared 
-  0.3  2           50      17.54937  0.2451149
-  0.3  2          100      16.92806  0.2919879
-  0.3  3           50      16.48676  0.3321720
-  0.3  3          100      15.92188  0.3734169
-  0.4  2           50      17.32623  0.2578049
-  0.4  2          100      16.77633  0.3013716
-  0.4  3           50      16.28175  0.3416765
-  0.4  3          100      15.75087  0.3829990
+  0.3  2           50      17.48745  0.2501813
+  0.3  2          100      16.94517  0.2916672
+  0.3  3           50      16.42805  0.3361503
+  0.3  3          100      15.91732  0.3735791
+  0.4  2           50      17.31173  0.2591959
+  0.4  2          100      16.80229  0.2995254
+  0.4  3           50      16.26994  0.3443408
+  0.4  3          100      15.76909  0.3818260
 
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
@@ -722,19 +722,19 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta =
 
  XGBoost variable importance:
      Feature       Gain       Cover   Frequence
- 1: LATWGS84 0.11649719 0.079088500 0.074127907
- 2:  DEPTH.f 0.07369950 0.044922324 0.056686047
- 3:  VW4MOD1 0.06020783 0.012143164 0.011627907
- 4:  DEMMRG5 0.03867882 0.034779095 0.045058140
- 5:  N09MSD3 0.03602204 0.022965887 0.015988372
- 6:  VW5MOD1 0.03369399 0.006370139 0.008720930
- 7:  TWIMRG5 0.02718994 0.014792804 0.017441860
- 8:  N11MSD3 0.02658267 0.010807705 0.013081395
- 9:  T01MSD3 0.02569941 0.013260710 0.014534884
-10:  L04USG5 0.02450127 0.006466174 0.002906977
-11:  C05GLC5 0.02354149 0.008472156 0.014534884
-12:  VW1MOD1 0.02236485 0.021975681 0.015988372
-13:  N02MOD3 0.02044231 0.002311096 0.005813953
-14:  T03MOD3 0.01781319 0.020329122 0.013081395
-15:  P01MRG3 0.01687550 0.006284412 0.007267442
+ 1: LATWGS84 0.15367116 0.085163241 0.088662791
+ 2:  DEPTH.f 0.07565914 0.037927818 0.055232558
+ 3:  VW3MOD1 0.06693519 0.011957516 0.010174419
+ 4:  DEMMRG5 0.03396547 0.033539471 0.042151163
+ 5:  N11MSD3 0.03239516 0.009182559 0.014534884
+ 6:  TWIMRG5 0.03167972 0.013895178 0.017441860
+ 7:  L04USG5 0.02804456 0.005814936 0.004360465
+ 8:  N09MSD3 0.02701217 0.018875336 0.014534884
+ 9:  VW1MOD1 0.02361066 0.026992212 0.020348837
+10:  I03MOD4 0.02025081 0.006828418 0.008720930
+11:  T03MOD3 0.02001361 0.018423554 0.010174419
+12:  P01MRG3 0.01912541 0.016986013 0.014534884
+13:  EX3MOD5 0.01806113 0.003397887 0.008720930
+14:  L09USG5 0.01701133 0.005297078 0.002906977
+15:  SN1MOD4 0.01678967 0.006679470 0.011627907
 --------------------------------------
