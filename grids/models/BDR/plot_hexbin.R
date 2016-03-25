@@ -1,5 +1,5 @@
 plot_hexbin <- function(j, breaks, main, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1), pal=R_pal[["bpy_colors"]][1:18], in.file, log.plot){
-  out.file = paste0("plot_CV_", t.vars[j], ".png")
+  out.file = paste0("plot_CV_", t.vars[j], ".jpg")
   if(!file.exists(out.file)){
     load(in.file)
     assign("m", get(paste0("CV_", t.vars[j])))
@@ -8,7 +8,7 @@ plot_hexbin <- function(j, breaks, main, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0
     meas <- m[[1]]$Observed
     R.squared = round(1-var(meas - pred, na.rm=TRUE)/var(meas, na.rm=TRUE), 2)
     main.txt = paste0(main, "  (CV R-squared: ", R.squared, ")")
-    png(file = out.file, res = 150, width=850, height=850, type="cairo")
+    jpeg(file = out.file, res = 150, width=850, height=850, type="cairo")
     if(log.plot==TRUE){
       ## confidence limits based on RMSE:
       pfun <- function(x,y, ...){

@@ -51,8 +51,8 @@ par(mar = c(5.1,4.1,4.1,2.1), mfcol=c(1,1))
 summary(soilwell2$BDRICM)
 sum(soilwell$BDRICM==250)
 
+sum(!is.na(soilwell2[soilwell2$SOURCEDB!= "Wells",]$BDRICM))
 
 
-
-
+sum(!is.na(soilwell2[soilwell2$SOURCEDB== "Wells",]$BDRICM))
 
