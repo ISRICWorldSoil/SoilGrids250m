@@ -7,11 +7,18 @@ library(sp)
 library(rgdal)
 #library(e1071)
 #library(randomForest)
+library(devtools)
+#devtools::install_github('dmlc/xgboost')
+library(xgboost)
+#devtools::install_github("imbs-hl/ranger/ranger-r-package/ranger", ref="forest_memory") ## version to deal with Memory problems
+library(ranger)
+library(caret)
+library(hexbin)
+library(gridExtra)
 library(snowfall)
 library(utils)
 library(plotKML)
 library(GSIF)
-#library(randomForestSRC)
 
 plotKML.env(convert="convert", show.env=FALSE)
 options(bitmapType='cairo')
@@ -22,6 +29,8 @@ source("../extract.equi7t3.R")
 source("../wrapper.predict_2D.R")
 load("../equi7t3.rda")
 des <- read.csv("../SoilGrids250m_COVS250m.csv")
+mask_value <- as.list(des$MASK_VALUE)
+names(mask_value) = des$WORLDGRIDS_CODE
 
 ## points:
 load("../../profs/BDR/BDR.pnts.rda")
@@ -35,7 +44,7 @@ unlink("ov.BDR_SoilGrids250m.csv.gz")
 gzip("ov.BDR_SoilGrids250m.csv")
 save(ovA, file="ovA.rda", compression_level="xz")
 #load("ovA.rda")
-## 1.3GB
+## 1.3GB object
 
 ## BDRICM = depth to bedrock until 250 cm (censored data)
 ## BDRLOG = occurrence of R horizon 0 / 1
@@ -53,62 +62,77 @@ ovA$BDTICM <- ifelse(ovA$BDTICM<0, NA, ovA$BDTICM)
 ## ------------- MODEL FITTING -----------
 
 t.vars <- c("BDRICM", "BDRLOG", "BDTICM")
-z.min <- c(0,0,0)
-z.max <- c(250,100,Inf)
-pr.lst <- des$WORLDGRIDS_CODE
+z.min <- as.list(c(0,0,0))
+names(z.min) = t.vars
+z.max <- as.list(c(200,100,Inf))
+names(z.max) = t.vars
+
+pr.lst <- as.character(des$WORLDGRIDS_CODE)
 ## remove some predictors that might lead to artifacts (buffer maps and land cover):
-pr.lst <- pr.lst[-sapply(c("QUAUEA3","VOLNOA3","C??GLC5"), function(x){grep(
-  glob2rx(x), pr.lst)})]
-formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ LATWGS84 + ', paste(pr.lst, collapse="+")))})
-## For BDTICM we can not use latitude as predictor because points are somewhat clustered in LAT space 
-formulaString.lst[[3]] = as.formula(paste(t.vars[3], ' ~ ', paste(pr.lst, collapse="+")))
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","VOLNOA3","C??GLC5"), function(x){grep(glob2rx(x), pr.lst)}))]
+formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ ', paste(pr.lst, collapse="+")))}) ## LATWGS84 +
+## For BDTICM we can not use latitude, quakes and volcano density as predictor because points are somewhat clustered in LAT space --> predictions lead to artifacts 
+#formulaString.lst[[3]] = as.formula(paste(t.vars[3], ' ~ ', paste(pr.lst, collapse="+")))
 
-## H2O package more suited for large data (http://www.r-bloggers.com/benchmarking-random-forest-implementations/)
-library(h2o)
-## reset to use all cores:
-localH2O = h2o.init(nthreads = -1)
-
+## sub-sample to speed up model fitting:
+Nsub <- 1.5e4 
+## Initiate cluster
+cl <- makeCluster(48)
+registerDoParallel(cl)
 ## Write results of model fitting into a text file:
-cat("Results of 'h2o.randomForest':\n\n", file="resultsFit.txt")
-mrfX_path <- rep(list(NULL), length(t.vars))
-mdLX_path <- rep(list(NULL), length(t.vars))
-#mrfX_path[[2]] = "/data/models/BDR/DRF_model_R_1450371688480_15"
-#mdLX_path[[2]] = "/data/models/BDR/DeepLearning_model_R_1450371688480_20"
+cat("Results of model fitting 'randomForest / XGBoost':\n\n", file="BDR_resultsFit.txt")
 for(j in 1:length(t.vars)){
-  if(is.null(mrfX_path[[j]])){
-    cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="resultsFit.txt", append=TRUE)
-    cat("\n", file="resultsFit.txt", append=TRUE)
-    LOC_ID <- ovA$LOC_ID
+  cat("\n", file="BDR_resultsFit.txt", append=TRUE)
+  cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="BDR_resultsFit.txt", append=TRUE)
+  cat("\n", file="BDR_resultsFit.txt", append=TRUE)
+  LOC_ID <- ovA$LOC_ID
+  ## Caret training settings (reduce number of combinations to speed up):
+  ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
+  gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
+  rf.tuneGrid <- expand.grid(mtry = seq(4,22,by=2))
+  out.rf <- paste0("mrf.",t.vars[j],".rds")
+  if(!file.exists(out.rf)){
     dfs <- ovA[,all.vars(formulaString.lst[[j]])]
     sel <- complete.cases(dfs)
     dfs <- dfs[sel,]
-    dfs.hex <- as.h2o(dfs, destination_frame = "dfs.hex")
-    mrfX <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString.lst[[j]])), training_frame=dfs.hex) 
-    mdLX <- h2o.deeplearning(y=1, x=2:length(all.vars(formulaString.lst[[j]])), training_frame=dfs.hex)
-    sink(file="resultsFit.txt", append=TRUE, type="output")
-    print(mrfX)
-    cat("\n", file="resultsFit.txt", append=TRUE)
+    ## optimize mtry parameter:
+    t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid) 
+    ## fit RF model using 'ranger' (fully parallelized)
+    ## reduce number of trees so the output objects do not get TOO LARGE i.e. >5GB
+    saveRDS(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
+    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=291)
+    saveRDS(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
     ## Top 15 covariates:
-    print(mrfX@model$variable_importances[1:15,])
-    cat("\n", file="resultsFit.txt", append=TRUE)
-    print(mdLX)
-    cat("\n", file="resultsFit.txt", append=TRUE)
-    sink()
-    mrfX_path[[j]] = h2o.saveModel(mrfX, path="./", force=TRUE)
-    mdLX_path[[j]] = h2o.saveModel(mdLX, path="./", force=TRUE)
-    ## save fitting success:
-    fit.df <- data.frame(LOC_ID=LOC_ID[sel], observed=dfs[,1], predicted=as.data.frame(h2o.predict(mrfX, dfs.hex, na.action=na.pass))$predict)
+    sink(file="BDR_resultsFit.txt", append=TRUE, type="output")
+    print(mrfX)
+    cat("\n Variable importance:\n", file="BDR_resultsFit.txt", append=TRUE)
+    xl <- as.list(ranger::importance(mrfX))
+    print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:15]])))
+    ## save fitting success vectors:
+    fit.df <- data.frame(LOC_ID=LOC_ID[sel], observed=dfs[,1], predicted=predictions(mrfX))
     unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
     write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
     gzip(paste0("RF_fit_", t.vars[j], ".csv"))
+    ## fit XGBoost model (uses all points):
+    mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
+    saveRDS(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
+    ## save also binary model for prediction purposes:
+    xgb.save(mgbX$finalModel, paste0("Xgb.",t.vars[j]))
+    importance_matrix <- xgb.importance(mgbX$coefnames, model = mgbX$finalModel)
+    cat("\n", file="BDR_resultsFit.txt", append=TRUE)
+    print(mgbX)
+    cat("\n XGBoost variable importance:\n", file="BDR_resultsFit.txt", append=TRUE)
+    print(importance_matrix[1:15,])
+    cat("--------------------------------------\n", file="BDR_resultsFit.txt", append=TRUE)
+    sink()
   }
 }
-names(mrfX_path) = t.vars
-names(mdLX_path) = t.vars
-write.table(mrfX_path, file="mrfX_path.txt")
-write.table(mdLX_path, file="mdLX_path.txt")
-#mrfX_path = as.list(read.table("mrfX_path.txt"))
-#mdLX_path = as.list(read.table("mdLX_path.txt"))
+rm(mrfX); rm(mgbX)
+
+mrfX_lst <- list.files(pattern="^mrf.")
+mgbX_lst <- list.files(pattern="^mgb.")
+names(mrfX_lst) <- paste(sapply(mrfX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
+names(mgbX_lst) <- paste(sapply(mgbX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
 
 ## world plot - overlay and plot points and maps:
 shp.pnts <- ovA[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84",t.vars)]
@@ -123,23 +147,47 @@ system("7za a Soil_depth_training_points.zip Soil_depth_training_points.*")
 ## ------------- PREDICTIONS -----------
 
 ## Predict per tile:
-#pr.dirs <- basename(dirname(list.files(path="/data/covs1km", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
-pr.dirs <- basename(dirname(list.files(path="/data/covs", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
+pr.dirs <- basename(dirname(list.files(path="/data/covs1t", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
 str(pr.dirs)
-## 2353 dirs
+#save(pr.dirs, file="pr.dirs.rda")
+## 16,561 dirs
+
 ## test predictions:
-wrapper.predict_2D(i="NA_060_036", varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max)
-#wrapper.predict_2D(i="NA_060_036", varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min, z.max=z.max)
+system.time( wrapper.predict_2D(i="NA_060_036", varn="BDTICM", gm1=mrfX_lst[["BDTICM"]], gm2=mgbX_lst[["BDTICM"]], in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[["BDTICM"]], zmax=z.max[["BDTICM"]], mask_value=mask_value) )
+
 ## Run in loop (whole world):
-#x <- lapply(pr.dirs, function(i){try( wrapper.predict_2D(i, varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs1km", out.path="/data/predicted1km", z.min=z.min, z.max=z.max) )})
-x <- lapply(pr.dirs, function(i){try( wrapper.predict_2D(i, varn=t.vars, gm_path1=mrfX_path, gm_path2=mdLX_path, in.path="/data/covs", out.path="/data/predicted", z.min=z.min, z.max=z.max) )})
+for(j in t.vars[3]){
+  gc(); gc()
+  gm1 <- readRDS(mrfX_lst[[j]])
+  gm1.w = 1/gm1$prediction.error
+  gm2 <- readRDS(mgbX_lst[[j]])
+  gm2.w = 1/(min(gm2$results$RMSE, na.rm=TRUE)^2)
+  ## divide RAM by size of model:
+  cpus = unclass(round(256/(3.5*(object.size(gm1)/1e9+object.size(gm2)/1e9))))
+  ## leave 2 CPU's free for background processes:
+  cpus <- ifelse(cpus>46, 46, cpus)
+  sfInit(parallel=TRUE, cpus=cpus) 
+  sfExport("wrapper.predict_2D", "pr.dirs", "mask_value", "z.min", "z.max", "gm1", "gm2", "j", "gm1.w", "gm2.w")
+  sfLibrary(rgdal)
+  sfLibrary(plyr)
+  sfLibrary(ranger)
+  sfLibrary(xgboost)
+  sfLibrary(caret)
+  ## each process takes up to 20GB (gm1 largest object)
+  ## Can take up to an hour to export all objects to all CPUs
+  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_2D(i=x, varn=j, gm1=gm1, gm2=gm2, in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[[j]], zmax=z.max[[j]], mask_value=mask_value, gm1.w=gm1.w, gm2.w=gm2.w) )  } )
+  sfStop()
+  rm(gm1); rm(gm2)
+  gc(); gc()
+  #stopCluster(cl)
+}
 
 x <- readGDAL("/data/predicted/NA_060_036/BDRLOG_M_NA_060_036.tif")
 x.ll <- reproject(x)
 kml(x.ll, file.name="BDRLOG_M_NA_060_036.kml", folder.name="R horizon", colour=band1, z.lim=c(0,100), colour_scale=SAGA_pal[["SG_COLORS_YELLOW_RED"]], raster_name="BDRLOG_M_NA_060_036.png")
 x <- readGDAL("/data/predicted/NA_060_036/BDTICM_M_NA_060_036.tif")
 x.ll <- reproject(x)
-kml(x.ll, file.name="BDTICM_M_NA_060_036.kml", folder.name="Absolute depth in cm", colour=band1, colour_scale=SAGA_pal[[1]], raster_name="BDTICM_M_NA_060_036.png", z.lim=c(0,5000))
+kml(x.ll, file.name="BDTICM_M_NA_060_036.kml", folder.name="Absolute depth in cm", colour=band1, colour_scale=SAGA_pal[[1]], raster_name="BDTICM_M_NA_060_036.png", z.lim=c(0,7000))
 
 ## world plot - overlay and plot points and maps:
 xy.pnts <- join(ovA[complete.cases(ovA[,c("SOURCEID","SOURCEDB")]),], as.data.frame(BDR.pnts[c("SOURCEID")]), type="left", match="first")
@@ -192,8 +240,6 @@ names(plt.log) = t.vars
 for(j in 1:length(t.vars)){
   plot_hexbin(j, breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"), log.plot=plt.log[t.vars[j]])
 }
-
-h2o.shutdown()
 
 ## clean-up:
 # for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 

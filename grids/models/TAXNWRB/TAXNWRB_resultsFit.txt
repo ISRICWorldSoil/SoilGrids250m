@@ -1,0 +1,53 @@
+Results of model fitting 'nnet / randomForest':
+
+Variable: TAXNWRB.f
+Penalized Multinomial Regression 
+
+64623 samples
+  171 predictor
+  118 classes: 'Acric Ferralsols', 'Acric Plinthosols', 'Albic Arenosols', 'Albic Luvisols', 'Alic Nitisols', 'Aluandic Andosols', 'Aric Regosols', 'Calcaric Regosols', 'Calcic Chernozems', 'Calcic Gleysols', 'Calcic Gypsisols', 'Calcic Histosols', 'Calcic Kastanozems', 'Calcic Luvisols', 'Calcic Solonetz', 'Calcic Vertisols', 'Cryic Histosols', 'Cutanic Alisols', 'Endogleyic Cambisols', 'Endogleyic Planosols', 'Ferralic Arenosols', 'Ferralic Cambisols', 'Fibric Histosols', 'Gleyic Luvisols', 'Gleyic Podzols', 'Gleyic Solonetz', 'Gypsic Solonchaks', 'Haplic Acrisols', 'Haplic Acrisols (Alumic)', 'Haplic Acrisols (Ferric)', 'Haplic Acrisols (Humic)', 'Haplic Albeluvisols', 'Haplic Alisols', 'Haplic Andosols', 'Haplic Arenosols', 'Haplic Arenosols (Calcaric)', 'Haplic Calcisols', 'Haplic Calcisols (Sodic)', 'Haplic Cambisols', 'Haplic Cambisols (Calcaric)', 'Haplic Cambisols (Chromic)', 'Haplic Cambisols (Dystric)', 'Haplic Cambisols (Eutric)', 'Haplic Cambisols (Humic)', 'Haplic Cambisols (Sodic)', 'Haplic Chernozems', 'Haplic Cryosols', 'Haplic Ferralsols', 'Haplic Ferralsols (Rhodic)', 'Haplic Ferralsols (Xanthic)', 'Haplic Fluvisols', 'Haplic Fluvisols (Arenic)', 'Haplic Fluvisols (Calcaric)', 'Haplic Fluvisols (Dystric)', 'Haplic Fluvisols (Eutric)', 'Haplic Gleysols', 'Haplic Gleysols (Dystric)', 'Haplic Gleysols (Eutric)', 'Haplic Gypsisols', 'Haplic Kastanozems', 'Haplic Leptosols', 'Haplic Leptosols (Eutric)', 'Haplic Lixisols', 'Haplic Lixisols (Chromic)', 'Haplic Lixisols (Ferric)', 'Haplic Luvisols', 'Haplic Luvisols (Chromic)', 'Haplic Luvisols (Ferric)', 'Haplic Nitisols (Rhodic)', 'Haplic Phaeozems', 'Haplic Planosols (Dystric)', 'Haplic Planosols (Eutric)', 'Haplic Podzols', 'Haplic Regosols (Dystric)', 'Haplic Regosols (Eutric)', 'Haplic Regosols (Sodic)', 'Haplic Solonchaks', 'Haplic Solonchaks (Sodic)', 'Haplic Solonetz', 'Haplic Umbrisols', 'Haplic Vertisols', 'Haplic Vertisols (Eutric)', 'Hemic Histosols', 'Histic Albeluvisols', 'Hypoluvic Arenosols', 'Leptic Cambisols', 'Leptic Luvisols', 'Leptic Phaeozems', 'Leptic Regosols', 'Leptic Umbrisols', 'Lithic Leptosols', 'Lixic Plinthosols', 'Luvic Calcisols', 'Luvic Chernozems', 'Luvic Phaeozems', 'Luvic Planosols', 'Luvic Stagnosols', 'Mollic Gleysols', 'Mollic Leptosols', 'Mollic Solonetz', 'Mollic Vertisols', 'Petric Calcisols', 'Petric Durisols', 'Plinthic Acrisols', 'Protic Arenosols', 'Rendzic Leptosols', 'Sapric Histosols', 'Solodic Planosols', 'Stagnic Luvisols', 'Turbic Cryosols', 'Umbric Albeluvisols', 'Umbric Ferralsols', 'Umbric Gleysols', 'Vertic Cambisols', 'Vertic Luvisols', 'Vetic Acrisols', 'Vitric Andosols', 'Vitric Cryosols' 
+
+No pre-processing
+Resampling: Bootstrapped (10 reps) 
+Summary of sample sizes: 63113, 63113, 63113, 63113, 63113, 63113, ... 
+Resampling results across tuning parameters:
+
+  decay  Accuracy   Kappa    
+  0e+00  0.1880488  0.1560992
+  1e-04  0.1880488  0.1560993
+  1e-01  0.1880488  0.1560992
+
+Accuracy was used to select the optimal model using  the largest value.
+The final value used for the model was decay = 0.1. 
+
+ Random forest model:Ranger result
+
+Call:
+ ranger::ranger(formulaString.FAO, ov[complete.cases(ov[, all.vars(formulaString.FAO)]),      ], importance = "impurity", write.forest = TRUE, mtry = t.mrfX$bestTune$mtry,      probability = TRUE) 
+
+Type:                             Probability estimation 
+Number of trees:                  500 
+Sample size:                      63113 
+Number of independent variables:  158 
+Mtry:                             22 
+Target node size:                 10 
+Variable importance mode:         impurity 
+OOB prediction error:             0.7284351 
+
+ Variable importance:
+             [,1]
+VW5MOD1  574757.4
+LATWGS84 569056.6
+VDPMRG5  524109.5
+DEMMRG5  502837.7
+M04MOD4  500658.1
+ES5MOD5  497802.6
+TWIMRG5  493612.1
+I08MOD4  486725.7
+VBFMRG5  483713.3
+ES3MOD5  482614.8
+ES4MOD5  465667.6
+I07MOD4  464480.3
+EX5MOD5  463758.6
+EX6MOD5  460521.7
+M08MOD4  458010.0

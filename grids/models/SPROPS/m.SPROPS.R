@@ -74,7 +74,7 @@ z.max <- as.list(c(800,110,110,100,100,100,100,3500,2200))
 names(z.max) = t.vars
 ## FIT MODELS:
 pr.lst <- des$WORLDGRIDS_CODE
-formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ LATWGS84 + DEPTH.f +', paste(pr.lst, collapse="+")))})
+formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ DEPTH.f +', paste(pr.lst, collapse="+")))}) ## LATWGS84 +
 all.vars(formulaString.lst[[1]])
 
 ## Median value per cov:
@@ -98,7 +98,7 @@ for(j in 1:length(t.vars)){
   ## Caret training settings (reduce number of combinations to speed up):
   ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
   gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
-  rf.tuneGrid <- expand.grid(mtry = seq(4,22,by=2))
+  rf.tuneGrid <- expand.grid(mtry = seq(10,60,by=5))
   out.rf <- paste0("mrf.",t.vars[j],".rds")
   if(!file.exists(out.rf)){
     dfs <- ovA[,all.vars(formulaString.lst[[j]])]
@@ -138,8 +138,8 @@ for(j in 1:length(t.vars)){
 }
 rm(mrfX); rm(mgbX)
 
-mrfX_lst <- list.files(pattern="mrf.")
-mgbX_lst <- list.files(pattern="mgb.")
+mrfX_lst <- list.files(pattern="^mrf.")
+mgbX_lst <- list.files(pattern="^mgb.")
 names(mrfX_lst) <- paste(sapply(mrfX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
 names(mgbX_lst) <- paste(sapply(mgbX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
 
@@ -152,21 +152,23 @@ str(pr.dirs)
 ## 16,561 dirs
 
 ## Test it:
-system.time( wrapper.predict_np(i="NA_060_036", varn="ORCDRC", gm1=mrfX_lst[[j]], gm2=mgbX_lst[[j]], in.path="/data/covs1t", out.path="/data/predicted", zmin=50, zmax=3500, mask_value=mask_value) )
+system.time( wrapper.predict_np(i="NA_060_036", varn="PHIHOX", gm1=mrfX_lst[["PHIHOX"]], gm2=mgbX_lst[["PHIHOX"]], in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[["PHIHOX"]], zmax=z.max[["PHIHOX"]], mask_value=mask_value) )
+system.time( wrapper.predict_np(i="NA_060_036", varn="ORCDRC", gm1=mrfX_lst[["ORCDRC"]], gm2=mgbX_lst[["ORCDRC"]], in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[["ORCDRC"]], zmax=z.max[["ORCDRC"]], mask_value=mask_value) )
 
-## Run per property:
-library(snowfall)
+## Run per property (TAKES ABOUT 2 DAYS OF COMPUTING PER PROPERTY):
 for(j in t.vars){
   gc(); gc()
   #gm1 <- mrfX_lst[[j]]
   gm1 <- readRDS(mrfX_lst[[j]])
   gm2 <- readRDS(mgbX_lst[[j]])
   ## divide RAM by size of model:
-  cpus = unclass(round(256/(3*(object.size(gm1)/1e9+object.size(gm2)/1e9))))
-  cpus <- ifelse(cpus>48, 48, cpus)
+  cpus = unclass(round(256/(3.5*(object.size(gm1)/1e9+object.size(gm2)/1e9))))
+  ## leave 2 CPU's free for background processes:
+  cpus <- ifelse(cpus>46, 46, cpus)
   #cl <- makeCluster(s48-cpus)
   #registerDoParallel(cl)
-  sfInit(parallel=TRUE, cpus=cpus) # cpus=48, type="MPI"
+  sfInit(parallel=TRUE, cpus=cpus) 
+  ## cpus=48, type="MPI"
   ## Error in mpi.send(x = serialize(obj, NULL), type = 4, dest = dest, tag = tag, : long vectors not supported yet: memory.c:3361
   sfExport("wrapper.predict_np", "pr.dirs", "mask_value", "z.min", "z.max", "gm1", "gm2", "j")
   sfLibrary(rgdal)
@@ -174,13 +176,29 @@ for(j in t.vars){
   sfLibrary(ranger)
   sfLibrary(xgboost)
   sfLibrary(caret)
-  ## exach process up to 5GB (gm1 largest object)
+  ## each process takes up to 5GB (gm1 largest object)
   ## Can take up to an hour to export all objects to all CPUs
   x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_np(i=x, varn=j, gm1=gm1, gm2=gm2, in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[[j]], zmax=z.max[[j]], mask_value=mask_value) )  } )
   sfStop()
+  rm(gm1); rm(gm2)
+  gc(); gc()
   #stopCluster(cl)
 }
-stopCluster(cl)
+
+## corrupt or missing tiles:
+missing.tiles <- function(varn, pr.dirs){
+  dir.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", varn, "*.tif")), full.names=TRUE, recursive=TRUE)
+  out.lst <- pr.dirs[which(!pr.dirs %in% basename(dirname(dir.lst)))]
+  return(out.lst)
+}
+sfInit(parallel=TRUE, cpus=length(t.vars))
+sfLibrary(raster)
+sfLibrary(rgdal)
+sfExport("missing.tiles", "t.vars", "pr.dirs")
+missing.lst <- sfLapply(t.vars, missing.tiles, pr.dirs=pr.dirs)
+sfStop()
+names(missing.lst) = t.vars
+## "NA_101_074" "NA_106_069"
 
 ## clean-up:
 # for(i in t.vars){ ## c("BLD", "ORCDRC", "PHIHOX") 

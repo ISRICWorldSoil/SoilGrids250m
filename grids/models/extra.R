@@ -1,4 +1,10 @@
 
+
+cl <- makeCluster(getOption("cl.cores", cpus))
+clusterExport(cl, c("varn", "gm_path1", "gm_path2", "z.min", "z.max", "predict_vars", "out.c"), envir=environment())
+x <- clusterApply(cl, 1:length(varn), function(x){predict_vars(x, varn, gm_path1, gm_path2, z.min, z.max, out.c, gm1.w, gm2.w)})
+stopCluster(cl)
+
 sfInit(parallel=TRUE, cpus=40)
 sfExport("make.csv.gz", "pr.dirs")
 sfLibrary(rgdal)

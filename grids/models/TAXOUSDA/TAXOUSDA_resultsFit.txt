@@ -1,0 +1,53 @@
+Results of model fitting 'nnet / randomForest':
+
+Variable: TAXOUSDA.f
+Penalized Multinomial Regression 
+
+58124 samples
+  173 predictor
+   67 classes: 'Albolls', 'Aqualfs', 'Aquands', 'Aquents', 'Aquepts', 'Aquerts', 'Aquods', 'Aquolls', 'Aquox', 'Aquults', 'Arents', 'Argids', 'Borolls', 'Calcids', 'Cambids', 'Cryalfs', 'Cryands', 'Cryepts', 'Cryids', 'Cryods', 'Cryolls', 'Durids', 'Fibrists', 'Fluvents', 'Folists', 'Gelands', 'Gelepts', 'Gelods', 'Gypsids', 'Hemists', 'Histels', 'Humods', 'Humults', 'Ochrepts', 'Orthels', 'Orthents', 'Orthods', 'Perox', 'Psamments', 'Rendolls', 'Salids', 'Saprists', 'Torrands', 'Torrerts', 'Torrox', 'Turbels', 'Udalfs', 'Udands', 'Udepts', 'Uderts', 'Udolls', 'Udox', 'Udults', 'Ustalfs', 'Ustands', 'Ustepts', 'Usterts', 'Ustolls', 'Ustox', 'Ustults', 'Vitrands', 'Xeralfs', 'Xerands', 'Xerepts', 'Xererts', 'Xerolls', 'Xerults' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+Summary of sample sizes: 56668, 56668, 56668, 56668, 56668 
+Resampling results across tuning parameters:
+
+  decay  Accuracy   Kappa    
+  0e+00  0.3447374  0.3068961
+  1e-04  0.3447374  0.3068961
+  1e-01  0.3447374  0.3068961
+
+Accuracy was used to select the optimal model using  the largest value.
+The final value used for the model was decay = 0.1. 
+
+ Random forest model:Ranger result
+
+Call:
+ ranger::ranger(formulaString.USDA, ov[complete.cases(ov[, all.vars(formulaString.USDA)]),      ], importance = "impurity", write.forest = TRUE, mtry = t.mrfX$bestTune$mtry,      probability = TRUE) 
+
+Type:                             Probability estimation 
+Number of trees:                  500 
+Sample size:                      56668 
+Number of independent variables:  158 
+Mtry:                             22 
+Target node size:                 10 
+Variable importance mode:         impurity 
+OOB prediction error:             0.5235087 
+
+ Variable importance:
+             [,1]
+ASSDAC3  492017.3
+TWIMRG5  406641.7
+T12MOD3  400733.0
+I02MOD4  360626.2
+T03MOD3  342518.7
+GTDHYS3  332937.9
+DEMMRG5  318260.2
+LATWGS84 300809.1
+VBFMRG5  300533.1
+I01MOD4  282668.1
+T02MOD3  280553.6
+PRSMRG3  278447.6
+VDPMRG5  238073.0
+N03MOD3  224792.0
+VW1MOD1  224221.6
