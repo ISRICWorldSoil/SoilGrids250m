@@ -2,7 +2,7 @@
 ## by: Tom.Hengl@isric.org
 
 ## run per property:
-wrapper.predict_np <- function(i, gm1, gm2, sd=c(0, 5, 15, 30, 60, 100, 200), varn, in.path, out.path, zmin, zmax, gm1.w=NULL, gm2.w=NULL, type="Int16", mvFlag=-32768, mask_value){
+wrapper.predict_np <- function(i, gm1, gm2, sd=c(0, 5, 15, 30, 60, 100, 200), varn, in.path, out.path, zmin, zmax, gm1.w=NULL, gm2.w=NULL, type="Int16", mvFlag=-32768){
   out.all <- as.vector(sapply(varn, function(x){paste0(out.path, "/", i, "/", x, "_M_sl", 1:length(sd), "_", i, ".tif")}))
   if(any(!file.exists(out.all))){
     rds.file = paste0(in.path, "/", i, "/", i, ".rds")
@@ -11,14 +11,6 @@ wrapper.predict_np <- function(i, gm1, gm2, sd=c(0, 5, 15, 30, 60, 100, 200), va
       newdata <- readRDS(rds.file)
       ## some data.frames have a single pixel / should be skipped:
       if(nrow(newdata@data)>1){
-        ## filter any missing layers:
-        sel.na <- colSums(sapply(newdata@data, function(x){!is.na(x)}))==0
-        if(any(sel.na==TRUE)){
-          sel.na <- attr(sel.na, "names")[which(sel.na)]
-          for(x in 1:length(sel.na)){
-            newdata@data[,sel.na[x]] = mask_value[[sel.na[x]]]
-          }
-        }
         if(is.character(gm1)){
           ## Load RandomForest model:
           gm1 <- readRDS(gm1)

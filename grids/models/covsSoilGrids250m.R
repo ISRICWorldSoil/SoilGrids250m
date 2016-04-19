@@ -26,6 +26,10 @@ source("make.covsRDA.R")
 ## Months of interest:
 m.lst <- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
 ms.lst <- c("JanFeb","MarApr","MayJun","JulAug","SepOct","NovDec")
+des <- read.csv("SoilGrids250m_COVS250m.csv")
+mask_value <- as.list(des$MASK_VALUE)
+names(mask_value) = des$WORLDGRIDS_CODE
+
 msk.lst <- list.files(path="/data/covs", pattern=glob2rx("LMK_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
 length(msk.lst)
 ## 2599 tiles
@@ -143,7 +147,6 @@ for(i in 1:7){
 
 ## plot in GE:
 tif.lst <- list.files(path="/data/covs/NA_060_036/", pattern=glob2rx("*_*_*_*.tif$"), full.names=TRUE)
-# des <- read.csv("SoilGrids250m_COVS250m.csv")
 # varn <- sapply(basename(tif.lst), function(x){strsplit(x, "_")[[1]][1]})
 # no <- match(varn, des$WORLDGRIDS_CODE)
 # plotKML.env(convert="convert", show.env=FALSE)
@@ -244,14 +247,16 @@ for(j in names(equi7t1)){
 # length(mskt1.lst)-length(selDt1$name)
 # ## 16,561 dirs left
 
+make.covsRDA(in.path="/data/covs1t", i="NA_075_072", mask_value=mask_value)
+
 ## Create prediction files:
 prt1.dirs <- basename(list.dirs("/data/covs1t")[-1])
 sfInit(parallel=TRUE, cpus=48)
-sfExport("make.covsRDA", "prt1.dirs")
+sfExport("make.covsRDA", "prt1.dirs", "mask_value")
 sfLibrary(rgdal)
 sfLibrary(sp)
 sfLibrary(R.utils)
-x <- sfClusterApplyLB(prt1.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs1t") ) })
+x <- sfClusterApplyLB(prt1.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs1t", mask_value=mask_value) ) })
 sfStop()
 
 ## create prediction dirs:
@@ -291,11 +296,11 @@ lapply(n.tifs[which(cov.lst %in% cov.incomplete)], length)
 #make.covsRDA(i="NA_102_042", in.path="/data/covs1km")
 ## RDS files at 1 km
 sfInit(parallel=TRUE, cpus=48)
-sfExport("make.covsRDA")
+sfExport("make.covsRDA", "mask_value")
 sfLibrary(rgdal)
 sfLibrary(sp)
 sfLibrary(R.utils)
-x <- sfClusterApplyLB(pr.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs1km") ) })
+x <- sfClusterApplyLB(pr.dirs, fun=function(i){ try(make.covsRDA(i, in.path="/data/covs1km", mask_value=mask_value) ) })
 sfStop()
 
 ## Check if everything is OK:
@@ -311,6 +316,10 @@ pr.dirs[which(!pr.dirs %in% basename(dirname(rds.lst)))]
 #empty.lst <- list.files(path="/data/covs1km", pattern=glob2rx("*.tif$"), full.names=TRUE, recursive=TRUE)
 #del.lst <- empty.lst[which(file.size(empty.lst)==0)]
 
+#del.lst <- list.files(path="/data/covs1t", pattern=glob2rx("*_*_*.rds"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
+#del.lst <- list.files(path="/data/covs1t", pattern=glob2rx("VOLNOA3_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
 #del.lst <- list.files(path="/data/covs", pattern=glob2rx("ASSDAC3_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 #del.lst <- list.files(path="/data/covs", pattern=glob2rx("P??MRG3_*_*_*.tif"), full.names=TRUE, recursive=TRUE)

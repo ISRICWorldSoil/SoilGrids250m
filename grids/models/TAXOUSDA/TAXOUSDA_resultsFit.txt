@@ -13,9 +13,9 @@ Summary of sample sizes: 56668, 56668, 56668, 56668, 56668
 Resampling results across tuning parameters:
 
   decay  Accuracy   Kappa    
-  0e+00  0.3447374  0.3068961
-  1e-04  0.3447374  0.3068961
-  1e-01  0.3447374  0.3068961
+  0e+00  0.3492453  0.3108771
+  1e-04  0.3492453  0.3108771
+  1e-01  0.3492453  0.3108771
 
 Accuracy was used to select the optimal model using  the largest value.
 The final value used for the model was decay = 0.1. 
@@ -28,26 +28,26 @@ Call:
 Type:                             Probability estimation 
 Number of trees:                  500 
 Sample size:                      56668 
-Number of independent variables:  158 
-Mtry:                             22 
+Number of independent variables:  156 
+Mtry:                             15 
 Target node size:                 10 
 Variable importance mode:         impurity 
-OOB prediction error:             0.5235087 
+OOB prediction error:             0.5260398 
 
  Variable importance:
-             [,1]
-ASSDAC3  492017.3
-TWIMRG5  406641.7
-T12MOD3  400733.0
-I02MOD4  360626.2
-T03MOD3  342518.7
-GTDHYS3  332937.9
-DEMMRG5  318260.2
-LATWGS84 300809.1
-VBFMRG5  300533.1
-I01MOD4  282668.1
-T02MOD3  280553.6
-PRSMRG3  278447.6
-VDPMRG5  238073.0
-N03MOD3  224792.0
-VW1MOD1  224221.6
+            [,1]
+ASSDAC3 420005.8
+TWIMRG5 368868.6
+T12MOD3 351073.5
+GTDHYS3 308402.5
+DEMMRG5 304988.8
+VBFMRG5 301919.0
+T02MOD3 290957.5
+T03MOD3 288409.3
+T01MOD3 284328.4
+I01MOD4 277006.3
+I02MOD4 269594.0
+PRSMRG3 257145.1
+VW1MOD1 247010.8
+VDPMRG5 226908.3
+N03MOD3 224036.6

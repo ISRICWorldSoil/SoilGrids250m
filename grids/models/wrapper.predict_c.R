@@ -1,21 +1,13 @@
 ## predict soil types using a model "mg" and write GeoTifs out
 ## by: Tom.Hengl@isric.org
 
-wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, check.names=TRUE, soil.fix, mask_value, gm1.w, gm2.w){ 
+wrapper.predict_c <- function(i, gm1, gm2, varn, in.path, out.path, col.legend, check.names=TRUE, soil.fix, gm1.w, gm2.w){ 
   out.c <- paste0(out.path, "/", i, "/", varn, "_", i, ".tif")
   if(!file.exists(out.c)){
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
     if(nrow(m@data)>1){
       mfix <- m$BICUSG5
       lfix <- levels(as.factor(paste(mfix)))
-      sel.na <- colSums(sapply(m@data, function(x){!is.na(x)}))==0 
-      ## filter any missing columns:
-      if(any(sel.na==TRUE)){
-        sel.na <- attr(sel.na, "names")[which(sel.na)]
-        for(x in 1:length(sel.na)){
-          m@data[,sel.na[x]] = mask_value[[sel.na[x]]]
-        }
-      }
       probs <- predict_df(gm1, gm2, m@data, gm1.w, gm2.w)
       gc()
       if(any(unique(unlist(soil.fix)) %in% lfix)){

@@ -3,7 +3,7 @@
 ## List of covariates is at: https://goo.gl/FWD15V
 ## Tom.Hengl@isric.org
 
-make.covsRDA <- function(in.path, i, csv=FALSE, fix.sums=TRUE, d.min=-9999, d.max=65000){
+make.covsRDA <- function(in.path, i, csv=FALSE, fix.sums=TRUE, d.min=-9999, d.max=65000, mask_value){
   out.rda <- paste0(in.path, "/", i, "/", i, ".rds")
   if(!file.exists(out.rda)){
     cov.lst <- list.files(path=paste(in.path, i, sep="/"), glob2rx("*_*_*_*.tif$"), full.names=TRUE)
@@ -19,7 +19,7 @@ make.covsRDA <- function(in.path, i, csv=FALSE, fix.sums=TRUE, d.min=-9999, d.ma
         d <- ifelse(d<= d.min|d> d.max, NA, d)
         dn <- which(is.na(d))
         if(length(dn)>0){ 
-          ## replace all missing values with median value
+          ## replace missing values with median value
           ## TH: this could lead to artifacts
           d[dn] <- quantile(d, probs=0.5, na.rm=TRUE)
         }
@@ -34,6 +34,16 @@ make.covsRDA <- function(in.path, i, csv=FALSE, fix.sums=TRUE, d.min=-9999, d.ma
       rL <- range(sL, na.rm=TRUE)
       if(rL[1]<100|rL[2]>100){
         for(j in L){ m@data[sL>0,j] <- round(m@data[sL>0,j] / sL[sL>0] * 100, 0) }
+      }
+    }
+    ## filter layers that are completely missing:
+    sel.na <- colSums(sapply(m@data, function(x){!is.na(x)}))==0
+    if(any(sel.na==TRUE)){
+      sel.na <- attr(sel.na, "names")[which(sel.na)]
+      for(x in 1:length(sel.na)){
+        if(sel.na[x] %in% names(m)){
+          m@data[,sel.na[x]] = mask_value[[sel.na[x]]]
+        }
       }
     }
     ## Save output:
