@@ -1,0 +1,69 @@
+Results of model fitting 'randomForest':
+
+Variable: USDA Great Group
+
+ Random forest model:Ranger result
+
+Call:
+ ranger::ranger(formulaString.USDA, ovA, importance = "impurity",      write.forest = TRUE, probability = TRUE) 
+
+Type:                             Probability estimation 
+Number of trees:                  500 
+Sample size:                      304018 
+Number of independent variables:  156 
+Mtry:                             12 
+Target node size:                 10 
+Variable importance mode:         impurity 
+OOB prediction error:             0.449543 
+
+ Variable importance:
+            [,1]
+VDPMRG5 19405548
+I02MOD4 17367028
+DEMMRG5 17271539
+DVMMRG5 16275839
+TWIMRG5 15444795
+VBFMRG5 14819867
+ES3MOD5 14473184
+EX4MOD5 14468885
+VW4MOD1 14387432
+SN1MOD4 14227565
+ES5MOD5 13889211
+ES6MOD5 13859548
+ES4MOD5 13842176
+I08MOD4 13688221
+I09MOD4 13618512
+
+Variable: SPCS classes
+
+ Random forest model:Ranger result
+
+Call:
+ ranger::ranger(formulaString.pscs, ovA2, importance = "impurity",      write.forest = TRUE, probability = TRUE) 
+
+Type:                             Probability estimation 
+Number of trees:                  500 
+Sample size:                      299191 
+Number of independent variables:  156 
+Mtry:                             12 
+Target node size:                 10 
+Variable importance mode:         impurity 
+OOB prediction error:             0.2534105 
+
+ Variable importance:
+            [,1]
+VW4MOD1 81554.62
+VBFMRG5 72652.58
+VDPMRG5 68289.29
+DEMMRG5 67094.32
+VW3MOD1 66530.71
+VW2MOD1 60262.92
+VW6MOD1 58695.59
+VW5MOD1 58361.15
+TWIMRG5 57168.93
+EX1MOD5 57166.01
+ES4MOD5 55708.04
+ES3MOD5 55372.74
+EX4MOD5 54726.75
+ES5MOD5 53396.36
+ES2MOD5 53076.48
