@@ -1,5 +1,5 @@
 ## Fit models for GreatGroups based on NASIS points (ca 350,000)
-## By Tom.Hengl@isric.org points prepare by Travis Neuman
+## ## Code by Tom.Hengl@isric.org / points prepared by Travis Nauman (tnauman@usgs.gov)
 
 setwd("/data/NASIS")
 library(aqp)
