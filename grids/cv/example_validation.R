@@ -17,6 +17,10 @@ library(lattice)
 library(grDevices)
 library(h2o)
 library(scales)
+library(ranger)
+library(xgboost)
+library(caret)
+library(doParallel)
 source("cv_functions.R")
 
 ## load the data
@@ -52,6 +56,8 @@ formulaString = as.formula(paste('soiltype ~ ', paste(cov.lst, collapse="+")))
 test.CLASS <- cv_factor(formulaString, rmatrix=m, nfold=5, idcol="ID")
 str(test.CLASS)
 test.CLASS[["Classes"]]
+test.CLASS[["Purity"]]
+test.CLASS[["Confusion.matrix"]]
 
 ## Cross-validation numeric soil property:
 ovP <- over(eberg, eberg_grid)
@@ -65,8 +71,9 @@ str(test.prop)
 
 ## with h2o software:
 h2o.init(nthreads = -1)
-test.prop <- cv_numeric(formulaStringP, rmatrix=mP, nfold=5, idcol="ID", h2o=TRUE)
+test.prop <- cv_numeric(formulaStringP, rmatrix=mP, nfold=5, idcol="ID", method="h2o")
 str(test.prop)
+h2o.shutdown()
 
 ## Edgeroi data set:
 data(edgeroi)
@@ -86,12 +93,11 @@ m2$DEPTH <- m2$UHDICM + (m2$LHDICM - m2$UHDICM)/2
 formulaStringP2 = ORCDRC ~ DEMSRT5+TWISRT5+PMTGEO5+EV1MOD5+EV2MOD5+EV3MOD5+DEPTH
 mP2 <- m2[complete.cases(m2[,all.vars(formulaStringP2)]),]
 
-h2o.init(nthreads = -1)
-test.ORC <- cv_numeric(formulaStringP2, rmatrix=mP2, nfold=5, idcol="SOURCEID", h2o=TRUE, Log=TRUE)
+test.ORC <- cv_numeric(formulaStringP2, rmatrix=mP2, nfold=5, idcol="SOURCEID", Log=TRUE)
 str(test.ORC)
 ## Plot CV results (use log-scale):
 plt0 <- xyplot(test.ORC[[1]]$Predicted~test.ORC[[1]]$Observed, asp=1, par.settings=list(plot.symbol = list(col=alpha("black", 0.6), fill=alpha("red", 0.6), pch=21, cex=0.9)), scales=list(x=list(log=TRUE, equispaced.log=FALSE), y=list(log=TRUE, equispaced.log=FALSE)), xlab="measured", ylab="predicted (machine learning)")
-plt0 <- plt0 + layer(panel.abline(0,1,lty=1,lw=2,col="black"))
+#plt0 <- plt0 + layer(panel.abline(0,1,lty=1,lw=2,col="black"))
 plt0
 
 ## Hexbin plot
@@ -109,5 +115,3 @@ pfun <- function(x,y, ...){
 }
 plt <- hexbinplot(pred~meas, colramp=colorRampPalette(R_pal[["bpy_colors"]][1:18]), main="Organic carbon in g/kg (accuracy assessment)", xlab="measured", ylab="predicted (ensemble)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, scales=list(x = list(log = 2, equispaced.log = FALSE), y = list(log = 2, equispaced.log = FALSE)), asp=1, xbins=25, density=40, xlim=lim, ylim=lim, panel=pfun)
 plt
-
-h2o.shutdown()

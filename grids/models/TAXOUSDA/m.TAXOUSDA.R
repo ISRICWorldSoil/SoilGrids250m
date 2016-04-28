@@ -32,7 +32,6 @@ gdalwarp = "/usr/local/bin/gdalwarp"
 gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
 system("/usr/local/bin/gdal-config --version")
 source("../extract.equi7t3.R")
-source("../wrapper.predict_c.R")
 source("../saveRDS_functions.R")
 source("../wrapper.predict_cs.R")
 
@@ -89,7 +88,7 @@ ctrl <- trainControl("boot",number=5)
 max.Mtry = round((length(all.vars(formulaString.USDA)[-1]))/3)
 rf.tuneGrid <- expand.grid(mtry = seq(5,max.Mtry,by=5))
 #m_TAXOUSDA <- nnet::multinom(formulaString.USDA, ov, MaxNWts = 19000)
-mnetX_TAXOUSDA <- caret::train(formulaString.USDA, data=ov, method="multinom", trControl=ctrl, MaxNWts = 19000, na.action=na.omit) ## 10 minutes
+mnetX_TAXOUSDA <- caret::train(formulaString.USDA, data=ov, method="multinom", trControl=ctrl, MaxNWts = 19000, na.action=na.omit) ## 20 minutes
 ## Optimize fitting of random forest:
 t.mrfX <- caret::train(formulaString.USDA, data=ov[sample.int(nrow(ov), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
 ## Ranger package (https://github.com/imbs-hl/ranger)
@@ -113,7 +112,7 @@ sink()
 ## save objects in parallel:
 saveRDS.gz(mnetX_TAXOUSDA, file="mnetX_TAXOUSDA.rds")
 saveRDS.gz(mrfX_TAXOUSDA, file="mrfX_TAXOUSDA.rds")
-
+save.image()
 
 ## ------------- PREDICTIONS -----------
 

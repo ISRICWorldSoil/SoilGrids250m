@@ -161,33 +161,23 @@ xS <- summary(as.factor(TAXNWRB.pnts$TAXNWRB.f), maxsum = 118)
 soiltype_count <- data.frame(Group=attr(xS, "names"), count=xS)
 write.csv(soiltype_count, file="soiltype_count2.csv")
 length(TAXNWRB.pnts$TAXNWRB.f)
-## FINAL NUMBER OF POINTS: 64,733 points
+## FINAL NUMBER OF POINTS: 64,735 points
 
 ###################################
 ## Export points
 ###################################
 
 summary(as.factor(TAXNWRB.pnts$SOURCEDB))
-#         AfSPDB            eSOTER 
-#             3184              2132 
-#      RadamBrasil              ISIS 
-#             6448               809 
-#             WISE          Can_FECD 
-#            10831              1878 
-#           CanSIS          CN-SOTER 
-#             8765              1626 
-#           HRSPDB           MX_CDPS 
-#             2854              5018 
-#     Russia_EGRPR Alterra-BODEMDATA 
-#              867               402 
-#       ISCN2012/N        HILATS2014 
-#             9025               334 
-#           IRSPDB          NAMSOTER 
-#             5223              2431 
-#             OFRA             SPADE 
-#               98               134 
-#            CIFOR         Simulated 
-#              207              2467
+#          AfSPDB            eSOTER       RadamBrasil              ISIS 
+#             3184              2132              6448               809 
+#             WISE          Can_FECD            CanSIS          CN-SOTER 
+#            10831              1878              8765              1626 
+#           HRSPDB           MX_CDPS      Russia_EGRPR Alterra-BODEMDATA 
+#             2854              5018               869               402 
+#       ISCN2012/N        HILATS2014            IRSPDB          NAMSOTER 
+#             9025               334              5223              2431 
+#             OFRA             SPADE             CIFOR         Simulated 
+#               98               134               207              2467
 
 coordinates(TAXNWRB.pnts) <- ~ LONWGS84+LATWGS84
 proj4string(TAXNWRB.pnts) <- "+proj=longlat +datum=WGS84"

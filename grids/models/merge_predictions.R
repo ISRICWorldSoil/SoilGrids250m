@@ -1,6 +1,7 @@
 ## Create mosaicks from predictions (ca. 2500 EQUI7T3 tiles) - SoilGrids250m
 ## Tom.Hengl@isric.org
 
+setwd("/data/models")
 library(snowfall)
 library(rgdal)
 gdalwarp = "/usr/local/bin/gdalwarp"
@@ -12,6 +13,7 @@ system("/usr/local/bin/gdal-config --version")
 load("equi7t3.rda")
 load("equi7t1.rda")
 source("mosaick_functions.R")
+des <- read.csv("SoilGrids250m_COVS250m.csv")
 ## Continents:
 ext <- as.list(1:7)
 #names(ext) <- names(equi7t3)
@@ -56,7 +58,7 @@ out <- sfClusterApplyLB(levs, function(i){make_mosaick(i, varn="TAXOUSDA", ext=e
 sfStop()
 
 ## Land mask:
-make_mosaick(i="dominant", varn="LMK", ext=ext, resample1="near", resample2="near", r="near", in.path="/data/mask", tile.names=tile.names, tr=0.002083333, r250m=TRUE, ot="Byte")
+#make_mosaick(i="dominant", varn="LMK", ext=ext, resample1="near", resample2="near", r="near", in.path="/data/mask", tile.names=tile.names, tr=0.002083333, r250m=TRUE, ot="Byte")
 
 ## only dominant class:
 make_mosaick(i="dominant", varn="TAXNWRB", ext=ext, resample1="near", resample2="near", r="near", tr=0.002083333, r250m=TRUE, tile.names=tile.names)
@@ -66,7 +68,7 @@ make_mosaick(i="dominant", varn="TAXOUSDA", ext=ext, resample1="near", resample2
 make_mosaick(i="dominant", varn="HISTPR", ext=ext, tr=0.008333333, in.path="/data/predicted1km", tr=0.002083333, r250m=TRUE, ot="Int16", dstnodata=-32768, tile.names=tile.names)
 
 ## Resample all soil properties at 1km:
-tvars = c("ORCDRC", "PHIHOX", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD", "CECSUM")
+tvars = c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD", "CECSUM")
 props = c(rep(tvars, 7), rep("OCSTHA", 6))
 varn.lst = c(paste0("M_sl", sapply(1:7, function(x){rep(x, length(tvars))})), paste0("M_sd", 1:6))
 ## test soil property:
@@ -101,3 +103,9 @@ sfExport("equi7t3", "gdalbuildvrt", "gdalwarp", "gdaladdo", "gdal_translate", "e
 out <- sfClusterApplyLB(tbdr, function(x){try( make_mosaick(i="M", varn=x, ext=ext, in.path="/data/predicted", tr=0.002083333, r250m=TRUE, ot="Int32", dstnodata=-99999, tile.names=tile.names) )})
 sfStop()
 
+## Covariates at 250m:
+tcovs <- as.character(des$WORLDGRIDS_CODE[c(grep(glob2rx("***MOD5"), des$WORLDGRIDS_CODE), grep(glob2rx("***MOD4"), des$WORLDGRIDS_CODE))])
+sfInit(parallel=TRUE, cpus=ifelse(length(tcovs)>10,10,length(tcovs)))
+sfExport("equi7t3", "gdalbuildvrt", "gdalwarp", "gdaladdo", "gdal_translate", "ext", "tcovs", "mosaick.equi7t3", "make_mosaick", "tile.names")
+out <- sfClusterApplyLB(tcovs, function(x){try( make_mosaick(i="dominant", varn=x, ext=ext, in.path="/data/covs1t", tr=0.002083333, r250m=TRUE, ot="Int16", dstnodata=-32768, tile.names=tile.names) )})
+sfStop()

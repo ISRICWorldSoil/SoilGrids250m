@@ -1,6 +1,7 @@
 ## Fit models for TAXNWRB and generate predictions - SoilGrids250m
 ## Tom.Hengl@isric.org
 
+setwd("/data/models/TAXNWRB")
 library(aqp)
 library(plyr)
 library(stringr)
@@ -48,7 +49,7 @@ makeSAGAlegend(x=as.factor(as.character(col.legend$Group)), MINIMUM=1:nrow(col.l
 ## training points:
 load("../../profs/TAXNWRB/TAXNWRB.pnts.rda")
 #str(TAXNWRB.pnts)
-## 64,623 points
+## 64,625 points
 ## Post-processing filter:
 soil.clim <- read.csv("../SOIL_CLIMATE_MATRIX.csv")
 soil.clim <- soil.clim[soil.clim$Classification_system=="TAXNWRB",-which(names(soil.clim) %in% c("Classification_system","COUNT_training","Min_lat","Max_lat","Max_elevation"))]
@@ -111,6 +112,7 @@ sink()
 ## save objects in parallel:
 saveRDS.gz(mnetX_TAXNWRB, file="mnetX_TAXNWRB.rds")
 saveRDS.gz(mrfX_TAXNWRB, file="mrfX_TAXNWRB.rds")
+save.image()
 
 ## Alternative: Multinomial Logit Models R Package mnlogit (https://cran.r-project.org/web/packages/mnlogit/vignettes/mnlogit.pdf) unfortunatelly not easy to install and use
 #m_TAXNWRB <- mnlogit::mnlogit(formulaString.FAO, ov, ncores=48, shape="wide")
@@ -125,6 +127,7 @@ gm2.w <- 1-mrfX_TAXNWRB$prediction.error
 ## (http://stackoverflow.com/questions/21096909/difference-betweeen-predictmodel-and-predictmodelfinalmodel-using-caret-for)
 mnetX_TAXNWRB_final <- mnetX_TAXNWRB$finalModel
 rm(mnetX_TAXNWRB)
+lev = mnetX_TAXNWRB_final$lev
 gc(); gc()
 
 ## test predictions for a sample area:
@@ -134,6 +137,8 @@ gc(); gc()
 
 ## clean-up:
 #del.lst <- list.files(path="/data/predicted", pattern=glob2rx("^TAXNWRB*.tif"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
+#del.lst <- list.files(path="/data/predicted", pattern=glob2rx("^TAXNWRB_*.rds$"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 
 ## run all predictions in parallel
@@ -145,24 +150,29 @@ str(pr.dirs)
 mrfX_TAXNWRB_final <- split_rf(mrfX_TAXNWRB)
 rm(mrfX_TAXNWRB)
 gc(); gc()
+save.image()
+
+## Test it:
+#predict_tile("EU_039_014", gm1=mnetX_TAXNWRB_final, gm2=mrfX_TAXNWRB_final, gm1.w=gm1.w, gm2.w=gm2.w)
 
 ## First, predict randomForest in parallel
-## TAKES 8 hours
-## Split to minimize problems of object size
+## TAKES ca 8 hours
+## Split to minimize problems of object size (ranger object)
 for(j in 1:length(mrfX_TAXNWRB_final)){
   gm = mrfX_TAXNWRB_final[[j]]
   cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
-  sfInit(parallel=TRUE, cpus=cpus)
+  sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
   sfExport("gm", "pr.dirs", "split_predict_c", "j")
   sfLibrary(ranger)
   x <- sfLapply(pr.dirs, fun=function(x){ try( split_predict_c(x, gm, in.path="/data/covs1t", out.path="/data/predicted", split_no=j, varn="TAXNWRB") )  } ) 
   sfStop()
+  rm(gm)
 }
 
 ## Second, predict nnet model in parallel
 ## TAKES ca 4 hrs
 cpus = unclass(round((256-30)/(3.5*(object.size(mnetX_TAXNWRB_final)/1e9))))
-sfInit(parallel=TRUE, cpus=cpus)
+sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
 sfExport("mnetX_TAXNWRB_final", "pr.dirs", "predict_nnet")
 sfLibrary(nnet)
 x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( predict_nnet(x, mnetX_TAXNWRB_final, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB") )  } )
@@ -171,12 +181,11 @@ sfStop()
 ## Finally, sum up all predictions and generate geotifs
 ## TAKES ca 2.5 hrs
 ## this will also remove all temporary files
-lev = mnetX_TAXNWRB_final$lev
-sfInit(parallel=TRUE, cpus=35)
+sfInit(parallel=TRUE, cpus=46)
 sfExport("pr.dirs", "sum_predictions", "gm1.w", "gm2.w", "soil.fix", "lev", "col.legend")
 sfLibrary(rgdal)
 sfLibrary(plyr)
-x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( sum_predictions(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB", gm1.w=gm1.w, gm2.w=gm2.w, col.legend=col.legend, soil.fix=soil.fix, lev=lev) )  } )
+x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( sum_predictions(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB", gm1.w=gm1.w, gm2.w=gm2.w, col.legend=col.legend, soil.fix=soil.fix, lev=lev, check.names=TRUE) )  } )
 sfStop()
 
 ## ------------- VISUALIZATION -----------

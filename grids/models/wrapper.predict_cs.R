@@ -19,18 +19,19 @@ split_rf <- function(rf, num_splits=4){
 
 split_predict_c <- function(i, gm, in.path, out.path, split_no, varn){
   rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", split_no, ".rds")
-  if(!file.exists(rds.out)){
+  if(any(c(!file.exists(rds.out),file.size(rds.out)==0))){
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
-    x = predict(gm, m@data, probability=TRUE, na.action = na.pass, num.threads=1)$predictions
+    ## round up numbers otherwise too large objects
+    x = round(predict(gm, m@data, probability=TRUE, na.action = na.pass, num.threads=1)$predictions*100)
     saveRDS(x, file=rds.out)
   }
 }
 
 predict_nnet <- function(i, gm, in.path, out.path, varn){
   rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_nnet.rds")
-  if(!file.exists(rds.out)){
+  if(any(c(!file.exists(rds.out),file.size(rds.out)==0))){
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
-    x = predict(gm, m@data, type="prob", na.action = na.pass)
+    x = round(predict(gm, m@data, type="prob", na.action = na.pass)*100)
     saveRDS(x, file=rds.out)
   }
 }
@@ -45,7 +46,7 @@ sum_predictions <- function(i, in.path, out.path, varn, gm1.w, gm2.w, col.legend
       lfix <- levels(as.factor(paste(mfix)))
       rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", 1:num_splits, ".rds")
       probs2 <- lapply(rf.ls, readRDS)
-      probs2 <- data.frame(Reduce("+", probs2) / num_splits)
+      probs2 <- Reduce("+", probs2) / num_splits
       probs1 <- readRDS(paste0(out.path, "/", i, "/", varn,"_", i, "_nnet.rds"))
       ## weighted average:
       probs <- list(probs1[,lev]*gm1.w, probs2[,lev]*gm2.w)
@@ -57,13 +58,11 @@ sum_predictions <- function(i, in.path, out.path, varn, gm1.w, gm2.w, col.legend
           sel <- sel[sapply(sel, function(i){length(i)>0})]
           if(length(sel)>0){ probs[mfix==k,names(sel)] <- 0 }
         }
-        ## Standardize values so they sums up to 100:
-        rs <- rowSums(probs, na.rm=TRUE)
-        m@data <- data.frame(lapply(probs, function(i){i/rs}))
-      } else {
-        rs <- rowSums(probs, na.rm=TRUE)
-        m@data <- probs
       }
+      ## Standardize values so they sums up to 100:
+      rs <- rowSums(probs, na.rm=TRUE)
+      m@data <- data.frame(lapply(probs, function(i){i/rs}))
+      ## Write GeoTiffs:
       if(sum(rs,na.rm=TRUE)>0&length(rs)>0){
         tax <- names(m)
         for(j in 1:ncol(m)){
@@ -80,7 +79,7 @@ sum_predictions <- function(i, in.path, out.path, varn, gm1.w, gm2.w, col.legend
           Group = tax
         }
         col.tbl <- plyr::join(data.frame(Group=Group, int=1:length(tax)), col.legend, type="left")
-        ## match most probable class (takes 1-2 mins):
+        ## match most probable class:
         m$cl <- col.tbl[match(apply(m@data,1,which.max), col.tbl$int),"Number"]  
         writeGDAL(m["cl"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(col.tbl$Group)))  ## TH: 'colorTable=list(col.tbl$COLOR)' does not work
       }
@@ -89,4 +88,16 @@ sum_predictions <- function(i, in.path, out.path, varn, gm1.w, gm2.w, col.legend
       gc()
     }  
   }
+}
+
+## This one for testing purposes only:
+predict_tile <- function(x, gm1, gm2, gm1.w, gm2.w){
+  for(j in 1:length(gm2)){
+    gm = gm2[[j]]
+    split_predict_c(i=x, gm, in.path="/data/covs1t", out.path="/data/predicted", split_no=j, varn="TAXNWRB")
+    rm(gm)
+    gc()
+  }
+  predict_nnet(i=x, gm1, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB")
+  sum_predictions(i=x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB", gm1.w=gm1.w, gm2.w=gm2.w, col.legend=col.legend, soil.fix=soil.fix, lev=lev, check.names=TRUE)
 }

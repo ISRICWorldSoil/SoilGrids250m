@@ -1,7 +1,7 @@
 ## function for the ensemble predictions for Cross Validation (runs in parallel hence can be run on large data sets)
 ## by: Tom.Hengl@isric.org, Gerard.Heuvelink@wur.nl and Maria.RuiperezGonzales@wur.nl
 
-list.of.packages <- c("nnet", "plyr", "ROCR", "randomForest", "plyr", "parallel", "psych", "mda", "h2o", "dismo", "grDevices", "snowfall", "hexbin", "lattice", "ranger", "xgboost")
+list.of.packages <- c("nnet", "plyr", "ROCR", "randomForest", "plyr", "parallel", "psych", "mda", "h2o", "dismo", "grDevices", "snowfall", "hexbin", "lattice", "ranger", "xgboost", "doParallel", "caret")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -23,7 +23,8 @@ cv_factor <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold){
   snowfall::sfLibrary(package="ROCR", character.only=TRUE)
   snowfall::sfLibrary(package="nnet", character.only=TRUE)
   snowfall::sfLibrary(package="plyr", character.only=TRUE)
-  snowfall::sfLibrary(package="randomForest", character.only=TRUE)
+  snowfall::sfLibrary(package="ranger", character.only=TRUE)
+  snowfall::sfLibrary(package="caret", character.only=TRUE)
   out <- snowfall::sfLapply(1:nfold, function(j){predict_parallel(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol)})
   snowfall::sfStop()
   ## calculate totals per soil type
@@ -42,7 +43,7 @@ cv_factor <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold){
   parallel::stopCluster(cl)
   ## derive confusion matrix:
   cf <- mda::confusion(names(obs)[ranks.obs], names(pred)[ranks.pred])
-  c.kappa <- psych::cohen.kappa(cf)
+  c.kappa <- psych::cohen.kappa(cbind(names(obs)[ranks.obs], names(pred)[ranks.pred]))
   purity <- sum(diag(cf))/sum(cf)*100  
   ## Accuracy for Binomial var [http://www.r-bloggers.com/evaluating-logistic-regression-models/]: 
   TPR <- sapply(1:ncol(obs), function(c){mean(performance( prediction(pred[,c], obs[,c]), measure="tpr")@y.values[[1]])})
@@ -56,14 +57,18 @@ cv_factor <- function(formulaString, rmatrix, nfold, idcol, cpus=nfold){
 ensemble.predict <- function(formulaString, s.train, s.test, MaxNWts = 19000, ...){ 
   ## drop empty levels to avoid errors:
   s.train[,all.vars(formulaString)[1]] <- droplevels(s.train[,all.vars(formulaString)[1]])
-  gm1 <- nnet::multinom(formulaString, s.train, MaxNWts = MaxNWts)
-  gm2 <- randomForest(formulaString, data=s.train, ...)
+  gm1 <- nnet::multinom(formulaString, data=s.train, MaxNWts = MaxNWts)
+  ## derive classification accuracy:
+  gm1.w <- postResample(s.train[,all.vars(formulaString)[1]], predict(gm1, s.train, na.action = na.pass))[1]
+  gm2 <- ranger(formulaString, data=s.train, write.forest=TRUE, probability=TRUE, ...)
+  gm2.w <- 1-gm2$prediction.error
   probs1 <- predict(gm1, s.test, type="probs", na.action = na.pass) ## nnet
-  probs2 <- predict(gm2, s.test, type="prob", na.action = na.pass) ## randomForest
-  lt <- list(probs1[,gm1$lev], probs2[,gm1$lev])
-  probs <- Reduce("+", lt) / length(lt)
+  probs2 <- predict(gm2, s.test, probability=TRUE, na.action = na.pass)$predictions ## randomForest
+  ## weighted mean:
+  lt <- list(probs1[,gm1$lev]*gm1.w, probs2[,gm1$lev]*gm2.w)
+  probs <- Reduce("+", lt) / rep(gm1.w+gm2.w, length(probs1))
   return(probs)
-}   
+}
 
 ## ensemble prediction in parallel (for parallelization):
 predict_parallel <- function(j, sel, varn, formulaString, rmatrix, idcol){
@@ -93,12 +98,13 @@ predict_parallel <- function(j, sel, varn, formulaString, rmatrix, idcol){
 ## --------------------------------------------------------------
 
 ## predict soil properties in parallel:
-predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, method="caret", cpus, Nsub=1e4){ 
+predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, method, cpus, Nsub=1e4){ 
   s.train <- rmatrix[!sel==j,]
   s.test <- rmatrix[sel==j,]
   n.l <- dim(s.test)[1]
+  if(missing(Nsub)){ Nsub = length(all.vars(formulaString))*50 }
+  if(Nsub>nrow(s.train)){ Nsub = nrow(s.train) }
   if(method=="h2o"){
-    
     ## select only complete point pairs
     train.hex <- as.h2o(s.train[complete.cases(s.train[,all.vars(formulaString)]),all.vars(formulaString)], destination_frame = "train.hex")
     gm1 <- h2o.randomForest(y=1, x=2:length(all.vars(formulaString)), training_frame=train.hex) 
@@ -120,20 +126,20 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, metho
     registerDoParallel(cl)
     ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
     gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
-    rf.tuneGrid <- expand.grid(mtry = seq(4,22,by=2))
+    rf.tuneGrid <- expand.grid(mtry = seq(4,length(all.vars(formulaString))/3,by=2))
     ## fine-tune RF parameters:
-    t.mrfX <- caret::train(formulaString.lst[[j]], data=s.train[sample.int(nrow(s.train), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
-    gm1 <- ranger(formulaString.lst[[j]], data=s.train, write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=291)
+    t.mrfX <- caret::train(formulaString, data=s.train[sample.int(nrow(s.train), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
+    gm1 <- ranger(formulaString, data=s.train, write.forest=TRUE, mtry=t.mrfX$bestTune$mtry)
     gm1.w = 1/gm1$prediction.error
-    gm2 <- caret::train(formulaString.lst[[j]], data=s.train, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid)
+    gm2 <- caret::train(formulaString, data=s.train, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid)
     gm2.w = 1/(min(gm2$results$RMSE, na.rm=TRUE)^2)
     v1 <- predict(gm1, test, na.action=na.pass)$predictions
     v2 <- predict(gm2, test, na.action=na.pass)
     pred <- rowSums(cbind(v1*gm1.w, v2*gm2.w))/(gm1.w+gm2.w)
   }
-  if(method=="randomForest"){
-    gm <- randomForest(formulaString, data=s.train, na.action=na.omit)
-    pred <- predict(gm, s.test, na.action = na.pass) 
+  if(method=="ranger"){
+    gm <- ranger(formulaString, data=s.train, write.forest=TRUE)
+    pred <- predict(gm, s.test, na.action = na.pass)$predictions 
   }
   obs.pred <- as.data.frame(list(s.test[,varn], pred))
   names(obs.pred) = c("Observed", "Predicted")
@@ -142,10 +148,10 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, metho
   return(obs.pred)
 }
 
-cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus, method="caret", Log=FALSE){ 
+cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus, method="ranger", Log=FALSE){ 
   varn = all.vars(formulaString)[1]
   sel <- dismo::kfold(rmatrix, k=nfold)  
-  message(paste("Running ", nfold, "-fold cross validation with model re-fitting...", sep=""))
+  message(paste("Running ", nfold, "-fold cross validation with model re-fitting method ", method," ...", sep=""))
   if(nfold > nrow(rmatrix)){ 
     stop("'nfold' argument must not exceed total number of points") 
   }
@@ -168,11 +174,11 @@ cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus, method="caret
       out[[j]] <- predict_parallelP(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, method=method, cpus=cpus)
     }
   }
-  if(method=="randomForest"){
+  if(method=="ranger"){
     snowfall::sfInit(parallel=TRUE, cpus=cpus)
-    snowfall::sfExport("predict_parallelP","idcol","formulaString","rmatrix","sel","varn","h2o")
+    snowfall::sfExport("predict_parallelP","idcol","formulaString","rmatrix","sel","varn","method")
     snowfall::sfLibrary(package="plyr", character.only=TRUE)
-    snowfall::sfLibrary(package="randomForest", character.only=TRUE)
+    snowfall::sfLibrary(package="ranger", character.only=TRUE)
     out <- snowfall::sfLapply(1:nfold, function(j){predict_parallelP(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, method=method, cpus=1)})
     snowfall::sfStop()
   }

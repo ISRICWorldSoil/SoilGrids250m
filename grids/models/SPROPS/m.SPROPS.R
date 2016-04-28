@@ -32,6 +32,8 @@ system("/usr/local/bin/gdal-config --version")
 source("../extract.equi7t3.R")
 source('/data/models/objects_in_memory.R')
 source("../wrapper.predict_np.R")
+source("../saveRDS_functions.R")
+
 load("../equi7t3.rda")
 load("../equi7t1.rda")
 des <- read.csv("../SoilGrids250m_COVS250m.csv")
@@ -66,7 +68,7 @@ save(ovA, file="ovA.rda", compression_level="xz")
 ## ------------- MODEL FITTING -----------
 
 t.vars <- c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD", "CECSUM")
-lapply(ovA[,t.vars], quantile, probs=c(0.01,0.5,0.99), na.rm=TRUE)
+#lapply(ovA[,t.vars], quantile, probs=c(0.01,0.5,0.99), na.rm=TRUE)
 
 z.min <- as.list(c(0,20,20,0,0,0,0,50,0))
 names(z.min) = t.vars
@@ -75,13 +77,11 @@ names(z.max) = t.vars
 ## FIT MODELS:
 pr.lst <- des$WORLDGRIDS_CODE
 formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ DEPTH.f +', paste(pr.lst, collapse="+")))}) ## LATWGS84 +
-all.vars(formulaString.lst[[1]])
+#all.vars(formulaString.lst[[1]])
 
 ## Median value per cov:
-cov.m <- lapply(ovA[,all.vars(formulaString.lst[[1]])[-1]], function(x){quantile(x, probs=c(0.01,0.5,0.99), na.rm=TRUE)})
-col.m <- as.data.frame(cov.m)
-mask_value <- as.list(des$MASK_VALUE)
-names(mask_value) = des$WORLDGRIDS_CODE
+#cov.m <- lapply(ovA[,all.vars(formulaString.lst[[1]])[-1]], function(x){quantile(x, probs=c(0.01,0.5,0.99), na.rm=TRUE)})
+#col.m <- as.data.frame(cov.m)
 
 ## sub-sample to speed up model fitting:
 Nsub <- 1.5e4 
@@ -108,9 +108,9 @@ for(j in 1:length(t.vars)){
     t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid) 
     ## fit RF model using 'ranger' (fully parallelized)
     ## reduce number of trees so the output objects do not get TOO LARGE i.e. >5GB
-    saveRDS(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
-    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=291) ## 
-    saveRDS(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
+    saveRDS.gz(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
+    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry) ## , num.trees=291
+    saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
     ## Top 15 covariates:
     sink(file="SPROPS_resultsFit.txt", append=TRUE, type="output")
     print(mrfX)
@@ -124,7 +124,7 @@ for(j in 1:length(t.vars)){
     gzip(paste0("RF_fit_", t.vars[j], ".csv"))
     ## fit XGBoost model (uses all points):
     mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
-    saveRDS(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
+    saveRDS.gz(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
     ## save also binary model for prediction purposes:
     xgb.save(mgbX$finalModel, paste0("Xgb.",t.vars[j]))
     importance_matrix <- xgb.importance(mgbX$coefnames, model = mgbX$finalModel)
@@ -142,6 +142,7 @@ mrfX_lst <- list.files(pattern="^mrf.")
 mgbX_lst <- list.files(pattern="^mgb.")
 names(mrfX_lst) <- paste(sapply(mrfX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
 names(mgbX_lst) <- paste(sapply(mgbX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
+save.image()
 
 ## ------------- PREDICTIONS -----------
 
