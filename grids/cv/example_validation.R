@@ -38,21 +38,17 @@ ov <- over(eberg, eberg_grid)
 m <- cbind(ov, eberg@data)
 
 ## clean-up target variable:
-summary(m$TAXGRSC)
-m$soiltype <- NA
-for(i in levels(m$TAXGRSC)){
- sel <- grep(pattern=i, m$TAXGRSC)
- if(length(sel)>5){
-  m$soiltype[sel] <- i
- }
-}
+xg = summary(m$TAXGRSC, maxsum=length(levels(m$TAXGRSC)))
+selg.levs = attr(xg, "names")[xg > 5]
+m$soiltype <- m$TAXGRSC
+m$soiltype[which(!m$TAXGRSC %in% selg.levs)] <- NA
+m$soiltype <- droplevels(m$soiltype)
+summary(m$soiltype)
 ## regression matrix:
-m <- m[complete.cases(m[,1:(ncol(eberg_grid)+2)]),]
-m$soiltype <- as.factor(m$soiltype)
 cov.lst <- paste0("PC", 1:11)
-
-## Cross-validation factor-type variable:
 formulaString = as.formula(paste('soiltype ~ ', paste(cov.lst, collapse="+")))
+m <- m[complete.cases(m[,all.vars(formulaString)]),]
+## Cross-validation factor-type variable:
 test.CLASS <- cv_factor(formulaString, rmatrix=m, nfold=5, idcol="ID")
 str(test.CLASS)
 test.CLASS[["Classes"]]
