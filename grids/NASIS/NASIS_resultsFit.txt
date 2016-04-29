@@ -9,30 +9,30 @@ Call:
 
 Type:                             Probability estimation 
 Number of trees:                  500 
-Sample size:                      304018 
+Sample size:                      304006 
 Number of independent variables:  156 
 Mtry:                             12 
 Target node size:                 10 
 Variable importance mode:         impurity 
-OOB prediction error:             0.449543 
+OOB prediction error:             0.4492522 
 
  Variable importance:
             [,1]
-VDPMRG5 19405548
-I02MOD4 17367028
-DEMMRG5 17271539
-DVMMRG5 16275839
-TWIMRG5 15444795
-VBFMRG5 14819867
-ES3MOD5 14473184
-EX4MOD5 14468885
-VW4MOD1 14387432
-SN1MOD4 14227565
-ES5MOD5 13889211
-ES6MOD5 13859548
-ES4MOD5 13842176
-I08MOD4 13688221
-I09MOD4 13618512
+VDPMRG5 20142392
+I02MOD4 18248784
+DEMMRG5 18169383
+DVMMRG5 17262917
+TWIMRG5 16264341
+VBFMRG5 15512076
+ES3MOD5 15248926
+EX4MOD5 15178483
+VW4MOD1 15133716
+I09MOD4 15103808
+SN1MOD4 14982654
+ES4MOD5 14808632
+ES5MOD5 14807935
+I01MOD4 14462205
+ES6MOD5 14379755
 
 Variable: SPCS classes
 
@@ -43,27 +43,27 @@ Call:
 
 Type:                             Probability estimation 
 Number of trees:                  500 
-Sample size:                      299191 
+Sample size:                      299169 
 Number of independent variables:  156 
 Mtry:                             12 
 Target node size:                 10 
 Variable importance mode:         impurity 
-OOB prediction error:             0.2534105 
+OOB prediction error:             0.2880337 
 
  Variable importance:
-            [,1]
-VW4MOD1 81554.62
-VBFMRG5 72652.58
-VDPMRG5 68289.29
-DEMMRG5 67094.32
-VW3MOD1 66530.71
-VW2MOD1 60262.92
-VW6MOD1 58695.59
-VW5MOD1 58361.15
-TWIMRG5 57168.93
-EX1MOD5 57166.01
-ES4MOD5 55708.04
-ES3MOD5 55372.74
-EX4MOD5 54726.75
-ES5MOD5 53396.36
-ES2MOD5 53076.48
+             [,1]
+VBFMRG5 132705.22
+VW4MOD1 114577.94
+DEMMRG5 113346.08
+VDPMRG5 111009.62
+TWIMRG5 103880.89
+ES2MOD5  99051.88
+EX4MOD5  97390.05
+ES3MOD5  96205.25
+ES4MOD5  95618.07
+EX1MOD5  94190.40
+ES5MOD5  92902.65
+EX3MOD5  87425.58
+VW3MOD1  86932.38
+I02MOD4  84674.01
+VW1MOD1  83462.33

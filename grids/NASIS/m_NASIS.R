@@ -1,5 +1,5 @@
 ## Fit models for GreatGroups based on NASIS points (ca 350,000)
-## ## Code by Tom.Hengl@isric.org / points prepared by Travis Nauman (tnauman@usgs.gov)
+## Code by Tom.Hengl@isric.org / points prepared by Travis Nauman (tnauman@usgs.gov)
 
 setwd("/data/NASIS")
 library(aqp)
@@ -39,32 +39,26 @@ des <- read.csv("/data/models/SoilGrids250m_COVS250m.csv")
 unzip("NASIS_L48_gg.zip")
 NASISgg.pnts <- readOGR("nasispts16_gg_L48.shp", "nasispts16_gg_L48")
 ## 304,454 points
-summary(NASISgg.pnts$gg)
+#summary(NASISgg.pnts$gg)
 ## Remove smaller classes:
-NASISgg.pnts$soiltype <- NA
-for(i in levels(NASISgg.pnts$gg)){
-  sel <- grep(pattern=i, NASISgg.pnts$gg)
-  if(length(sel)>5){
-    NASISgg.pnts$soiltype[sel] <- i
-  }
-}
-str(summary(NASISgg.pnts$gg))
+xg = summary(NASISgg.pnts$gg, maxsum=length(levels(NASISgg.pnts$gg)))
+selg.levs = attr(xg, "names")[xg > 5]
+NASISgg.pnts$soiltype <- NASISgg.pnts$gg
+NASISgg.pnts$soiltype[which(!NASISgg.pnts$gg %in% selg.levs)] <- NA
+NASISgg.pnts$soiltype <- droplevels(NASISgg.pnts$soiltype)
+str(summary(NASISgg.pnts$soiltype, maxsum=length(levels(NASISgg.pnts$soiltype))))
+## 245 classes
 
 ## soil texture data:
 unzip("nasispts16_pscs_L48.zip")
 NASISpscs.pnts <- readOGR("nasispts16_pscs_L48.shp", "nasispts16_pscs_L48")
 ## 299,487 points
 str(NASISpscs.pnts@data)
-summary(NASISpscs.pnts$pscs)
-NASISpscs.pnts$textype <- NA
-for(i in levels(NASISpscs.pnts$pscs)){
-  sel <- grep(pattern=i, NASISpscs.pnts$pscs)
-  if(length(sel)>5){
-    NASISpscs.pnts$textype[sel] <- i
-  }
-}
-NASISpscs.pnts$textype <- as.factor(NASISpscs.pnts$textype)
-summary(NASISpscs.pnts$textype)
+xs = summary(NASISpscs.pnts$pscs, maxsum=length(levels(NASISpscs.pnts$pscs)))
+sel.levs = attr(xs, "names")[xs > 5]
+NASISpscs.pnts$textype <- NASISpscs.pnts$pscs
+NASISpscs.pnts$textype[which(!NASISpscs.pnts$pscs %in% sel.levs)] <- NA
+NASISpscs.pnts$textype <- droplevels(NASISpscs.pnts$textype)
 
 ## OVERLAY AND FIT MODELS:
 ov <- extract.equi7(x=NASISgg.pnts, y=des$WORLDGRIDS_CODE, equi7=equi7t3, path="/data/covs", cpus=48)
@@ -83,7 +77,6 @@ pr.lst <- des$WORLDGRIDS_CODE
 formulaString.USDA = as.formula(paste('soiltype ~ ', paste(pr.lst, collapse="+")))
 #formulaString.USDA
 ovA <- ov[complete.cases(ov[,all.vars(formulaString.USDA)]),]
-ovA$soiltype <- as.factor(paste(ovA$soiltype))
 
 formulaString.pscs = as.formula(paste('textype ~ ', paste(pr.lst, collapse="+")))
 ovA2 <- ov2[complete.cases(ov2[,all.vars(formulaString.pscs)]),]
@@ -148,7 +141,7 @@ rm(mrfX_NASISgg); rm(mrfX_NASISgg_final)
 gc(); gc()
 save.image()
 
-mrfX_NASISpscs = readRDS.gz("mrfX_NASISpscs.rds")
+#mrfX_NASISpscs = readRDS.gz("mrfX_NASISpscs.rds")
 mrfX_NASISpscs_final <- split_rf(mrfX_NASISpscs, num_splits)
 for(j in 1:length(mrfX_NASISpscs_final)){
   gm = mrfX_NASISpscs_final[[j]]
@@ -160,6 +153,10 @@ save.image()
 
 #del.lst <- list.files(path="/data/NASIS", pattern=glob2rx("^TAXgg_*_*_*_*.rds$"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
+#del.lst <- list.files(path="/data/NASIS", pattern=glob2rx("^PSCS_*_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
+del.lst <- list.files(path="/data/NASIS", pattern=glob2rx("^TAXgg_*_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
+unlink(del.lst)
 
 #model.n = "mrfX_NASISgg_"
 #varn = "TAXgg"
@@ -179,7 +176,7 @@ for(j in 1:num_splits){
 
 ## Test it:
 #sum_predict_ranger(i="NA_060_036", in.path="/data/covs1t", out.path="/data/NASIS", varn="TAXgg", num_splits)
-sum_predict_ranger(i="NA_060_036", in.path="/data/covs1t", out.path="/data/NASIS", varn="PSCS", num_splits)
+#sum_predict_ranger(i="NA_060_036", in.path="/data/covs1t", out.path="/data/NASIS", varn="PSCS", num_splits)
 
 ## Sum up predictions:
 sfInit(parallel=TRUE, cpus=30)
