@@ -43,6 +43,8 @@ horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
 sumTex <- rowSums(horizons[,c("SLTPPT","CLYPPT","SNDPPT")])
 hist(sumTex)
 ## some horizons do not sum up to 100% but these do not have to be filtered out
+## Convert to cmol / kg
+horizons$CECSUM <- horizons$CECSUM/10
 
 # ------------------------------------------------------------
 # export TAXONOMY DATA

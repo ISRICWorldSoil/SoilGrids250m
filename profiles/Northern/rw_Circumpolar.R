@@ -50,5 +50,5 @@ str(SPROPS.artic)
 ## 7457
 ## Needs to be checked! the histograms show some 5000 measurements >40% of SOC
 ## Most likely the authors have over-represented histosols / peatlands
-#save(SPROPS.artic, file="SPROPS.artic.rda")
+save(SPROPS.artic, file="SPROPS.artic.rda")
 plot(SPROPS.artic$LONWGS84, SPROPS.artic$LATWGS84, pch="+")

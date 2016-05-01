@@ -70,6 +70,8 @@ str(horizons[which(horizons$CECSUM>=300),])
 pedon_cor <- read.csv("CAN_classes.csv")
 pedon_id <- read.csv("CAN_pedon_id.csv")
 pedon_class <- read.csv("CAN_pedon_class.csv")
+summary(pedon_class$TAX_ORDER)
+summary(pedon_class$TAX_GTGRP)
 pedon_class$SOURCEID = paste("CAN", pedon_class$PEDON, sep="_")
 
 pedon_id$LONWGS84 <- cols2dms(pedon_id$LOCLONGDEG, pedon_id$LOCLONGMIN, pedon_id$LOCLONGSEC, rep("W", length(pedon_id$LOCLONGDEG)))
@@ -193,6 +195,14 @@ CRF.tbl <- data.frame(CF_CLASS.C.9=levels(horizons2$CF_CLASS.C.9), CRFVOL=c(NA,5
 horizons2$CRFVOL <- join(horizons2, CRF.tbl, type="left")$CRFVOL
 horizons2$TIMESTRR <- as.Date(paste(horizons2$DATE.N.9.0), format="%Y")
 
+xy.FECD <- fecd[,c("SOURCEID","LAT_DD.N.8.2","LONG_DD.N.10.2","TEXTURE.C.9","ESTABLISHM.C.16","PROVINCE.C.9","SLOPE.C.9","ORDER.C.11","PARENT_MAT.C.20","DRAINAGE_C.C.18")]
+xy.FECD$LOC_ID <- paste("ID", xy.FECD$LONG_DD.N.10.2, xy.FECD$LAT_DD.N.8.2, sep="_")
+xy.FECD <- xy.FECD[!duplicated(xy.FECD$LOC_ID),]
+coordinates(xy.FECD) <- ~ LONG_DD.N.10.2+LAT_DD.N.8.2
+proj4string(xy.FECD) <- "+proj=longlat +datum=WGS84"
+plotKML(xy.FECD, balloon=TRUE, kmz=TRUE)
+
+
 SPROPS.FECD <- rbind.fill(list(horizons2[,c("SOURCEID","TIMESTRR","LONWGS84","LATWGS84","SAMPLEID","HZDTXT","UHDICM","LHDICM","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","PHIKCL","ORCDRC","CECSUM")], horizons2a[,c("SOURCEID","LONWGS84","LATWGS84","SAMPLEID","HZDTXT","UHDICM","LHDICM","CLYPPT","SNDPPT","SLTPPT","ORCDRC","CECSUM","BLD")]))
 SPROPS.FECD$DEPTH <- SPROPS.FECD$UHDICM + (SPROPS.FECD$LHDICM - SPROPS.FECD$UHDICM)/2
 SPROPS.FECD <- SPROPS.FECD[!is.na(SPROPS.FECD$LONWGS84) & !is.na(SPROPS.FECD$LATWGS84) & !is.na(SPROPS.FECD$DEPTH),]
@@ -224,7 +234,7 @@ str(TAXNWRB.FECD)
 ## 1214 profiles
 coordinates(TAXNWRB.FECD) <- ~ LONWGS84+LATWGS84
 proj4string(TAXNWRB.FECD) <- "+proj=longlat +datum=WGS84"
-plotKML(TAXNWRB.FECD["TAXNWRB"])
+plotKML(TAXNWRB.FECD["TAXNWRB"],balloon=TRUE)
 save(TAXNWRB.FECD, file="TAXNWRB.FECD.rda")
 
 TAXOUSDA.FECD <- join(sites2a, pedon_cor, type="left", match="first")[,c("SOURCEID","LONWGS84","LATWGS84","SOURCEDB","TAXOUSDA")]

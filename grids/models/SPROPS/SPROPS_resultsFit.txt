@@ -5,35 +5,35 @@ Variable: ORCDRC
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 300) 
 
 Type:                             Regression 
-Number of trees:                  500 
+Number of trees:                  300 
 Sample size:                      605054 
 Number of independent variables:  157 
 Mtry:                             40 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             1020.754 
-R squared:                        0.6539751 
+OOB prediction error:             1024.534 
+R squared:                        0.6526935 
 
  Variable importance:
              [,1]
-DEPTH.f 303482207
-T10MOD3  49199791
-T09MOD3  37123742
-T04MOD3  28086719
-M03MOD4  26651559
-TMDMOD3  24771562
-TWIMRG5  24758707
-M11MOD4  22095703
-DEMMRG5  21477499
-VBFMRG5  21085036
-M12MOD4  18767705
-M02MOD4  17342579
-I10MOD4  16393707
-I09MOD4  16142556
-T03MOD3  15669119
+DEPTH.f 304275918
+T10MOD3  39495172
+T09MOD3  33829262
+T04MOD3  29808732
+M03MOD4  29155219
+TMDMOD3  26930724
+M11MOD4  26222133
+TWIMRG5  25553240
+VBFMRG5  21177102
+DEMMRG5  20895500
+M12MOD4  19314784
+T03MOD3  17937409
+M02MOD4  16119426
+I10MOD4  14948168
+I04MOD4  14852668
 
 eXtreme Gradient Boosting 
 
@@ -58,11 +58,11 @@ Resampling results across tuning parameters:
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
  parameter 'colsample_bytree' was held constant at a value of 0.8
-
-Tuning parameter 'min_child_weight' was held constant at a value of 1
+Tuning
+ parameter 'min_child_weight' was held constant at a value of 1
 RMSE was used to select the optimal model using  the smallest value.
-The final values used for the model were nrounds = 100, max_depth = 3, eta
- = 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
+The final values used for the model were nrounds = 100, max_depth = 3, eta =
+ 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
     Feature        Gain       Cover   Frequence
@@ -87,35 +87,35 @@ Variable: PHIHOX
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 300) 
 
 Type:                             Regression 
-Number of trees:                  500 
+Number of trees:                  300 
 Sample size:                      604019 
 Number of independent variables:  157 
 Mtry:                             60 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             0.2516392 
-R squared:                        0.8592144 
+OOB prediction error:             0.2524539 
+R squared:                        0.8587586 
 
  Variable importance:
              [,1]
-PRSMRG3 166941.25
-DEPTH.f  68921.19
-P07MRG3  63232.78
-P10MRG3  41207.80
-M04MOD4  31958.25
-M05MOD4  24453.46
-I05MOD4  20597.82
-M10MOD4  20426.55
-M09MOD4  16116.31
-T07MOD3  16057.98
-I09MOD4  15148.77
-M11MOD4  13991.37
-P03MRG3  11284.76
-T06MOD3  10423.68
-DEMMRG5  10257.55
+PRSMRG3 145701.22
+P07MRG3  82377.60
+DEPTH.f  68619.79
+P10MRG3  34649.46
+M04MOD4  33371.34
+M05MOD4  29458.03
+I05MOD4  20462.01
+T07MOD3  19051.77
+M10MOD4  18953.90
+I09MOD4  15211.98
+M09MOD4  14444.58
+M11MOD4  11929.98
+T06MOD3  10805.99
+VDPMRG5  10349.20
+P03MRG3  10220.72
 
 eXtreme Gradient Boosting 
 
@@ -140,11 +140,11 @@ Resampling results across tuning parameters:
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
  parameter 'colsample_bytree' was held constant at a value of 0.8
-
-Tuning parameter 'min_child_weight' was held constant at a value of 1
+Tuning
+ parameter 'min_child_weight' was held constant at a value of 1
 RMSE was used to select the optimal model using  the smallest value.
-The final values used for the model were nrounds = 100, max_depth = 3, eta
- = 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
+The final values used for the model were nrounds = 100, max_depth = 3, eta =
+ 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
     Feature        Gain       Cover   Frequence
@@ -169,35 +169,35 @@ Variable: PHIKCL
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 300) 
 
 Type:                             Regression 
-Number of trees:                  500 
+Number of trees:                  300 
 Sample size:                      156437 
 Number of independent variables:  157 
 Mtry:                             55 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             0.30019 
-R squared:                        0.8059904 
+OOB prediction error:             0.3006342 
+R squared:                        0.8057033 
 
  Variable importance:
              [,1]
-DEPTH.f 16614.111
-I07MOD4 11922.915
-VW2MOD1  9022.844
-PRSMRG3  7725.310
-I09MOD4  6464.096
-C02GLC5  6428.880
-I08MOD4  5946.253
-VW1MOD1  5338.139
-P07MRG3  4675.619
-DEMMRG5  4455.783
-M09MOD4  3792.524
-EX1MOD5  3548.493
-VW5MOD1  3452.577
-VW6MOD1  2908.834
-VDPMRG5  2781.403
+DEPTH.f 16604.275
+I07MOD4 11679.131
+VW2MOD1  8650.676
+PRSMRG3  7311.365
+I09MOD4  7292.780
+C02GLC5  6504.563
+I08MOD4  5556.074
+VW1MOD1  5205.922
+P07MRG3  4767.726
+DEMMRG5  4277.097
+VW5MOD1  3614.581
+M09MOD4  3577.856
+EX1MOD5  3570.402
+I06MOD4  2999.328
+VDPMRG5  2809.985
 
 eXtreme Gradient Boosting 
 
@@ -222,11 +222,11 @@ Resampling results across tuning parameters:
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
  parameter 'colsample_bytree' was held constant at a value of 0.8
-
-Tuning parameter 'min_child_weight' was held constant at a value of 1
+Tuning
+ parameter 'min_child_weight' was held constant at a value of 1
 RMSE was used to select the optimal model using  the smallest value.
-The final values used for the model were nrounds = 100, max_depth = 3, eta
- = 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
+The final values used for the model were nrounds = 100, max_depth = 3, eta =
+ 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
     Feature       Gain       Cover   Frequence
@@ -251,35 +251,35 @@ Variable: CRFVOL
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 300) 
 
 Type:                             Regression 
-Number of trees:                  500 
+Number of trees:                  300 
 Sample size:                      303139 
 Number of independent variables:  157 
 Mtry:                             60 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             101.1627 
-R squared:                        0.6252112 
+OOB prediction error:             101.5426 
+R squared:                        0.6238036 
 
  Variable importance:
               [,1]
-DEPTH.f 10572966.7
-TWIMRG5  3162194.4
-VW3MOD1  2482303.8
-DEMMRG5  2178630.9
-VBFMRG5  1231719.2
-ASSDAC3  1111233.0
-VW5MOD1  1052258.8
-VW2MOD1   859222.5
-SLPMRG5   842603.2
-VW4MOD1   828124.9
-ES3MOD5   795119.2
-VDPMRG5   779064.2
-ES1MOD5   765554.9
-ES4MOD5   757644.2
-GTDHYS3   750549.5
+DEPTH.f 10589428.4
+TWIMRG5  3126527.7
+VW3MOD1  2612977.4
+DEMMRG5  2214344.2
+VBFMRG5  1190359.7
+ASSDAC3  1073891.2
+VW5MOD1  1073533.4
+SLPMRG5   900972.9
+VW4MOD1   825372.6
+ES3MOD5   821147.6
+VDPMRG5   785708.4
+ES1MOD5   775104.4
+VW2MOD1   772147.3
+ES4MOD5   772077.1
+T02MSD3   751930.9
 
 eXtreme Gradient Boosting 
 
@@ -304,11 +304,11 @@ Resampling results across tuning parameters:
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
  parameter 'colsample_bytree' was held constant at a value of 0.8
-
-Tuning parameter 'min_child_weight' was held constant at a value of 1
+Tuning
+ parameter 'min_child_weight' was held constant at a value of 1
 RMSE was used to select the optimal model using  the smallest value.
-The final values used for the model were nrounds = 100, max_depth = 3, eta
- = 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
+The final values used for the model were nrounds = 100, max_depth = 3, eta =
+ 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
     Feature       Gain       Cover   Frequence
@@ -333,35 +333,35 @@ Variable: SNDPPT
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 300) 
 
 Type:                             Regression 
-Number of trees:                  500 
+Number of trees:                  300 
 Sample size:                      616762 
 Number of independent variables:  157 
 Mtry:                             60 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             149.4583 
-R squared:                        0.8136311 
+OOB prediction error:             149.7802 
+R squared:                        0.8132296 
 
  Variable importance:
             [,1]
-DEPTH.f 31107974
-P04MRG3 16585827
-VW4MOD1 13857181
-VBFMRG5  9569049
-P11MRG3  9510586
-VDPMRG5  9258948
-VW1MOD1  8909622
-DEMMRG5  8593343
-T02MSD3  8446124
-TWIMRG5  7080097
-T11MSD3  6470986
-VW2MOD1  6420628
-VW3MOD1  5790718
-N05MSD3  5689607
-VW6MOD1  5673935
+DEPTH.f 31144963
+P04MRG3 16824797
+VW4MOD1 13631314
+P11MRG3 10461216
+VDPMRG5  9411269
+VBFMRG5  9300735
+T02MSD3  9021237
+DEMMRG5  8395571
+VW1MOD1  8288877
+VW2MOD1  7111132
+TWIMRG5  6966037
+T11MSD3  6824155
+VW6MOD1  5945541
+N05MSD3  5879360
+VW3MOD1  5599018
 
 eXtreme Gradient Boosting 
 
@@ -386,11 +386,11 @@ Resampling results across tuning parameters:
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
  parameter 'colsample_bytree' was held constant at a value of 0.8
-
-Tuning parameter 'min_child_weight' was held constant at a value of 1
+Tuning
+ parameter 'min_child_weight' was held constant at a value of 1
 RMSE was used to select the optimal model using  the smallest value.
-The final values used for the model were nrounds = 100, max_depth = 3, eta
- = 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
+The final values used for the model were nrounds = 100, max_depth = 3, eta =
+ 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
     Feature       Gain       Cover   Frequence
@@ -415,35 +415,35 @@ Variable: SLTPPT
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 300) 
 
 Type:                             Regression 
-Number of trees:                  500 
+Number of trees:                  300 
 Sample size:                      613750 
 Number of independent variables:  157 
 Mtry:                             55 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             85.2571 
-R squared:                        0.8165339 
+OOB prediction error:             85.56334 
+R squared:                        0.8158749 
 
  Variable importance:
             [,1]
-N02MOD3 20150314
-DEPTH.f 18962420
-N12MOD3 11869392
-T12MOD3 11150404
-P04MRG3  7456897
-T01MOD3  7102961
-VW4MOD1  7008262
-VBFMRG5  4846548
-VDPMRG5  4257860
-N03MOD3  3944558
-N01MOD3  3876201
-DEMMRG5  3820597
-TWIMRG5  3225316
-VW3MOD1  3036245
-T11MSD3  2800215
+N02MOD3 20392971
+DEPTH.f 18915164
+T12MOD3 10982141
+N12MOD3  9282985
+T01MOD3  9226122
+P04MRG3  7858979
+VW4MOD1  7245136
+VBFMRG5  4963200
+N03MOD3  4362337
+VDPMRG5  4242586
+DEMMRG5  3691579
+N01MOD3  3278969
+TWIMRG5  3160124
+VW1MOD1  3130383
+I09MOD4  2804146
 
 eXtreme Gradient Boosting 
 
@@ -468,11 +468,11 @@ Resampling results across tuning parameters:
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
  parameter 'colsample_bytree' was held constant at a value of 0.8
-
-Tuning parameter 'min_child_weight' was held constant at a value of 1
+Tuning
+ parameter 'min_child_weight' was held constant at a value of 1
 RMSE was used to select the optimal model using  the smallest value.
-The final values used for the model were nrounds = 100, max_depth = 3, eta
- = 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
+The final values used for the model were nrounds = 100, max_depth = 3, eta =
+ 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
     Feature       Gain       Cover   Frequence
@@ -497,35 +497,35 @@ Variable: CLYPPT
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 300) 
 
 Type:                             Regression 
-Number of trees:                  500 
+Number of trees:                  300 
 Sample size:                      625159 
 Number of independent variables:  157 
 Mtry:                             35 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             84.10557 
-R squared:                        0.7472457 
+OOB prediction error:             84.2643 
+R squared:                        0.7467686 
 
  Variable importance:
             [,1]
-DEPTH.f 15743638
-T10MOD3  3776262
-DEMMRG5  3430345
-T09MOD3  3325627
-VBFMRG5  3064739
-T11MOD3  2776244
-T04MOD3  2716873
-VW1MOD1  2660792
-VW4MOD1  2649248
-T01MOD3  2547931
-TWIMRG5  2456330
-VW5MOD1  2256806
-VDPMRG5  2118860
-VW2MOD1  2088896
-M11MOD4  2031871
+DEPTH.f 15754412
+T10MOD3  3449152
+DEMMRG5  3433654
+T09MOD3  3294626
+T04MOD3  3191675
+VBFMRG5  3018226
+VW1MOD1  2830657
+T11MOD3  2623368
+VW4MOD1  2522421
+TWIMRG5  2461701
+T01MOD3  2444974
+VW5MOD1  2275536
+SN2MOD4  2106273
+M11MOD4  2103756
+VDPMRG5  2099263
 
 eXtreme Gradient Boosting 
 
@@ -550,11 +550,11 @@ Resampling results across tuning parameters:
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
  parameter 'colsample_bytree' was held constant at a value of 0.8
-
-Tuning parameter 'min_child_weight' was held constant at a value of 1
+Tuning
+ parameter 'min_child_weight' was held constant at a value of 1
 RMSE was used to select the optimal model using  the smallest value.
-The final values used for the model were nrounds = 100, max_depth = 3, eta
- = 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
+The final values used for the model were nrounds = 100, max_depth = 3, eta =
+ 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
     Feature       Gain       Cover   Frequence
@@ -579,35 +579,35 @@ Variable: BLD
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 300) 
 
 Type:                             Regression 
-Number of trees:                  500 
+Number of trees:                  300 
 Sample size:                      140596 
 Number of independent variables:  157 
 Mtry:                             60 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             23495.5 
-R squared:                        0.7901882 
+OOB prediction error:             23558.74 
+R squared:                        0.7896235 
 
  Variable importance:
               [,1]
-DEPTH.f 2578117486
-M03MOD4  822724550
-M04MOD4  434633845
-T09MOD3  409298159
-T05MOD3  324980547
-TWIMRG5  291653624
-ES2MOD5  228191458
-DEMMRG5  224770128
-T02MOD3  224568017
-VW6MOD1  192680585
-T04MOD3  192099060
-VDPMRG5  186945303
-VW1MOD1  172821669
-T10MOD3  168096381
-SN2MOD4  163852253
+DEPTH.f 2569486890
+M03MOD4  921555074
+M04MOD4  395688471
+T09MOD3  351013660
+T05MOD3  314074409
+TWIMRG5  289439216
+ES2MOD5  227736662
+DEMMRG5  227289962
+T02MOD3  225181678
+VW6MOD1  204104796
+VDPMRG5  198165122
+T04MOD3  183598634
+SN2MOD4  177614908
+T10MOD3  173817430
+VW1MOD1  168784727
 
 eXtreme Gradient Boosting 
 
@@ -632,11 +632,11 @@ Resampling results across tuning parameters:
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
  parameter 'colsample_bytree' was held constant at a value of 0.8
-
-Tuning parameter 'min_child_weight' was held constant at a value of 1
+Tuning
+ parameter 'min_child_weight' was held constant at a value of 1
 RMSE was used to select the optimal model using  the smallest value.
-The final values used for the model were nrounds = 100, max_depth = 3, eta
- = 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
+The final values used for the model were nrounds = 100, max_depth = 3, eta =
+ 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
     Feature       Gain       Cover   Frequence
@@ -661,35 +661,35 @@ Variable: CECSUM
 Ranger result
 
 Call:
- ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry) 
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 300) 
 
 Type:                             Regression 
-Number of trees:                  500 
+Number of trees:                  300 
 Sample size:                      393585 
 Number of independent variables:  157 
 Mtry:                             50 
 Target node size:                 5 
 Variable importance mode:         impurity 
-OOB prediction error:             97.55433 
-R squared:                        0.6746771 
+OOB prediction error:             97.90964 
+R squared:                        0.6734923 
 
  Variable importance:
            [,1]
-DEPTH.f 9619565
-N11MSD3 2092305
-L04USG5 2026838
-VW1MOD1 1823798
-N09MSD3 1736210
-DEMMRG5 1445695
-TWIMRG5 1353357
-VDPMRG5 1281069
-N06MSD3 1273826
-SN1MOD4 1223482
-T02MSD3 1214462
-T12MOD3 1211368
-N02MOD3 1196401
-VBFMRG5 1179085
-VW4MOD1 1120422
+DEPTH.f 9617108
+N11MSD3 2138143
+L04USG5 2053601
+VW1MOD1 1758526
+N09MSD3 1696491
+DEMMRG5 1476509
+TWIMRG5 1352260
+SN1MOD4 1289994
+VDPMRG5 1262878
+N06MSD3 1229209
+SN2MOD4 1202172
+T02MSD3 1199465
+VBFMRG5 1179666
+T12MOD3 1166431
+N02MOD3 1121759
 
 eXtreme Gradient Boosting 
 
@@ -714,11 +714,11 @@ Resampling results across tuning parameters:
 Tuning parameter 'gamma' was held constant at a value of 0
 Tuning
  parameter 'colsample_bytree' was held constant at a value of 0.8
-
-Tuning parameter 'min_child_weight' was held constant at a value of 1
+Tuning
+ parameter 'min_child_weight' was held constant at a value of 1
 RMSE was used to select the optimal model using  the smallest value.
-The final values used for the model were nrounds = 100, max_depth = 3, eta
- = 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
+The final values used for the model were nrounds = 100, max_depth = 3, eta =
+ 0.4, gamma = 0, colsample_bytree = 0.8 and min_child_weight = 1. 
 
  XGBoost variable importance:
     Feature       Gain        Cover   Frequence

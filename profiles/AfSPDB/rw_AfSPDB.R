@@ -1,9 +1,6 @@
 # Reading and writing of the African SPDB (ca 18,000 profiles);
-# The NSA [http://www.isric.org/data/africa-soil-profiles-database-version-01-2]
+# Download data from [http://www.isric.org/data/africa-soil-profiles-database-version-01-2]
 # by Tom.Hengl@isric.org
-
-## Download the database:
-# system("7za -e NatSoil2002.7z")
 
 library(aqp)
 library(plyr)

@@ -37,6 +37,8 @@ horizons <- rename(horizons, c("Profiel_ID"="SOURCEID", "pH_KCl"="PHIKCL", "pH_H
 horizons$UHDICM <- rowSums(horizons[,c("Diepte_grens_boven1", "Diepte_grens_boven2")], na.rm=TRUE)/2
 horizons$LHDICM <- rowSums(horizons[,c("Diepte_grens_onder1","Diepte_grens_onder2")], na.rm=TRUE)/2
 summary(horizons$UHDICM)
+horizons$PHIHOX <- ifelse(horizons$PHIHOX<2.5, NA, ifelse(horizons$PHIHOX>10, NA, horizons$PHIHOX))
+horizons$PHIKCL <- ifelse(horizons$PHIKCL<2.5, NA, ifelse(horizons$PHIKCL>10, NA, horizons$PHIKCL))
 horizons$SNDPPT <- horizons$T50_100 + horizons$T100_200 + horizons$T200_500 + horizons$T500_1000 + horizons$T1000_2000
 horizons$SLTPPT <- horizons$T2_10 + horizons$T10_20 + horizons$T20_50
 horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
@@ -44,6 +46,20 @@ horizons$SLTPPT <- ifelse(is.na(horizons$SLTPPT), 100-(horizons$CLYPPT+horizons$
 horizons$SNDPPT <- ifelse(is.na(horizons$SNDPPT), 100-(horizons$CLYPPT+horizons$SLTPPT), horizons$SNDPPT)
 sumTex <- rowSums(horizons[,c("SLTPPT","CLYPPT","SNDPPT")])
 hist(sumTex)
+
+# ------------------------------------------------------------
+# All soil properties
+# ------------------------------------------------------------
+
+SPROPS.Vlaanderen <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","SNDPPT","CLYPPT","SLTPPT","PHIHOX","PHIKCL","ORCDRC","CECSUM","CRFVOL")], SITE.s[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
+SPROPS.Vlaanderen <- SPROPS.Vlaanderen[!is.na(SPROPS.Vlaanderen$LONWGS84) & !is.na(SPROPS.Vlaanderen$LATWGS84) & !is.na(SPROPS.Vlaanderen$DEPTH),]
+str(SPROPS.Vlaanderen)
+hist(log1p(SPROPS.Vlaanderen$ORCDRC), breaks=40)
+hist(SPROPS.Vlaanderen$PHIHOX, breaks=40)
+hist(SPROPS.Vlaanderen$CLYPPT, breaks=40)
+## 41,789
+save(SPROPS.Vlaanderen, file="SPROPS.Vlaanderen.rda")
+plot(SPROPS.Vlaanderen$LONWGS84, SPROPS.Vlaanderen$LATWGS84, pch="+")
 
 # ------------------------------------------------------------
 # export TAXONOMY DATA
@@ -58,16 +74,6 @@ proj4string(TAXNWRB.Vlaanderen) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXNWRB.Vlaanderen["TAXNWRB"])
 save(TAXNWRB.Vlaanderen, file="TAXNWRB.Vlaanderen.rda")
 
-# ------------------------------------------------------------
-# All soil properties
-# ------------------------------------------------------------
-
-SPROPS.Vlaanderen <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","SNDPPT","CLYPPT","SLTPPT","PHIHOX","PHIKCL","ORCDRC","CECSUM","CRFVOL")], SITE.s[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
-SPROPS.Vlaanderen <- SPROPS.Vlaanderen[!is.na(SPROPS.Vlaanderen$LONWGS84) & !is.na(SPROPS.Vlaanderen$LATWGS84) & !is.na(SPROPS.Vlaanderen$DEPTH),]
-str(SPROPS.Vlaanderen)
-## 41,789
-save(SPROPS.Vlaanderen, file="SPROPS.Vlaanderen.rda")
-plot(SPROPS.Vlaanderen$LONWGS84, SPROPS.Vlaanderen$LATWGS84, pch="+")
 
 # ------------------------------------------------------------
 # Depth to bedrock
