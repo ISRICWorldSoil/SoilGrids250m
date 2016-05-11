@@ -1,4 +1,9 @@
-## Split randomForest models
+## Split randomForest models and make predictions for factor and numeric type variables
+## By tom.hengl@isric.org / suggestion to split RF models by Marvin N. Wright <wright at imbs.uni-luebeck.de>
+
+## -------------------------------
+## Factor-type variables
+## -------------------------------
 
 split_rf <- function(rf, num_splits=4){
   ## Split up tree indices
@@ -17,12 +22,12 @@ split_rf <- function(rf, num_splits=4){
   return(rfs)
 }
 
-split_predict_c <- function(i, gm, in.path, out.path, split_no, varn){
+split_predict_c <- function(i, gm, in.path, out.path, split_no, varn, num.threads=1){
   rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", split_no, ".rds")
   if(any(c(!file.exists(rds.out),file.size(rds.out)==0))){
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
     ## round up numbers otherwise too large objects
-    x = round(predict(gm, m@data, probability=TRUE, na.action = na.pass, num.threads=1)$predictions*100)
+    x = round(predict(gm, m@data, probability=TRUE, na.action = na.pass, num.threads=num.threads)$predictions*100)
     saveRDS(x, file=rds.out)
   }
 }
@@ -79,7 +84,7 @@ sum_predictions <- function(i, in.path, out.path, varn, gm1.w, gm2.w, col.legend
           Group = tax
         }
         col.tbl <- plyr::join(data.frame(Group=Group, int=1:length(tax)), col.legend, type="left")
-        ## match most probable class:
+        ## match most probable class
         m$cl <- col.tbl[match(apply(m@data,1,which.max), col.tbl$int),"Number"]  
         writeGDAL(m["cl"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(col.tbl$Group)))  ## TH: 'colorTable=list(col.tbl$COLOR)' does not work
       }
@@ -100,4 +105,106 @@ predict_tile <- function(x, gm1, gm2, gm1.w, gm2.w){
   }
   predict_nnet(i=x, gm1, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB")
   sum_predictions(i=x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB", gm1.w=gm1.w, gm2.w=gm2.w, col.legend=col.legend, soil.fix=soil.fix, lev=lev, check.names=TRUE)
+}
+
+## simple ranger predict function:
+sum_predict_ranger <- function(i, in.path, out.path, varn, num_splits){
+  if(length(list.files(path = paste0(out.path, "/", i, "/"), glob2rx(paste0("^",varn,"_*_*_*_*.tif$"))))==0){
+    ## load all objects:
+    m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
+    if(nrow(m@data)>1){
+      rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", 1:num_splits, ".rds")
+      probs <- lapply(rf.ls, readRDS)
+      probs <- data.frame(Reduce("+", probs) / num_splits)
+      ## Standardize values so they sums up to 100:
+      rs <- rowSums(probs, na.rm=TRUE)
+      m@data <- data.frame(lapply(probs, function(i){i/rs}))
+      ## Write GeoTiffs:
+      if(sum(rs,na.rm=TRUE)>0&length(rs)>0){
+        tax <- names(m)
+        for(j in 1:ncol(m)){
+          out <- paste0(out.path, "/", i, "/", varn, "_", tax[j], "_", i, ".tif")
+          if(!file.exists(out)){
+            m$v <- round(m@data[,j]*100)
+            writeGDAL(m["v"], out, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
+          }
+        }
+      }
+      unlink(rf.ls)
+    }
+  }
+}
+
+## -------------------------------
+## Numeric variables
+## -------------------------------
+
+## 7 standard dephts
+split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5, 15, 30, 60, 100, 200), method, multiplier=1, depths=TRUE){
+  if(method=="ranger"){
+    rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", split_no, ".rds")
+  }
+  if(method=="xgboost"){
+    rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_xgb.rds")
+  }
+  if(any(c(!file.exists(rds.out),file.size(rds.out)==0))){
+    rds.file = paste0(in.path, "/", i, "/", i, ".rds")
+    if(file.exists(rds.file)&file.size(rds.file)>1e3){ 
+      #message("Predicting from .rds file...")
+      m <- readRDS(rds.file)
+      if(depths==FALSE){
+        x <- matrix(data=NA, nrow=nrow(m), ncol=1)
+        if(method=="ranger"){
+          x[,1] <- round(predict(gm, m@data, na.action=na.pass)$predictions * multiplier)
+        } else {
+          x[,1] <- round(predict(gm, m@data, na.action=na.pass) * multiplier)
+        }
+      } else {
+        x <- matrix(data=NA, nrow=nrow(m), ncol=length(sd))
+        for(l in 1:length(sd)){
+          m$DEPTH.f = sd[l]
+          if(method=="ranger"){
+            v = predict(gm, m@data, na.action=na.pass)$predictions * multiplier
+          } else {
+            v = predict(gm, m@data, na.action=na.pass) * multiplier
+          }
+          x[,l] <- round(v)
+        }
+      }
+      saveRDS(x, file=rds.out)
+    }
+  }
+}
+
+## Sum up predictions
+sum_predict_ensemble <- function(i, in.path, out.path, varn, num_splits, zmin, zmax, gm1.w, gm2.w, type="Int16", mvFlag=-32768, depths=TRUE){
+  if(length(list.files(path = paste0(out.path, "/", i, "/"), glob2rx(paste0("^",varn,"_M_*.tif$"))))==0){
+    m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
+    if(nrow(m@data)>1){
+      ## import all predictions:
+      rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", 1:num_splits, ".rds")
+      gb = paste0(out.path, "/", i, "/", varn,"_", i, "_xgb.rds")
+      v1 <- lapply(rf.ls, readRDS)
+      v1 <- Reduce("+", v1) / num_splits
+      v2 <- readRDS(gb)
+      ## weighted average:
+      m@data <- data.frame(Reduce("+", list(v1*gm1.w, v2*gm2.w)) / (gm1.w+gm2.w))
+      if(depths==FALSE){
+        ## Write GeoTiffs (2D case):
+        out.tif = paste0(out.path, "/", i, "/", varn, "_M_", i, ".tif")
+        m@data[,1] <- ifelse(m@data[,1] < zmin, zmin, ifelse(m@data[,1] > zmax, zmax, m@data[,1]))
+        writeGDAL(m[1], out.tif, type=type, mvFlag=mvFlag, options="COMPRESS=DEFLATE")
+      } else {
+        ## Write GeoTiffs (per depth):
+        for(l in 1:ncol(m)){
+          out.tif = paste0(out.path, "/", i, "/", varn, "_M_sl", l, "_", i, ".tif")
+          m@data[,l] <- ifelse(m@data[,l] < zmin, zmin, ifelse(m@data[,l] > zmax, zmax, m@data[,l]))
+          writeGDAL(m[l], out.tif, type=type, mvFlag=mvFlag, options="COMPRESS=DEFLATE")
+        }
+      }
+      ## cleanup:
+      unlink(rf.ls)
+      unlink(gb)
+    }
+  }
 }

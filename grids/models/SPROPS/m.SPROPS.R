@@ -31,7 +31,8 @@ gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
 system("/usr/local/bin/gdal-config --version")
 source("../extract.equi7t3.R")
 source('/data/models/objects_in_memory.R')
-source("../wrapper.predict_np.R")
+#source("../wrapper.predict_np.R")
+source("../wrapper.predict_cs.R")
 source("../saveRDS_functions.R")
 
 load("../equi7t3.rda")
@@ -105,11 +106,15 @@ for(j in 1:length(t.vars)){
     sel <- complete.cases(dfs)
     dfs <- dfs[sel,]
     ## optimize mtry parameter:
-    t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid) 
+    if(!file.exists(gsub("mrf","t.mrf",out.rf))){
+      t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
+      saveRDS.gz(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
+    } else {
+      t.mrfX <- readRDS.gz(gsub("mrf","t.mrf",out.rf))
+    }
     ## fit RF model using 'ranger' (fully parallelized)
     ## reduce number of trees so the output objects do not get TOO LARGE i.e. >5GB
-    saveRDS.gz(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
-    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry) ## , num.trees=291
+    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=300)  
     saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
     ## Top 15 covariates:
     sink(file="SPROPS_resultsFit.txt", append=TRUE, type="output")
@@ -122,11 +127,15 @@ for(j in 1:length(t.vars)){
     unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
     write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
     gzip(paste0("RF_fit_", t.vars[j], ".csv"))
-    ## fit XGBoost model (uses all points):
-    mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
-    saveRDS.gz(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
-    ## save also binary model for prediction purposes:
-    xgb.save(mgbX$finalModel, paste0("Xgb.",t.vars[j]))
+    if(!file.exists(paste0("mgb.",t.vars[j],".rds"))){
+      ## fit XGBoost model (uses all points):
+      mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
+      saveRDS.gz(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
+      ## save also binary model for prediction purposes:
+      xgb.save(mgbX$finalModel, paste0("Xgb.",t.vars[j]))
+    } else {
+      mgbX <- readRDS.gz(paste0("mgb.",t.vars[j],".rds"))
+    }
     importance_matrix <- xgb.importance(mgbX$coefnames, model = mgbX$finalModel)
     cat("\n", file="SPROPS_resultsFit.txt", append=TRUE)
     print(mgbX)
@@ -137,6 +146,7 @@ for(j in 1:length(t.vars)){
   }
 }
 rm(mrfX); rm(mgbX)
+stopCluster(cl); closeAllConnections()
 
 mrfX_lst <- list.files(pattern="^mrf.")
 mgbX_lst <- list.files(pattern="^mgb.")
@@ -152,38 +162,64 @@ str(pr.dirs)
 #save(pr.dirs, file="pr.dirs.rda")
 ## 16,561 dirs
 
-## Test it:
-system.time( wrapper.predict_np(i="NA_060_036", varn="PHIHOX", gm1=mrfX_lst[["PHIHOX"]], gm2=mgbX_lst[["PHIHOX"]], in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[["PHIHOX"]], zmax=z.max[["PHIHOX"]], mask_value=mask_value) )
-system.time( wrapper.predict_np(i="NA_060_036", varn="ORCDRC", gm1=mrfX_lst[["ORCDRC"]], gm2=mgbX_lst[["ORCDRC"]], in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[["ORCDRC"]], zmax=z.max[["ORCDRC"]], mask_value=mask_value) )
-
-## Run per property (TAKES ABOUT 2 DAYS OF COMPUTING PER PROPERTY):
+## Split RF models (otherwise memory limit problems):
+num_splits = 3
 for(j in t.vars){
-  gc(); gc()
-  #gm1 <- mrfX_lst[[j]]
-  gm1 <- readRDS(mrfX_lst[[j]])
-  gm2 <- readRDS(mgbX_lst[[j]])
-  ## divide RAM by size of model:
-  cpus = unclass(round(256/(3.5*(object.size(gm1)/1e9+object.size(gm2)/1e9))))
-  ## leave 2 CPU's free for background processes:
-  cpus <- ifelse(cpus>46, 46, cpus)
-  #cl <- makeCluster(s48-cpus)
-  #registerDoParallel(cl)
-  sfInit(parallel=TRUE, cpus=cpus) 
-  ## cpus=48, type="MPI"
-  ## Error in mpi.send(x = serialize(obj, NULL), type = 4, dest = dest, tag = tag, : long vectors not supported yet: memory.c:3361
-  sfExport("wrapper.predict_np", "pr.dirs", "mask_value", "z.min", "z.max", "gm1", "gm2", "j")
+  mrfX = readRDS.gz(mrfX_lst[[j]])
+  mrfX_final <- split_rf(mrfX, num_splits)
+  for(k in 1:length(mrfX_final)){
+    gm = mrfX_final[[k]]
+    saveRDS.gz(gm, file=paste0("mrfX_", k, "_", j,".rds"))
+  }
+}
+rm(mrfX); rm(mrfX_final)
+gc(); gc()
+save.image()
+
+type.lst <- c("Int16","Byte","Byte","Byte","Byte","Byte","Byte","Int16","Int16")
+names(type.lst) = t.vars
+mvFlag.lst <- c(-32768, 255, 255, 255, 255, 255, 255, -32768, -32768)
+names(mvFlag.lst) = t.vars
+
+## Run per property (TAKES ABOUT 20-30 HOURS OF COMPUTING PER PROPERTY)
+## To avoid memory problems with RF objects, we split into e.g. 3 parts
+for(j in t.vars){
+  if(j=="PHIHOX"|j=="PHIKCL"){ multiplier = 10 }
+  if(j %in% c("P", "S", "B", "Cu", "Zn")){ multiplier = 100 }
+  if(j %in% c("ORCDRC","CRFVOL","SNDPPT","SLTPPT","CLYPPT","BLD","CECSUM")){ multiplier = 1 }
+  ## Random forest predictions (splits):
+  gm = readRDS.gz(mrfX_lst[[j]])
+  gm1.w = 1/gm$prediction.error
+  rm(gm)
+  for(k in 1:num_splits){
+    gm = readRDS.gz(paste0("mrfX_", k, "_", j,".rds"))
+    gc()
+    cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
+    sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
+    sfExport("gm", "pr.dirs", "split_predict_n", "j", "k", "multiplier")
+    sfLibrary(ranger)
+    x <- sfLapply(pr.dirs, fun=function(x){ if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ try( split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", split_no=k, varn=j, method="ranger", multiplier=multiplier) ) } } )
+    sfStop()
+    rm(gm)
+  }
+  ## XGBoost:
+  gm = readRDS.gz(paste0("mgb.", j,".rds"))
+  gm2.w = 1/(min(gm$results$RMSE, na.rm=TRUE)^2)
+  cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
+  gc()
+  sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
+  sfExport("gm", "pr.dirs", "split_predict_n", "j", "multiplier")
+  sfLibrary(xgboost)
+  x <- sfLapply(pr.dirs, fun=function(x){ try( if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", varn=j, method="xgboost", multiplier=multiplier) } ) } )
+  sfStop()
+  rm(gm)
+  ## sum up predictions:
+  sfInit(parallel=TRUE, cpus=45)
+  sfExport("pr.dirs", "sum_predict_ensemble", "num_splits", "j", "z.min", "z.max", "gm1.w", "gm2.w", "type.lst", "mvFlag.lst")
   sfLibrary(rgdal)
   sfLibrary(plyr)
-  sfLibrary(ranger)
-  sfLibrary(xgboost)
-  sfLibrary(caret)
-  ## each process takes up to 5GB (gm1 largest object)
-  ## Can take up to an hour to export all objects to all CPUs
-  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_np(i=x, varn=j, gm1=gm1, gm2=gm2, in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[[j]], zmax=z.max[[j]], mask_value=mask_value) )  } )
+  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ sum_predict_ensemble(x, in.path="/data/covs1t", out.path="/data/predicted", varn=j, num_splits, zmin=z.min[[j]], zmax=z.max[[j]], gm1.w=gm1.w, gm2.w=gm2.w, type=type.lst[[j]], mvFlag=mvFlag.lst[[j]]) } )  } )
   sfStop()
-  rm(gm1); rm(gm2)
-  gc(); gc()
-  #stopCluster(cl)
 }
 
 ## corrupt or missing tiles:
@@ -202,15 +238,21 @@ names(missing.lst) = t.vars
 ## "NA_101_074" "NA_106_069"
 
 ## clean-up:
-# for(i in t.vars){ ## c("BLD", "ORCDRC", "PHIHOX") 
-#  del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
-#  unlink(del.lst)
+for(i in c("BLD", "ORCDRC", "PHIHOX", "PHIKCL", "SNDPPT", "SLTPPT", "CLYPPT")){ ## c("CECSUM","CRFVOL")  
+  del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+  unlink(del.lst)
+}
+# for(i in c("CECSUM", "CRFVOL")){ ## c("BLD", "ORCDRC", "PHIHOX") 
+#   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "_*_*_*_rf?.rds")), full.names=TRUE, recursive=TRUE)
+#   unlink(del.lst)
 # }
 
 # for(i in t.vars){
 #  del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #  unlink(del.lst)
 # }
+
+## ------------- VISUALIZATIONS -----------
 
 ## world plot - overlay and plot points and maps:
 xy.pnts <- ovA[!duplicated(ovA$SOURCEID),c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")]
