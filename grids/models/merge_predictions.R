@@ -37,22 +37,32 @@ tile.names <- names(equi7t3)
 #x = sapply(1:length(equi7t3), function(x){mosaick.equi7t3(j=tile.names[x], i="Fibrists", r="bilinear", in.path="/data/predicted", varn="TAXOUSDA", te=ext[[x]], ot="Byte", dstnodata=255, tr=0.002083333)})
 #make_mosaick(i="Fibrists", varn="TAXOUSDA", ext=ext, tr=0.002083333, in.path="/data/predicted", r250m=TRUE, tile.names=tile.names)
 
-## Reprojection TAKES CA 3-5 hrs (compression is the most time-consuming?)
-
-## Resample all soil properties at 250m:
-tvars = c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "CECSUM") ## "BLD",
+## Reprojection TAKES CA 3-5 hrs
+tvars = c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "CECSUM", "BLD")
 props = c(rep(tvars, 7), rep("OCSTHA", 6))
 varn.lst = c(paste0("M_sl", sapply(1:7, function(x){rep(x, length(tvars))})), paste0("M_sd", 1:6))
+ot.lst <- c(rep(c("Int16","Byte","Byte","Byte","Byte","Byte","Byte","Int16","Int16"), 7), rep("Int16", 6))
+dstnodata.lst <- c(rep(c(-32768, 255, 255, 255, 255, 255, 255, -32768, -32768), 7), rep(-32768, 6))
+
 ## test soil property:
 #make_mosaick(i="M_sd1", varn="ORCDRC", ext=ext, tr=0.008333333, in.path="/data/predicted1km", r250m=FALSE)
 
 ## Resample all soil properties to 250m:
 ## TAKES >7-8 hours
 ## without compression TAKES A LOT OF HARD DISK SPACE
-sfInit(parallel=TRUE, cpus=48)
-sfExport("equi7t3", "gdalbuildvrt", "gdalwarp", "tile.names", "gdaladdo", "gdal_translate", "ext", "props", "varn.lst", "mosaick.equi7t3", "make_mosaick")
-out <- sfClusterApplyLB(1:length(props), function(x){make_mosaick(varn.lst[x], varn=props[x], ext=ext, in.path="/data/predicted", ot="Int16", dstnodata=-32768, tile.names=tile.names, tr=0.002083333, r250m=TRUE)})
+sfInit(parallel=TRUE, cpus=25)
+sfExport("equi7t3", "gdalbuildvrt", "gdalwarp", "tile.names", "gdaladdo", "gdal_translate", "ext", "props", "varn.lst", "mosaick.equi7t3", "make_mosaick", "ot.lst", "dstnodata.lst")
+out <- sfClusterApplyLB(1:length(props), function(x){make_mosaick(varn.lst[x], varn=props[x], ext=ext, in.path="/data/predicted", ot=ot.lst[x], dstnodata=dstnodata.lst[x], tile.names=tile.names, tr=0.002083333, r250m=TRUE)})
 sfStop()
+
+## Rename some soil properties:
+from.lst = c("CECSUM_M","BLD_M")
+to.lst = c("CECSOL_M", "BLDFIE_M")
+for(j in 1:length(from.lst)){
+  from <- list.files(path="/data/GEOG", pattern=glob2rx(paste0("^",from.lst[j],"*.tif")), full.names = TRUE)
+  to <- gsub(from.lst[j], to.lst[j], from) 
+  x= sapply(1:length(from), function(x){ if(file.exists(from[x])){ file.rename(from=from[x], to=to[x]) } } )
+}
 
 ## Parellel mosaicks per continent:
 m <- readRDS("/data/models/TAXNWRB/mnetX_TAXNWRB.rds")
@@ -80,7 +90,7 @@ make_mosaick(i="dominant", varn="TAXNWRB", ext=ext, resample1="near", resample2=
 make_mosaick(i="dominant", varn="TAXOUSDA", ext=ext, resample1="near", resample2="near", r="near", tr=0.002083333, r250m=TRUE, tile.names=tile.names)
 
 ## Organic soils:
-make_mosaick(i="dominant", varn="HISTPR", ext=ext, tr=0.008333333, in.path="/data/predicted1km", tr=0.002083333, r250m=TRUE, ot="Int16", dstnodata=-32768, tile.names=tile.names)
+make_mosaick(i="dominant", varn="HISTPR", ext=ext, in.path="/data/predicted", tr=0.002083333, r250m=TRUE, ot="Int16", dstnodata=-32768, tile.names=tile.names)
 
 
 ## 1km

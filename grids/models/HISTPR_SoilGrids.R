@@ -62,3 +62,9 @@ sfLibrary(rgdal)
 sfLibrary(GSIF)
 out <- sfClusterApplyLB(pr.dirs, function(i){try( wrapper.OCSTHA(i, in.path="/data/predicted") )})
 sfStop()
+
+## clean-up:
+# for(i in c("OCSTHA", "HISTPR")){  
+#   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+#   unlink(del.lst)
+# }

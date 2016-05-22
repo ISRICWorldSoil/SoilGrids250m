@@ -26,7 +26,8 @@ gdalwarp = "/usr/local/bin/gdalwarp"
 gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
 system("/usr/local/bin/gdal-config --version")
 source("../extract.equi7t3.R")
-source("../wrapper.predict_2D.R")
+source("../wrapper.predict_cs.R")
+source("../saveRDS_functions.R")
 load("../equi7t3.rda")
 des <- read.csv("../SoilGrids250m_COVS250m.csv")
 mask_value <- as.list(des$MASK_VALUE)
@@ -89,19 +90,22 @@ for(j in 1:length(t.vars)){
   ## Caret training settings (reduce number of combinations to speed up):
   ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
   gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
-  rf.tuneGrid <- expand.grid(mtry = seq(4,22,by=2))
+  rf.tuneGrid <- expand.grid(mtry = seq(10,60,by=5))
   out.rf <- paste0("mrf.",t.vars[j],".rds")
   if(!file.exists(out.rf)){
     dfs <- ovA[,all.vars(formulaString.lst[[j]])]
     sel <- complete.cases(dfs)
     dfs <- dfs[sel,]
     ## optimize mtry parameter:
-    t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid) 
+    if(!file.exists(gsub("mrf","t.mrf",out.rf))){
+      t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
+      saveRDS.gz(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
+    } else {
+      t.mrfX <- readRDS.gz(gsub("mrf","t.mrf",out.rf))
+    }
     ## fit RF model using 'ranger' (fully parallelized)
-    ## reduce number of trees so the output objects do not get TOO LARGE i.e. >5GB
-    saveRDS(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
-    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=291)
-    saveRDS(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
+    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=300)
+    saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
     ## Top 15 covariates:
     sink(file="BDR_resultsFit.txt", append=TRUE, type="output")
     print(mrfX)
@@ -113,11 +117,15 @@ for(j in 1:length(t.vars)){
     unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
     write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
     gzip(paste0("RF_fit_", t.vars[j], ".csv"))
-    ## fit XGBoost model (uses all points):
-    mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
-    saveRDS(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
-    ## save also binary model for prediction purposes:
-    xgb.save(mgbX$finalModel, paste0("Xgb.",t.vars[j]))
+    if(!file.exists(paste0("mgb.",t.vars[j],".rds"))){
+      ## fit XGBoost model (uses all points):
+      mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
+      saveRDS.gz(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
+      ## save also binary model for prediction purposes:
+      xgb.save(mgbX$finalModel, paste0("Xgb.",t.vars[j]))
+    } else {
+      mgbX <- readRDS.gz(paste0("mgb.",t.vars[j],".rds"))
+    }
     importance_matrix <- xgb.importance(mgbX$coefnames, model = mgbX$finalModel)
     cat("\n", file="BDR_resultsFit.txt", append=TRUE)
     print(mgbX)
@@ -128,21 +136,12 @@ for(j in 1:length(t.vars)){
   }
 }
 rm(mrfX); rm(mgbX)
+stopCluster(cl); closeAllConnections()
 
 mrfX_lst <- list.files(pattern="^mrf.")
 mgbX_lst <- list.files(pattern="^mgb.")
 names(mrfX_lst) <- paste(sapply(mrfX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
 names(mgbX_lst) <- paste(sapply(mgbX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
-
-## world plot - overlay and plot points and maps:
-shp.pnts <- ovA[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84",t.vars)]
-shp.pnts <- xy.pnts[complete.cases(xy.pnts[,c("LONWGS84","LATWGS84")]),]
-coordinates(xy.pnts) = ~ LONWGS84+LATWGS84
-proj4string(xy.pnts) = proj4string(BDR.pnts)
-unlink("Soil_depth_training_points.shp")
-writeOGR(xy.pnts, "Soil_depth_training_points.shp", "Soil_depth_training_points", "ESRI Shapefile")
-unlink("Soil_depth_training_points.zip")
-system("7za a Soil_depth_training_points.zip Soil_depth_training_points.*")
 
 ## ------------- PREDICTIONS -----------
 
@@ -152,35 +151,66 @@ str(pr.dirs)
 #save(pr.dirs, file="pr.dirs.rda")
 ## 16,561 dirs
 
-## test predictions:
-system.time( wrapper.predict_2D(i="NA_060_036", varn="BDTICM", gm1=mrfX_lst[["BDTICM"]], gm2=mgbX_lst[["BDTICM"]], in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[["BDTICM"]], zmax=z.max[["BDTICM"]], mask_value=mask_value) )
+## Split RF models (otherwise memory limit problems):
+num_splits = 3
+for(j in t.vars){
+  mrfX = readRDS.gz(mrfX_lst[[j]])
+  mrfX_final <- split_rf(mrfX, num_splits)
+  for(k in 1:length(mrfX_final)){
+    gm = mrfX_final[[k]]
+    saveRDS.gz(gm, file=paste0("mrfX_", k, "_", j,".rds"))
+  }
+}
+rm(mrfX); rm(mrfX_final)
+gc(); gc()
+save.image()
 
-## Run in loop (whole world):
-for(j in t.vars[3]){
-  gc(); gc()
-  gm1 <- readRDS(mrfX_lst[[j]])
-  gm1.w = 1/gm1$prediction.error
-  gm2 <- readRDS(mgbX_lst[[j]])
-  gm2.w = 1/(min(gm2$results$RMSE, na.rm=TRUE)^2)
-  ## divide RAM by size of model:
-  cpus = unclass(round(256/(3.5*(object.size(gm1)/1e9+object.size(gm2)/1e9))))
-  ## leave 2 CPU's free for background processes:
-  cpus <- ifelse(cpus>46, 46, cpus)
-  sfInit(parallel=TRUE, cpus=cpus) 
-  sfExport("wrapper.predict_2D", "pr.dirs", "mask_value", "z.min", "z.max", "gm1", "gm2", "j", "gm1.w", "gm2.w")
+type.lst <- c("Byte", "Byte", "Int32")
+names(type.lst) = t.vars
+mvFlag.lst <- c(255, 255, -32768)
+names(mvFlag.lst) = t.vars
+
+## Run per property (TAKES ABOUT 20-30 HOURS OF COMPUTING PER PROPERTY)
+## To avoid memory problems with RF objects, we split predictions into e.g. 3 parts
+for(j in t.vars[3]){ # t.vars
+  if(j=="BDRLOG"){ multiplier = 100 }
+  if(j %in% c("BDRICM","BDTICM")){ multiplier = 1 }
+  ## Random forest predictions (splits):
+  gm = readRDS.gz(mrfX_lst[[j]])
+  gm1.w = 1/gm$prediction.error
+  rm(gm)
+  for(k in 1:num_splits){
+    gm = readRDS.gz(paste0("mrfX_", k, "_", j,".rds"))
+    gc()
+    cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
+    sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
+    sfExport("gm", "pr.dirs", "split_predict_n", "j", "k", "multiplier")
+    sfLibrary(ranger)
+    x <- sfLapply(pr.dirs, fun=function(x){ if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ try( split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", split_no=k, varn=j, method="ranger", multiplier=multiplier, depths=FALSE) ) } } )
+    sfStop()
+    rm(gm)
+  }
+  ## XGBoost:
+  gm = readRDS.gz(paste0("mgb.", j,".rds"))
+  gm2.w = 1/(min(gm$results$RMSE, na.rm=TRUE)^2)
+  cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
+  gc()
+  sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
+  sfExport("gm", "pr.dirs", "split_predict_n", "j", "multiplier")
+  sfLibrary(xgboost)
+  x <- sfLapply(pr.dirs, fun=function(x){ try( if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", varn=j, method="xgboost", multiplier=multiplier, depths=FALSE) } ) } )
+  sfStop()
+  rm(gm)
+  ## sum up predictions:
+  sfInit(parallel=TRUE, cpus=45)
+  sfExport("pr.dirs", "sum_predict_ensemble", "num_splits", "j", "z.min", "z.max", "gm1.w", "gm2.w", "mvFlag.lst", "type.lst")
   sfLibrary(rgdal)
   sfLibrary(plyr)
-  sfLibrary(ranger)
-  sfLibrary(xgboost)
-  sfLibrary(caret)
-  ## each process takes up to 20GB (gm1 largest object)
-  ## Can take up to an hour to export all objects to all CPUs
-  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( wrapper.predict_2D(i=x, varn=j, gm1=gm1, gm2=gm2, in.path="/data/covs1t", out.path="/data/predicted", zmin=z.min[[j]], zmax=z.max[[j]], mask_value=mask_value, gm1.w=gm1.w, gm2.w=gm2.w) )  } )
+  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ sum_predict_ensemble(x, in.path="/data/covs1t", out.path="/data/predicted", varn=j, num_splits, zmin=z.min[[j]], zmax=z.max[[j]], gm1.w=gm1.w, gm2.w=gm2.w, type=type.lst[[j]], mvFlag=mvFlag.lst[[j]], depths=FALSE) } )  } )
   sfStop()
-  rm(gm1); rm(gm2)
-  gc(); gc()
-  #stopCluster(cl)
 }
+
+## ------------- VISUALIZATIONS -----------
 
 x <- readGDAL("/data/predicted/NA_060_036/BDRLOG_M_NA_060_036.tif")
 x.ll <- reproject(x)
@@ -208,6 +238,16 @@ points(xy.pnts[-which(xy.pnts$SOURCEDB=="Wells"|xy.pnts$SOURCEDB=="Simulated"&!n
 points(xy.pnts[-which(!xy.pnts$SOURCEDB=="Wells"|xy.pnts$SOURCEDB=="Simulated"&no.plt),], pch=21, bg=alpha("blue", 0.6), cex=.8, col="black")
 points(xy.pnts[which(xy.pnts$SOURCEDB=="Simulated"&no.plt),], pch=21, bg=alpha("yellow", 0.6), cex=.6, col="black")
 dev.off()
+
+## world plot - overlay and plot points and maps:
+shp.pnts <- ovA[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84",t.vars)]
+shp.pnts <- xy.pnts[complete.cases(xy.pnts[,c("LONWGS84","LATWGS84")]),]
+coordinates(xy.pnts) = ~ LONWGS84+LATWGS84
+proj4string(xy.pnts) = proj4string(BDR.pnts)
+unlink("Soil_depth_training_points.shp")
+writeOGR(xy.pnts, "Soil_depth_training_points.shp", "Soil_depth_training_points", "ESRI Shapefile")
+unlink("Soil_depth_training_points.zip")
+system("7za a Soil_depth_training_points.zip Soil_depth_training_points.*")
 
 ## ------------- CROSS-VALIDATION -----------
 source("../../cv/cv_functions.R")

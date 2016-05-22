@@ -21,15 +21,15 @@ mosaick.equi7t3 <- function(i, j, varn, in.path, r, te, tr, ot, dstnodata, out.p
       system(paste0(gdalbuildvrt, ' -input_file_list ', out.tmp, ' ', vrt.tmp))
       ## Two extra tiles for >180 degrees:
       if(j=="AS"){
-        system(paste0(gdalwarp, ' ', vrt.tmp, ' ', gsub("/AS/", "/chukotka/", out.tif), ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te -180 54 -168.3 83.3 -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 4000')) ## chukotka
+        system(paste0(gdalwarp, ' ', vrt.tmp, ' ', gsub("/AS/", "/chukotka/", out.tif), ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te -180 54 -168.3 83.3 -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 2000')) ## chukotka
       }
       if(j=="OC"){
-        system(paste0(gdalwarp, ' ', vrt.tmp, ' ', gsub("/OC/", "/pacific/", out.tif), ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te -180 -62 -120 15 -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 4000')) ## Pacific islands
+        system(paste0(gdalwarp, ' ', vrt.tmp, ' ', gsub("/OC/", "/pacific/", out.tif), ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te -180 -62 -120 15 -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 2000')) ## Pacific islands
       }
       if(compress==TRUE){
-        system(paste0(gdalwarp, ' ', vrt.tmp, ' ', out.tif, ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te ', paste(te, collapse=" "),' -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 4000 -co \"COMPRESS=DEFLATE\"')) ## <-- takes MORE time / not necessary ?
+        system(paste0(gdalwarp, ' ', vrt.tmp, ' ', out.tif, ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te ', paste(te, collapse=" "),' -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 2000 -co \"COMPRESS=DEFLATE\"')) ## <-- takes MORE time / not necessary ?
       } else {
-        system(paste0(gdalwarp, ' ', vrt.tmp, ' ', out.tif, ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te ', paste(te, collapse=" "),' -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 4000'))
+        system(paste0(gdalwarp, ' ', vrt.tmp, ' ', out.tif, ' -t_srs \"+proj=longlat +datum=WGS84\" -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te ', paste(te, collapse=" "),' -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 2000'))
       }
     }
   }

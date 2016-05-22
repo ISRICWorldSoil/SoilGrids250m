@@ -183,7 +183,7 @@ names(mvFlag.lst) = t.vars
 
 ## Run per property (TAKES ABOUT 20-30 HOURS OF COMPUTING PER PROPERTY)
 ## To avoid memory problems with RF objects, we split into e.g. 3 parts
-for(j in t.vars){
+for(j in t.vars[c(5,6,7,8)]){
   if(j=="PHIHOX"|j=="PHIKCL"){ multiplier = 10 }
   if(j %in% c("P", "S", "B", "Cu", "Zn")){ multiplier = 100 }
   if(j %in% c("ORCDRC","CRFVOL","SNDPPT","SLTPPT","CLYPPT","BLD","CECSUM")){ multiplier = 1 }
@@ -198,8 +198,9 @@ for(j in t.vars){
     sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
     sfExport("gm", "pr.dirs", "split_predict_n", "j", "k", "multiplier")
     sfLibrary(ranger)
-    x <- sfLapply(pr.dirs, fun=function(x){ if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ try( split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", split_no=k, varn=j, method="ranger", multiplier=multiplier) ) } } )
+    x <- sfClusterApplyLB(pr.dirs, fun=function(x){ if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ try( split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", split_no=k, varn=j, method="ranger", multiplier=multiplier) ) } } )
     sfStop()
+    closeAllConnections()
     rm(gm)
   }
   ## XGBoost:
@@ -210,9 +211,10 @@ for(j in t.vars){
   sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
   sfExport("gm", "pr.dirs", "split_predict_n", "j", "multiplier")
   sfLibrary(xgboost)
-  x <- sfLapply(pr.dirs, fun=function(x){ try( if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", varn=j, method="xgboost", multiplier=multiplier) } ) } )
+  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", varn=j, method="xgboost", multiplier=multiplier) } ) } )
   sfStop()
   rm(gm)
+  closeAllConnections()
   ## sum up predictions:
   sfInit(parallel=TRUE, cpus=45)
   sfExport("pr.dirs", "sum_predict_ensemble", "num_splits", "j", "z.min", "z.max", "gm1.w", "gm2.w", "type.lst", "mvFlag.lst")
@@ -238,10 +240,10 @@ names(missing.lst) = t.vars
 ## "NA_101_074" "NA_106_069"
 
 ## clean-up:
-for(i in c("BLD", "ORCDRC", "PHIHOX", "PHIKCL", "SNDPPT", "SLTPPT", "CLYPPT")){ ## c("CECSUM","CRFVOL")  
-  del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
-  unlink(del.lst)
-}
+# for(i in c("BLD", "ORCDRC", "PHIHOX", "PHIKCL", "SNDPPT", "SLTPPT", "CLYPPT")){ ## c("CECSUM","CRFVOL")  
+#   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+#   unlink(del.lst)
+# }
 # for(i in c("CECSUM", "CRFVOL")){ ## c("BLD", "ORCDRC", "PHIHOX") 
 #   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "_*_*_*_rf?.rds")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
