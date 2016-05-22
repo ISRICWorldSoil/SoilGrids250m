@@ -6,8 +6,12 @@
       <FeatureTypeStyle>
         <Rule>
           <RasterSymbolizer>
+          <Geometry>
+              <PropertyName>Sand content (50-2000 micro meter) mass fraction in %</PropertyName>
+              <Opacity>1</Opacity>
+            </Geometry>
             <ColorMap type="intervals">
-              <ColorMapEntry color="#FFFFFF" quantity="0" label="NODATA" opacity="0.0"/>
+              <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
               <ColorMapEntry color="#FFFF00" quantity="1" label="0 - 1" opacity="0.7"/>
               <ColorMapEntry color="#F8F806" quantity="3" label="1 - 3" opacity="0.7"/>
               <ColorMapEntry color="#F1F10C" quantity="4" label="3 - 4" opacity="0.7"/>

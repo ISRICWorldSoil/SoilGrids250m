@@ -7,7 +7,7 @@
         <Rule>
           <RasterSymbolizer>
             <ColorMap type="intervals">
-              <ColorMapEntry color="#FFFFFF" quantity="0.0" label="NODATA" opacity="0.0"/>
+              <ColorMapEntry color="#FFFFFF" quantity="-32768" label="NODATA" opacity="0.0"/>
               <ColorMapEntry color="#3D3FFF" quantity="850.0" label="200 - 850" opacity="0.7"/>
               <ColorMapEntry color="#3A42FF" quantity="1000.0" label="850 - 1000" opacity="0.7"/>
               <ColorMapEntry color="#3745FF" quantity="1100.0" label="1000 - 1100" opacity="0.7"/>

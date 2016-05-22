@@ -6,8 +6,12 @@
       <FeatureTypeStyle>
         <Rule>
           <RasterSymbolizer>
+          <Geometry>
+              <PropertyName>Soil pH x 10 in KCl</PropertyName>
+              <Opacity>1</Opacity>
+            </Geometry>
             <ColorMap type="intervals">
-              <ColorMapEntry color="#FFFFFF" quantity="0.0" label="NODATA" opacity="0.0"/>
+              <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
               <ColorMapEntry color="#FF0000" quantity="33.0" label="20 - 33" opacity="0.7"/>
               <ColorMapEntry color="#FF1C00" quantity="35.0" label="33 - 35" opacity="0.7"/>
               <ColorMapEntry color="#FF3900" quantity="36.0" label="35 - 36" opacity="0.7"/>

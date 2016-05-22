@@ -6,8 +6,12 @@
       <FeatureTypeStyle>
         <Rule>
           <RasterSymbolizer>
+           <Geometry>
+              <PropertyName>Soil organic carbon content (fine earth fraction) in g per kg</PropertyName>
+              <Opacity>1</Opacity>
+            </Geometry>
             <ColorMap type="intervals">
-              <ColorMapEntry color="#FFFFFF" quantity="0.0" label="NODATA" opacity="0.0"/>
+              <ColorMapEntry color="#FFFFFF" quantity="-32768" label="NODATA" opacity="0.0"/>
               <ColorMapEntry color="#000180" quantity="0.2" label="0 - 0.2" opacity="0.7"/>
               <ColorMapEntry color="#000393" quantity="0.4" label="0.2 - 0.4" opacity="0.7"/>
               <ColorMapEntry color="#0006A6" quantity="0.6" label="0.4 - 0.6" opacity="0.7"/>

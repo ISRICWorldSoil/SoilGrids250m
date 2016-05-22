@@ -1,32 +1,34 @@
-<StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" version="1.0.0">
-  <NamedLayer>
-    <Name>SoilGrids250m</Name>
-    <UserStyle>
-      <Title>BDRLOG_M_250m</Title>
-      <FeatureTypeStyle>
-        <Rule>
-          <RasterSymbolizer>
-            <Geometry>
-              <PropertyName>Predicted probability of occurence (0-100%) of R horizon</PropertyName>
+<?xml version="1.0" ?>
+<StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sld="http://www.opengis.net/sld">
+    <UserLayer>
+        <LayerFeatureConstraints>
+            <FeatureTypeConstraint/>
+        </LayerFeatureConstraints>
+        <UserStyle>
+            <Name>BDRLOG</Name>
+            <Title/>
+            <FeatureTypeStyle>
+                <Name/>
+                <Rule>
+                    <RasterSymbolizer>
+                        <Geometry>
+              <PropertyName>Predicted probability of occurrence (0-100%) of R horizon</PropertyName>
               <Opacity>1</Opacity>
             </Geometry>
-            <ColorMap type="intervals">
-              <ColorMapEntry color="#FFFFFF" label="NODATA" opacity="0.0" quantity="255.0"/>
-              <ColorMapEntry color="#FFFFCC" label="0" opacity="0.7" quantity="0.0"/>
-              <ColorMapEntry color="#FFF0A8" label="10" opacity="0.7" quantity="10.0"/>
-              <ColorMapEntry color="#FEE186" label="20" opacity="0.7" quantity="20.0"/>
-              <ColorMapEntry color="#FEC965" label="30" opacity="0.7" quantity="30.0"/>
-              <ColorMapEntry color="#FDAA48" label="40" opacity="0.7" quantity="40.0"/>
-              <ColorMapEntry color="#FD8D3C" label="50" opacity="0.7" quantity="50.0"/>
-              <ColorMapEntry color="#FC5A2D" label="60" opacity="0.7" quantity="60.0"/>
-              <ColorMapEntry color="#EC2E21" label="70" opacity="0.7" quantity="70.0"/>
-              <ColorMapEntry color="#D30F20" label="80" opacity="0.7" quantity="80.0"/>
-              <ColorMapEntry color="#B00026" label="90" opacity="0.7" quantity="90.0"/>
-              <ColorMapEntry color="#800026" label="100" opacity="0.7" quantity="100.0"/>
-            </ColorMap>
-          </RasterSymbolizer>
-        </Rule>
-      </FeatureTypeStyle>
-    </UserStyle>
-  </NamedLayer>
+                        <ColorMap>
+                        <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
+                            <ColorMapEntry color="#ffffd4" label="0.000000" opacity="0.7" quantity="0"/>
+                            <ColorMapEntry color="#fee9ac" label="12.142857" opacity="0.7" quantity="12.1429"/>
+                            <ColorMapEntry color="#fecf7f" label="24.285714" opacity="0.7" quantity="24.2857"/>
+                            <ColorMapEntry color="#feab45" label="36.428571" opacity="0.7" quantity="36.4286"/>
+                            <ColorMapEntry color="#f38821" label="48.571429" opacity="0.7" quantity="48.5714"/>
+                            <ColorMapEntry color="#de6711" label="60.714286" opacity="0.7" quantity="60.7143"/>
+                            <ColorMapEntry color="#bd4c09" label="72.857143" opacity="0.7" quantity="72.8571"/>
+                            <ColorMapEntry color="#993404" label="85.000000" opacity="0.7" quantity="85"/>
+                        </ColorMap>
+                    </RasterSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </UserLayer>
 </StyledLayerDescriptor>

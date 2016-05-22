@@ -6,8 +6,12 @@
       <FeatureTypeStyle>
         <Rule>
           <RasterSymbolizer>
+            <Geometry>
+              <PropertyName>Coarse fragments volumetric in %</PropertyName>
+              <Opacity>1</Opacity>
+            </Geometry>
             <ColorMap type="intervals">
-              <ColorMapEntry color="#FFFFFF" quantity="0.0" label="NODATA" opacity="0.0"/>
+              <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
               <ColorMapEntry color="#FFFF00" quantity="0.1" label="0 - 0.1" opacity="0.7"/>
               <ColorMapEntry color="#FDF800" quantity="0.3" label="0.1 - 0.3" opacity="0.7"/>
               <ColorMapEntry color="#FBF100" quantity="0.4" label="0.3 - 0.4" opacity="0.7"/>
