@@ -9,30 +9,30 @@ Call:
 
 Type:                             Probability estimation 
 Number of trees:                  500 
-Sample size:                      304006 
+Sample size:                      339227 
 Number of independent variables:  156 
 Mtry:                             12 
 Target node size:                 10 
 Variable importance mode:         impurity 
-OOB prediction error:             0.4492522 
+OOB prediction error:             0.4654786 
 
  Variable importance:
             [,1]
-VDPMRG5 20142392
-I02MOD4 18248784
-DEMMRG5 18169383
-DVMMRG5 17262917
-TWIMRG5 16264341
-VBFMRG5 15512076
-ES3MOD5 15248926
-EX4MOD5 15178483
-VW4MOD1 15133716
-I09MOD4 15103808
-SN1MOD4 14982654
-ES4MOD5 14808632
-ES5MOD5 14807935
-I01MOD4 14462205
-ES6MOD5 14379755
+VDPMRG5 33723005
+DEMMRG5 31887649
+I02MOD4 30417971
+DVMMRG5 28386823
+TWIMRG5 28230265
+VBFMRG5 26611859
+VW4MOD1 26056118
+ES4MOD5 25486382
+SN1MOD4 25016533
+EX4MOD5 24705327
+ES5MOD5 24666017
+ES2MOD5 24139575
+VW1MOD1 24062267
+ES3MOD5 23976554
+EX5MOD5 23864902
 
 Variable: SPCS classes
 
@@ -43,27 +43,27 @@ Call:
 
 Type:                             Probability estimation 
 Number of trees:                  500 
-Sample size:                      299169 
+Sample size:                      306242 
 Number of independent variables:  156 
 Mtry:                             12 
 Target node size:                 10 
 Variable importance mode:         impurity 
-OOB prediction error:             0.2880337 
+OOB prediction error:             0.3741567 
 
  Variable importance:
-             [,1]
-VBFMRG5 132705.22
-VW4MOD1 114577.94
-DEMMRG5 113346.08
-VDPMRG5 111009.62
-TWIMRG5 103880.89
-ES2MOD5  99051.88
-EX4MOD5  97390.05
-ES3MOD5  96205.25
-ES4MOD5  95618.07
-EX1MOD5  94190.40
-ES5MOD5  92902.65
-EX3MOD5  87425.58
-VW3MOD1  86932.38
-I02MOD4  84674.01
-VW1MOD1  83462.33
+            [,1]
+VBFMRG5 603468.4
+TWIMRG5 541096.2
+DEMMRG5 484164.8
+VDPMRG5 464503.9
+ES3MOD5 449014.7
+ES2MOD5 432394.6
+EX4MOD5 430751.1
+ES4MOD5 419642.4
+EX3MOD5 405928.8
+VW4MOD1 400441.1
+VW3MOD1 396561.1
+EX1MOD5 395323.8
+ES6MOD5 373654.1
+ES5MOD5 370861.7
+ES1MOD5 358089.9
