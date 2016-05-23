@@ -71,7 +71,7 @@
         </gmd:CI_Citation>
       </gmd:citation>
       <gmd:abstract>
-        <gco:CharacterString>Predicted USDA 2014 suborder classes (as integers). LEGEND=ftp://ftp.soilgrids.org/legends/TAXOUSDA.txt</gco:CharacterString>
+        <gco:CharacterString>Predicted USDA 2014 suborder classes (as integers). Legend can be downloaded at: ftp://soilgrids:soilgrids@ftp.soilgrids.org/legends/TAXOUSDA.txt</gco:CharacterString>
       </gmd:abstract>
       <gmd:pointOfContact>
         <gmd:CI_ResponsibleParty>
