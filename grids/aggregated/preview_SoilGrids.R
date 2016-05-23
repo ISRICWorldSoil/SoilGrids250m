@@ -171,6 +171,7 @@ for(i in 1:259){
     #CI_Online_resource_URL = paste(mdSG$DOWNLOAD_FTP_URL[i], mdSG$FileName[i], ".gz", sep=""),
     CI_Electronic_mail_address = mdSG$CITATION_ADDRESS[i],
     CI_Organisation_name = mdSG$CITATION_ORIGINATOR[i],
+    Date_stamp = as.Date(mdSG$PUBLICATION_DATE[i], format="%Y-%m-%d"),
     CI_Citation_date = as.Date(mdSG$PUBLICATION_DATE[i], format="%Y-%m-%d"),
     MD_Thesaurus_date = as.Date(mdSG$PUBLICATION_DATE[i], format="%Y-%m-%d"),
     CI_Unique_name = mdSG$ATTRIBUTE_LABEL[i],
