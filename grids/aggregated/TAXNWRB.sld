@@ -10,7 +10,7 @@
               <PropertyName>WRB 2006 class</PropertyName>
               <Opacity>1</Opacity>
             </Geometry>
-            <ColorMap type="intervals">
+            <ColorMap type="values">
               <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
               <ColorMapEntry color="#FC894D" quantity="43" label="Acric Ferralsols" opacity="0.7"/>
               <ColorMapEntry color="#845851" quantity="95" label="Acric Plinthosols" opacity="0.7"/>

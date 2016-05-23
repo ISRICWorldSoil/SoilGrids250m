@@ -10,7 +10,7 @@
               <PropertyName>USDA 2014 class</PropertyName>
               <Opacity>1</Opacity>
             </Geometry>
-            <ColorMap type="intervals">
+            <ColorMap type="values">
               <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
               <ColorMapEntry color="#00FF00" quantity="70" label="Albolls" opacity="0.7"/>
               <ColorMapEntry color="#ADFF2F" quantity="80" label="Aqualfs" opacity="0.7"/>
