@@ -220,6 +220,15 @@ save.image()
 #del.lst <- list.files(path="/data/NASIS", pattern=glob2rx("^TAXgg_*_*_*_*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 
+pred_tiles <- function(x, j){
+  if(dir.exists(paste0(out.path, "/", x, "/"))){
+    lst = list.files(path = paste0(out.path, "/", x, "/"), glob2rx("*.rds$"))
+    if(length(lst)<j){ 
+      split_predict_c(x, gm, in.path="/data/covs1t", out.path=out.path, split_no=j, varn=varn) 
+    } 
+  }
+}
+
 #model.n = "mrfX_NASISgg_"
 #varn = "TAXgg"
 model.n = "mrfX_NASISpscs_"
@@ -229,9 +238,9 @@ for(j in 1:num_splits){
   gm = readRDS.gz(paste0(model.n, j,".rds"))
   cpus = unclass(round((256-50)/(3.5*(object.size(gm)/1e9))))
   sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
-  sfExport("gm", "new.dirs", "split_predict_c", "j", "varn", "out.path")
+  sfExport("gm", "new.dirs", "split_predict_c", "j", "varn", "out.path", "pred_tiles")
   sfLibrary(ranger)
-  x <- sfClusterApplyLB(new.dirs, fun=function(x){ if(length(list.files(path = paste0(out.path, "/", x, "/"), glob2rx("*.rds$")))<j){ try( split_predict_c(x, gm, in.path="/data/covs1t", out.path=out.path, split_no=j, varn=varn) ) } } )  ## , num.threads=5
+  x <- sfClusterApplyLB(new.dirs, fun=function(x){ try( pred_tiles(x, j=j) ) } )  ## , num.threads=5
   sfRemoveAll()
   sfStop()
   closeAllConnections()
