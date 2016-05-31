@@ -180,7 +180,7 @@ sfStop()
 ## ------------- VISUALIZATION -----------
 
 ## world plot - overlay and plot points and maps:
-xy.pnts <- join(ovA[,c("SOURCEID","SOURCEDB","TAXOUSDA.f")], as.data.frame(TAXOUSDA.pnts[c("SOURCEID")]), type="left", match="first")
+xy.pnts <- join(ov[,c("SOURCEID","SOURCEDB","TAXOUSDA.f")], as.data.frame(TAXOUSDA.pnts[c("SOURCEID")]), type="left", match="first")
 coordinates(xy.pnts) = ~ LONWGS84+LATWGS84
 proj4string(xy.pnts) = proj4string(TAXOUSDA.pnts)
 plotKML(xy.pnts["TAXOUSDA.f"], folder.name="USDA classifications", file.name="TAXOUSDA_observed.kml")
@@ -219,25 +219,28 @@ dev.off()
 ## Cross-validation 10-fold:
 source("../../cv/cv_functions.R")
 ## Remove classes with too little observations:
-summary(ovA$TAXOUSDA.f)
-ovA$TAXOUSDA.f2 <- NA
-for(i in levels(ovA$TAXOUSDA.f)){
-  sel <- grep(pattern=i, ovA$TAXOUSDA.f)
-  if(length(sel)>15){
-    ovA$TAXOUSDA.f2[sel] <- i
-  }
-}
-ovA$TAXOUSDA.f2 <- as.factor(ovA$TAXOUSDA.f2)
+summary(ov$TAXOUSDA.f)
+xs = summary(ov$TAXOUSDA.f, maxsum=length(levels(ov$TAXOUSDA.f)))
+sel.levs = attr(xs, "names")[xs > 5]
+ov$TAXOUSDA.f2 <- ov$TAXOUSDA.f
+ov$TAXOUSDA.f2[which(!ov$TAXOUSDA.f %in% sel.levs)] <- NA
+ov$TAXOUSDA.f2 <- droplevels(ov$TAXOUSDA.f2)
 
 ## TAKES CA 1hr
-formulaString2.USDA = as.formula(paste('TAXOUSDA.f2 ~ LATWGS84 + ', paste(pr.lst, collapse="+")))
-test.USDA <- cv_factor(formulaString2.USDA, ovA[complete.cases(ovA[,all.vars(formulaString2.USDA)]),], nfold=10, idcol="SOURCEID")
+formulaString2.USDA = as.formula(paste('TAXOUSDA.f2 ~ ', paste(pr.lst, collapse="+")))
+test.USDA <- cv_factor(formulaString2.USDA, ov[complete.cases(ov[,all.vars(formulaString2.USDA)]),], nfold=10, idcol="SOURCEID")
+closeAllConnections()
 str(test.USDA)
 test.USDA[["Cohen.Kappa"]]
 test.USDA[["Classes"]]
 save(test.USDA, file="test.USDA.rda")
+unlink("cv_TAXOUSDA_classes.csv.gz")
+unlink("cv_TAXOUSDA_observed.csv.gz")
+unlink("cv_TAXOUSDA_predicted.csv.gz")
 write.csv(test.USDA[["Classes"]], "cv_TAXOUSDA_classes.csv")
 write.csv(test.USDA[["Observed"]], "cv_TAXOUSDA_observed.csv")
 gzip("cv_TAXOUSDA_observed.csv")
 write.csv(test.USDA[["Predicted"]], "cv_TAXOUSDA_predicted.csv")
 gzip("cv_TAXOUSDA_predicted.csv")
+## Confusion matrix:
+write.csv(test.USDA[["Confusion.matrix"]], "cv_TAXOUSDA_Confusion.matrix.csv")

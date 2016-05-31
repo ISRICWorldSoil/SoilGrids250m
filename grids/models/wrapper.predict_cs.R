@@ -23,12 +23,14 @@ split_rf <- function(rf, num_splits=4){
 }
 
 split_predict_c <- function(i, gm, in.path, out.path, split_no, varn, num.threads=1){
-  rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", split_no, ".rds")
-  if(any(c(!file.exists(rds.out),file.size(rds.out)==0))){
-    m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
-    ## round up numbers otherwise too large objects
-    x = round(predict(gm, m@data, probability=TRUE, na.action = na.pass, num.threads=num.threads)$predictions*100)
-    saveRDS(x, file=rds.out)
+  if(dir.exists(out.path)){
+    rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", split_no, ".rds")
+    if(any(c(!file.exists(rds.out),file.size(rds.out)==0))){
+      m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
+      ## round up numbers otherwise too large objects
+      x = round(predict(gm, m@data, probability=TRUE, na.action = na.pass, num.threads=num.threads)$predictions*100)
+      saveRDS(x, file=rds.out)
+    } 
   }
 }
 
@@ -140,7 +142,7 @@ sum_predict_ranger <- function(i, in.path, out.path, varn, num_splits){
 ## -------------------------------
 
 ## 7 standard dephts
-split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5, 15, 30, 60, 100, 200), method, multiplier=1, depths=TRUE){
+split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5, 15, 30, 60, 100, 200), method, multiplier=1, depths=TRUE, DEPTH.col="DEPTH.f"){
   if(method=="ranger"){
     rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", split_no, ".rds")
   }
@@ -162,7 +164,7 @@ split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5,
       } else {
         x <- matrix(data=NA, nrow=nrow(m), ncol=length(sd))
         for(l in 1:length(sd)){
-          m$DEPTH.f = sd[l]
+          m@data[,DEPTH.col] = sd[l]
           if(method=="ranger"){
             v = predict(gm, m@data, na.action=na.pass)$predictions * multiplier
           } else {

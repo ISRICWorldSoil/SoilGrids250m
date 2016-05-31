@@ -224,17 +224,25 @@ dev.off()
 ## ------------- CROSS-VALIDATION -----------
 
 ## subset to complete pairs:
-ovA <- ov[-m_TAXNWRB$na.action,]
-nrow(ovA)
-ovA$TAXNWRB.f <- as.factor(paste(ovA$TAXNWRB.f))
-## Cross-validation 10-fold:
-source("../../cv/cv_functions.R")
+## Remove classes with too little observations:
+summary(ov$TAXNWRB.f)
+xs = summary(ov$TAXNWRB.f, maxsum=length(levels(ov$TAXNWRB.f)))
+sel.levs = attr(xs, "names")[xs > 5]
+ov$TAXNWRB.f2 <- ov$TAXNWRB.f
+ov$TAXNWRB.f2[which(!ov$TAXNWRB.f %in% sel.levs)] <- NA
+ov$TAXNWRB.f2 <- droplevels(ov$TAXNWRB.f2)
+
 ## TAKES CA 1hr
-test.WRB <- cv_factor(formulaString.FAO, ovA, nfold=10, idcol="SOURCEID")
+formulaString2.FAO = as.formula(paste('TAXNWRB.f2 ~ ', paste(pr.lst, collapse="+")))
+test.WRB <- cv_factor(formulaString2.FAO, ov[complete.cases(ov[,all.vars(formulaString2.FAO)]),], nfold=10, idcol="SOURCEID")
+closeAllConnections()
 str(test.WRB)
 test.WRB[["Cohen.Kappa"]]
 test.WRB[["Classes"]]
 save(test.WRB, file="test.WRB.rda")
+unlink("cv_TAXNWRB_classes.csv.gz")
+unlink("cv_TAXNWRB_observed.csv.gz")
+unlink("cv_TAXNWRB_predicted.csv.gz")
 write.csv(test.WRB[["Classes"]], "cv_TAXNWRB_classes.csv")
 write.csv(test.WRB[["Observed"]], "cv_TAXNWRB_observed.csv")
 gzip("cv_TAXNWRB_observed.csv")

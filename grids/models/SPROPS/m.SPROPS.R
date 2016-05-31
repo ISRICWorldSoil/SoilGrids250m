@@ -1,6 +1,7 @@
 ## Fit models for soil properties and generate predictions - SoilGrids250m
 ## Tom.Hengl@isric.org
 
+setwd("/data/models/SPROPS")
 library(plyr)
 library(stringr)
 library(sp)
@@ -65,6 +66,7 @@ gzip("ov.SPROPS_SoilGrids250m.csv")
 save(ovA, file="ovA.rda", compression_level="xz")
 #load("ovA.rda")
 ## 1.3GB
+load(".RData")
 
 ## ------------- MODEL FITTING -----------
 
@@ -275,5 +277,34 @@ points(xy.pnts[xy.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("yellow"
 points(xy.pnts[!xy.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("red", 0.6), cex=.8, col="black")
 dev.off()
 
-## Cross-validation 10-fold (TH: this does not account for high spatial clustering):
+## Cross-validation 10-fold (TH: this does not takes into account high spatial clustering):
 
+source("../../cv/cv_functions.R")
+cat("Results of Cross-validation:\n\n", file="resultsCV.txt")
+cv_lst <- rep(list(NULL), length(t.vars))
+for(j in 1:length(t.vars)){
+  if(!file.exists(paste0("CV_", t.vars[j], ".rda"))){
+    cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="resultsCV.txt", append=TRUE)
+    cat("\n", file="resultsCV.txt", append=TRUE)
+    cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA[complete.cases(ovA[,all.vars(formulaString.lst[[j]])]),], nfold=10, idcol="SOURCEID", Log=TRUE)
+    sink(file="resultsCV.txt", append=TRUE, type="output")
+    print(cv_lst[[j]]$Summary)
+    cat("\n", file="resultsCV.txt", append=TRUE)
+    sink()
+    assign(paste0("CV_", t.vars[j]), cv_lst[[j]])
+    save(list=paste0("CV_", t.vars[j]), file=paste0("CV_", t.vars[j], ".rda"))
+  }
+}
+
+## correlation plots:
+source("../plot_hexbin.R")
+plt.names <- c("SOC in g/kg", "Soil pH x 10 in H2O", "Soil pH x 10 in KCl", "Coarse fragments in %vol", "Sand fraction in %", "Silt fraction in %", "Clay fraction in %", "Bulk density (FE) in kg / m3", "CEC soil in cmolc/kg") 
+names(plt.names) = t.vars
+breaks.lst <- list(c(0,5,10,seq(20,1000,length=47)), seq(2.5,9.5,length=50), seq(2.5,9.5,length=50), c(0,1,2,5,seq(8,100,length=46)), seq(0,100,length=50), seq(0,100,length=50), seq(0,100,length=50), seq(450,2200,length=50), c(0,1,2,5,seq(8,450,length=26)))
+names(breaks.lst) = t.vars
+plt.log <- c(TRUE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE)
+names(plt.log) = t.vars
+
+for(j in 1:length(t.vars)){
+  plot_hexbin(j, breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"), log.plot=plt.log[t.vars[j]])
+}
