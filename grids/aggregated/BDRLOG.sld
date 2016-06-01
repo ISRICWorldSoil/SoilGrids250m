@@ -16,7 +16,7 @@
               <Opacity>1</Opacity>
             </Geometry>
                         <ColorMap>
-                        <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
+                        
                             <ColorMapEntry color="#ffffd4" label="0.000000" opacity="0.7" quantity="0"/>
                             <ColorMapEntry color="#fee9ac" label="12.142857" opacity="0.7" quantity="12.1429"/>
                             <ColorMapEntry color="#fecf7f" label="24.285714" opacity="0.7" quantity="24.2857"/>
@@ -25,6 +25,7 @@
                             <ColorMapEntry color="#de6711" label="60.714286" opacity="0.7" quantity="60.7143"/>
                             <ColorMapEntry color="#bd4c09" label="72.857143" opacity="0.7" quantity="72.8571"/>
                             <ColorMapEntry color="#993404" label="85.000000" opacity="0.7" quantity="85"/>
+                            <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
                         </ColorMap>
                     </RasterSymbolizer>
                 </Rule>
