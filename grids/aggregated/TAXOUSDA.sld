@@ -55,7 +55,7 @@
               <ColorMapEntry color="#F5D7BB" quantity="51" label="Salids" opacity="0.7"/>
               <ColorMapEntry color="#A42828" quantity="13" label="Saprists" opacity="0.7"/>
               <ColorMapEntry color="#FC05FA" quantity="22" label="Torrands" opacity="0.7"/>
-              <ColorMapEntry color="#EBEB0C" quantity="45" label="Torrerts" opacity="0.7"/>
+              <ColorMapEntry color="#EBEB0C" quantity="43" label="Torrerts" opacity="0.7"/>
               <ColorMapEntry color="#F50505" quantity="31" label="Torrox" opacity="0.7"/>
               <ColorMapEntry color="#43D4D2" quantity="6" label="Turbels" opacity="0.7"/>
               <ColorMapEntry color="#8CFF19" quantity="84" label="Udalfs" opacity="0.7"/>
