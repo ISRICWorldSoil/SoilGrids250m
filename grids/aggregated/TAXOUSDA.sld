@@ -11,7 +11,7 @@
               <Opacity>1</Opacity>
             </Geometry>
             <ColorMap type="values">
-              <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
+              
               <ColorMapEntry color="#00FF00" quantity="70" label="Albolls" opacity="0.7"/>
               <ColorMapEntry color="#ADFF2F" quantity="80" label="Aqualfs" opacity="0.7"/>
               <ColorMapEntry color="#FF00FF" quantity="20" label="Aquands" opacity="0.7"/>
@@ -79,6 +79,7 @@
               <ColorMapEntry color="#FAFA05" quantity="66" label="Xererts" opacity="0.7"/>
               <ColorMapEntry color="#02F00A" quantity="73" label="Xerolls" opacity="0.7"/>
               <ColorMapEntry color="#F7980F" quantity="64" label="Xerults" opacity="0.7"/>
+              <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
             </ColorMap>
           </RasterSymbolizer>
         </Rule>
