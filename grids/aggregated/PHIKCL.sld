@@ -11,7 +11,7 @@
               <Opacity>1</Opacity>
             </Geometry>
             <ColorMap type="intervals">
-              <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
+              
               <ColorMapEntry color="#FF0000" quantity="33.0" label="20 - 33" opacity="0.7"/>
               <ColorMapEntry color="#FF1C00" quantity="35.0" label="33 - 35" opacity="0.7"/>
               <ColorMapEntry color="#FF3900" quantity="36.0" label="35 - 36" opacity="0.7"/>
@@ -52,6 +52,7 @@
               <ColorMapEntry color="#1B00FF" quantity="74.0" label="72 - 74" opacity="0.7"/>
               <ColorMapEntry color="#3800FF" quantity="76.0" label="74 - 76" opacity="0.7"/>
               <ColorMapEntry color="#5400FF" quantity="110.0" label="76 - 110" opacity="0.7"/>
+              <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
             </ColorMap>
           </RasterSymbolizer>
         </Rule>
