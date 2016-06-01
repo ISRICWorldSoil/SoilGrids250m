@@ -26,7 +26,7 @@
               <ColorMapEntry color="#2A9EC1" label="1650" opacity="0.7" quantity="1650.0"/>
               <ColorMapEntry color="#1D8EBE" label="1900" opacity="0.7" quantity="1900.0"/>
               <ColorMapEntry color="#1F78B4" label="2100" opacity="0.7" quantity="2100.0"/>
-              <ColorMapEntry color="#2163AA" label="24000" opacity="0.7" quantity="24000.0"/>
+              <ColorMapEntry color="#2163AA" label="2400" opacity="0.7" quantity="2400.0"/>
               <ColorMapEntry color="#2250A1" label="3200" opacity="0.7" quantity="3200.0"/>
               <ColorMapEntry color="#243F99" label="5400" opacity="0.7" quantity="5400.0"/>
               <ColorMapEntry color="#20308A" label="9100" opacity="0.7" quantity="9100.0"/>
