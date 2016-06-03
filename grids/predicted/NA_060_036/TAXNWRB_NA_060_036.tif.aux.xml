@@ -1,0 +1,124 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <CategoryNames>
+      <Category>Acric Ferralsols</Category>
+      <Category>Acric Plinthosols</Category>
+      <Category>Albic Arenosols</Category>
+      <Category>Albic Luvisols</Category>
+      <Category>Alic Nitisols</Category>
+      <Category>Aluandic Andosols</Category>
+      <Category>Aric Regosols</Category>
+      <Category>Calcaric Regosols</Category>
+      <Category>Calcic Chernozems</Category>
+      <Category>Calcic Gleysols</Category>
+      <Category>Calcic Gypsisols</Category>
+      <Category>Calcic Histosols</Category>
+      <Category>Calcic Kastanozems</Category>
+      <Category>Calcic Luvisols</Category>
+      <Category>Calcic Solonetz</Category>
+      <Category>Calcic Vertisols</Category>
+      <Category>Cryic Histosols</Category>
+      <Category>Cutanic Alisols</Category>
+      <Category>Endogleyic Cambisols</Category>
+      <Category>Endogleyic Planosols</Category>
+      <Category>Ferralic Arenosols</Category>
+      <Category>Ferralic Cambisols</Category>
+      <Category>Fibric Histosols</Category>
+      <Category>Gleyic Luvisols</Category>
+      <Category>Gleyic Podzols</Category>
+      <Category>Gleyic Solonetz</Category>
+      <Category>Gypsic Solonchaks</Category>
+      <Category>Haplic Acrisols</Category>
+      <Category>Haplic Acrisols (Alumic)</Category>
+      <Category>Haplic Acrisols (Ferric)</Category>
+      <Category>Haplic Acrisols (Humic)</Category>
+      <Category>Haplic Albeluvisols</Category>
+      <Category>Haplic Alisols</Category>
+      <Category>Haplic Andosols</Category>
+      <Category>Haplic Arenosols</Category>
+      <Category>Haplic Arenosols (Calcaric)</Category>
+      <Category>Haplic Calcisols</Category>
+      <Category>Haplic Calcisols (Sodic)</Category>
+      <Category>Haplic Cambisols</Category>
+      <Category>Haplic Cambisols (Calcaric)</Category>
+      <Category>Haplic Cambisols (Chromic)</Category>
+      <Category>Haplic Cambisols (Dystric)</Category>
+      <Category>Haplic Cambisols (Eutric)</Category>
+      <Category>Haplic Cambisols (Humic)</Category>
+      <Category>Haplic Cambisols (Sodic)</Category>
+      <Category>Haplic Chernozems</Category>
+      <Category>Haplic Cryosols</Category>
+      <Category>Haplic Ferralsols</Category>
+      <Category>Haplic Ferralsols (Rhodic)</Category>
+      <Category>Haplic Ferralsols (Xanthic)</Category>
+      <Category>Haplic Fluvisols</Category>
+      <Category>Haplic Fluvisols (Arenic)</Category>
+      <Category>Haplic Fluvisols (Calcaric)</Category>
+      <Category>Haplic Fluvisols (Dystric)</Category>
+      <Category>Haplic Fluvisols (Eutric)</Category>
+      <Category>Haplic Gleysols</Category>
+      <Category>Haplic Gleysols (Dystric)</Category>
+      <Category>Haplic Gleysols (Eutric)</Category>
+      <Category>Haplic Gypsisols</Category>
+      <Category>Haplic Kastanozems</Category>
+      <Category>Haplic Leptosols</Category>
+      <Category>Haplic Leptosols (Eutric)</Category>
+      <Category>Haplic Lixisols</Category>
+      <Category>Haplic Lixisols (Chromic)</Category>
+      <Category>Haplic Lixisols (Ferric)</Category>
+      <Category>Haplic Luvisols</Category>
+      <Category>Haplic Luvisols (Chromic)</Category>
+      <Category>Haplic Luvisols (Ferric)</Category>
+      <Category>Haplic Nitisols (Rhodic)</Category>
+      <Category>Haplic Phaeozems</Category>
+      <Category>Haplic Planosols (Dystric)</Category>
+      <Category>Haplic Planosols (Eutric)</Category>
+      <Category>Haplic Podzols</Category>
+      <Category>Haplic Regosols (Dystric)</Category>
+      <Category>Haplic Regosols (Eutric)</Category>
+      <Category>Haplic Regosols (Sodic)</Category>
+      <Category>Haplic Solonchaks</Category>
+      <Category>Haplic Solonchaks (Sodic)</Category>
+      <Category>Haplic Solonetz</Category>
+      <Category>Haplic Umbrisols</Category>
+      <Category>Haplic Vertisols</Category>
+      <Category>Haplic Vertisols (Eutric)</Category>
+      <Category>Hemic Histosols</Category>
+      <Category>Histic Albeluvisols</Category>
+      <Category>Hypoluvic Arenosols</Category>
+      <Category>Leptic Cambisols</Category>
+      <Category>Leptic Luvisols</Category>
+      <Category>Leptic Phaeozems</Category>
+      <Category>Leptic Regosols</Category>
+      <Category>Leptic Umbrisols</Category>
+      <Category>Lithic Leptosols</Category>
+      <Category>Lixic Plinthosols</Category>
+      <Category>Luvic Calcisols</Category>
+      <Category>Luvic Chernozems</Category>
+      <Category>Luvic Phaeozems</Category>
+      <Category>Luvic Planosols</Category>
+      <Category>Luvic Stagnosols</Category>
+      <Category>Mollic Gleysols</Category>
+      <Category>Mollic Leptosols</Category>
+      <Category>Mollic Solonetz</Category>
+      <Category>Mollic Vertisols</Category>
+      <Category>Petric Calcisols</Category>
+      <Category>Petric Durisols</Category>
+      <Category>Plinthic Acrisols</Category>
+      <Category>Protic Arenosols</Category>
+      <Category>Rendzic Leptosols</Category>
+      <Category>Sapric Histosols</Category>
+      <Category>Solodic Planosols</Category>
+      <Category>Stagnic Luvisols</Category>
+      <Category>Turbic Cryosols</Category>
+      <Category>Umbric Albeluvisols</Category>
+      <Category>Umbric Ferralsols</Category>
+      <Category>Umbric Gleysols</Category>
+      <Category>Vertic Cambisols</Category>
+      <Category>Vertic Luvisols</Category>
+      <Category>Vetic Acrisols</Category>
+      <Category>Vitric Andosols</Category>
+      <Category>Vitric Cryosols</Category>
+    </CategoryNames>
+  </PAMRasterBand>
+</PAMDataset>
