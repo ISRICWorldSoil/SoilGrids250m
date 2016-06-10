@@ -263,4 +263,3 @@ for(j in 1:length(title.lst)){
   saveXML(l1, sld.file)
   close(sld.file)
 }
-

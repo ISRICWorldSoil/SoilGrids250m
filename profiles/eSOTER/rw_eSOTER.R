@@ -84,6 +84,11 @@ proj4string(TAXOUSDA.eSOTER) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXOUSDA.eSOTER["TAXNUSDA"])
 save(TAXOUSDA.eSOTER, file="TAXOUSDA.eSOTER.rda")
 
+## export taxonomy data for correlation:
+eSOTER_tax <- SITE.s[,c("SOURCEID", "LATWGS84", "LONWGS84", "TAXNWRB", "TAXNUSDA", "TAXGWRB", "LITH")]
+summary(as.factor(eSOTER_tax$TAXNUSDA))
+save(eSOTER_tax, file="eSOTER_tax.rda")
+
 # ------------------------------------------------------------
 # All soil properties
 # ------------------------------------------------------------

@@ -22,11 +22,16 @@ histosol.prob <- function(i, in.path, fao.lst, usda.lst){
 
 #histosol.prob(i="SA_051_069", in.path="/data/predicted1km", fao.lst, usda.lst)
 
-## Organic carbon stock (six standard layers):
-wrapper.OCSTHA <- function(i, in.path, n.lst=c("ORCDRC","BLD","CRFVOL"), ORCDRC.sd=20, BLD.sd=100, CRFVOL.sd=5){
+## Organic carbon stock (six standard layers) corrected for depth to bedrock:
+wrapper.OCSTHA <- function(i, in.path, n.lst=c("ORCDRC","BLD","CRFVOL"), ORCDRC.sd=20, BLD.sd=100, CRFVOL.sd=5, BDR.lst=c("BDRICM","BDRLOG","BDTICM"), sdepth = c(0, 5, 15, 30, 60, 100, 200)){
   ## six standard layers 0-5, 5-15, 15-30, 30-60, 60-100, 100-200:
   out.all <- paste0(in.path, "/", i, "/OCSTHA_M_sd", 1:6, "_", i,".tif")
   if(any(!file.exists(out.all))){
+    sD <- raster::stack(paste0(in.path, "/", i, "/", BDR.lst, "_M_", i, ".tif"))
+    sD <- as(sD, "SpatialGridDataFrame")
+    sD$BDRLOG <- ifelse(sD@data[,grep("BDRLOG_M", names(sD))]>50, 100, NA)
+    ## parallel minimum:
+    sD$BDRICM <- pmin(sD@data[,grep("BDRICM_M", names(sD))], sD@data[,grep("BDTICM_M", names(sD))], sD$BDRLOG, na.rm = TRUE)
     for(d in 1:6){
       Utif.lst <- paste0(in.path, "/", i, "/", n.lst, "_M_sl", d, "_", i, ".tif")
       Ltif.lst <- paste0(in.path, "/", i, "/", n.lst, "_M_sl", d+1, "_", i, ".tif")
@@ -37,7 +42,10 @@ wrapper.OCSTHA <- function(i, in.path, n.lst=c("ORCDRC","BLD","CRFVOL"), ORCDRC.
       s$CRFVOL <- rowMeans(s@data[,grep("CRFVOL", names(s))], na.rm = TRUE)
       ## Predict organic carbon stock (in tones / ha):
       s$v <- round(as.vector(OCSKGM(ORCDRC=s$ORCDRC, BLD=s$BLD, CRFVOL=s$CRFVOL, HSIZE=get("stsize", envir = GSIF.opts)[d]*100, ORCDRC.sd=ORCDRC.sd, BLD.sd=BLD.sd, CRFVOL.sd=CRFVOL.sd)*10))
+      ## Correct for depth to bedrock:
+      s$v <- ifelse(sD@data[s@grid.index,"BDRICM"] > sdepth[d+1], s$v, ifelse(sD@data[s@grid.index,"BDRICM"] > sdepth[d], s$v*(sD@data[s@grid.index,"BDRICM"]-sdepth[d])/sdepth[d+1], 0))
       writeGDAL(s["v"], out.all[d], type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")
+      writeGDAL(sD["BDRICM"], paste0(in.path, "/", i, "/BDRMIN_M_", i, ".tif"), type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
       gc()
     }
   }

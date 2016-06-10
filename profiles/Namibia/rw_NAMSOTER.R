@@ -37,8 +37,11 @@ save(TAXNWRB.NAMSOTER, file="TAXNWRB.NAMSOTER.rda")
 
 horizons <- read.csv("Namibia_all_horizons.csv")
 horizons$SAMPLEID <- make.unique(paste(horizons$PRID, horizons$HONU, sep="_"))
-horizons <- rename(horizons, c("PRID"="SOURCEID","HBDE"="LHDICM","SDTO"="SNDPPT","STPC"="SLTPPT","CLPC"="CLYPPT","BULK"="BLD","PHAQ"="PHIHOX","TOTC"="ORCDRC","CECS"="CECSUM"))
-horizons$ORCDRC <- horizons$ORCDRC*10
+horizons <- rename(horizons, c("PRID"="SOURCEID","HBDE"="LHDICM","SDTO"="SNDPPT","STPC"="SLTPPT","CLPC"="CLYPPT","BULK"="BLD","PHAQ"="PHIHOX","CECS"="CECSUM"))
+## Total Carbon needs to be reduced for CaCO3:
+horizons$ORCDRC <- signif(ifelse((horizons$PHIHOX > 7)&!is.na(horizons$TCEQ), horizons$TOTC - .12 * horizons$TCEQ, horizons$TOTC), 3)
+summary(horizons$ORCDRC)
+horizons$ORCDRC <- ifelse(horizons$ORCDRC < 0, 0, horizons$ORCDRC)
 summary(horizons$ORCDRC)
 ## upper horizon boundary missing:
 horizons$UHDICM <- NA
@@ -66,6 +69,11 @@ str(SPROPS.NAMSOTER)
 ## 5911
 save(SPROPS.NAMSOTER, file="SPROPS.NAMSOTER.rda")
 plot(SPROPS.NAMSOTER$LONWGS84, SPROPS.NAMSOTER$LATWGS84, pch="+")
+SPROPS.NAMSOTER.xy = SPROPS.NAMSOTER
+coordinates(SPROPS.NAMSOTER.xy) <- ~ LONWGS84+LATWGS84
+SPROPS.NAMSOTER.xy$ORCDRC <- round(SPROPS.NAMSOTER.xy$ORCDRC)
+proj4string(SPROPS.NAMSOTER.xy) <- "+proj=longlat +datum=WGS84"
+writeOGR(SPROPS.NAMSOTER.xy, "SPROPS.NAMSOTER.shp", "SPROPS.NAMSOTER", "ESRI Shapefile")
 
 # ------------------------------------------------------------
 # Depth to bedrock

@@ -228,4 +228,9 @@ proj4string(TAXOUSDA.WISE) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXOUSDA.WISE["TAXOUSDA"])
 save(TAXOUSDA.WISE, file="TAXOUSDA.WISE.rda")
 
+## export taxonomy data for correlation:
+WISE_tax <- SITE.s[,c("SOURCEID", "LATWGS84", "LONWGS84", "TAXNWRB", "TAXOUSDA", "LFORM", "LANDUS")]
+summary(as.factor(WISE_tax$TAXOUSDA))
+save(WISE_tax, file="WISE_tax.rda")
+
 # end of script;

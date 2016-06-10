@@ -9,6 +9,7 @@ library(rgdal)
 library(lattice)
 library(scales)
 library(plotKML)
+library(dplyr)
 
 ## list of input data sets:
 tax.lst <- list.files(path="G:\\soilstorage\\SoilData", pattern=glob2rx("SPROPS.*.rda"), full.names=TRUE, recursive=TRUE)
@@ -17,7 +18,7 @@ in.lst <- lapply(tax.lst, load, .GlobalEnv)
 in.lst <- lapply(in.lst, function(x){as.data.frame(get(x))})
 ## 24 data sets
 
-## Simulated desert soils:
+## Simulated sand dunes points:
 load("../TAXOUSDA/deserts.pnt.rda")
 SPROPS.sim <- as.data.frame(spTransform(deserts.pnt, CRS("+proj=longlat +datum=WGS84")))
 SPROPS.sim[,1] <- NULL
@@ -31,6 +32,7 @@ SPROPS.sim$ORCDRC = 0
 SPROPS.sim$SNDPPT = 98
 SPROPS.sim$SLTPPT = 2
 SPROPS.sim$CLYPPT = 0
+SPROPS.sim$CRFVOL = 2
 SPROPS.sim$PHIHOX = 8.1
 SPROPS.sim$UHDICM = c(rep(0, nrow(deserts.pnt)), rep(5, nrow(deserts.pnt))) 
 SPROPS.sim$LHDICM = c(rep(5, nrow(deserts.pnt)), rep(200, nrow(deserts.pnt)))
@@ -42,10 +44,10 @@ in.lst[[length(tax.lst)+1]] <- SPROPS.sim
 ## Bind everything together:
 all.pnts <- dplyr::rbind_all(in.lst)
 str(all.pnts)
-## 759,259
+## 782,945
 all.pnts$LOC_ID <- as.factor(paste("ID", all.pnts$LONWGS84, all.pnts$LATWGS84, sep="_"))
 summary(!duplicated(all.pnts$LOC_ID))
-## 146,048 unique locations!
+## 149,840 unique locations!
 ## Filter out remaining values outside of physical range:
 all.pnts$SNDPPT <- ifelse(all.pnts$SNDPPT<0|all.pnts$SNDPPT>100, NA, all.pnts$SNDPPT)
 hist(all.pnts$SNDPPT, col="blue", xlab="Sand in %", breaks=40, main=sum(!is.na(all.pnts$SNDPPT)))
@@ -59,7 +61,7 @@ all.pnts$PHIKCL <- ifelse(all.pnts$PHIKCL<2|all.pnts$PHIKCL>12, NA, all.pnts$PHI
 hist(all.pnts$PHIKCL, col="blue", xlab="pH in KCl", breaks=40, main=sum(!is.na(all.pnts$PHIKCL)))
 all.pnts$ORCDRC <- ifelse(all.pnts$ORCDRC>800, NA, all.pnts$ORCDRC)
 hist(log1p(all.pnts$ORCDRC), col="blue", xlab="log-Organic carbon", breaks=40, main=sum(!is.na(all.pnts$ORCDRC)))
-## groupings around very high values?
+## some groupings around very high values?
 all.pnts$BLD <- ifelse(all.pnts$BLD<50|all.pnts$BLD>3000, NA, all.pnts$BLD)
 hist(all.pnts$BLD, col="blue", xlab="Bulk density", breaks=40, main=sum(!is.na(all.pnts$BLD)))
 all.pnts$CECSUM <- ifelse(all.pnts$CECSUM<0, 0, ifelse(all.pnts$CECSUM>600, NA, all.pnts$CECSUM))
@@ -84,6 +86,21 @@ str(all.pnts[which(z.shift<0)[720],])
 str(all.pnts[which(z.shift<0)[721],])
 all.pnts$DEPTH.f <- all.pnts$UHDICM.f + (all.pnts$LHDICM.f - all.pnts$UHDICM.f)/2
 summary(all.pnts$UHDICM.f, breaks=30)
+## check distributions:
+par(mar=c(11,5,3,1))
+boxplot(log1p(ORCDRC)~SOURCEDB, all.pnts[all.pnts$LHDICM<30,], main="log1p(ORCDRC)", las=2)
+boxplot(PHIHOX~SOURCEDB, all.pnts, main="PHIHOX")
+## Organic carbon as function of depth:
+OC.m <- lm(log1p(ORCDRC)~log1p(DEPTH.f), all.pnts)
+summary(OC.m)
+pfun <- function(x,y, ...){
+  panel.hexbinplot(x,y, ...)  
+  panel.abline(coef(OC.m)[1],coef(OC.m)[2],lty=1,lw=2,col="black")
+}
+pal = R_pal[["bpy_colors"]][1:18]
+library(hexbin)
+hexbinplot(OC.m$model$`log1p(ORCDRC)`~OC.m$model$`log1p(DEPTH.f)`, colramp=colorRampPalette(pal), ylab="ORCDRC", xlab="depth", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, asp=1, xbins=30, ybins=30, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1)) ## scales=list(x = list(log = 2, equispaced.log = FALSE), y = list(log = 2, equispaced.log = FALSE))
+## save data file:
 save(all.pnts, file="all.pnts.rda")
 
 SPROPS.pnts <- as.data.frame(all.pnts[!duplicated(all.pnts$LOC_ID),c("LOC_ID","SOURCEID","SOURCEDB","LONWGS84","LATWGS84")])
@@ -93,4 +110,4 @@ proj4string(SPROPS.pnts) <- "+proj=longlat +datum=WGS84"
 length(SPROPS.pnts)
 summary(as.factor(SPROPS.pnts$SOURCEDB))
 save(SPROPS.pnts, file="SPROPS.pnts.rda")
-
+save.image()

@@ -31,7 +31,9 @@ for(j in c("PS_TSAND", "PS_50_2U", "PS_2UCLAY", "PH1", "PH2", "UDEPTH", "LDEPTH"
 }
 horizons$CRFVOL <- horizons$PS_VCSAND ## rowSums(horizons[,c("PS_VCSAND", "PS_NO10", "PS_NO4")], na.rm=TRUE)
 summary(horizons$CRFVOL)
-horizons$ORCDRC <- signif(horizons$ORGCARB * 10/1.724, 3)
+summary(horizons$ORGCARB) ## These numbers are quite high! Is this really SOC or SOM?
+#horizons$ORCDRC <- signif(horizons$ORGCARB * 10/1.724, 3)
+horizons$ORCDRC <- round(horizons$ORGCARB * 10)
 horizons <- rename(horizons, c("PS_TSAND"="SNDPPT", "PS_50_2U"="SLTPPT", "PS_2UCLAY"="CLYPPT", "PH1"="PHIHOX", "PH2"="PHIKCL", "UDEPTH"="UHDICM", "LDEPTH"="LHDICM", "BD"="BLD", "CEC_BUFF"="CECSUM"))
 horizons$BLD <- horizons$BLD*1000
 ## many missing lower depths:
@@ -79,12 +81,12 @@ pedon_id$LONWGS84 <- ifelse(pedon_id$LONWGS84>-1, NA, pedon_id$LONWGS84)
 pedon_id$LATWGS84 <- cols2dms(pedon_id$LOCLATDEG, pedon_id$LOCLATMIN, pedon_id$LOCLATSEC, rep("N", length(pedon_id$LOCLATDEG)))
 pedon_id$LATWGS84 <- ifelse(pedon_id$LATWGS84<25, NA, pedon_id$LATWGS84)
 pedon_id$TIMESTRR <- as.Date(paste(pedon_id$YEAR_), format="%Y")
+pedon_id$SOURCEDB = "CanSIS"
 #plot(pedon_id$LONWGS84, pedon_id$LATWGS84)
 str(pedon_id)
 pedon_id <- join(pedon_id, pedon_class, by="PEDON", type="left", match="first")
 pedon_id$TAX_ID <- paste(pedon_id$TAX_ORDER, pedon_id$TAX_GTGRP, sep="_")
 pedon_merge <- join(pedon_id, pedon_cor[,c("TAX_ID","TAXNWRB","TAXOUSDA")], by="TAX_ID", type="left", match="first")
-pedon_merge$SOURCEDB = "CanSIS"
 pedon_merge$SOURCEID = paste("CAN", pedon_merge$PEDON, sep="_")
 pedon_merge <- pedon_merge[!is.na(pedon_merge$LATWGS84)&!is.na(pedon_merge$LONWGS84),]
 ## look at some examples
@@ -113,7 +115,6 @@ TAXNWRB.CanSIS <- pedon_merge[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LA
 TAXNWRB.CanSIS <- TAXNWRB.CanSIS[!is.na(TAXNWRB.CanSIS$TAXNWRB)&!is.na(TAXNWRB.CanSIS$LONWGS84)&nchar(paste(TAXNWRB.CanSIS$TAXNWRB))>0,]
 TAXNWRB.CanSIS$TAXNWRB <- iconv(paste(TAXNWRB.CanSIS$TAXNWRB), "latin1", "UTF-8", "")
 str(TAXNWRB.CanSIS)
-
 ## 5938 profiles
 coordinates(TAXNWRB.CanSIS) <- ~ LONWGS84+LATWGS84
 proj4string(TAXNWRB.CanSIS) <- "+proj=longlat +datum=WGS84"
@@ -131,10 +132,17 @@ SPROPS.CanSIS$PHIHOX <- ifelse(SPROPS.CanSIS$PHIHOX>11.5|SPROPS.CanSIS$PHIHOX<2.
 View(SPROPS.CanSIS)
 hist(SPROPS.CanSIS$CECSUM)
 hist(SPROPS.CanSIS$ORCDRC, breaks=30)
+## pool of high values
 SPROPS.CanSIS$BLD <- ifelse(SPROPS.CanSIS$BLD<100, NA, SPROPS.CanSIS$BLD)
 hist(SPROPS.CanSIS$BLD, breaks=30)
 ## 17,535 horizons
 save(SPROPS.CanSIS, file="SPROPS.CanSIS.rda")
+SPROPS.CanSIS.xy = SPROPS.CanSIS
+coordinates(SPROPS.CanSIS.xy) <- ~ LONWGS84+LATWGS84
+SPROPS.CanSIS.xy$ORCDRC <- round(SPROPS.CanSIS.xy$ORCDRC)
+proj4string(SPROPS.CanSIS.xy) <- "+proj=longlat +datum=WGS84"
+unlink("SPROPS.CanSIS.shp")
+writeOGR(SPROPS.CanSIS.xy, "SPROPS.CanSIS.shp", "SPROPS.CanSIS", "ESRI Shapefile")
 
 # ------------------------------------------------------------
 # Depth to bedrock
@@ -245,3 +253,83 @@ coordinates(TAXOUSDA.FECD) <- ~ LONWGS84+LATWGS84
 proj4string(TAXOUSDA.FECD) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXOUSDA.FECD["TAXOUSDA"])
 save(TAXOUSDA.FECD, file="TAXOUSDA.FECD.rda")
+
+# ------------------------------------------------------------
+# Canadian Upland Forest Carbon Database
+# ------------------------------------------------------------
+
+## read exported tables:
+PROFILES_simple <- read.csv("PROFILES_simple.csv")
+PROFILES_simple$SOURCEID <- paste("CUFCDB", PROFILES_simple$LOCATION_ID, sep="_")
+PROFILES_simple$SAMPLEID <- make.unique(paste(PROFILES_simple$SOURCEID, PROFILES_simple$ID, sep="_"))
+## locations:
+SITES_simple <- read.csv("SITES_simple.csv")
+SITES_simple$SOURCEID <- make.unique(paste("CUFCDB", SITES_simple$LOCATION_ID, sep="_"))
+SITES_simple <- rename(SITES_simple, replace=c("LONGITUDE"="LONWGS84", "LATITUDE"="LATWGS84"))
+summary(SITES_simple$Loc_accuracy)
+sel.loc <- SITES_simple$Loc_accuracy=="high"
+SITES_simple$SOURCEDB = "CUFCDB"
+
+## rename columns:
+PROFILES_simple$UHDICM <- PROFILES_simple$UPPER_HZN_LIMIT
+PROFILES_simple$LHDICM <- PROFILES_simple$UPPER_HZN_LIMIT+PROFILES_simple$HZN_THICKNESS
+PROFILES_simple$ORCDRC <- round(PROFILES_simple$ORG_CARBON_PCT*10)
+PROFILES_simple$PHIHOX = NA
+#PROFILES_simple$PHIKCL = NA
+summary(PROFILES_simple$pH_H2O_CACL2)
+sel.pH = PROFILES_simple$pH_H2O_CACL2=="H2O"|PROFILES_simple$pH_H2O_CACL2=="unknown"
+#sel.CaCl2 = PROFILES_simple$pH_H2O_CACL2=="CaCl2"|PROFILES_simple$pH_H2O_CACL2=="CACL2"
+PROFILES_simple$PHIHOX[sel.pH] <- PROFILES_simple$pH[sel.pH]
+#PROFILES_simple$PHIKCL[sel.CaCl2] <- PROFILES_simple$pH[sel.CaCl2]
+PROFILES_simple$BLD <- round(PROFILES_simple$BULK_DENSITY*1000)  
+PROFILES_simple$HZDTXT <- PROFILES_simple$HORIZON
+PROFILES_simple$CRFVOL <- round(PROFILES_simple$CF_VOLPCT)
+
+SPROPS.CUFCDB <- join(PROFILES_simple[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","BLD","ORCDRC","PHIHOX","CRFVOL","HZDTXT")], SITES_simple[sel.loc,c("SOURCEID","LONWGS84","LATWGS84","SOURCEDB")])
+#SPROPS.CUFCDB$PHIKCL <- ifelse(SPROPS.CUFCDB$PHIKCL>11|SPROPS.CUFCDB$PHIKCL<2.5, NA, SPROPS.CUFCDB$PHIKCL)
+SPROPS.CUFCDB$PHIHOX <- ifelse(SPROPS.CUFCDB$PHIHOX>11.5|SPROPS.CUFCDB$PHIHOX<2.5, NA, SPROPS.CUFCDB$PHIHOX)
+SPROPS.CUFCDB$BLD <- ifelse(SPROPS.CUFCDB$BLD<100, NA, SPROPS.CUFCDB$BLD)
+hist(SPROPS.CUFCDB$ORCDRC)
+hist(SPROPS.CUFCDB$PHIHOX, breaks=30)
+hist(SPROPS.CUFCDB$BLD, breaks=30)
+str(SPROPS.CUFCDB)
+## 17,519 horizons
+save(SPROPS.CUFCDB, file="SPROPS.CUFCDB.rda")
+
+## merge with correlation table:
+SITES_simple$CSSC_Great_Groups = SITES_simple$Great_Group
+TAXNWRB.CUFCDB <- join(SITES_simple[sel.loc,], pedon_cor, type="left", match="first")[,c("SOURCEID","LONWGS84","LATWGS84","TAXNWRB")]
+TAXNWRB.CUFCDB <- TAXNWRB.CUFCDB[!is.na(TAXNWRB.CUFCDB$TAXNWRB)&!is.na(TAXNWRB.CUFCDB$LONWGS84)&nchar(paste(TAXNWRB.CUFCDB$TAXNWRB))>0,]
+str(TAXNWRB.CUFCDB)
+## 2046 profiles
+coordinates(TAXNWRB.CUFCDB) <- ~ LONWGS84+LATWGS84
+proj4string(TAXNWRB.CUFCDB) <- "+proj=longlat +datum=WGS84"
+plotKML(TAXNWRB.CUFCDB["TAXNWRB"],balloon=TRUE)
+save(TAXNWRB.CUFCDB, file="TAXNWRB.CUFCDB.rda")
+
+TAXOUSDA.CUFCDB <- join(SITES_simple[sel.loc,], pedon_cor, type="left", match="first")[,c("SOURCEID","LONWGS84","LATWGS84","TAXOUSDA")]
+TAXOUSDA.CUFCDB <- TAXOUSDA.CUFCDB[!is.na(TAXOUSDA.CUFCDB$TAXOUSDA)&!is.na(TAXOUSDA.CUFCDB$LONWGS84)&nchar(paste(TAXOUSDA.CUFCDB$TAXOUSDA))>0,]
+str(TAXOUSDA.CUFCDB)
+## 2046 profiles
+coordinates(TAXOUSDA.CUFCDB) <- ~ LONWGS84+LATWGS84
+proj4string(TAXOUSDA.CUFCDB) <- "+proj=longlat +datum=WGS84"
+plotKML(TAXOUSDA.CUFCDB["TAXOUSDA"],balloon=TRUE)
+save(TAXOUSDA.CUFCDB, file="TAXOUSDA.CUFCDB.rda")
+
+# ------------------------------------------------------------
+# Depth to bedrock CUFCDB
+# ------------------------------------------------------------
+
+levels(PROFILES_simple$HORIZON)
+sel2.r <- grep("^R", PROFILES_simple$HORIZON, ignore.case=FALSE, fixed=FALSE)
+#sel2.r2 <- which(SITES_simple$SOURCEID %in% PROFILES_simple$SOURCEID[grep("2R", PROFILES_simple$HORIZON, ignore.case=FALSE, fixed=FALSE)])
+PROFILES_simple$BDRICM <- NA
+PROFILES_simple[sel2.r,"BDRICM"] <- pmax(PROFILES_simple$UHDICM[sel2.r], PROFILES_simple$LHDICM[sel2.r])
+bdr2.d <- aggregate(PROFILES_simple$BDRICM, list(PROFILES_simple$SOURCEID), max, na.rm=TRUE)
+names(bdr2.d) <- c("SOURCEID", "BDRICM")
+BDR.CUFCDB <- join(bdr2.d, SITES_simple[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
+BDR.CUFCDB$BDRICM <- ifelse(is.infinite(BDR.CUFCDB$BDRICM), 250, BDR.CUFCDB$BDRICM)
+summary(BDR.CUFCDB$BDRICM<250)
+## 303 points
+str(BDR.CUFCDB)
+save(BDR.CUFCDB, file="BDR.CUFCDB.rda")

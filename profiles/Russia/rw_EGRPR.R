@@ -81,8 +81,8 @@ sel0 <- horizons$HORTOP==0&horizons$HORBOT==0
 horizons$HORTOP[sel0] <- NA
 horizons$HORBOT[sel0] <- NA
 horizons$SAMPLEID <- make.unique(paste(horizons$SOURCEID, horizons$HIAUTH, sep="_"))
-horizons <- rename(horizons, c("HORTOP"="UHDICM","HORBOT"="LHDICM","PHH2O"="PHIHOX","PHSLT"="PHIKCL","ORGMAT"="ORCDRC","CECST"="CECSUM","DVOL"="BLD"))
-horizons$ORCDRC <- horizons$ORCDRC*10/1.724
+horizons <- rename(horizons, c("HORTOP"="UHDICM","HORBOT"="LHDICM","PHH2O"="PHIHOX","PHSLT"="PHIKCL","CECST"="CECSUM","DVOL"="BLD"))
+horizons$ORCDRC <- horizons$ORGMAT*10/1.724
 summary(horizons$ORCDRC)
 horizons$BLD <- horizons$BLD * 1000
 levels(as.factor(horizons$GRVDEG))
@@ -114,9 +114,16 @@ nrow(horizons)
 
 SPROPS.EGRPR <- join(horizons[!is.na(horizons$DEPTH),c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","CRFVOL","BLD","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM")], as.data.frame(TAXNWRB.EGRPR)[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
 str(SPROPS.EGRPR)
+summary(SPROPS.EGRPR$ORCDRC)
 ## 4568
 save(SPROPS.EGRPR, file="SPROPS.EGRPR.rda")
 plot(SPROPS.EGRPR$LONWGS84, SPROPS.EGRPR$LATWGS84, pch="+")
+SPROPS.EGRPR.xy = SPROPS.EGRPR[!is.na(SPROPS.EGRPR$LONWGS84),]
+coordinates(SPROPS.EGRPR.xy) <- ~ LONWGS84+LATWGS84
+SPROPS.EGRPR.xy$ORCDRC <- round(SPROPS.EGRPR.xy$ORCDRC)
+proj4string(SPROPS.EGRPR.xy) <- "+proj=longlat +datum=WGS84"
+unlink("SPROPS.EGRPR.shp")
+writeOGR(SPROPS.EGRPR.xy, "SPROPS.EGRPR.shp", "SPROPS.EGRPR", "ESRI Shapefile")
 
 # ------------------------------------------------------------
 # Depth to bedrock

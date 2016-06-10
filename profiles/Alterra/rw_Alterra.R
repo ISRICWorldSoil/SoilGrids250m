@@ -69,6 +69,11 @@ str(SPROPS.Alterra)
 ## 2617
 save(SPROPS.Alterra, file="SPROPS.Alterra.rda")
 plot(SPROPS.Alterra$LONWGS84, SPROPS.Alterra$LATWGS84, pch="+")
+SPROPS.Alterra.xy = SPROPS.Alterra
+coordinates(SPROPS.Alterra.xy) <- ~ LONWGS84+LATWGS84
+SPROPS.Alterra.xy$ORCDRC <- round(SPROPS.Alterra.xy$ORCDRC)
+proj4string(SPROPS.Alterra.xy) <- "+proj=longlat +datum=WGS84"
+writeOGR(SPROPS.Alterra.xy, "SPROPS.Alterra.shp", "SPROPS.Alterra", "ESRI Shapefile")
 
 # ------------------------------------------------------------
 # Depth to bedrock
