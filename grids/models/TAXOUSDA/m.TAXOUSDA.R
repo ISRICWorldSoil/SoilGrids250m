@@ -174,8 +174,19 @@ sfInit(parallel=TRUE, cpus=48)
 sfExport("pr.dirs", "sum_predictions", "gm1.w", "gm2.w", "soil.fix", "lev", "col.legend")
 sfLibrary(rgdal)
 sfLibrary(plyr)
-x <- sfLapply(pr.dirs, fun=function(x){ try( sum_predictions(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXOUSDA", gm1.w=gm1.w, gm2.w=gm2.w, col.legend=col.legend, soil.fix=soil.fix, lev=lev) )  } )
+x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( sum_predictions(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXOUSDA", gm1.w=gm1.w, gm2.w=gm2.w, col.legend=col.legend, soil.fix=soil.fix, lev=lev) )  } )
 sfStop()
+
+## most probable class fix:
+sfInit(parallel=TRUE, cpus=46)
+sfExport("pr.dirs", "most_probable_fix", "lev", "col.legend") ## pr.dirs
+sfLibrary(rgdal)
+sfLibrary(plyr)
+sfLibrary(raster)
+sfLibrary(sp)
+x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( most_probable_fix(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXOUSDA", col.legend=col.legend, lev=lev) )  } )
+sfStop()
+
 
 ## ------------- VISUALIZATION -----------
 
@@ -229,7 +240,6 @@ ov$TAXOUSDA.f2 <- droplevels(ov$TAXOUSDA.f2)
 ## TAKES CA 1hr
 formulaString2.USDA = as.formula(paste('TAXOUSDA.f2 ~ ', paste(pr.lst, collapse="+")))
 test.USDA <- cv_factor(formulaString2.USDA, ov[complete.cases(ov[,all.vars(formulaString2.USDA)]),], nfold=10, idcol="SOURCEID")
-closeAllConnections()
 str(test.USDA)
 test.USDA[["Cohen.Kappa"]]
 test.USDA[["Classes"]]
@@ -242,5 +252,3 @@ write.csv(test.USDA[["Observed"]], "cv_TAXOUSDA_observed.csv")
 gzip("cv_TAXOUSDA_observed.csv")
 write.csv(test.USDA[["Predicted"]], "cv_TAXOUSDA_predicted.csv")
 gzip("cv_TAXOUSDA_predicted.csv")
-## Confusion matrix:
-write.csv(test.USDA[["Confusion.matrix"]], "cv_TAXOUSDA_Confusion.matrix.csv")

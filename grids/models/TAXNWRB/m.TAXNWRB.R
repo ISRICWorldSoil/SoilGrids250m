@@ -127,7 +127,6 @@ gm2.w <- 1-mrfX_TAXNWRB$prediction.error
 ## (http://stackoverflow.com/questions/21096909/difference-betweeen-predictmodel-and-predictmodelfinalmodel-using-caret-for)
 mnetX_TAXNWRB_final <- mnetX_TAXNWRB$finalModel
 rm(mnetX_TAXNWRB)
-lev = mnetX_TAXNWRB_final$lev
 gc(); gc()
 
 ## test predictions for a sample area:
@@ -181,12 +180,23 @@ sfStop()
 ## Finally, sum up all predictions and generate geotifs
 ## TAKES ca 2.5 hrs
 ## this will also remove all temporary files
+lev = mnetX_TAXNWRB_final$lev
 sfInit(parallel=TRUE, cpus=46)
 sfExport("pr.dirs", "sum_predictions", "gm1.w", "gm2.w", "soil.fix", "lev", "col.legend")
 sfLibrary(rgdal)
 sfLibrary(plyr)
 x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( sum_predictions(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB", gm1.w=gm1.w, gm2.w=gm2.w, col.legend=col.legend, soil.fix=soil.fix, lev=lev, check.names=TRUE) )  } )
 sfStop()
+
+## most probable class fix:
+sfInit(parallel=TRUE, cpus=48)
+sfExport("pr.dirs", "most_probable_fix", "lev", "col.legend")
+sfLibrary(rgdal)
+sfLibrary(plyr)
+sfLibrary(raster)
+x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( most_probable_fix(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB", col.legend=col.legend, lev=lev, check.names=TRUE) )  } )
+sfStop()
+
 
 ## ------------- VISUALIZATION -----------
 
@@ -235,7 +245,6 @@ ov$TAXNWRB.f2 <- droplevels(ov$TAXNWRB.f2)
 ## TAKES CA 1hr
 formulaString2.FAO = as.formula(paste('TAXNWRB.f2 ~ ', paste(pr.lst, collapse="+")))
 test.WRB <- cv_factor(formulaString2.FAO, ov[complete.cases(ov[,all.vars(formulaString2.FAO)]),], nfold=10, idcol="SOURCEID")
-closeAllConnections()
 str(test.WRB)
 test.WRB[["Cohen.Kappa"]]
 test.WRB[["Classes"]]
@@ -250,3 +259,4 @@ write.csv(test.WRB[["Predicted"]], "cv_TAXNWRB_predicted.csv")
 gzip("cv_TAXNWRB_predicted.csv")
 ## Confusion matrix:
 write.csv(test.WRB[["Confusion.matrix"]], "cv_TAXNWRB_Confusion.matrix.csv")
+closeAllConnections()

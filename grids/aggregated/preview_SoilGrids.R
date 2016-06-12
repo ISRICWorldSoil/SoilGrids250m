@@ -161,7 +161,7 @@ proj4string(landmask) <- "+proj=longlat +datum=WGS84"
 landmask <- as(landmask["mask"], "SpatialPixelsDataFrame")
 landmask <- landmask[landmask@coords[,2]> -62 & landmask@coords[,2]< 87.4,]
 
-for(i in 1:259){
+for(i in 1:266){
  out.xml.file = paste0("X:/SoilGrids250m/GEOG/", mdSG$FileName[i], ".xml") # "/data/GEOG/"
   if(!file.exists(out.xml.file)){
    xmd <- spMetadata(landmask, out.xml.file=out.xml.file,
