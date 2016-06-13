@@ -201,10 +201,12 @@ sfStop()
 ## ------------- VISUALIZATION -----------
 
 ## world plot - overlay and plot points and maps:
-xy.pnts <- join(ovA[,c("SOURCEID","SOURCEDB","TAXNWRB.f")], as.data.frame(TAXNWRB.pnts[c("SOURCEID")]), type="left", match="first")
+xy.pnts <- join(ov[,c("SOURCEID","SOURCEDB","TAXNWRB.f")], as.data.frame(TAXNWRB.pnts[c("SOURCEID")]), type="left", match="first")
+xy.pnts <- xy.pnts[!duplicated(xy.pnts$SOURCEID),]
 coordinates(xy.pnts) = ~ LONWGS84+LATWGS84
 proj4string(xy.pnts) = proj4string(TAXNWRB.pnts)
-plotKML(xy.pnts["TAXNWRB.f"], folder.name="WRB classifications", file.name="TAXNWRB_observed.kml")
+lev.leg <- join(data.frame(Group=levels(xy.pnts$TAXNWRB.f)), col.legend[,c("Group","COLOR")], type="left")
+plotKML(xy.pnts["TAXNWRB.f"], folder.name="WRB classifications", file.name="TAXNWRB_observed.kml", colour_scale=lev.leg$COLOR)
 zip(zipfile="TAXNWRB_observed.kmz", files="TAXNWRB_observed.kml", zip="zip")
 
 library(maps)

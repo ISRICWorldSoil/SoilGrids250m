@@ -192,9 +192,11 @@ sfStop()
 
 ## world plot - overlay and plot points and maps:
 xy.pnts <- join(ov[,c("SOURCEID","SOURCEDB","TAXOUSDA.f")], as.data.frame(TAXOUSDA.pnts[c("SOURCEID")]), type="left", match="first")
+xy.pnts <- xy.pnts[!duplicated(xy.pnts$SOURCEID),]
 coordinates(xy.pnts) = ~ LONWGS84+LATWGS84
 proj4string(xy.pnts) = proj4string(TAXOUSDA.pnts)
-plotKML(xy.pnts["TAXOUSDA.f"], folder.name="USDA classifications", file.name="TAXOUSDA_observed.kml")
+lev.leg <- join(data.frame(Group=levels(xy.pnts$TAXOUSDA.f)), col.legend[,c("Group","COLOR")], type="left")
+plotKML(xy.pnts["TAXOUSDA.f"], folder.name="USDA classifications", file.name="TAXOUSDA_observed.kml", colour_scale=lev.leg$COLOR)
 zip(zipfile="TAXOUSDA_observed.kmz", files="TAXOUSDA_observed.kml", zip="zip")
 
 require(maptools)

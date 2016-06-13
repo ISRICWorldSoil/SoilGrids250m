@@ -39,6 +39,7 @@ mosaick.equi7t3 <- function(i, j, varn, in.path, r, te, tr, ot, dstnodata, out.p
 make_mosaick <- function(i, varn, ext, resample1="bilinear", resample2="average", r250m=TRUE, tr=0.002083333, r="bilinear", in.path="/data/predicted", ot="Byte", dstnodata=255, tile.names, out.path='/data/GEOG/', compress=FALSE){
   if(i=="dominant"){
     out.tif <- paste0(out.path, varn, "_250m_ll.tif")
+    r = "near"
   } else {
     out.tif <- paste0(out.path, varn, "_", i, "_250m_ll.tif")
   }

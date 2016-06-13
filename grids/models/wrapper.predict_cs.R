@@ -137,6 +137,35 @@ sum_predict_ranger <- function(i, in.path, out.path, varn, num_splits){
   }
 }
 
+## special function to derive most probable class:
+most_probable_fix <- function(i, in.path, out.path, varn, col.legend, check.names=FALSE, lev){
+  out.c <- paste0(out.path, "/", i, "/", varn, "_", i, ".tif")
+  if(file.exists(out.c)){
+    ## find tiles with missing pixels
+    lm <- readGDAL(paste0(in.path, "/", i, "/LMK_", i, ".tif"))
+    lm$cl <- readGDAL(out.c)$band1
+    if(sum(!is.na(lm$band1)-!is.na(lm$cl))>0){
+      ## load all probs:
+      m <- raster::stack(list.files(path=paste0(out.path, "/", i), pattern = glob2rx(paste0(varn,  "_*_", i,".tif")), full.names = TRUE))
+      names(m) <- sapply(names(m), function(x){strsplit(x, "_")[[1]][2]})
+      m <- as(m, "SpatialGridDataFrame")
+      ## most probable class:
+      if(check.names==TRUE){ 
+        Group = gsub("\\.", " ", gsub("\\.$", "\\)", gsub("\\.\\.", " \\(", lev))) 
+      } else {
+        Group = lev
+      }
+      col.tbl <- plyr::join(data.frame(Group=Group, int=1:length(lev)), col.legend, type="left")
+      ## match most probable class
+      m$cl <- col.tbl[match(apply(m@data,1,which.max), col.tbl$int),"Number"]
+      unlink(out.c)
+      writeGDAL(m["cl"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(col.tbl$Group)))
+      gc()
+    }
+  }
+}
+
+
 ## -------------------------------
 ## Numeric variables
 ## -------------------------------
