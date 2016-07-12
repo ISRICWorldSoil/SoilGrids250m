@@ -38,14 +38,14 @@ tile.names <- names(equi7t3)
 #make_mosaick(i="Fibrists", varn="TAXOUSDA", ext=ext, tr=0.002083333, in.path="/data/predicted", r250m=TRUE, tile.names=tile.names)
 
 ## Reprojection TAKES CA 3-5 hrs
-tvars = c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "CECSOL", "BLDFIE", "TEXMHT")
+tvars = c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "CECSOL", "BLDFIE", "TEXMHT", "AWCh1", "AWCh2", "AWCh3", "WWP", "AWCtS")
 #tvars = c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "CECSUM", "BLD", "TEXMHT")
 props = c(rep(tvars, 7), rep("OCSTHA", 6))
 varn.lst = c(paste0("M_sl", sapply(1:7, function(x){rep(x, length(tvars))})), paste0("M_sd", 1:6))
-ot.lst <- c(rep(c("Int16","Byte","Byte","Byte","Byte","Byte","Byte","Int16","Int16","Byte"), 7), rep("Int16", 6))
-dstnodata.lst <- c(rep(c(-32768, 255, 255, 255, 255, 255, 255, -32768, -32768, 255), 7), rep(-32768, 6))
-resample1.lst <- c(rep(c("bilinear", "bilinear", "bilinear", "bilinear", "bilinear", "bilinear", "bilinear", "bilinear", "bilinear", "near"), 7), rep("bilinear", 6))
-resample2.lst <- c(rep(c("average", "average", "average", "average", "average", "average", "average", "average", "average", "mode"), 7), rep("average", 6))
+ot.lst <- c(rep(c("Int16","Byte","Byte","Byte","Byte","Byte","Byte","Int16","Int16","Byte","Byte","Byte","Byte","Byte","Byte"), 7), rep("Int16", 6))
+dstnodata.lst <- c(rep(c(-32768, 255, 255, 255, 255, 255, 255, -32768, -32768, 255, 255, 255, 255, 255, 255), 7), rep(-32768, 6))
+resample1.lst <- c(rep(c("bilinear", "bilinear", "bilinear", "bilinear", "bilinear", "bilinear", "bilinear", "bilinear", "bilinear", "near", "bilinear", "bilinear", "bilinear", "bilinear", "bilinear"), 7), rep("bilinear", 6))
+resample2.lst <- c(rep(c("average", "average", "average", "average", "average", "average", "average", "average", "average", "mode", "average", "average", "average", "average", "average"), 7), rep("average", 6))
 
 ## test soil property:
 #make_mosaick(i="M_sd1", varn="ORCDRC", ext=ext, tr=0.008333333, in.path="/data/predicted1km", r250m=FALSE)
