@@ -263,3 +263,25 @@ for(j in 1:length(title.lst)){
   saveXML(l1, sld.file)
   close(sld.file)
 }
+
+## Add soil legends to GSIF:
+data("soil.legends")
+names(soil.legends) = c("ORCDRC","PHIHOX","PHIKCL","BLDFIE","CECSOL","SNDPPT","SLTPPT", "CLYPPT","CRFVOL","TAXOUSDA","TAXGWRB")
+legUSDA <- read.csv("../models/TAXOUSDA/TAXOUSDA_legend.csv")
+legUSDA <- legUSDA[!is.na(legUSDA$B),]
+legWRB <- read.csv("../models/TAXNWRB/TAXNWRB_legend.csv")
+legWRB <- legWRB[!is.na(legWRB$B),]
+soil.legends$TAXOUSDA <- legUSDA[,c("Number","Group","Generic")]
+soil.legends$TAXOUSDA$COLOR <- rgb(red=legUSDA$R/255, green=legUSDA$G/255, blue=legUSDA$B/255)
+soil.legends$TAXNWRB <- legWRB[,c("Number","Group","Shortened_name")]
+soil.legends$TAXNWRB$Generic <- legWRB$WRB_group
+soil.legends$TAXNWRB$COLOR <- rgb(red=legWRB$R/255, green=legWRB$G/255, blue=legWRB$B/255)
+save(soil.legends, file="D:/Rdev/GSIF/pkg/data/soil.legends.rda", compress="xz")
+
+## Soil correlation tables:
+csv.lst <- c("../../profiles/CanSIS/CAN_classes.csv", "../../profiles/China/cleanup_SU_SYM90.csv", "../profs/TAXOUSDA/TAXOUSDA_GreatGroups.csv", "../profs/TAXNWRB/WRB_versions.csv", "../profs/TAXNWRB/cleanup_SU_SYM74.csv", "../profs/TAXOUSDA/USDA_Great_Group_2_FAO.csv", "../profs/TAXNWRB/Full_data_FAO74_US_CPSS.csv") ## "../../profiles/Alterra/cleanup_Alterra.csv",, "../../profiles/Radambrasil/cleanup_RadamBrasil.csv",
+soil.classes <- lapply(csv.lst, read.csv)
+names(soil.classes) = c("Canadian", "FAO1990.WRB", "USDA_GreatGroups", "WRB_versions", "FAO1974.WRB", "USDA.WRB", "FAO.WRB.USDA")
+save(soil.classes, file="D:/Rdev/GSIF/pkg/data/soil.classes.rda", compress="xz")
+
+

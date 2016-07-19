@@ -1,0 +1,262 @@
+FAO90,SoilUnitD90,SoilGroupD90,FAO 90Code,FAO 90remarks,FAO74,SoilUnitD74,SoilGroup74,SoilGroupD74,FAO 74Code,CPCS,SoilUnitDCPCS,SoilGroupCPCS,SoilGroupDCPCS,Correlation,FAO88,SoilUnit8D8,SoilGroup88,SoilGroupD88,Code88,US,SoilUnitDUS,SoilGroupUS,SoilGroupDUS,Correlation,CPSS from report (tentative),WRB (tentative) from report
+AC,Acrisols,Acrisols,104,,A,Acrisol,A,Acrisols,,,,,,AC,AC,ACRISOLS,AC,ACRISOLS,18,,,,,AC,,
+ACf,Ferric Acrisols,Acrisols,106,,Af,Ferric Acrisol,A,Acrisols,91,IX/22,Sols fersiallitiques sans réserve calcique (et lessivés).,IX,Sols á sesquioxydes de fer,ACf,ACf,Ferric Acrisols,AC,ACRISOLS,20,FEB,Haploxerult,F,Ultisols,ACf,Sol faiblement ferrallitique,
+ACg,Gleyic Acrisols,Acrisols,109,,Ag,Gleyic Acrisol,A,Acrisols,94,VII/12,Sols lessivés,VII,Sols brunifiés,ACg,ACg,Gleyic Acrisols,AC,ACRISOLS,23,FAF,Ochraquult,F,Ultisols,ACg,,
+ACh,Orthic Acrisols,Acrisols,105,,Ao,Orthic Acrisol,A,Acrisols,90,IX/12,Sols ferrugineux tropicaux,IX,Sols á sesquioxydes de fer,ACh,ACh,Haplic Acrisols,AC,ACRISOLS,19,FDD,Haplustult,F,Ultisols,ACh,Sol ferrugineux tropical lessivé,"Haplic Acrisol (Ferric, Abruptic,Arenic)"
+ACu,Humic Acrisols,Acrisols,107,,Ah,Humic Acrisol,A,Acrisols,92,IX/12,Sols ferrugineux tropicaux,IX,Sols á sesquioxydes de fer,ACu,ACu,Humic Acrisols,AC,ACRISOLS,21,FBB,Palehumult,F,Ultisols,ACu,,
+AN,Andosols,Andosols,22,,T,Andosol,T,Andosols,,,,,,AN,AN,ANDOSOLS,AN,ANDOSOLS,31,,,,,AN,,
+ANh,Ochric Andosols,Andosols,23,,To,Ochric Andosol,T,Andosols,23,IV/22,Sols desatures,IV,Andosols,ANh,ANh,Haplic Andosols,AN,ANDOSOLS,32,IBG,Dystrandept,I,Inceptisols,ANh,,
+ANm,Mollic Andosols,Andosols,24,,Tm,Mollic Andosol,T,Andosols,24,IV/21,Sols saturés,IV,Andosols,ANm,ANm,Mollic Andosols,AN,ANDOSOLS,33,IBF,Eutrandept,I,Inceptisols,ANm,,
+ANu,Humic Andosols,Andosols,25,,Th,Humic Andosol,T,Andosols,25,IV/21,Sols saturés,IV,Andosols,ANu,ANu,Umbric Andosols,AN,ANDOSOLS,34,IBG,Dystrandept,I,Inceptisols,ANu,,
+ANz,Vitric Andosols,Andosols,26,,Tv,Vitric Andosol,T,Andosols,26,IV/21,Sols saturés,IV,Andosols,ANz,ANz,Vitric Andosols,AN,ANDOSOLS,35,IBE,Vitrandept,I,Inceptisols,ANz,,
+AR,Arenosols,Arenosols,15,,Q,Arenosol,Q,Arenosols,,,,,,AR,AR,ARENOSOLS,AR,ARENOSOLS,38,,,,,AR,,
+ARa,Albic Arenosols,Arenosols,19,,Qa,Albic Arenosol,Q,Arenosols,20,VIII/12,Sols podzoliques,VIII,Sols podzolisés,ARa,ARa,Albic Arenosols,AR,ARENOSOLS,43,JCC,Quartzipsamment,J,Entisols,ARa,Sol ferrugineux tropical faiblement lessivé sur sable,
+ARb,Cambic Arenosols,Arenosols,16,,Qc,Cambic arenosol,Q,Arenosols,17,VII/11,Sols bruns,VII,Sols brunifiés,ARb,ARb,Cambic Arenosols,AR,ARENOSOLS,40,JCG,Ustipsamment,J,Entisols,ARb,Sol brun-rouge subaride,
+ARl,Luvic Arenosols,Arenosols,17,,Ql,Luvic arenosol,Q,Arenosols,18,VII/22,Sols derno-podzoliques,VII,Sols brunifiés,ARl,ARl,Luvic Arenosols,AR,ARENOSOLS,41,JCA,Cryopsamment,J,Entisols,ARl,Sol ferrugineux tropical lessivé,
+ARo,Ferralic Arenosols,Arenosols,18,,Qf,Ferralic arenosol,Q,Arenosols,19,X/36,Sols ferralitiques lessivés,X,Sols ferrallitiques,ARo,ARo,Ferralic Arenosols,AR,ARENOSOLS,42,JCG,Ustipsamment,J,Entisols,ARo,Sol ferrugineux tropical peu lessivé,
+CH,Chernozems,Chernozems,54,,C,Chernozem,C,Chernozems,,,,,,CH,CH,CHERNOZEMS,CH,CHERNOZEMS,51,,,,,CH,,
+CHh,Haplic Chernozems,Chernozems,55,,Ch,Haplic Chernozem,C,Chernozems,48,VI/21,Chernozems,VI,Sols isohumiques,CHh,CHh,Haplic Chernozems,CH,CHERNOZEMS,52,GFF,Vermustoll,G,Mollisols,CHh,,
+CHk,Calcic Chernozems,Chernozems,56,,Ck,Calcic Chernozem,C,Chernozems,49,VI/21,Chernozems,VI,Sols isohumiques,CHk,CHk,Calcic Chernozems,CH,CHERNOZEMS,53,GFF,Vermustoll,G,Mollisols,CHk,,
+CHl,Luvic Chernozems,Chernozems,57,,Cl,Luvic Chernozem,C,Chernozems,50,VI/21,Chernozems,VI,Sols isohumiques,CHl,CHl,Luvic Chernozems,CH,CHERNOZEMS,54,GGB,Argiudolls,G,Mollisols,CHl,,
+CHw,Glossic Chernozems,Chernozems,58,,Cg,Glossic Chernozem,C,Chernozems,51,VI/21,Chernozems,VI,Sols isohumiques,CHw,CHw,Glossic Chernozems,CH,CHERNOZEMS,55,GEB,Cryoboroll,G,Mollisols,CHw,,
+LVh,Luvic Yermosols,Yermosols,43,1st Approx.,Yl,Luvic Yermosol,Y,Yermosols,39,I/35,Sols minéraux bruts xériques organisés d'apport,I,Sols minéraux bruts,LVh,LVh,Haplic Luvisols,LV,LUVISOLS,,EAE,Haplargid,E,Aridisols,LVh,,
+CLh,Calcic Xerosols,Xerosols,47,,Xk,Calcic Xerosol,X,Xerosols,42,VI/32,Sierozems,VI,Sols isohumiques,CLh,CLh,Haplic Calcisols,CL,CALCISOLS,58,EBE,Calciorthid,E,Aridisols,CLh,,
+CM,Cambisols,Cambisols,67,,B,Cambisol,B,Cambisols,,,,,,CM,CM,CAMBISOLS,CM,CAMBISOLS,61,,,,,CM,,
+CMc,Calcic Cambisols,Cambisols,73,,Bk,Calcic Cambisol,B,Cambisols,63,V/12,Sols bruns calcaires,V,Sols calcimagnésiques,CMc,CMc,Calcaric Cambisols,CM,CAMBISOLS,65,IEE,Xerochrept,I,Inceptisols,CMc,Sol brun calcaire,Calcaric Cambisols
+CMd,Dystric Cambisols,Cambisols,69,,Bd,Dystric Cambisol,B,Cambisols,59,VII/11,Sols bruns,VII,Sols brunifiés,CMd,CMd,Dystric Cambisols,CM,CAMBISOLS,63,IEG,Dystrochrept,I,Inceptisols,CMd,,
+CMe,Eutric Cambisols,Cambisols,68,,Be,Eutric Cambisol,B,Cambisols,58,VII/11,Sols bruns,VII,Sols brunifiés,CMe,CMe,Eutric Cambisols,CM,CAMBISOLS,62,IEC,Cryiochrept,I,Inceptisols,CMe,,
+CMg,Gleyic Cambisols,Cambisols,71,,Bg,Gleyic Cambisol,B,Cambisols,61,VII/11,Sols bruns,VII,Sols brunifiés,CMg,CMg,Gleyic Cambisols,CM,CAMBISOLS,69,IEG,Dystrochrept,I,Inceptisols,CMg,,
+CMi,Gelic Cambisols,Cambisols,72,,Bx,Gelic Cambisol,B,Cambisols,62,VII/31,Sols lessivés boréaux,VII,Sols brunifiés,CMi,CMi,Gelic Cambisols,CM,CAMBISOLS,70,IAE,Cryaquept,I,Inceptisols,CMi,,
+CMo,Ferralic Cambisols,Cambisols,76,,Bf,Ferralic Cambisol,B,Cambisols,66,VII/41,Sols bruns eutrophes tropicaux,VII,Sols brunifiés,CMo,CMo,Ferralic Cambisols,CM,CAMBISOLS,68,IDE,Dystropept,I,Inceptisols,CMo,,
+CMu,Humic Cambisols,Cambisols,70,,Bh,Humic Cambisol,B,Cambisols,60,VII/11,Sols bruns,VII,Sols brunifiés,CMu,CMu,Humic Cambisols,CM,CAMBISOLS,64,IFD,Haplumbrept,I,Inceptisols,CMu,Sol brun humifère,Haplic Umbrisols
+CMv,Vertic Cambisols,Cambisols,75,,Bv,Vertic Cambisol,B,Cambisols,65,VII/11,Sols bruns,VII,Sols brunifiés,CMv,CMv,Vertic Cambisols,CM,CAMBISOLS,67,IEE,Xerochrept,I,Inceptisols,CMv,Sol peu évolué,Calcari-Vertic Cambisols
+CMx,Chromic Cambisols,Cambisols,74,,Bc,Chromic Cambisol,B,Cambisols,64,IX/21,"Sols fersiallitiques á réserve calcique et, le plus souvent, peu lessivés",IX,Sols á sesquioxydes de fer,CMx,CMx,Chromic Cambisols,CM,CAMBISOLS,66,IEE,Xerochrept,I,Inceptisols,CMx,Sol rouge méditerranéen non lessivé modal,Chromic Cambisols
+DS,Dunes/Sand,,141,,,,,,,,,,,DS,DS,Dunes & shift.sands,DS,Dunes,194,,,,,DS,,
+FL,Fluvisols,Fluvisols,146,,J,Fluvisol,J,Fluvisols,,,,,,FL,FL,FLUVISOLS,FL,FLUVISOLS,1,,,,,FL,,
+FLc,Calcaric Fluvisols,Fluvisols,148,,Jc,Calcaric Fluvisol,J,Fluvisols,2,II/42,Sols d'apport alluvial,II,Sols peu évolués,FLc,FLc,Calcaric Fluvisols,FL,FLUVISOLS,3,JD,Fluvent,J,Entisols,FLc,Sol d'apport modal sur d'apport fluviatile,Calcari-Gypsiric Fluvisol
+FLd,Dystric Fluvisols,Fluvisols,149,,Jd,Dystric Fluvisol,J,Fluvisols,3,II/42,Sols d'apport alluvial,II,Sols peu évolués,FLd,FLd,Dystric Fluvisols,FL,FLUVISOLS,4,JAD,Fluvaquent,J,Entisols,FLd,,
+FLe,Eutric Fluvisols,Fluvisols,147,,Je,Eutric Fluvisol,J,Fluvisols,1,II/42,Sols d'apport alluvial,II,Sols peu évolués,FLe,FLe,Eutric Fluvisols,FL,FLUVISOLS,2,JAD,Fluvaquent,J,Entisols,FLe,Sol mineral brut d'apport fluviatile,Eutri-Skeletic Fluvisols
+FLt,Thionic Fluvisols,Fluvisols,150,,Jt,Thionic Fluvisol,J,Fluvisols,4,XII/11,Sols salins (Solontchank) profil AC,XII,Sols sodiques,FLt,FLt,Thionic Fluvisols,FL,FLUVISOLS,7,IAH,Tropaquept,I,Inceptisols,FLt,Sol sulfaté acide,"Sali-Gleyic Fluvisol (Thionic,Sodic)"
+FR,Ferralsols,Ferrasols,114,,F,Ferrasol,F,Ferrasols,,,,,,FR,FR,FERRALSOLS,FR,FERRALSOLS,71,,,,,FR,,
+FRg,Acric Ferralsols,Ferrasols,119,,Fa,Acric Ferralsol,F,Ferrasols,102,X/31,Sols ferralliquites fortement désaturés en (B) typiques,X,Sols ferrallitiques,FRg,FRg,Geric Ferralsols,FR,FERRALSOLS,76,CEC,Acrorthox,C,Oxisols,FRg,,
+FRh,Orthic Ferralsols,Ferrasols,115,,Fo,Orthic Ferrasol,F,Ferrasols,98,X/31,Sols ferralliquites fortement désaturés en (B) typiques,X,Sols ferrallitiques,FRh,FRh,Haplic Ferralsols,FR,FERRALSOLS,72,CDD,Haplustox,C,Oxisols,FRh,,
+FRr,Rhodic Ferralsols,Ferrasols,117,,Fr,Rhodic Ferralsol,F,Ferrasols,100,X/21,Sols ferralitiques moyennement de saturés en (B) typiques,X,Sols ferrallitiques,FRr,FRr,Rhodic Ferralsols,FR,FERRALSOLS,74,CE,Orthox,C,Oxisols,FRr,,
+FRu,Humic Ferralsols,Ferrasols,118,,Fh,Humic Ferralsol,F,Ferrasols,101,X/32,Sols ferralitiques fortement désaturés humiféres,X,Sols ferrallitiques,FRu,FRu,Humic Ferralsols,FR,FERRALSOLS,75,CDD,Haplustox,C,Oxisols,FRu,,
+FRx,Xanthic Ferralsols,Ferrasols,116,,Fx,Xanthic Ferralsol,F,Ferrasols,99,X/31,Sols ferralliquites fortement désaturés en (B) typiques,X,Sols ferrallitiques,FRx,FRx,Xanthic Ferralsols,FR,FERRALSOLS,73,CDD,Haplustox,C,Oxisols,FRx,,
+GG,Glaciers,,137,GG,,,,,,,,,,GG,GG,Glaciers,GG,Glaciers,199,,,,,GG,,
+GL,Gleysols,Gleysols,1,,G,Gleysols,G,Gleysols,,,,,,GL,GL,GLEYSOLS,GL,GLEYSOLS,9,,,,,GL,,
+GLd,Dystric Gleysols,Gleysols,4,,Gd,Dystric Gleysol,G,Gleysols,7,XI/32,Sols á pseudogley,XI,Sols hydromorphes,GLd,GLd,Dystric Gleysols,GL,GLEYSOLS,12,IAI,Humaquept,I,Inceptisols,GLd,Sol hydromorphe,
+GLe,Eutric Gleysols,Gleysols,2,,Ge,Eutric Gleysol,G,Gleysols,5,XI/31,Sols á gley,XI,Sols hydromorphes,GLe,GLe,Eutric Gleysols,GL,GLEYSOLS,10,IAJ,Haplaquept,I,Inceptisols,GLe,"Sol peu évolué non climatique d'apport alluvial, hydromorphe",
+GLi,Gelic Gleysols,Gleysols,8,2012aug20,Gx,Gelic Gleysol,G,Gleysols,11,XI/31,Sols á gley,XI,Sols hydromorphes,GLi,GLi,Gelic Gleysols,GL,GLEYSOLS,17,IAE,Cryaquept,I,Inceptisols,GLi,,
+GLk,Calcaric Gleysols,Gleysols,3,,Gc,Calcaric Gleysol,G,Gleysols,6,XI/36,Sols hydromorphes á redistribution du calcaire or du gypse,XI,Sols hydromorphes,GLk,GLk,Calcic Gleysols,GL,GLEYSOLS,11,IAJ,Haplaquept,I,Inceptisols,GLk,,
+GLm,Mollic Gleysols,Gleysols,5,,Gm,Mollic Gleysol,G,Gleysols,8,XI/34,Sols á amphygley,XI,Sols hydromorphes,GLm,GLm,Mollic Gleysols,GL,GLEYSOLS,14,GBF,Haplaquoll,G,Mollisols,GLm,,
+GLu,Humic Gleysols,Gleysols,6,,Gh,Humic Gleysol,G,Gleysols,9,XI/21,Sols humiques á gley,XI,Sols hydromorphes,GLu,GLu,Umbric Gleysols,GL,GLEYSOLS,15,IAI,Humaquept,I,Inceptisols,GLu,,
+GR,Greyzems,Greyzems,64,,M,Greyzem,M,Greyzems,,,,,,GR,GR,GREYZEMS,GR,GREYZEMS,78,,,,,GR,,
+GRg,Gleyic Greyzems,Greyzems,66,,Mg,Gleyic Greyzem,M,Greyzems,57,VII/21,Sols gris forestiers,VII,Sols brunifiés,GRg,GRg,Gleyic Greyzems,GR,GREYZEMS,80,GBE,Argiaquoll,G,Mollisols,GRg,,
+GRh,Orthic Greyzems,Greyzems,65,,Mo,Orthic Greyzem,M,Greyzems,56,VII/21,Sols gris forestiers,VII,Sols brunifiés,GRh,GRh,Haplic Greyzems,GR,GREYZEMS,79,GED,Argiboroll,G,Mollisols,GRh,,
+GY,Gypsic Yermosols,Yermosols,42,,Yy,Gypsic Yermosol,Y,Yermosols,38,I/35,Sols minéraux bruts xériques organisés d'apport,I,Sols minéraux bruts,GY,GY,GYPSISOLS,GY,GYPSISOLS,81,EBD,Gypsiorthid,E,Aridisols,GY,,
+GY,Gypsic Xerosols,Xerosols,48,,Xy,Gypsic xerosol,X,Xerosols,43,VI/32,Sierozems,VI,Sols isohumiques,GY,GY,GYPSISOLS,GY,GYPSISOLS,81,EBD,Gypsiorthid,E,Aridisols,GY,Sol calcimorphe à encroûtement gypseux,Petric Gypsisols
+HS,Eutric Histosols,Histosols,122,undiff.,Oe,Eutric Histosol,O,Histosols,104,XI/1,Sols hydromorphes organiques,XI,Sols hydromorphes,HS,HS,HISTOSOLS,HS,HISTOSOLS,86,ADB,Borosaprist,A,Histosols,HS,,
+HS,Dystric Histosols,Histosols,123,undiff.,Od,Dystric Histosol,O,Histosols,105,XI/1,Sols hydromorphes organiques,XI,Sols hydromorphes,HS,HS,HISTOSOLS,HS,HISTOSOLS,86,AB,Fibrist,A,Histosols,HS,,
+HS,Histosols,Histosols,121,,O,Histosol,O,Histosols,,,,,,HS,HS,HISTOSOLS,HS,HISTOSOLS,86,,,,,HS,,
+HSi,Gelic Histosols,Histosols,124,,Ox,Gelic Histosol,O,Histosols,106,XI/1,Sols hydromorphes organiques,XI,Sols hydromorphes,HSi,HSi,Gelic Histosols,HS,HISTOSOLS,91,ACD,Cryohemist,A,Histosols,HSi,,
+KS,Kastanozems,Kastenozems,50,,K,Kastenozem,K,Kastenozems,,,,,,KS,KS,KASTANOZEMS,KS,KASTANOZEMS,92,,,,,KS,,
+KSh,Haplic Kastanozems,Kastenozems,51,,Kh,Haplic Kastanozem,K,Kastenozems,45,VI/22,Sols chatains,VI,Sols isohumiques,KSh,KSh,Haplic Kastanozems,KS,KASTANOZEMS,93,GFG,Haplustoll,G,Mollisols,KSh,,
+KSk,Calcic Kastanozems,Kastenozems,52,,KK,Calcic Kastanozem,K,Kastenozems,46,VI/22,Sols chatains,VI,Sols isohumiques,KSk,KSk,Calcic Kastanozems,KS,KASTANOZEMS,95,GEE,Vermiboroll,G,Mollisols,KSk,Sol isohumique subtropical-châtain,Luvi-Calcic Kastanozems (Sodic)
+KSl,Luvic Kastanozems,Kastenozems,53,,Kl,Luvic Kastanozem,K,Kastenozems,47,VI/31,Sols marrons,VI,Sols isohumiques,KSl,KSl,Luvic Kastanozems,KS,KASTANOZEMS,94,GFE,Argiustoll,G,Mollisols,KSl,,
+LPm,Rendzinas,Redznina,20,,E,Redznina,E,Redznina,21,V/II,Rendzines,V,Sols calcimagnésiques,LPm,LPm,Mollic Leptosols,LP,LEPTOSOLS,101,GC,Rendoll,G,Mollisols,LPm,,
+LPq,Lithosols,Lithosol,14,2102june13,I,Lithosol,I,Lithosol,16,I/11,Sols minéraux bruts d'érosion,I,Sols minéraux bruts,LPq,LPq,Lithic Leptosols,LP,LEPTOSOLS,103,,,,,LPq,,
+LPu,Rankers,Ranker,21,,U,Ranker,U,Ranker,22,II/21,Rankers,II,Sols peu évolués,LPu,LPu,Umbric Leptosols,LP,LEPTOSOLS,102,IFD,Haplumbrept,I,Inceptisols,LPu,,
+LV,Luvisols,Luvisols,77,,L,Luvisol,L,Luvisols,,,,,,LV,LV,LUVISOLS,LV,LUVISOLS,105,,,,,LV,,
+LVa,Albic Luvisols,Luvisols,83,,La,Albic Luvisol,L,Luvisols,72,(-),,(-),(-),LVa,LVa,Albic Luvsiols,LV,LUVISOLS,111,HBD,Cryoboralf,H,Alfisols,LVa,,
+LVg,Gleyic Luvisols,Luvisols,85,,Lg,Gleyic Luvisol,L,Luvisols,74,VII/12,Sols lessivés,VII,Sols brunifiés,LVg,LVg,Gleyic Luvisols,LV,LUVISOLS,113,HAI,Ochraqualf,H,Alfisols,LVg,,
+CLh,Calcic Yermosols,Yermosols,41,,Yk,Calcic Yermosol,Y,Yermosols,37,I/35,Sols minéraux bruts xériques organisés d'apport,I,Sols minéraux bruts,CLh,CLh,Haplic Calcisols,CL,CALCISOLS,58,EBE,Calciorthid,E,Aridisols,CLh,,
+LVh,Luvic Xerosols,Xerosols,49,1st Approx.,Xl,Luvic Xerosol,X,Xerosols,44,VI/32,Sierozems,VI,Sols isohumiques,LVh,LVh,Haplic Luvisols,LV,LUVISOLS,,EAE,Haplargid,E,Aridisols,,,
+LVh,Orthic Luvisols,Luvisols,78,,Lo,Orthic luvisol,L,Luvisols,67,VII/12,Sols lessivés,VII,Sols brunifiés,LVh,LVh,Haplic Luvisols,LV,LUVISOLS,106,HEH,Hapludalf,H,Alfisols,LVh,,
+LVk,Calcic Luvisols,Luvisols,80,,Lk,Calcic luvisol,L,Luvisols,69,VII/12,Sols lessivés,VII,Sols brunifiés,LVk,LVk,Calcic Luvisols,LV,LUVISOLS,,HDE,Rhodoxeralf,H,Alfisols,,,
+LVv,Vertic Luvisols,Luvisols,81,,Lv,Vertic Luvisol,L,Luvisols,70,VII/12,Sols lessivés,VII,Sols brunifiés,LVv,LVv,Vertic Luvisols,LV,LUVISOLS,110,HDF,Parexeralf,H,Alfisols,LVv,,
+LVx,Chromic Luvisols,Luvisols,79,,Lc,Chromic luvisol,L,Luvisols,68,IX/22,Sols fersiallitiques sans reserve calcique (et lessivés),IX,Sols á sesquioxydes de fer,LVx,LVx,Chromic Luvisols,LV,LUVISOLS,108,HDE,Rhodoxeralf,H,Alfisols,LVx,,
+LXf,Ferric Luvisols,Luvisols,82,2012july09,Lf,Ferric Luvisol,L,Luvisols,71,IX/22,Sols fersiallitiques sans reserve calcique (et lessivés),IX,Sols á sesquioxydes de fer,LXf,LXf,Ferric Lixisols,LX,LIXISOLS,116,HDG,Haploxeralf,H,Alfisols,LXf,"Sol ferralitique à réserve calcique, à caractère hydromorphe",
+LXp,Plinthic Luvisols,Luvisols,84,??2101june13,Lp,Plinthic Luvisol,L,Luvisols,73,IX/12,Sols ferrugineux tropicaux lessivés,IX,Sols á sesquioxydes de fer,LXp,LXp,Plinthic Lixisols,LX,LIXISOLS,117,HCB,Plinthustalf,H,Alfisols,LXp,,
+NI,No Information,,151,,,,,,,,,,,,,,,,,,,,,,,
+NT,Nitosols,Nitosols,110,,N,Nitosol,N,Nitosols,,,,,,NT,NT,NITISOLS,NT,NITISOLS,121,,,,,NT,,
+NTh,Dystric Nitosols,Nitosols,112,1st Approx.--??2102june13,Nd,Dystric Nitosol,N,Nitosols,96,IX/12,Sols ferrugineux tropicaux lessivés,IX,Sols á sesquioxydes de fer,NTh,NTh,Haplic Nitisols,NT,NITISOLS,122,FCC,Paleudult,F,Ultisols,NTh,,
+NTr,Eutric Nitosols,Nitosols,111,1st Approx.??2102june13,Ne,Eutric Nitosol,N,Nitosols,95,IX/12,Sols ferrugineux tropicaux lessivés,IX,Sols á sesquioxydes de fer,NTr,NTr,Rhodic Nitisols,NT,NITISOLS,123,FDB,Paleustult,F,Ultisols,NTr,,
+NTu,Humic Nitosols,Nitosols,113,,Nh,Humic Nitosol,N,Nitosols,97,IX/12,Sols ferrugineux tropicaux lessivés,IX,Sols á sesquioxydes de fer,NTu,NTu,Humic Nitisols,NT,NITISOLS,124,HCD,Paleustalf,H,Alfisols,NTu,,
+PD,Podzoluvisols,Podzoluvisols,86,,D,Podzoluvisol,D,Podzoluvisols,,,,,,PD,PD,PODZOLUVISOLS,PD,PODZOLUVISOLS,125,,,,,PD,,
+PDd,Dystric Podzoluvisol,Podzoluvisols,88,,Dd,Dystric Podzoluvisol,D,Podzoluvisols,76,VII/12,Sols lessivés,VII,Sols brunifiés,PDd,PDd,Dystric Podzoluvisols,PD,PODZOLUVISOLS,127,HED,Glossudalf,H,Alfisols,PDd,,
+PDe,Eutric Podzoluvisols,Podzoluvisols,87,,De,Eutric Podzoluvisol,D,Podzoluvisols,75,VII/22,Sols derno-podzoliques,VII,Sols brunifiés,PDe,PDe,Eutric Podzoluvisols,PD,PODZOLUVISOLS,126,HBD,Cryoboralf,H,Alfisols,PDe,,
+PDg,Gleyic Podzoluvisols,Podzoluvisols,89,,Dg,Gleyic Podzoluvisol,D,Podzoluvisols,77,VII/12,Sols lessivés,VII,Sols brunifiés,PDg,PDg,Gleyic Podzoluvisols,PD,PODZOLUVISOLS,129,HAF,Glossaqualf,H,Alfisols,PDg,,
+PH,Phaeozems,Phaeozems,59,,H,Phaeozems,H,Phaeozems,,,,,,PH,PH,PHAEOZEMS,PH,PHAEOZEMS,131,,,,,PH,,
+PHc,Calcaric Phaeozems,Phaeozems,61,,Hc,Calcaric Phaeozem,H,Phaeozems,53,VI/11,Brunizems,VI,Sols isohumiques,PHc,PHc,Calcaric Phaeozems,PH,PHAEOZEMS,133,GEG,Haploboroll,G,Mollisols,PHc,,
+PHg,Gleyic Phaeozems,Phaeozems,63,,Hg,Gleyic Phaeozem,H,Phaeozems,55,VI/11,Brunizems,VI,Sols isohumiques,PHg,PHg,Gleyic Phaeozems,PH,PHAEOZEMS,136,GBE,Argiaquoll,G,Mollisols,PHg,,
+PHh,Haplic Phaeozems,Phaeozems,60,,Hh,Haplic Phaeozem,H,Phaeozems,52,VI/11,Brunizems,VI,Sols isohumiques,PHh,PHh,Haplic Phaeozems,PH,PHAEOZEMS,132,GGD,Hapludoll,G,Mollisols,PHh,,
+PHl,Luvic Phaeozems,Phaeozems,62,,Hl,Luvic phaeozem,H,Phaeozems,54,VI/4,Sols isohumiques á pédoclimat á température élevée en période pluvieuse,VI,Sols isohumiques,PHl,PHl,Luvic Phaeozems,PH,PHAEOZEMS,134,GGB,Argiudoll,G,Mollisols,PHl,Sol rouge méditeranée dans karst calcaire érodé,Calcari-Luvic Phaeozems
+PL,Planosols,Planosols,97,,W,Planosol,W,Planosols,,,,,,PL,PL,PLANOSOLS,PL,PLANOSOLS,137,,,,,PL,,
+PLd,Dystric Planosols,Planosols,99,,Wd,Dystric Planosol,W,Planosols,85,XI/32,Sols á pseudogley,XI,Sols hydromorphes,PLd,PLd,Dystric Planosols,PL,PLANOSOLS,139,FAC,Albaquult,F,Ultisols,PLd,"Sol à mull, sol lessivé hydromorphe",Dystri-Albic Planosols
+PLe,Eutric Planosols,Planosols,98,,We,Eutric Planosol,W,Planosols,84,XI/32,Sols á pseudogley,XI,Sols hydromorphes,PLe,PLe,Eutric Planosols,PL,PLANOSOLS,138,HAG,Albaqualf,H,Alfisols,PLe,,
+PLe,Sodic Planosols,Planosols,102,1st Approx.,Ws,Solodic Planosol,W,Planosols,88,XII/23,Sols sodiques á horizon blanchi (solodises),XII,Sols sodiques,PLe,PLe,Eutric Planosols,PL,PLANOSOLS,138,HCC,Natrustalf,H,Alfisols,PLe,,
+PLi,Gelic Planosols,Planosols,103,,Wx,Gelic Planosol,W,Planosols,89,(-),,(-),(-),PLi,PLi,Gelic Planosols,PL,PLANOSOLS,142,HBD,Cryoboralf,H,Alfisols,PLi,,
+PLm,Mollic Planosols,Planosols,100,,Wm,Mollic Planosol,W,Planosols,86,XI/32,Sols á pseudogley,XI,Sols hydromorphes,PLm,PLm,Mollic Planosols,PL,PLANOSOLS,140,GAB,Argialboll,G,Mollisols,PLm,,
+PLu,Humic Planosols,Planosols,101,,Wh,Humic Planosol,W,Planosols,87,XI/32,Sols á pseudogley,XI,Sols hydromorphes,PLu,PLu,Umbric Planosols,PL,PLANOSOLS,141,HCD,Paleustalf,H,Alfisols,PLu,,
+PT,Plinthic Gleysols,Gleysols,7,1st. Approx.,Gp,Plinthic Gleysol,G,Gleysols,10,XI/35,Sols á accumulation de fer en carapace or cuirasse,XI,Sols hydromorphes,PT,PT,PLINTHOSOLS,PT,PLINTHOSOLS,143,IAF,Plinthaquept,I,Inceptisols,PT,,
+PT,Plinthic Ferralsols,Ferrasols,120,???,Fp,Plinthic Ferralsol,F,Ferrasols,103,X/31,Sols ferralliquites fortement désaturés en (B) typiques,X,Sols ferrallitiques,PT,PT,PLINTHOSOLS,PT,PLINTHOSOLS,143,CEF,Haplorthox,C,Oxisols,PT,,
+PTd,Plinthic Acrisols,Acrisols,108,???,Ap,Plinthic Acrisol,A,Acrisols,93,IX/12,Sols ferrugineux tropicaux,IX,Sols á sesquioxydes de fer,,,,,,,FAD,Paleaquult,F,Ultisols,,,
+PZ,Podzols,Podzols,90,,P,Podzol,P,Podzols,,,,,,PZ,PZ,PODZOLS,PZ,PODZOLS,148,,,,,PZ,,
+PZb,Leptic Podzols,Podzols,92,,Pl,Leptic Podzol,P,Podzols,79,VIII/12,Sols podzoliques,VIII,Sols podzolisés,PZb,PZb,Cambic Podzols,PZ,PODZOLS,150,BDE,Haplorthod,B,Spodosol,PZb,,
+PZc,Humic Podzols,Podzols,94,,Ph,Humic Podzol,P,Podzols,81,VIII/11,Podzols,VIII,Sols podzolisés,PZc,PZc,Carbic Podzols,PZ,PODZOLS,152,BCB,Tropohumod,B,Spodosol,PZc,,
+PZf,Ferric Podzols,Podzols,93,,Pf,Ferric Podzol,P,Podzols,80,VIII/11,Podzols,VIII,Sols podzolisés,PZf,PZf,Ferric Podzols,PZ,PODZOLS,151,BB,Ferrod,B,Spodosol,PZf,,
+PZf,Placic Podzols,Podzols,95,,Pp,Placic Podzol,P,Podzols,82,VIII/11,Podzols,VIII,Sols podzolisés,PZf,PZf,Ferric Podzols,PZ,PODZOLS,151,BCA,Placohumod,B,Spodosol,PZf,,
+PZg,Gleyic Podzols,Podzols,96,,Pg,Gleyic Podzol,P,Podzols,83,VIII/11,Podzols,VIII,Sols podzolisés,PZg,PZg,Gleyic Podzols,PZ,PODZOLS,153,BAB,Cryaquod,B,Spodosol,PZg,,
+PZh,Orthic Podzols,Podzols,91,,Po,Octhic Podzol,P,Podzols,78,VIII/11,Podzols,VIII,Sols podzolisés,PZh,PZh,Haplic Podzols,PZ,PODZOLS,149,BDE,Haplorthod,B,Spodosol,PZh,Sol à mull; sols lessivés podzoliques,Skeleti-Albic Podzols
+RG,Regosols,Regosols,9,,R,Regosol,R,Regosols,,,,,,RG,RG,REGOSOLS,RG,REGOSOLS,155,,,,,RG,,
+RG,Xerosols,Xerosols,45,Several options possible,X,Xerosol,X,Xerosols,,,,,,RG,RG,REGOSOLS,RG,REGOSOLS,155,,,,,RG,,
+RG,Yermosols,Yermosols,39,Several options possible??2101june13,Y,Yermosol,Y,Yermosols,,,,,,RG,RG,REGOSOLS,RG,REGOSOLS,155,,,,,RG,,
+RGc,Calcaric Regosols,Regosols,11,,Rc,Calcaric Regosol,R,Regosols,13,II/44,Sols d'apport éolien,II,Sols peu évolués,RGc,RGc,Calcaric Regosols,RG,REGOSOLS,157,JE,Orthent,J,Entisols,RGc,Regosol,Calcari-Leptic Regosols
+RGc,Haplic Yermosols,Yermosols,40,1st Approx.,Yh,Haplic Yermosol,Y,Yermosols,36,I/32,Sols minéraux bruts xériques inorganisés,I,Sols minéraux bruts,RGc,RGc,Calcaric Regosols,RG,REGOSOLS,157,EBF,Camborthid,E,Aridisols,RGc,,
+RGc,Haplic Xerosols,Xerosols,46,1st Approx.??2102une13,Xh,Haplic Xerosol,X,Xerosols,41,VI/32,Sierozems,VI,Sols isohumiques,RGc,RGc,Calcaric Regosols,RG,REGOSOLS,157,EBF,Camborthid,E,Aridisols,RGc,Sol mineral brut d'érosion,Calcaric Regosols
+RGd,Dystric Regosols,Regosols,12,,Rd,Dystric Regosol,R,Regosols,14,II/44,Sols d'apport éolien,II,Sols peu évolués,RGd,RGd,Dystric Regosols,RG,REGOSOLS,159,JCD,Udipsamment,J,Entisols,RGd,"Sol peu évolué d'apport, hydromorphe",Endogleyic Regosol (Dystric)
+RGe,Eutric Regosols,Regosols,10,,Re,Eutric Regosoll,R,Regosols,12,II/44,Sols d'apport éolien,II,Sols peu évolués,RGe,RGe,Eutric Regosols,RG,REGOSOLS,156,JE,Orthent,J,Entisols,RGe,Sol peu évolué d'apport éolien,Eutric Regosol
+RGe,Takyric Yermosols,Yermosols,44,1st Approx.????,Yt,Takyric Yermosol,Y,Yermosols,40,I/35,Sols minéraux bruts xériques organisés d'apport,I,Sols minéraux bruts,RGe,RGe,Eutric Regosols,RG,REGOSOLS,156,EBF,Camborthid,E,Aridisols,RGe,Sol brun subaride,Haplic Regosol (Eutric)
+RGi,Gelic Regosols,Regosols,13,,Rx,Gelic Regosol,R,Regosols,15,II/1,Sols peu évolues á permagel,II,Sols peu évolués,RGi,RGi,Gelic Regosols,RG,REGOSOLS,161,IAE,Cryaquept,I,Inceptisols,RGi,,
+RK,Rock Outcrops,,142,,,,,,,,,,,RK,RK,Rock outcrops,RK,Rock outcrops,196,,,,,RK,,
+SC,Solonchaks,Solochanks,30,,Z,Solochank,Z,Solochanks,,,,,,SC,SC,SOLONCHAKS,SC,SOLONCHAKS,162,,,,,SC,,
+SCg,Gleyic Solonchaks,Solochanks,34,,Zg,Gleyic Solonchack,Z,Solochanks,32,XII/21,Sols salins á alcalins (Solontchak-Solonetz) Profil A (B) C,XII,Sols sodiques,SCg,SCg,Gleyic Solonchaks,SC,SOLONCHAKS,165,IAC,Halaquept,I,Inceptisols,SCg,,
+SCh,Orthic Solonchaks,Solochanks,31,,Zo,Orthic Solonchack,Z,Solochanks,29,XII/21,Sols salins á alcalins (Solontchak-Solonetz) Profil A (B) C,XII,Sols sodiques,SCh,SCh,Haplic Solonchaks,SC,SOLONCHAKS,163,EBA,Salorthid,E,Aridisols,SCh,Sol halomorphe,
+SCh,Takyric Solonchaks,Solochanks,33,,Zt,Takyric Solonchack,Z,Solochanks,31,XII/21,Sols salins á alcalins (Solontchak-Solonetz) Profil A (B) C,XII,Sols sodiques,SCh,SCh,Haplic Solonchaks,SC,SOLONCHAKS,163,EBD,Gypsiorthid,E,Aridisols,SCh,,
+SCm,Mollic Solonchaks,Solochanks,32,,Zm,Orthic Solonchack,Z,Solochanks,30,XII/21,Sols salins á alcalins (Solontchak-Solonetz) Profil A (B) C,XII,Sols sodiques,SCm,SCm,Mollic Solonchaks,SC,SOLONCHAKS,164,GFG,Haplustoll,G,Mollisols,SCm,,
+SN,Solonetz,Solonetzs,35,,S,Solonetz,S,Solonetzs,,,,,,SN,SN,SOLONETZ,SN,SOLONETZ,170,,,,,SN,,
+SNg,Gleyic Solonetz,Solonetzs,38,,Sg,Gleyic Solonetz,S,Solonetzs,35,XII/22,Sols sodiques á horizon B (Solonetz),XII,Sols sodiques,SNg,SNg,Gleyic Solonetz,SN,SOLONETZ,176,HAB,Natraqualf,H,Alfisols,SNg,,
+SNh,Orthic Solonetz,Solonetzs,36,,So,Orthic Solonetz,S,Solonetzs,33,XII/23,Sols sodiques á horizon blanchi (solodises),XII,Sols sodiques,SNh,SNh,Haplic Solonetz,SN,SOLONETZ,171,HCC,Natrustalf,H,Alfisols,SNh,,
+SNm,Mollic Solonetz,Solonetzs,37,,Sm,Mollic Solonetz,S,Solonetzs,34,XII/22,Sols sodiques á horizon B (Solonetz),XII,Sols sodiques,SNm,SNm,Mollic Solonetz,SN,SOLONETZ,172,GFB,Natrustoll,G,Mollisols,SNm,,
+ST,Salt flats,,135,,,,,,,,,,,ST,ST,Salt flats,ST,Salt flats,195,,,,,ST,,
+VR,Pellic Vertisols,Vertisols,28,undiff.,Vp,Pellic Vertisol,V,Vertisols,27,III/1,Vertisols a drainage externe nul or réduit,III,Vertisols,VR,VR,VERTISOLS,VR,VERTISOLS,177,DAB,Pelloxerert,D,Vertisols,VR,,
+VR,Chromic Vertisols,Vertisols,29,undiff. (climatic clustering),Vc,Chromic Vertisol,V,Vertisols,28,III/2,Sols vertisols a drainage externe possible,III,Vertisols,VR,VR,VERTISOLS,VR,VERTISOLS,177,DAA,Chromoxerert,D,Vertisols,VR,,
+VR,Vertisols,Vertisols,27,,V,Vertisol,V,Vertisols,,,,,,VR,VR,VERTISOLS,VR,VERTISOLS,177,,,,,VR,,
+WR,Water bodies,,138,,,,,,,,,,,WR,WR,Water bodies,WR,Water,198,,,,,WR,,
+,,,,,,,,,,,,,,GYh,GYh,Haplic Gypsisols,GY,GYPSISOLS,82,,,,,GYh,Calcimorphe sur accumulation gypseuse,Hypergypsi-Leptic Gypsisols
+,,,,,,,,,,,,,,,,,,,,,,,,CMc,Rendzine,Calcari-Leptic Cambisols
+,,,,,,,,,,,,,,CLp,CLp,Petric Calcisols,CL,CALCISOLS,60,,,,,CLp,Rendzine brune sur croute et encroutement calcaire,Hypercalci-Epipetric Calcisols
+,,,,,,,,,,,,,,,,,,,,,,,,CMc,Rendzine brunifiée,Calcari-Leptic Cambisols
+,,,,,,,,,,,,,,,,,,,,,,,,CLp,Rendzine sur croute,Hypercalci-Petric Calcisols
+,,,,,,,,,,,,,,LXh,LXh,Haplic Lixisols,LX,LIXISOLS,115,,,,,LXh,Sol à Mull - Sol brun forestier,Haplic Lixisols
+,,,,,,,,,,,,,,,,,,,,,,,,LXh,Sol à Mull - Sol brun lessivé,Haplic Lixisols
+,,,,,,,,,,,,,,ALh,ALh,Haplic Alisols,AL,ALISOLS,25,,,,,ALh,Sol à mull; sols bruns faiblement lessivés,Profondic Alisols
+,,,,,,,,,,,,,,LVj,LVj,Stagnic Luvisols,LV,LUVISOLS,112,,,,,LVj,Sol à mull; sols lessivés hydromorphes,Endodystri-Stagnic Luvisols
+,,,,,,,,,,,,,,,,,,,,,,,,CLp,Sol brun calcaire sur marne,Hypercalci-Petric Calcisols
+,,,,,,,,,,,,,,CLl,CLl,Luvic Calcisols,CL,CALCISOLS,59,,,,,CLl,Sol brun isohumique,Chromi-Luvic Calcisols
+,,,,,,,,,,,,,,,,,,,,,,,,ARl,Sol brun subaride,Bruni-Hypoluvic Arenosol (Eutric)
+,,,,,,,,,,,,,,LPk,LPk,Rendzic Leptosols,LP,LEPTOSOLS,100,,,,,LPk,Sol calcomagnesimorphe rendzine,Rendzic Leptosols
+,,,,,,,,,,,,,,,,,,,,,,,,CLp,Sol calcomagnesimorphes rendzine,Hypercalci-Epipetric Calcisols
+,,,,,,,,,,,,,,,,,,,,,,,,CLp,Sol de croûte or encroûtement gypseux,Lepti-Petric Calcisols
+,,,,,,,,,,,,,,,,,,,,,,,,ARl,Sol ferrugineux tropical faiblement lessivé,Hypoluvic Arenosol (Eutric)
+,,,,,,,,,,,,,,LXg,LXg,Gleyic Lixisols,LX,LIXISOLS,120,,,,,LXg,Sol ferrugineux tropical lessivé,Gleyic Lixisols (Ferric)
+,,,,,,,,,,,,,,,,,,,,,,,,ACf,Sol ferrugineux tropical lessivé,"Vetic Acrisol (Abruptic,Hyperdystric)"
+,,,,,,,,,,,,,,,,,,,,,,,,ARh,Sol ferrugineux tropical lessivé,
+,,,,,,,,,,,,,,,,,,,,,,,,LXh,Sol ferrugineux tropical lessivé,"Haplic Lixisol (Epiarenic,Chromic)"
+,,,,,,,,,,,,,,,,,,,,,,,,ACf,Sol ferrugineux tropical lessivé,"Haplic Acrisol (Ferric, Epieutric,Arenic)"
+,,,,,,,,,,,,,,,,,,,,,,,,ACh,Sol ferrugineux tropical lessivé,
+,,,,,,,,,,,,,,,,,,,,,,,,ARl,Sol ferrugineux tropical lessivé,Rubi-Hypoluvic Arenosol (Dystric)
+,,,,,,,,,,,,,,,,,,,,,,,,ACf,Sol ferrugineux tropical lessivé à taches diffuses,"Hapli-Ferric Acrisol (Abruptic,Chromic)"
+,,,,,,,,,,,,,,,,,,,,,,,,LXf,Sol ferrugineux tropical lessivé sur grès sablo-argileux,
+,,,,,,,,,,,,,,,,,,,,,,,,Acp,"Sol ferrugineux tropical lessivé, induré",Pisoplinthic Acrisols (Chromic)
+,,,,,,,,,,,,,,,,,,,,,,,,LXf,Sol ferrugineux tropical peu lessivé,
+,,,,,,,,,,,,,,,,,,,,,,,,CLl,Sol fersialitique à réserve calcique,Chromi-Luvic Calcisols
+,,,,,,,,,,,,,,,,,,,,,,,,RGe,Sol gravillonnaire,
+,,,,,,,,,,,,,,,,,,,,,,,,FLe,Sol hydromorphe à pseudogley,Gleyic Fluvisol (Eutric)
+,,,,,,,,,,,,,,,,,,,,,,,,GLe,Sol hydromorphe à pseudogley de surface,
+,,,,,,,,,,,,,,,,,,,,,,,,GLe,Sol hydromorphe minéraux argileux à pseudogley,
+,,,,,,,,,,,,,,,,,,,,,,,,GLe,Sol hydromorphe peu humifère,
+,,,,,,,,,,,,,,,,,,,,,,,,GLe,Sol hydromorphe sur argile de décantation,
+,,,,,,,,,,,,,,,,,,,,,,,,CMc,Sol isohumique subtropical brun modal,Chromi-Calcaric Cambisols
+,,,,,,,,,,,,,,LVk,LVk,Calcic Luvisols,LV,LUVISOLS,109,,,,,LVk,Sol isohumique subtropical châtain modal,Chromi-Calcaric Luvisols
+,,,,,,,,,,,,,,,,,,,,,,,,CLl,"Sol iso-humique, sierozem modal (subdesert soil)",Luvic Calcisols
+,,,,,,,,,,,,,,ARc,ARc,Calcaric Arenosols,AR,ARENOSOLS,44,,,,,ARc,"Sol mineral brut, erg, dunes",Calcari-Gypsiric Arenosols
+,,,,,,,,,,,,,,,,,,,,,,,,FLc,Sol peu évolué,Hyposodi-Calcaric Fluvisols
+,,,,,,,,,,,,,,ARh,ARh,Haplic Arenosols,AR,ARENOSOLS,39,,,,,ARh,Sol peu évolué d’apport éolien,Haplic Arenosols
+,,,,,,,,,,,,,,,,,,,,,,,,Fle,Sol peu évolué d'apport alluvial,"Haplic Arenosols (Eutric, Arenic)"
+,,,,,,,,,,,,,,,,,,,,,,,,Rge,Sol peu évolué d'érosion,"Hapli-Leptic Regosol (Eutric,Skeletic)"
+,,,,,,,,,,,,,,,,,,,,,,,,ARh,Sol peu évolué humifère sur matériaux très sableux de dunes aplanies,
+,,,,,,,,,,,,,,,,,,,,,,,,FLe,Sol peu évolué non climatique d'apport hydromorphe sur alluvions lacustrines de texture fine,"Gleyic Fluvisol (Eutric,Clayic)"
+,,,,,,,,,,,,,,,,,,,,,,,,RGc,"Sol peu évolué, non-climatique, d'érosion",Calcaric Regosols
+,,,,,,,,,,,,,,,,,,,,,,,,LVk,Sol rouge méditeranée,Sodi-Calcic Luvisols (Rhodic)
+,,,,,,,,,,,,,,,,,,,,,,,,LVk,Sol rouge méditeranée,
+,,,,,,,,,,,,,,SCn,SCn,Sodic Solonchaks,SC,SOLONCHAKS,168,,,,,SCn,Sol salé à alcalis sur alluvion fluviatile,Sodi-Gleyic Solonchaks (Calcaric)
+,,,,,,,,,,,,,,SNk,SNk,Calcic Solonetz,SN,SOLONETZ,173,,,,,SNk,Sol salé sur alluvion fluviatile,Calci-Salic Solonetz
+,,,,,,,,,,,,,,,,,,,,,,,,FLt,Sol sulfaté acide maturé à jarosite à moyenne profondeur,
+,,,,,,,,,,,,,,VRe,VRe,Eutric Vertisols,VR,VERTISOLS,178,,,,,VRe,Sol vertique,Sodi-Hyposalic Vertisols (Gypsiric)
+,,,,,,,,,,,,,,,,,,,,,,,,Rge,Sols gravillonnaire sur niveau d'alteration argileuse de roche basique,
+,,,,,,,,,,,,,,,,,,,,,,,,VRe,Vertisol,
+,,,,,,,,,,,,,,VRk,VRk,Calcic Vertisols,VR,VERTISOLS,180,,,,,VRk,Vertisol lithomorph e modal á caractère accentué,Hyposodi-Calcic Vertisols
+,,,,,,,,,,,,,,,,,,,,,,,,VRe,Vertisol lithomorphe à surface de structure massive (sol modal sur marnes),
+,,,,,,,,,,,,,,,,,,,,,,,,VRk,Vertisol lithomorphe à surface massive,Mazic Vertisol (Calcaric)
+,,,,,,,,,,,,,,ACp,ACp,Plinthic Acrisols,AC,ACRISOLS,22,,,,,ACp,,
+,,,,,,,,,,,,,,AL,AL,ALISOLS,AL,ALISOLS,24,,,,,AL,,
+,,,,,,,,,,,,,,ALf,ALf,Ferric Alisols,AL,ALISOLS,26,,,,,ALf,,
+,,,,,,,,,,,,,,ALg,ALg,Gleyic Alisols,AL,ALISOLS,30,,,,,ALg,,
+,,,,,,,,,,,,,,ALj,ALj,Stagnic Alisols,AL,ALISOLS,29,,,,,ALj,,
+,,,,,,,,,,,,,,ALp,ALp,Plinthic Alisols,AL,ALISOLS,28,,,,,ALp,,
+,,,,,,,,,,,,,,ALu,ALu,Humic Alisols,AL,ALISOLS,27,,,,,ALu,,
+,,,,,,,,,,,,,,ANg,ANg,Gleyic Andosols,AN,ANDOSOLS,36,,,,,ANg,,
+,,,,,,,,,,,,,,ANi,ANi,Gelic Andosols,AN,ANDOSOLS,37,,,,,ANi,,
+,,,,,,,,,,,,,,ARe,ARe,Eutric Arenosols,AR,ARENOSOLS,207,,,,,ARe,,
+,,,,,,,,,,,,,,ARg,ARg,Gleyic Arenosols,AR,ARENOSOLS,45,,,,,ARg,,
+,,,,,,,,,,,,,,AT,AT,ANTHROSOLS,AT,ANTHROSOLS,46,,,,,AT,,
+,,,,,,,,,,,,,,ATa,ATa,Aric Anthrosols,AT,ANTHROSOLS,47,,,,,ATa,,
+,,,,,,,,,,,,,,ATc,ATc,Cumulic Anthrosols,AT,ANTHROSOLS,48,,,,,ATc,,
+,,,,,,,,,,,,,,ATf,ATf,Fimic Anthrosols,AT,ANTHROSOLS,49,,,,,ATf,,
+,,,,,,,,,,,,,,ATu,ATu,Urbic Anthrosols,AT,ANTHROSOLS,50,,,,,ATu,,
+,,,,,,,,,,,,,,CHg,CHg,Gleyic Chernozems,CH,CHERNOZEMS,56,,,,,CHg,,
+,,,,,,,,,,,,,,CL,CL,CALCISOLS,CL,CALCISOLS,57,,,,,CL,,
+,,,,,,,,,,,,,,CMh,CMh,Haplic Cambisols,CM,CAMBISOLS,208,,,,,CMh,,
+,,,,,,,,,,,,,,FLm,FLm,Mollic Fluvisols,FL,FLUVISOLS,5,,,,,FLm,,
+,,,,,,,,,,,,,,FLs,FLs,Salic Fluviosls,FL,FLUVISOLS,8,,,,,FLs,,
+,,,,,,,,,,,,,,FLu,FLu,Umbric Fluvisols,FL,FLUVISOLS,6,,,,,FLu,,
+,,,,,,,,,,,,,,FP,FP,Fishpond,FP,Fishpond,204,,,,,FP,,
+,,,,,,,,,,,,,,FRp,FRp,Plinthic Ferralsols,FR,FERRALSOLS,77,,,,,FRp,,
+,,,,,,,,,,,,,,GLa,GLa,Andic Gleysols,GL,GLEYSOLS,13,,,,,GLa,,
+,,,,,,,,,,,,,,GLt,GLt,Thionic Gleysols,GL,GLEYSOLS,16,,,,,GLt,,
+,,,,,,,,,,,,,,GYk,GYk,Calcic Gypsisols,GY,GYPSISOLS,83,,,,,GYk,,
+,,,,,,,,,,,,,,GYl,GYl,Luvic Gypsisols,GY,GYPSISOLS,84,,,,,GYl,,
+,,,,,,,,,,,,,,GYp,GYp,Petric Gypsisols,GY,GYPSISOLS,85,,,,,GYp,,
+,,,,,,,,,,,,,,HD,HD,Humanly disturbed,HD,Humanly disturbed,202,,,,,HD,,
+,,,,,,,,,,,,,,HSf,HSf,Fibric Histosols,HS,HISTOSOLS,89,,,,,HSf,,
+,,,,,,,,,,,,,,HSl,HSl,Folic Histosols,HS,HISTOSOLS,87,,,,,HSl,,
+,,,,,,,,,,,,,,HSs,HSs,Terric Histosols,HS,HISTOSOLS,88,,,,,HSs,,
+,,,,,,,,,,,,,,HSt,HSt,Thionic Histosols,HS,HISTOSOLS,90,,,,,HSt,,
+,,,,,,,,,,,,,,IS,IS,Island,IS,Island,205,,,,,IS,,
+,,,,,,,,,,,,,,KSy,KSy,Gypsic Kastanozems,KS,KASTANOZEMS,96,,,,,KSy,,
+,,,,,,,,,,,,,,LP,LP,LEPTOSOLS,LP,LEPTOSOLS,97,,,,,LP,,
+,,,,,,,,,,,,,,LPd,LPd,Dystric Leptosols,LP,LEPTOSOLS,99,,,,,LPd,,
+,,,,,,,,,,,,,,LPe,LPe,Eutric Leptosols,LP,LEPTOSOLS,98,,,,,LPe,,
+,,,,,,,,,,,,,,LPi,LPi,Gelic Leptosols,LP,LEPTOSOLS,104,,,,,LPi,,
+,,,,,,,,,,,,,,LVe,LVe,Eutric Luvisols,LV,LUVISOLS,206,,,,,LVe,,
+,,,,,,,,,,,,,,LVf,LVf,Ferric Luvisols,LV,LUVISOLS,107,,,,,LVf,,
+,,,,,,,,,,,,,,LX,LX,LIXISOLS,LX,LIXISOLS,114,,,,,LX,,
+,,,,,,,,,,,,,,LXa,LXa,Albic Lixisols,LX,LIXISOLS,118,,,,,LXa,,
+,,,,,,,,,,,,,,LXj,LXj,Stagnic Lixisols,LX,LIXISOLS,119,,,,,LXj,,
+,,,,,,,,,,,,,,MA,MA,Marsh,MA,Marsh,203,,,,,MA,,
+,,,,,,,,,,,,,,ND,ND,No Data,ND,No Data,200,,,,,ND,,
+,,,,,,,,,,,,,,PDi,PDi,Gelic Podzoluvisols,PD,PODZOLUVISOLS,130,,,,,PDi,,
+,,,,,,,,,,,,,,PDj,PDj,Stagnic Podzoluvisols,PD,PODZOLUVISOLS,128,,,,,PDj,,
+,,,,,,,,,,,,,,PHj,PHj,Stagnic Phaeozems,PH,PHAEOZEMS,135,,,,,PHj,,
+,,,,,,,,,,,,,,PTa,PTa,Albic Plinthosols,PT,PLINTHOSOLS,147,,,,,PTa,,
+,,,,,,,,,,,,,,PTd,PTd,Dystric Plinthosols,PT,PLINTHOSOLS,145,,,,,PTd,,
+,,,,,,,,,,,,,,PTe,PTe,Eutric Plinthosols,PT,PLINTHOSOLS,144,,,,,PTe,,
+,,,,,,,,,,,,,,PTu,PTu,Humic Plinthosols,PT,PLINTHOSOLS,146,,,,,PTu,,
+,,,,,,,,,,,,,,PZi,PZi,Gelic Podzols,PZ,PODZOLS,154,,,,,PZi,,
+,,,,,,,,,,,,,,RGh,RGh,Haplic Regosol,RG,REGOSOLS,209,,,,,RGh,,
+,,,,,,,,,,,,,,RGu,RGu,Umbric Regosols,RG,REGOSOLS,160,,,,,RGu,,
+,,,,,,,,,,,,,,RGy,RGy,Gypsic Regosols,RG,REGOSOLS,158,,,,,RGy,,
+,,,,,,,,,,,,,,SCi,SCi,Gelic Solonchaks,SC,SOLONCHAKS,169,,,,,SCi,,
+,,,,,,,,,,,,,,SCk,SCk,Calcic Solonchaks,SC,SOLONCHAKS,166,,,,,SCk,,
+,,,,,,,,,,,,,,SCy,SCy,Gypsic Solonchaks,SC,SOLONCHAKS,167,,,,,SCy,,
+,,,,,,,,,,,,,,SNj,SNj,Stagnic Solonetz,SN,SOLONETZ,175,,,,,SNj,,
+,,,,,,,,,,,,,,SNy,SNy,Gypsic Solonetz,SN,SOLONETZ,174,,,,,SNy,,
+,,,,,,,,,,,,,,UR,UR,"Urban, mining, etc.",UR,"Urban, mining, etc.",201,,,,,UR,,
+,,,,,,,,,,,,,,VRd,VRd,Dystric Vertisols,VR,VERTISOLS,179,,,,,VRd,,
+,,,,,,,,,,,,,,VRy,VRy,Gypsic Vertisols,VR,VERTISOLS,181,,,,,VRy,,
+,,,,,,,,,,,,,,WRs,WRs,"Inland water, salt",WR,Water,197,,,,,WRs,,
+,,,,,,,,,,,,,,,,,,,,,,,,ACh,,
+,,,,,,,,,,,,,,,,,,,,,,,,ARb,,
+,,,,,,,,,,,,,,,,,,,,,,,,GLd,,

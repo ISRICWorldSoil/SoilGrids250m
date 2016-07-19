@@ -1,0 +1,320 @@
+USDA_Great_group,USDA_suborder,FAO_subgroup,WRB_subgroup__
+Albaqualfs,aqualfs,Planosols (Albic),Haplic Planosols
+Cryaqualfs,aqualfs,Gelic Planosols / Gelic Stagnosols,Haplic Planosols (Eutric)
+Duraqualfs,aqualfs,Planosols (Petroduric) / Stagnosols (Petroduric),Haplic Planosols (Eutric)
+Endoaqualfs,aqualfs,Gleyic Luvisols,Gleyic Luvisols
+Epiaqualfs,aqualfs,Haplic Stagnosols,
+Fragaqualfs,aqualfs,Planosols (Fragic) / Stagnosols (Fragic),Haplic Planosols (Eutric)
+Glossaqualfs,aqualfs,Stagnic Albeluvisol,Haplic Albeluvisols
+Kandiaqualfs,aqualfs,Planosols / Stagnosols / Stagnic Albeluvisols,Haplic Albeluvisols
+Natraqualfs,aqualfs,Stagnic Solonetz,Haplic Solonetz
+Plintaqualfs,aqualfs,Plinthic Planosols / Plinthic Stagnosols,Haplic Planosols
+Vermaqualfs,aqualfs,Planosols (Vermic) / Stagnosols (Vermic),Haplic Planosols
+Glossocryalfs,cryalfs,Albeluvisols (Gelic) / Solonetz (Gelic),Haplic Albeluvisols / Haplic Solonetz
+Haplocryalfs,cryalfs,Luvisols (Gelic) / Lixisols (Gelic) / Solonetz (Gelic),Haplic Luvisols / Haplic Lixisols / Haplic Solonetz
+Palecryalfs,cryalfs,Albeluvisols (Gelic) / Solonetz (Gelic),Haplic Albeluvisols / Haplic Solonetz
+Ferrudalfs,udalfs,Ferric Albeluvisols,Haplic Albeluvisols
+Fragiudalfs,udalfs,Luvisols (Fragic) / Lixisols (Fragic),Haplic Luvisols / Haplic Lixisols
+Fraglossudalfs,udalfs,Albeluvisols (Fragic),Haplic Albeluvisols
+Glossudalfs,udalfs,Albeluvisols,Haplic Albeluvisols
+Hapludalfs,udalfs,Luvisols,Haplic Luvisols
+Kandiudalfs,udalfs,Lixisols (Profondic),Haplic Lixisols
+Kanhapludalfs,udalfs,Lixisols,Haplic Lixisols
+Natrudalfs,udalfs,Solonetz,Haplic Solonetz
+Paleudalfs,udalfs,Luvisols (Profondic),Haplic Luvisols
+Rhodudalfs,udalfs,Luvisols (Rhodic),Haplic Luvisols
+Durustalfs,ustalfs,Luvic Petric Durisols,Petric Durisols
+Haplustalfs,ustalfs,Luvisols,Haplic Luvisols
+Kandiustalfs,ustalfs,Lixisols (Profondic),Haplic Lixisols
+Kanhaplustalfs,ustalfs,Lixisols,Haplic Lixisols
+Natrustalfs,ustalfs,Solonetz,Haplic Solonetz
+Paleustalfs,ustalfs,Luvisols (Profondic),Haplic Luvisols
+Plinthustalfs,ustalfs,Lixic Plinthisols / Petroplinthic Lixisols / Pisoplinthic Lixisols / Plinthic Lixisols,
+Rhodustalfs,ustalfs,Rhodic Luvisols,Haplic Luvisols
+Durixeralfs,xeralfs,Petric Luvic Durisols,Petric Durisols
+Fragixeralfs,xeralfs,Luvisols (Fragic) / Lixisols (Fragic),Haplic Luvisols / Haplic Lixisols
+Haploxeralfs,xeralfs,Haplic Luvisols / Haplic Lixisols,Haplic Luvisols / Haplic Lixisols
+Natrixeralfs,xeralfs,Solonetz,Haplic Solonetz
+Palexeralfs,xeralfs,Petrocalcic Luvisols / Petrocalcic Lixisols,Haplic Luvisols / Haplic Lixisols
+Plinthoxeralfs,xeralfs,Lixic Plinthisols / Petroplinthic Lixisols / Pisoplinthic Lixisols / Plinthic Lixisols,
+Rhodoxeralfs,xeralfs,Rhodic Luvisols / Rhodic Lixisols,Haplic Luvisols / Haplic Lixisols
+Cryaquands,aquands,Histic Andosols (Gelic) / Gleyic Andosols (Gelic),
+Duraquands,aquands,Petroduric Histic Andosols / Petroduric Gleyic Andosols,
+Endoaquands,aquands,Gleyic Andosols,
+Epiaquands,aquands,Stagnic Andosols,
+Melanaquands,aquands,Gleyic Melanic Andosols,
+Placaquands,aquands,Gleyic Andosols (Placic),
+Vitraquands,aquands,Gleyic Vitric Andosols,Vitric Andosols
+Duricryands,cryands,Petroduric Andosols (Gelic),
+Fulvicryands,cryands,Fulvic Andosols (Gelic),
+Haplocryands,cryands,Andosols (Gelic),
+Hydrocryands,cryands,Hydric Andosols (Gelic),
+Melanocryands,cryands,Melanic Andosols (Gelic),
+Vitricryands,cryands,Vitric Andosols (Gelic),Vitric Andosols
+Duritorrands,torrands,Petroduric Andosols / Petrocalcic Andosols,
+Haplotorrands,torrands,Andosols,
+Vitritorrands,torrands,Vitric Andosols,Vitric Andosols
+Durudands,udands,Petroduric Andosols,
+Fulvudands,udands,Fulvic Andosols,
+Hapludands,udands,Andosols,
+Hydrudands,udands,Hydric Andosols,
+Melanudands,udands,Melanic Andosols,
+Placudands,udands,Andosols (Placic),
+Durustands,ustands,Petroduric Andosols,
+Haplustands,ustands,Andosols,
+Udivitrands,vitrands,Vitric Andosols,Vitric Andosols
+Ustivitrands,vitrands,Vitric Andosols,Vitric Andosols
+Haploxerands,xerands,Andosols,
+Melanoxerands,xerands,Melanic Andosols,
+Vitrixerands,xerands,Vitric Andosols,Vitric Andosols
+Calciargids,argids,Calcic Luvisols / Luvisols (Bathycalcic) / Luvic Calcisols,
+Gypsiargids,argids,Luvisols (Gypsic) / Luvic Gypsisols,Haplic Luvisols
+Haplargids,argids,Luvisols,Haplic Luvisols
+Natriargids,argids,Solonetz,Haplic Solonetz
+Paleargids,argids,Profondic Luvisols,Haplic Luvisols
+Petroargids,argids,Luvisols (Bathypetrocalcic) / Luvisols (Bathypetroduric) / Luvisols (Bathypetrogypsic),Haplic Luvisols
+Haplocalcids,calcids,Calcisols,Haplic Calcisols
+Petrocalcids,calcids,Petric Calcisols,Petric Calcisols
+Anthracambids,cambids,Irragric Cambisols / Irragric Anthrosols,Haplic Cambisols
+Aquicambids,cambids,Gleyic Cambisols / Irragic Cambisols,Haplic Cambisols
+Haplocambids,cambids,Cambisols,Haplic Cambisols
+Petrocambids,cambids,Cambisols (Bathypetrocalcic) / Cambisols (Bathypetroduric) / Cambisols (Bathypetrogypsic),Haplic Cambisols
+Argicryids,cryids,Luvisols (Gelic) / Solonetz (Gelic),Haplic Luvisols / Haplic Solonetz
+Calcicryids,cryids,Calcisols (Gelic),Haplic Calcisols
+Gypsicryids,cryids,Gypsisols (Gelic),Haplic Gypsisols
+Haplocryids,cryids,Cambisols (Gelic),Haplic Cambisols
+Petrocryids,cryids,Petric Calcisols (Gelic) / Petric Gypsisols (Gelic) / Petric Durisols (Gelic),
+Salicryids,cryids,Solonchaks (Gelic),Haplic Solonchaks
+Argidurids,durids,Luvic Petric Durisols,Petric Durisols
+Haplodurids,durids,Petric Durisols,Petric Durisols
+Natridurids,durids,Petroduric Solonetz,Haplic Solonetz
+Argigypsids,gypsids,Luvic Gypsisols,Haplic Gypsisols
+Calcigypsids,gypsids,Calcic Gypsisols,Calcic Gypsisols
+Haplogypsids,gypsids,Gypsisols,Haplic Gypsisols
+Natrigypsids,gypsids,Gypsic Solonetz,Haplic Solonetz
+Petrogypsids,gypsids,Petric Gypsisols,Haplic Gypsisols
+Aquisalids,salids,Gleyic Solonchaks,Haplic Solonchaks
+Haplosalids,salids,Solonchaks,Haplic Solonchaks
+Cryaquents,aquents,Gleysols (Gelic) / Gleyic Fluvisols (Gelic),Haplic Gleysols / Haplic Fluvisols
+Endoaquents,aquents,Gleysols,Haplic Gleysols
+Epiaquents,aquents,Stagnosols,
+Fluvaquents,aquents,Gleyic Fluvisols,Haplic Fluvisols
+Hydraquents,aquents,Gleysols / Fluvisols,Haplic Gleysols / Haplic Fluvisols
+Psammaquents,aquents,Gleysols (Arenic) / Gleyic Fluvisols (Arenic),Haplic Gleysols / Haplic Fluvisols (Arenic)
+Sulfaquents,aquents,Gleysols (Thionic) / Gleyic Fluvisols (Thionic),Haplic Gleysols / Haplic Fluvisols
+Torriarents,arents,Anthrosols / Technosols,
+Udarents,arents,Anthrosols / Technosols,
+Ustarents,arents,Anthrosols / Technosols,
+Xerarents,arents,Anthrosols / Technosols,
+Cryofluvents,fluvents,Fluvisols (Gelic),Haplic Fluvisols
+Torrifluvents,fluvents,Fluvisols (Eutric),Haplic Fluvisols (Eutric)
+Udifluvents,fluvents,Fluvisols,Haplic Fluvisols
+Ustifluvents,fluvents,Fluvisols,Haplic Fluvisols
+Xerofluvents,fluvents,Haplic Fluvisols,Haplic Fluvisols
+Cryorthents,orthents,Regosols (Gelic),Haplic Regosols
+Torriorthents,fluvents,Regosols (Eutric),Haplic Regosols (Eutric)
+Udorthents,orthents,Regosols,Haplic Regosols
+Ustorthents,orthents,Regosols,Haplic Regosols
+Xerorthents,orthents,Regosols,Haplic Regosols
+Cryopsamments,psamments,Arenosols (Gelic),Haplic Arenosols
+Quartzipsamments,psamments,Arenosols,Haplic Arenosols
+Torripsamments,psamments,Arenosols (Eutric),Haplic Arenosols
+Udipsamments,psamments,Arenosols,Haplic Arenosols
+Ustipsamments,psamments,Arenosols,Haplic Arenosols
+Xeropsamments,psamments,Arenosols,Haplic Arenosols
+Fibrihistels,histels,Cryic Fibric Histosols,Cryic Histosols
+Folistels,histels,Cryic Folic Histosols,Cryic Histosols
+Glacistels,histels,Cryic Glacic Histosols,Cryic Histosols
+Hemistels,histels,Cryic Hemic Histosols,Cryic Histosols
+Sapristels,histels,Cryic Sapric Histosols,Cryic Histosols
+Anhyorthels,orthels,Cryosols (Aridic),Haplic Cryosols
+Aquorthels,orthels,Cryosols (Reductaquic),Haplic Cryosols
+Argiorthels,orthels,(Luvic) Cryosols,Haplic Cryosols
+Haplorthels,orthels,Cryosols,Haplic Cryosols
+Historthels,orthels,Histic Cryosols,Haplic Cryosols
+Mollorthels,orthels,Mollic Cryosols,Haplic Cryosols
+Psammorthels,orthels,Cryosols (Arenic),Haplic Cryosols
+Umbrorthels,orthels,Umbric Cryosols,Haplic Cryosols
+Anhyturbels,turbels,Turbic Cryosols (Aridic),Haplic Cryosols
+Aquiturbels,turbels,Turbic Cryosols (Reductaquic),Haplic Cryosols
+Haploturbels,turbels,Turbic Cryosols,Haplic Cryosols
+Histoturbels,turbels,Histic Turbic Cryosols,Haplic Cryosols
+Molliturbels,turbels,Mollic Turbic Cryosols,Haplic Cryosols
+Psammoturbels,turbels,Turbic Cryosols (Arenic),Haplic Cryosols
+Umbriturbels,turbels,Umbric Turbic Cryosols,Haplic Cryosols
+Cryofibrists,fibrists,Fibric Histosols (Gelic),Fibric Histosols
+Haplofibrists,fibrists,Fibric Histosols,Fibric Histosols
+Sphagnofibrists,fibrists,Ombric Fibric Histosols,Fibric Histosols
+Cryofolists,folists,Folic Histosols (Gelic),
+Torrifolists,folists,Folic Histosols,
+Udifolists,folists,Folic Histosols,
+Ustifolists,folists,Folic Histosols,
+Cryohemists,hemists,Hemic Histosols (Gelic),Hemic Histosols
+Haplohemists,hemists,Hemic Histosols,Hemic Histosols
+Sulfihemists,hemists,Hemic Histosols (Protothionic),Hemic Histosols
+Sulfohemists,hemists,Hemic Histosols (Orthothionic),Hemic Histosols
+Tropohemists,hemists,Hemic Histosols,Hemic Histosols
+Cryosaprists,saprists,Sapric Histosols (Gelic),Sapric Histosols
+Haplosaprists,saprists,Sapric Histosols,Sapric Histosols
+Sulfisaprists,saprists,Sapric Histosols (Protothionic),Sapric Histosols
+Sulfosaprists,saprists,Sapric Histosols (Orthothionic),Sapric Histosols
+Haplanthrepts,anthrepts,Umbrisols (Anthric),Haplic Umbrisols
+Plagganthrepts,anthrepts,Plaggic Anthrosols,
+Cryaquepts,aquepts,Gleysols (Gelic),Haplic Gleysols
+Endoaquepts,aquepts,Gleysols,Haplic Gleysols
+Epiaquepts,aquepts,Stagnosols,
+Fragaquepts,aquepts,Fragic Gleysols,Haplic Gleysols
+Halaquepts,aquepts,Sodic Gleysols / Gleyic Solonchaks,Haplic Gleysols / Haplic Solonchaks
+Humaquepts,aquepts,Histic Gleysols / Umbric Gleysols / Mollic Gleysols,
+Petraquepts,aquepts,Petrolinthic Gleysols / Petrogypsic Gleysols / Petrocalcic Gleysols,
+Sulfaquepts,aquepts,Thionic Gleysols,Haplic Gleysols
+Vermaquepts,aquepts,Gleysols (Vermic),Haplic Gleysols
+Dystrocryepts,cryepts,"Cambisols (Dystric, Gelic)",Haplic Cambisols (Dystric)
+Eutrocryepts,cryepts,"Cambisols (Eutric, Gelic)",Haplic Cambisols (Eutric)
+Durudepts,udepts,Petric Durisols,Petric Durisols
+Dystrudepts,udepts,Cambisols (Dystric),Haplic Cambisols (Dystric)
+Eutrudepts,udepts,Cambisols (Eutric),Haplic Cambisols (Eutric)
+Fragiudepts,udepts,Cambisols (Fragic),Haplic Cambisols
+Sulfudepts,udepts,Cambisols (Thionic),Haplic Cambisols
+Calciustepts,ustepts,Calcisols,Haplic Calcisols
+Duriustepts,ustepts,Petric Durisols,Petric Durisols
+Dystrustepts,udepts,Cambisols (Dystric),Haplic Cambisols (Dystric)
+Haplustepts,ustepts,Cambisols,Haplic Cambisols
+Calcixerepts,xerepts,Calcisols,Haplic Calcisols
+Durixerepts,xerepts,Petric Durisols,Petric Durisols
+Dystroxerepts,xerepts,Cambisols (Dystric),Haplic Cambisols (Dystric)
+Fragixerepts,xerepts,Cambisols (Fragic),Haplic Cambisols
+Haploxerepts,xerepts,Cambisols,Haplic Cambisols
+Argialbolls,albolls,"Luvic Phaeozems (Albic, Ferric)",Luvic Phaeozems
+Natrialbolls,albolls,"Mollic Solonetz (Albic, Ferric)",Mollic Solonetz
+Argiaquolls,aquolls,Luvic Gleyic Chernozems / Luvic Gleyic Phaeozems / Luvic Gleyic Kastanozems,
+Calcaquolls,aquolls,Gleyic Chernozems / Gleyic Kastanozems,Haplic Chernozems / Haplic Kastanozems
+Cryaquolls,aquolls,Gleyic Chernozems (Gelic) / Gleyic Phaeozems (Gelic) / Gleyic Kastanozems (Gelic),
+Duraquolls,aquolls,Petroduric Gleyic Chernozems / Petroduric Gleyic Phaeozems / Petroduric Gleyic Kastanozems,
+Endoaquolls,aquolls,Gleyic Phaeozems,Haplic Phaeozems
+Epiaquolls,aquolls,Stagnic Phaeozems,Haplic Phaeozems
+Natraquolls,aquolls,Mollic Gleyic Solonetz,Mollic Solonetz
+Argicryolls,cryolls,Luvic Chernozems (Gelic) / Luvic Phaeozems (Gelic) / Luvic Kastanozems (Gelic),
+Calcicryolls,cryolls,Calcic Chernozems (Gelic) / Calcic Kastanozems (Gelic),Haplic Chernozems / Haplic Kastanozems
+Duricryolls,cryolls,Petroduric Chernozems (Gelic) / Petroduric Phaeozems (Gelic) / Petroduric Kastanozems (Gelic),
+Haplocryolls,cryolls,Chernozems (Gelic) / Phaeozems (Gelic) / Kastanozems (Gelic),
+Natricryolls,cryolls,Mollic Solonetz (Gelic),Mollic Solonetz
+Palecryolls,cryolls,Luvic Chernozems (Gelic) / Luvic Phaeozems (Gelic) / Luvic Kastanozems (Gelic),
+Cryrendolls,rendolls,Rhendzic Leptosols (Gelic) / Rhendzic Phaeozems (Gelic),Haplic Leptosols / Haplic Phaeozems
+Haprendolls,rendolls,Rhendzic Leptosols / Rhendzic Phaeozems,Haplic Leptosols / Haplic Phaeozems
+Argiudolls,udolls,Luvic Chernozems / Luvic Phaeozems,Luvic Phaeozems
+Calciudolls,udolls,Calcic Chernozems / Petrocalcic Chernozems / Petrocalcic Phaeozems,
+Hapludolls,aquolls,Chernozems / Phaeozems,Haplic Chernozems / Haplic Phaeozems
+Natrudolls,udolls,Mollic Solonetz,Mollic Solonetz
+Paleudolls,udolls,Luvic Chernozems (Profondic) / Luvic Phaeozems (Profondic) / Chernozems (Bathypetrocalcic) / Phaeozems (Bathypetrocalcic),
+Vermiudolls,udolls,Vermic Chernozems / Vermic Phaeozems,Haplic Chernozems / Haplic Phaeozems
+Argiustolls,ustolls,Luvic Chernozems / Luvic Kastanozems,Luvic Chernozems / Haplic Kastanozems
+Calciustolls,ustolls,Calcic Chernozems / Calcic Kastanozems / Petrocalcic Chernozems / Petrocalcic Kastanozems / Petrocalcic Phaeozems / Gypsic Chernozems / Gypsic Kastanozems,
+Durustolls,ustolls,Petroduric Chernozems / Petroduric Kastanozems / Petroduric Phaeozems,
+Haplustolls,ustolls,Chernozems / Kastanozems / Phaeozems,
+Natrustolls,ustolls,Mollic Solonetz,Mollic Solonetz
+Paleustolls,ustolls,Luvic Chernozems (Profondic) / Luvic Kastanozems (Profondic) / Luvic Phaeozems (Profondic) / Chernozems (Bathypetrocalcic) / Kastanozems (Bathypetrocalcic) / Phaeozems (Bathypetrocalcic),
+Vermiustolls,ustolls,Vermic Chernozems / Vermic Kastanozems / Vermic Phaeozems,
+Argixerolls,albolls,Luvic Kastanozems / Luvic Chernozems,Luvic Chernozems / Haplic Kastanozems
+Calcixerolls,xerolls,Calcic Kastanozems / Calcic Chernozems / Gypsic Kastanozems / Gypsic Chernozems,
+Durixerolls,xerolls,Duric Kastanozems / Duric Chernozems,Haplic Kastanozems / Duric Chernozems
+Haploxerolls,cryolls,Kastanozems / Chernozems,Haplic Kastanozems / Haplic Chernozems
+Natrixerolls,xerolls,Mollic Solonetz,Mollic Solonetz
+Palexerolls,xerolls,Luvic Kastanozems (Profondic) / Luvic Chernozems (Profondic) / Petrocalcic Kastanozems / Petrocalcic Chernozems,
+Acraquoxes,aquoxes,Gleyic Geric Ferralsols,Haplic Ferralsols
+Eutraquoxes,aquoxes,Gleyic Ferralsols (Eutric),Haplic Ferralsols
+Haplaquoxes,aquoxes,Gleyic Ferralsols,Haplic Ferralsols
+Plinthaquoxes,aquoxes,Plinthosols / Ferralsols (Bathyplinthic),Haplic Ferralsols
+Acroperoxes,peroxes,Geric Ferralsols,Haplic Ferralsols
+Eutriperoxes,peroxes,Ferralsols (Eutric),Haplic Ferralsols
+Haploperoxes,peroxes,Ferralsols,Haplic Ferralsols
+Kandiperoxes,peroxes,Acric Ferralsols / Lixic Ferralsols,Haplic Ferralsols
+Sombriperoxes,peroxes,Ferralsols (Sombric),Haplic Ferralsols
+Acrotorroxes,torroxes,Geric Ferralsols,Haplic Ferralsols
+Eutrotorroxes,torroxes,Ferralsols (Eutric),Haplic Ferralsols
+Haplotorroxes,torroxes,Ferralsols,Haplic Ferralsols
+Acrudoxes,udoxes,Geric Ferralsols,Haplic Ferralsols
+Eutrudoxes,udoxes,Ferralsols (Eutric),Haplic Ferralsols
+Hapludoxes,udoxes,Ferralsols,Haplic Ferralsols
+Kandiudoxes,udoxes,Acric Ferralsols / Lixic Ferralsols,Haplic Ferralsols
+Sombriudoxes,udoxes,Ferralsols (Sombric),Haplic Ferralsols
+Acrustoxes,ustoxes,Geric Ferralsols,Haplic Ferralsols
+Eutrustoxes,ustoxes,Ferralsols (Eutric),Haplic Ferralsols
+Haplustoxes,ustoxes,Ferralsols,Haplic Ferralsols
+Kandiustoxes,ustoxes,Acric Ferralsols / Lixic Ferralsols,Haplic Ferralsols
+Sombriustoxes,ustoxes,Ferralsols (Sombric),Haplic Ferralsols
+Alaquods,aquods,Gleyic Podzols,Gleyic Podzols
+Cryaquods,aquods,Gleyic Podzols (Gelic),Gleyic Podzols
+Duraquods,aquods,Gleyic Podzols (Densic),Gleyic Podzols
+Endoaquods,aquods,Gleyic Podzols,Gleyic Podzols
+Epiaquods,aquods,Stagnic Podzols,Haplic Podzols
+Fragaquods,aquods,Gleyic Podzols (Fragic),Gleyic Podzols
+Placaquods,aquods,Gleyic Placic Podzols,Gleyic Podzols
+Duricryods,cryods,Densic Podzols (Gelic),Haplic Podzols
+Haplocryods,cryods,Podzols (Gelic),Haplic Podzols
+Humicryods,cryods,Carbic Podzols (Gelic),Haplic Podzols
+Placocryods,cryods,Placic Podzols (Gelic),Haplic Podzols
+Durihumods,humods,Carbic Podzols (Densic),Haplic Podzols
+Fragihumods,humods,Carbic Podzols (Fragic),Haplic Podzols
+Haplohumods,humods,Carbic Podzols,Haplic Podzols
+Placohumods,humods,Carbic Placic Podzols,Haplic Podzols
+Alorthods,orthods,Haplic Podzols,Haplic Podzols
+Durorthods,orthods,Podzols (Densic),Haplic Podzols
+Fragiorthods,orthods,Podzols (Fragic),Haplic Podzols
+Haplorthods,orthods,Podzols,Haplic Podzols
+Placorthods,orthods,Placic Podzols,Haplic Podzols
+Albaquults,aquults,Alic Planosols / Acric Planosols,Haplic Planosols (Eutric)
+Endoaquults,aquults,Gleyic Alisols / Gleyic Acrisols,Haplic Alisols / Gleyic Acrisols
+Epiaquults,aquults,Stagnic Alisols / Stagnic Acrisols,Haplic Acrisols / Haplic Alisols
+Fragaquults,aquults,Gleyic Alisols (Fragic) / Gleyic Acrisols (Fragic),Gleyic Acrisols
+Kandiaquults,aquults,Gleyic Acrisols (Profondic),Gleyic Acrisols
+Kanhaplaquults,aquults,Gleyic Acrisols,Gleyic Acrisols
+Paleaquults,aquults,Gleyic Alisols (Profondic),Haplic Alisols
+Plinthaquults,aquults,Acric Plinthosols / Gleyic Plinthic Alisols / Gleyic Plinthic Acrisols,Acric Plinthosols / Plinthic Acrisols
+Umbraquults,aquults,Umbric Gleyic Alisols / Umbric Gleyic Acrisols,Haplic Alisols / Gleyic Acrisols
+Haplohumults,humults,Alisols (Humic) / Acrisols (Humic),Haplic Alisols / Haplic Acrisols (Humic)
+Kandihumults,humults,"Acrisols (Humic, Profondic)",Haplic Acrisols
+Kanhaplohumults,humults,Acrisols (Humic),Haplic Acrisols
+Palehumults,humults,"Alisols (Humic, Profondic)",Haplic Alisols
+Plinthohumults,humults,Acric Plinthosols (Humic) / Plinthic Alisols (Humic) / Plinthic Acrisols (Humic),Acric Plinthosols / Plinthic Acrisols
+Sombrihumults,humults,Sombric Acrisols (Humic) / Sombric Alisols (Humic),Haplic Acrisols (Humic) / Haplic Alisols
+Fragiudults,udults,Alisols (Fragic) / Acrisols (Fragic),Haplic Alisols
+Hapludults,udults,Alisols / Acrisols,Haplic Alisols / Haplic Acrisols
+Kandiudults,udults,Acrisols (Profondic),Haplic Acrisols
+Kanhapludults,udults,Acrisols,Haplic Acrisols
+Paleudults,udults,Alisols (Profondic),Haplic Alisols
+Plinthudults,udults,Acric Plinthosols / Plinthic Alisols / Plinthic Acrisols,Acric Plinthosols / Plinthic Acrisols
+Rhodudults,udults,Alisols (Rhodic) / Acrisols (Rhodic),Haplic Alisols / Haplic Acrisols
+Haplustults,ustults,Alisols / Acrisols,Haplic Alisols / Haplic Acrisols
+Kandiustults,ustults,Acrisols (Profondic),Haplic Acrisols
+Kanhaplustults,ustults,Acrisols,Haplic Acrisols
+Paleustults,ustults,Alisols (Profondic),Haplic Alisols
+Plinthustults,ustults,Acric Plinthosols / Plinthic Alisols / Plinthic Acrisols,Acric Plinthosols / Plinthic Acrisols
+Rhodustults,ustults,Alisols (Rhodic) / Acrisols (Rhodic),Haplic Alisols / Haplic Acrisols
+Haploxerults,xerults,Alisols / Acrisols,Haplic Alisols / Haplic Acrisols
+Palexerults,xerults,Alisols (Profondic) / Acrisols (Profondic),Haplic Alisols / Haplic Acrisols
+Calcaquerts,aquerts,Calcic Gleyic Vertisols,Calcic Vertisols
+Duraquerts,aquerts,Petroduric Gleyic Vertisols,Haplic Vertisols
+Dystraquerts,aquerts,Gleyic Vertisols (Dystric),Haplic Vertisols
+Endoaquerts,aquerts,Gleyic Vertisols,Haplic Vertisols
+Epiaquerts,aquerts,Stagnic Vertisols,Haplic Vertisols
+Natraquerts,aquerts,Sodic Gleyic Vertisols,Haplic Vertisols
+Salaquerts,aquerts,Gleyic Salic Vertisols,Haplic Vertisols
+Haplocryepts,cryepts,Vertisols (Gelic),Haplic Vertisols
+Humicryepts,cryepts,"Vertisols (Humi, Gelic)",Haplic Vertisols
+Calcitorrerts,torrerts,Calcic Vertisols,Calcic Vertisols
+Gypsitorrerts,torrerts,Gypsic Vertisols,Haplic Vertisols
+Haplotorrerts,torrerts,Vertisols,Haplic Vertisols
+Salitorrerts,torrerts,Salic Vertisols,Haplic Vertisols
+Dystruderts,uderts,Vertisols (Dystric),Haplic Vertisols
+Hapluderts,uderts,Haplic Vertisols,Haplic Vertisols
+Calciusterts,usterts,Calcic Vertisols,Calcic Vertisols
+Dystrusterts,usterts,Vertisols (Dystric),Haplic Vertisols
+Gypsusterts,usterts,Gypsic Vertisols,Haplic Vertisols
+Haplusterts,usterts,Vertisols,Haplic Vertisols
+Salusterts,usterts,Salic Vertisols,Haplic Vertisols
+Calcixererts,xererts,Calcic Vertisols,Calcic Vertisols
+Durixererts,xererts,Petroduric Vertisols,Haplic Vertisols
+Haploxererts,xererts,Vertisols,Haplic Vertisols
+Durixererts,xererts,Petroduric Vertisols,Haplic Vertisols
+Haploxererts,xererts,Vertisols,Haplic Vertisols

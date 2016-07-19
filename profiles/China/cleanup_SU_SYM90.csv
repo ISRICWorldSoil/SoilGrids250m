@@ -1,0 +1,174 @@
+number,FAO_90,Name,Group
+1,ACf,Ferric Acrisol,Acrisol
+2,ACg,Gleyic Acrisol,Acrisol
+3,ACh,Haplic Acrisol,Acrisol
+4,ACp,Plinthic Acrisol,Acrisol
+5,ACu,Humic Acrisol,Acrisol
+6,ALf,Ferric Alisol,Alisol
+7,ALg,Gleyic Alisol,Alisol
+8,ALh,Haplic Alisol,Alisol
+9,ALj,Stagnic Alisol,Stagnosol
+10,ALp,Plinthic Alisol,Alisol
+11,ALu,Humic Alisol,Alisol
+12,ANh,Haplic Andosol,Andosol
+13,ANi,Gelic Andosol,Andosol
+14,ANm,Mollic Andosol,Andosol
+15,ANu,Umbric Andosol,Andosol
+16,ANz,Vitric Andosol,Andosol
+17,AR,Arenosol,Arenosol
+18,ARa,Albic Arenosol,Arenosol
+19,ARb,Cambic Arenosol,Arenosol
+20,ARc,Calcaric Arenosol,Arenosol
+21,ARg,Gleyic Arenosol,Arenosol
+22,ARh,Haplic Arenosol,Arenosol
+23,ARl,Luvic Arenosol,Arenosol
+24,ARo,Ferralic Arenosol,Arenosol
+25,AT,Anthrosol,Anthrosol
+26,ATa,Aric Anthrosol,Anthrosol
+27,ATc,Cumulic Anthrosol,Anthrosol
+28,ATf,Fimic Anthrosol,Anthrosol
+29,CH,Chernozem,Chernozem
+30,CHg,Gleyic Chernozem,Chernozem
+31,CHh,Haplic Chernozem,Chernozem
+32,CHk,Calcic Chernozem,Chernozem
+33,CHl,Luvic Chernozem,Chernozem
+34,CHw,Glossic Chernozem,Chernozem
+35,CL,Calcisol,Calcisol
+36,CLh,Haplic Calcisol,Calcisol
+37,CLl,Luvic Calcisol,Calcisol
+38,CLp,Petric Calcisol,Calcisol
+39,CM,Cambisol,Cambisol
+40,CMc,Calcaric Cambisol,Cambisol
+41,CMd,Dystric Cambisol,Cambisol
+42,CMe,Eutric Cambisol,Cambisol
+43,CMg,Gleyic Cambisol,Cambisol
+44,CMi,Gelic Cambisol,Cryosol
+45,CMo,Ferralic Cambisol,Cambisol
+46,CMu,Humic Cambisol,Umbrisol
+47,CMv,Vertic Cambisol,Cambisol
+48,CMx,Chromic Cambisol,Cambisol
+49,DS,,
+50,FL,Fluvisol,Fluvisol
+51,FLc,Calcaric Fluvisol,Fluvisol
+52,FLd,Dystric Fluvisol,Fluvisol
+53,FLe,Eutric Fluvisol,Fluvisol
+54,FLm,Mollic Fluvisol,Fluvisol
+55,FLs,Salic Fluvisol,Fluvisol
+56,FLt,Thionic Fluvisol,Fluvisol
+57,FLu,Umbric Fluvisol,Fluvisol
+58,FP,,
+59,FR,Ferralsol,Ferralsol
+60,FRg,Geric Ferralsol,Ferralsol
+61,FRh,Haplic Ferralsol,Ferralsol
+62,FRp,Plinthic Ferralsol,Ferralsol
+63,FRr,Rhodic Ferralsol,Ferralsol
+64,FRu,Humic Ferralsol,Ferralsol
+65,FRx,Xanthic Ferralsol,Ferralsol
+66,GG,,
+67,GL,Gleysol,Gleysol
+68,GLd,Dystric Gleysol,Gleysol
+69,GLe,Eutric Gleysol,Gleysol
+70,GLi,Gelic Gleysol,Gleysol
+71,GLk,Calcic Gleysol,Gleysol
+72,GLm,Mollic Gleysol,Gleysol
+73,GLt,Thionic Gleysol,Gleysol
+74,GLu,Umbric Gleysol,Gleysol
+75,GRh,Haplic Greyzem,Kastanozem
+76,GY,,Gypsisol
+77,GYh,Haplic Gypsisol,Gypsisol
+78,GYk,Calcic Gypsisol,Gypsisol
+79,GYl,Luvic Gypsisol,Gypsisol
+80,GYp,Petric Gypsisol,Gypsisol
+81,HD,,
+82,HS,Histosol,Histosol
+83,HSf,Fibric Histosol,Histosol
+84,HSi,Gelic Histosol,Cryosol
+85,HSl,Folic Histosol,Histosol
+86,HSs,Terric Histosol,Histosol
+87,HSt,Thionic Histosol,Histosol
+88,IS,,
+89,KS,Kastanozem,Kastanozem
+90,KSh,Haplic Kastanozem,Kastanozem
+91,KSk,Calcic Kastanozem,Kastanozem
+92,KSl,Luvic Kastanozem,Kastanozem
+93,LP,Leptosol,Leptosol
+94,LPd,Dystric Leptosol,Leptosol
+95,LPe,Eutric Leptosol,Leptosol
+96,LPi,Gelic Leptosol,Cryosol
+97,LPk,Rendzic Leptosol,Leptosol
+98,LPm,Mollic Leptosol,Leptosol
+99,LPq,Lithic Leptosol,Leptosol
+100,LPu,Umbric Leptosol,Umbrisol
+101,LV,Luvisol,Luvisol
+102,LVa,Albic Luvisol,Luvisol
+103,LVf,Ferric Luvisol,Luvisol
+104,LVg,Gleyic Luvisol,Luvisol
+105,LVh,Haplic Luvisol,Luvisol
+106,LVj,Stagnic Luvisol,Stagnosol
+107,LVk,Calcic Luvisol,Luvisol
+108,LVv,Vertic Luvisol,Luvisol
+109,LVx,Chromic Luvisol,Luvisol
+110,LXa,Albic Lixisol,Lixisol
+111,LXf,Ferric Lixisol,Lixisol
+112,LXg,Gleyic Lixisol,Lixisol
+113,LXh,Haplic Lixisol,Lixisol
+114,LXj,Stagnic Lixisol,Stagnosol
+115,LXp,Plinthic Lixisol,Lixisol
+116,NI,,
+117,NT,Nitisol,Nitisol
+118,NTh,Haplic Nitisol,Nitisol
+119,NTr,Rhodic Nitisol,Nitisol
+120,NTu,Humic Nitisol,Nitisol
+121,PDd,Dystric Podzoluvisol,Albeluvisol
+122,PDe,Eutric Podzoluvisol,Albeluvisol
+123,PDg,Gleyic Podzoluvisol,Albeluvisol
+124,PDj,Stagnic Podzoluvisol,Albeluvisol
+125,PHc,Calcaric Phaeozem,Phaeozem
+126,PHg,Gleyic Phaeozem,Phaeozem
+127,PHh,Haplic Phaeozem,Phaeozem
+128,PHj,Stagnic Phaeozem,Stagnosol
+129,PHl,Luvic Phaeozem,Phaeozem
+130,PLd,Dystric Planosol,Planosol
+131,PLe,Eutric Planosol,Planosol
+132,PLm,Mollic Planosol,Planosol
+133,PLu,Umbric Planosol,Planosol
+134,PT,Plinthosol,Plinthosol
+135,PTa,Albic Plinthosol,Plinthosol
+136,PTd,Dystric Plinthosol,Plinthosol
+137,PTe,Eutric Plinthosol,Plinthosol
+138,PTu,Humic Plinthosol,Plinthosol
+139,PZb,Cambic Podzol,Podzol
+140,PZc,Carbic Podzol,Podzol
+141,PZf,Ferric Podzol,Podzol
+142,PZg,Gleyic Podzol,Podzol
+143,PZh,Haplic Podzol,Podzol
+144,PZi,Gelic Podzol,Cryosol
+145,RGc,Calcaric Regosol,Regosol
+146,RGd,Dystric Regosol,Regosol
+147,RGe,Eutric Regosol,Regosol
+148,RGi,Gelic Regosol,Cryosol
+149,RGu,Umbric Regosol,Umbrisol
+150,RGy,Gypsic Regosol,Regosol
+151,RK,,
+152,SC,Solonchak,Solonchak
+153,SCg,Gleyic Solonchak,Solonchak
+154,SCh,Haplic Solonchak,Solonchak
+155,SCk,Calcic Solonchak,Solonchak
+156,SCm,Mollic Solonchak,Solonchak
+157,SCn,Sodic Solonchak,Solonchak
+158,SCy,Gypsic Solonchak,Solonchak
+159,SN,Solonetz,Solonetz
+160,SNg,Gleyic Solonetz,Solonetz
+161,SNh,Haplic Solonetz,Solonetz
+162,SNj,Stagnic Solonetz,Solonetz
+163,SNk,Calcic Solonetz,Solonetz
+164,SNm,Mollic Solonetz,Solonetz
+165,SNy,Gypsic Solonetz,Solonetz
+166,ST,,
+167,UR,,
+168,VR,,Vertisol
+169,VRd,Dystric Vertisol,Vertisol
+170,VRe,Eutric Vertisol,Vertisol
+171,VRk,Calcic Vertisol,Vertisol
+172,VRy,Gypsic Vertisol,Vertisol
+173,WR,,

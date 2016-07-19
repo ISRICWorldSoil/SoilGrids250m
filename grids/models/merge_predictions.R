@@ -126,3 +126,59 @@ sfInit(parallel=TRUE, cpus=ifelse(length(tcovs)>10,10,length(tcovs)))
 sfExport("equi7t3", "gdalbuildvrt", "gdalwarp", "gdaladdo", "gdal_translate", "ext", "tcovs", "mosaick.equi7t3", "make_mosaick", "tile.names")
 out <- sfClusterApplyLB(tcovs, function(x){try( make_mosaick(i="dominant", varn=x, ext=ext, in.path="/data/covs1t", tr=0.002083333, r250m=TRUE, ot="Int16", dstnodata=-32768, tile.names=tile.names) )})
 sfStop()
+
+## Aggregate all covariates to 10 km, 20 km and 50 km:
+t.lst <- list.files(pattern=glob2rx("*_1km_ll.tif$"), path="/data/GEOG", full.names=TRUE)
+tf.lst <- rep(FALSE, length(t.lst))
+tf.lst[unlist(sapply(c("TEXMHT_M","TAXOUSDA_1km","TAXNWRB_1km"), function(x){grep(x, t.lst)}))] = TRUE
+
+system(paste0(gdalwarp, ' /data/GEOG/BLDFIE_M_sl1_250m_ll.tif mask10km.tif -tr 0.1 0.1 -r \"average\" -co \"COMPRESS=DEFLATE\"'))
+mask10km = readGDAL("mask10km.tif")  ## 1494 rows and 3600 columns
+mask10km$band1 <- ifelse(is.na(mask10km$band1), NA, 1)
+mask10km <- as(mask10km, "SpatialPixelsDataFrame")
+#plot(raster(mask20km))
+system(paste0(gdalwarp, ' /data/GEOG/BLDFIE_M_sl1_250m_ll.tif mask20km.tif -tr 0.2 0.2 -r \"average\" -co \"COMPRESS=DEFLATE\"'))
+mask20km = readGDAL("mask20km.tif") ## 747 rows and 1800 columns
+mask20km$band1 <- ifelse(is.na(mask20km$band1), NA, 1)
+mask20km <- as(mask20km, "SpatialPixelsDataFrame")
+## 50 km mask:
+system(paste0(gdalwarp, ' /data/GEOG/BLDFIE_M_sl1_250m_ll.tif mask50km.tif -tr 0.5 0.5 -r \"average\" -co \"COMPRESS=DEFLATE\"'))
+mask50km = readGDAL("mask50km.tif") 
+mask50km$band1 <- ifelse(is.na(mask50km$band1), NA, 1)
+mask50km <- as(mask50km, "SpatialPixelsDataFrame")
+
+## resample:
+source("/data/models/autopredict.R")
+library(GSIF)
+library(RSAGA)
+library(snowfall)
+grid10km <- makePixels(x=NULL, y=t.lst, factors=tf.lst, pixel.size=0.1, max.dim=10000, gdalwarp=gdalwarp, show.progress=TRUE, area.poly=mask10km, remove.files=FALSE, ncores=46)
+saveRDS(grid10km, file="SoilGrids10km.rds")
+## rename files:
+from <- list.files(pattern=glob2rx("^r_*.tif$"))
+to <- gsub("1km", "10km", from)
+#to <- gsub("r_", "", to)
+x = sapply(1:length(from), function(x){ if(file.exists(from[x])){ file.rename(from=from[x], to=to[x]) } } )
+unlink(to)
+
+grid20km <- makePixels(x=NULL, y=t.lst, factors=tf.lst, pixel.size=0.2, max.dim=10000, gdalwarp=gdalwarp, show.progress=TRUE, area.poly=mask20km, remove.files=FALSE, ncores=46)
+str(grid20km@data)
+saveRDS(grid20km, file="SoilGrids20km.rds")
+## rename files:
+from <- list.files(pattern=glob2rx("^r_*.tif$"))
+to <- gsub("1km", "20km", from)
+#to <- gsub("r_", "", to)
+x = sapply(1:length(from), function(x){ if(file.exists(from[x])){ file.rename(from=from[x], to=to[x]) } } )
+unlink(to)
+
+grid50km <- makePixels(x=NULL, y=t.lst, factors=tf.lst, pixel.size=0.5, max.dim=10000, gdalwarp=gdalwarp, show.progress=TRUE, area.poly=mask50km, remove.files=FALSE, ncores=46)
+from <- list.files(pattern=glob2rx("^r_*.tif$"))
+to <- gsub("1km", "50km", from)
+#to <- gsub("r_", "", to)
+x = sapply(1:length(from), function(x){ if(file.exists(from[x])){ file.rename(from=from[x], to=to[x]) } } )
+saveRDS(grid50km, file="SoilGrids50km.rds")
+unlink(to)
+
+
+
+
