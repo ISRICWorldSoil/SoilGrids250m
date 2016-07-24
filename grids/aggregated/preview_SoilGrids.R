@@ -281,7 +281,13 @@ save(soil.legends, file="D:/Rdev/GSIF/pkg/data/soil.legends.rda", compress="xz")
 ## Soil correlation tables:
 csv.lst <- c("../../profiles/CanSIS/CAN_classes.csv", "../../profiles/China/cleanup_SU_SYM90.csv", "../profs/TAXOUSDA/TAXOUSDA_GreatGroups.csv", "../profs/TAXNWRB/WRB_versions.csv", "../profs/TAXNWRB/cleanup_SU_SYM74.csv", "../profs/TAXOUSDA/USDA_Great_Group_2_FAO.csv", "../profs/TAXNWRB/Full_data_FAO74_US_CPSS.csv") ## "../../profiles/Alterra/cleanup_Alterra.csv",, "../../profiles/Radambrasil/cleanup_RadamBrasil.csv",
 soil.classes <- lapply(csv.lst, read.csv)
-names(soil.classes) = c("Canadian", "FAO1990.WRB", "USDA_GreatGroups", "WRB_versions", "FAO1974.WRB", "USDA.WRB", "FAO.WRB.USDA")
+names(soil.classes) = c("Canadian", "FAO1990.WRB", "USDA_GreatGroups", "WRB_versions", "FAO1974.WRB", "USDA.WRB", "Soils_World")
+soil.classes$Soils_World$SoilUnitDCPCS <- iconv(soil.classes$Soils_World$SoilUnitDCPCS, to="ASCII", sub="byte")
+soil.classes$Soils_World$SoilGroupDCPCS <- iconv(soil.classes$Soils_World$SoilGroupDCPCS, to="ASCII", sub="byte")
+soil.classes$Soils_World$SoilGroupCPCS <- iconv(soil.classes$Soils_World$SoilGroupCPCS, to="ASCII", sub="byte")
+soil.classes$Soils_World$CPSS.from.report..tentative. <- iconv(soil.classes$Soils_World$CPSS.from.report..tentative., to="ASCII", sub="byte")
 save(soil.classes, file="D:/Rdev/GSIF/pkg/data/soil.classes.rda", compress="xz")
-
+DGC <- which(soil.classes$Canadian$CSSC_Great_Groups=="Dark Gray Chernozem")
+soil.classes$Canadian[DGC,]
+soil.classes$Soils_World[2,]
 
