@@ -1,6 +1,7 @@
 ## Fit models for depth to bedrock and generate predictions - SoilGrids250m
 ## Tom.Hengl@isric.org & shanggv@hotmail.com
 
+load(".RData")
 library(plyr)
 library(stringr)
 library(sp)
@@ -43,7 +44,7 @@ ovA <- join(BDR_all.pnts, ov, type="left", by="LOC_ID")
 write.csv(ovA, file="ov.BDR_SoilGrids250m.csv")
 unlink("ov.BDR_SoilGrids250m.csv.gz")
 gzip("ov.BDR_SoilGrids250m.csv")
-save(ovA, file="ovA.rda", compression_level="xz")
+#save(ovA, file="ovA.rda", compression_level="xz")
 #load("ovA.rda")
 ## 1.3GB object
 
@@ -259,7 +260,7 @@ for(j in 1:length(t.vars)){
     cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="resultsCV_BDR.txt", append=TRUE)
     cat("\n", file="resultsCV_BDR.txt", append=TRUE)
     ## exclude simulated points from Cross-validation:
-    cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA, nfold=10, idcol="SOURCEID", h2o=TRUE, Log=TRUE)
+    cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA[complete.cases(ovA[,all.vars(formulaString.lst[[j]])]),], nfold=3, idcol="SOURCEID", Log=TRUE)
     sink(file="resultsCV_BDR.txt", append=TRUE, type="output")
     print(cv_lst[[j]]$Summary)
     cat("\n", file="resultsCV_BDR.txt", append=TRUE)
@@ -272,14 +273,29 @@ for(j in 1:length(t.vars)){
 source("../plot_hexbin.R")
 plt.names <- c("Depth to bedrock (up to 250 cm)", "Occurrence of the R horizon", "Absolute depth to bedrock (in cm)")
 names(plt.names) = t.vars
-breaks.lst <- list(c(seq(0,250,length=50)), seq(0,1,length=50), seq(0,50000))
+breaks.lst <- list(c(seq(0,280,length=40)), seq(0,1,length=30), seq(0,50000,length=50))
 names(breaks.lst) = t.vars
 plt.log <- c(FALSE, FALSE, TRUE)
 names(plt.log) = t.vars
+colorcut.lst = list(c(0,0.005,0.022,0.045,0.086,0.11,0.5,0.75,1), c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1), c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1))
+names(colorcut.lst) = t.vars
 
 for(j in 1:length(t.vars)){
-  plot_hexbin(j, breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"), log.plot=plt.log[t.vars[j]])
+  plot_hexbin(t.vars[j], breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"), log.plot=plt.log[t.vars[j]], colorcut=colorcut.lst[[t.vars[j]]])
 }
+
+## without the map from Pelletier et al.
+formulaString.Pell = as.formula(paste('BDTICM ~ ', paste(pr.lst[-which(pr.lst %in% "ASSDAC3")], collapse="+")))
+CV_Pell <- cv_numeric(formulaString.Pell, rmatrix=ovA[complete.cases(ovA[,all.vars(formulaString.Pell)]),], nfold=3, idcol="SOURCEID", Log=TRUE)
+CV_Pell$Summary
+save(CV_Pell, file="CV_Pell.rda")
+plot_hexbin("Pell", breaks.lst[["BDTICM"]], main="Without Pelletier et al.", in.file="CV_Pell.rda", log.plot=plt.log[["BDTICM"]])
+cat(paste("Variable:", all.vars(formulaString.Pell)[1]), file="resultsCV_BDR.txt", append=TRUE)
+cat("\n", file="resultsCV_BDR.txt", append=TRUE)
+sink(file="resultsCV_BDR.txt", append=TRUE, type="output")
+print(CV_Pell$Summary)
+cat("\n", file="resultsCV_BDR.txt", append=TRUE)
+sink()
 
 ## clean-up:
 # for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
