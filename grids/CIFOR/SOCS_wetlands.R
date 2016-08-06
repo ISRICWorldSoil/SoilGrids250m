@@ -1,6 +1,7 @@
 ## Assessment and modeling of Soil Organic Carbon Stocks for Wetlands and Peatlands in the tropics
 ## Tom.Hengl@isric.org
 
+load(".RData")
 library(rgdal)
 library(utils)
 library(snowfall)
@@ -113,10 +114,26 @@ sfExport("gdalwarp","tif.lst")
 x <- sfClusterApplyLB(tif.lst, function(x){ try( system(paste0(gdalwarp, ' ', x, ' ', gsub("1km", "10km", basename(x)),' -r \"average\" -tr 0.1 0.1 -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"')) ) })
 sfStop()
 
+## Countries:
+download.file("http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries.zip", "ne_10m_admin_0_countries.zip")
+system("7za e ne_10m_admin_0_countries.zip")
+## Rasterize:
+countries.dbf <- read.dbf("ne_10m_admin_0_countries.dbf")
+countries.dbf[["dbf"]]$NAME_INT = as.integer(countries.dbf[["dbf"]]$NAME)
+write.dbf(countries.dbf, out.name="ne_10m_admin_0_countries.dbf") 
+cellsize = 0.1
+xllcorner = -180
+yllcorner = -36
+xurcorner = 180
+yurcorner = 36
+system(paste0('/usr/local/bin/saga_cmd -c=48 grid_gridding 0 -INPUT \"ne_10m_admin_0_countries.shp\" -FIELD \"NAME_INT\" -GRID \"countries_10km.sgrd\" -GRID_TYPE 0 -TARGET_DEFINITION 0 -TARGET_USER_SIZE ', cellsize, ' -TARGET_USER_XMIN ', xllcorner+cellsize/2,' -TARGET_USER_XMAX ', xurcorner-cellsize/2, ' -TARGET_USER_YMIN ', yllcorner+cellsize/2,' -TARGET_USER_YMAX ', yurcorner-cellsize/2))
+system(paste0(gdalwarp, ' countries_10km.sdat countries_10km.tif -r \"near\" -tr 0.1 0.1 -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"'))
+
 ## horizon thickness:
 ds <- get("stsize", envir = GSIF.opts)
 ds <- rowMeans(data.frame(c(NA,ds),c(ds,NA)), na.rm=TRUE)
-g10km <- raster::stack(list.files(pattern="10km"))
+tif.10km = list.files(pattern="10km")
+g10km <- raster::stack(tif.10km[grep(".tif", tif.10km)])
 names(g10km)
 g10km <- as(g10km, "SpatialGridDataFrame")
 ## Weighted average based on the thickness of horizon:
@@ -126,22 +143,26 @@ g10km$CRFVOL_M_1m_10km_ll <- rowSums(g10km@data[,paste0("CRFVOL_M_sl", 1:6, "_10
 g10km$ORCDRC_M_2m_10km_ll <- rowSums(g10km@data[,c("ORCDRC_M_sl6_10km_ll","ORCDRC_M_sl7_10km_ll")], na.rm=TRUE)
 g10km$BLDFIE_M_2m_10km_ll <- rowSums(g10km@data[,c("BLDFIE_M_sl6_10km_ll","BLDFIE_M_sl7_10km_ll")], na.rm=TRUE)
 g10km$CRFVOL_M_2m_10km_ll <- rowSums(g10km@data[,c("CRFVOL_M_sl6_10km_ll","CRFVOL_M_sl7_10km_ll")], na.rm=TRUE)
-plot(raster(g10km["BLD_M_sd1_10km_ll"]), col=SAGA_pal[[1]])
+plot(raster(g10km["BLDFIE_M_sl1_10km_ll"]), col=SAGA_pal[[1]])
 g10km <- as(g10km, "SpatialPixelsDataFrame")
 g10km$HISTPR_10km <- readGDAL("HISTPR_10km.tif")$band1[g10km@grid.index]
+#g10km$Country <- readGDAL("countries_10km.sdat")$band1[g10km@grid.index]
+country.df = data.frame(Country=1:length(levels(countries.dbf[["dbf"]]$NAME)), NAME=levels(countries.dbf[["dbf"]]$NAME))
+g10km$Country_NAME <- plyr::join(data.frame(Country=g10km$countries_10km), country.df, type="left")$NAME
+spplot(g10km["Country_NAME"])
 summary(!is.na(g10km$LMKGLC_10km))
 summary(!is.na(g10km$OCSTHA_2m_10km))
 g10km <- g10km[!is.na(g10km$LMKGLC_10km),]
 plot(raster(g10km["BLDFIE_M_sl1_10km_ll"]), col=SAGA_pal[[1]])
 plot(raster(g10km["HISTPR_10km"]), col=SAGA_pal[[1]])
 plot(raster(g10km["BLDFIE_M_1m_10km_ll"]), col=SAGA_pal[[1]])
-plot(log1p(raster(g10km["OCSTHA_1m_10km"])), col=SAGA_pal[[1]])
-plot(log1p(raster(g10km["OCSTHA_2m_10km"])), col=SAGA_pal[[1]])
+plot(log1p(raster(g10km["OCSTHA_1m_10km"])), col=SAGA_pal[[1]], zlim=c(0,8))
+plot(log1p(raster(g10km["OCSTHA_2m_10km"])), col=SAGA_pal[[1]], zlim=c(0,8))
 plot(log1p(raster(g10km["ORCDRC_M_1m_10km_ll"])), col=SAGA_pal[[1]])
 
 ## UPPER / LOWER UNCERTAINTY ESTIMATES:
-OCS_1m <- GSIF::OCSKGM(ORCDRC=g10km$ORCDRC_M_1m_10km_ll, BLD=g10km$BLDFIE_M_1m_10km_ll, CRFVOL=g10km$CRFVOL_M_1m_10km_ll, HSIZE=100, ORCDRC.sd=20, BLD.sd=170) ## (expm1(log1p(g10km$ORCDRC_M_1m_10km_ll)+0.6)-expm1(log1p(g10km$ORCDRC_M_1m_10km_ll)-0.6))/2
-OCS_2m <- GSIF::OCSKGM(ORCDRC=g10km$ORCDRC_M_2m_10km_ll, BLD=g10km$BLDFIE_M_2m_10km_ll, CRFVOL=g10km$CRFVOL_M_2m_10km_ll, HSIZE=100, ORCDRC.sd=20, BLD.sd=170)
+OCS_1m <- GSIF::OCSKGM(ORCDRC=g10km$ORCDRC_M_1m_10km_ll, BLD=g10km$BLDFIE_M_1m_10km_ll, CRFVOL=g10km$CRFVOL_M_1m_10km_ll, HSIZE=100, ORCDRC.sd=15, BLD.sd=170) ## (expm1(log1p(g10km$ORCDRC_M_1m_10km_ll)+0.6)-expm1(log1p(g10km$ORCDRC_M_1m_10km_ll)-0.6))/2
+OCS_2m <- GSIF::OCSKGM(ORCDRC=g10km$ORCDRC_M_2m_10km_ll, BLD=g10km$BLDFIE_M_2m_10km_ll, CRFVOL=g10km$CRFVOL_M_2m_10km_ll, HSIZE=100, ORCDRC.sd=15, BLD.sd=170)
 g10km$OCSTHA_1m_10km_UPPER <- g10km$OCSTHA_1m_10km + attr(OCS_1m, "measurementError")*10
 g10km$OCSTHA_1m_10km_LOWER <- g10km$OCSTHA_1m_10km - attr(OCS_1m, "measurementError")*10
 g10km$OCSTHA_1m_10km_LOWER <- ifelse(g10km$OCSTHA_1m_10km_LOWER<0, 0, g10km$OCSTHA_1m_10km_LOWER)
@@ -152,23 +173,34 @@ g10km$OCSTHA_2m_10km_LOWER <- ifelse(g10km$OCSTHA_2m_10km_LOWER<0, 0, g10km$OCST
 g10km@data[119000,c("OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km","OCSTHA_1m_10km_UPPER")]
 g10km@data[which(g10km$OCSTHA_1m_10km>2200)[1],c("OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km","OCSTHA_1m_10km_UPPER")]
 
+save.image()
 g10km.pol <- grid2poly(g10km["LMKGLC_10km"]) ## Takes ca 10 mins!
 library(geosphere)
 ## Calculate area in ha for each pixel in latlon (run in parallel):
 getArea <- function(x,pol){geosphere::areaPolygon(as(pol[x,], "SpatialPolygons"))/1e4}
+##area in ha
 getArea(2,g10km.pol)
-AREA <- unlist(parallel::mclapply( 1:length(g10km.pol), getArea, pol=g10km.pol, mc.cores=48))
+AREA <- unlist(parallel::mclapply( 1:length(g10km.pol), getArea, pol=g10km.pol, mc.cores=26)) ## memory demanding!
 #g10km$AREA <- sapply(1:length(g10km.pol), function(x){geosphere::areaPolygon(as(g10km.pol[x,], "SpatialPolygons"))})/1e4
 g10km$AREA <- AREA
 summary(g10km$AREA)
 
-g10km.df = as.data.frame(g10km[,c("OCSTHA_1m_10km","OCSTHA_2m_10km","HISTPR_10km","L05GLC_10km","BLDFIE_M_1m_10km_ll","BLDFIE_M_2m_10km_ll","ORCDRC_M_1m_10km_ll","ORCDRC_M_2m_10km_ll","OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km_UPPER","OCSTHA_2m_10km_LOWER","OCSTHA_2m_10km_UPPER","AREA")])
+g10km.df = as.data.frame(g10km[,c("OCSTHA_1m_10km","OCSTHA_2m_10km","HISTPR_10km","L05GLC_10km","BLDFIE_M_1m_10km_ll","BLDFIE_M_2m_10km_ll","ORCDRC_M_1m_10km_ll","ORCDRC_M_2m_10km_ll","OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km_UPPER","OCSTHA_2m_10km_LOWER","OCSTHA_2m_10km_UPPER","AREA","Country_NAME")])
+str(g10km.df)
+summary(g10km.df$Country_NAME)[1:20]
 unlink("TROP_grid10km.csv.gz")
 write.csv(g10km.df, file="TROP_grid10km.csv")
 gzip("TROP_grid10km.csv")
 ## Kalimantan:
 kal = which(g10km.df$s1>110.6 & g10km.df$s1<110.8 & g10km.df$s2> -2.9 & g10km.df$s2 < -2.7)
-g10km.df[kal,c("OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km","OCSTHA_1m_10km_UPPER")]
+g10km.df[kal,c("OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km","OCSTHA_1m_10km_UPPER","Country_NAME")]
+## Total estimate of OCS for 0-1 m and 1-2 m (total sum):
+sum(g10km.df$OCSTHA_1m_10km * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
+#sum(g10km.df$OCSTHA_1m_10km_LOWER * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
+#sum(g10km.df$OCSTHA_1m_10km_UPPER * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
+sum(g10km.df$OCSTHA_2m_10km * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
+#sum(g10km.df$OCSTHA_2m_10km_LOWER * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
+#sum(g10km.df$OCSTHA_2m_10km_UPPER * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
 
 ## plot in Google Earth:
 setwd("/data/CIFOR")
@@ -211,6 +243,7 @@ names(trop)
 rn = c(10,1200) ## quantile(c(trop$OCSTHA_1m_9km, trop$SOCS_old), c(.01, .99), na.rm=TRUE)
 rx = rev(as.character(round(c(round(rn[1], 0), NA, round(mean(rn), 0), NA, round(rn[2], 0)), 2)))
 trop$SOCS_oldf <- ifelse(trop$SOCS_old<rn[1], rn[1], ifelse(trop$SOCS_old>rn[2], rn[2], trop$SOCS_old))
+trop$OCSTHA_1m_10km <- ifelse(trop$OCSTHA_1m_10km==0, NA, trop$OCSTHA_1m_10km)
 trop$SOCS_SGf <- ifelse(trop$OCSTHA_1m_10km<rn[1], rn[1], ifelse(trop$OCSTHA_1m_10km>rn[2], rn[2], trop$OCSTHA_1m_10km))
 
 require(maptools)
