@@ -19,8 +19,8 @@ if(.Platform$OS.type == "windows"){
   gdal_translate <- paste0(gdal.dir, "/gdal_translate.exe")
   gdalwarp <- paste0(gdal.dir, "/gdalwarp.exe") 
 } else {
-  gdal_translate = "gdal_translate"
-  gdalwarp = "gdalwarp"
+  gdal_translate = "/usr/bin/gdal_translate"
+  gdalwarp = "/usr/bin/gdalwarp"
 }
 
 ## List of property maps:
@@ -29,16 +29,45 @@ usda.lst <- c("Saprists", "Hemists", "Folists", "Fibrists")
 
 ## resample to 1 km resolution Tropics only:
 system(paste0(gdalwarp, ' /data/GEOG/HISTPR_1km_ll.tif TROP_HISTPR_1km_ll.tif -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"'))
-for(i in fao.lst){ system(paste0(gdalwarp, ' /data/GEOG/', i, '_1km_ll.tif TROP_', i, '_1km_ll.tif -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"')) }
+for(i in fao.lst){ system(paste0(gdalwarp, ' /data/GEOG/TAXNWRB_', i, '_1km_ll.tif TROP_', i, '_1km_ll.tif -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"')) }
 
-orc.lst <- paste0("OCSTHA_M_sl", 1:6)
-for(i in orc.lst){ system(paste0(gdalwarp, ' /data/GEOG/', i, '_1km_ll.tif TROP_', i, '_1km_ll.tif -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"')) }
+## Resample in parallel:
+orc.lst <- paste0("OCSTHA_M_sd", 1:6)
+bld.lst <- paste0("BLDFIE_M_sl", 1:7)
+soc.lst <- paste0("ORCDRC_M_sl", 1:7)
+t.lst <- c(orc.lst, bld.lst, soc.lst)
+sfInit(parallel=TRUE, cpus=length(t.lst))
+sfLibrary(raster)
+sfLibrary(rgdal)
+sfExport("gdalwarp","t.lst")
+x <- sfClusterApplyLB(t.lst, function(x){ try( if(!file.exists(paste0('TROP_', x, '_1km_ll.tif'))){ system(paste0(gdalwarp, ' /data/GEOG/', x, '_1km_ll.tif TROP_', x, '_1km_ll.tif -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"')) } ) })
+sfStop()
+file.copy(from="TROP_OCSTHA_M_sd6_1km_ll.tif", to="TROP_OCSTHA_2m_1km_ll.tif")
+## sum up OCS values for 0-1 m
+sD <- raster::stack(paste0('TROP_OCSTHA_M_sd', 1:5, '_1km_ll.tif'))
+sumf <- function(x){calc(x, sum, na.rm=TRUE)}
+## run in parallel:
+beginCluster()
+r1 <- clusterR(sD, fun=sumf, filename="TROP_OCSTHA_1m_1km_ll.tif", datatype="INT2S", options=c("COMPRESS=DEFLATE"))
+endCluster()
+
+#for(i in orc.lst){ system(paste0(gdalwarp, ' /data/GEOG/', i, '_1km_ll.tif TROP_', i, '_1km_ll.tif -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"')) }
+
+## plot HWSD and SoilGrids estimated SOCS next to each other:
+rob = "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+system(paste0(gdalwarp, ' TROP_OCSTHA_1m_1km_ll.tif OCSTHA_1m_10km.tif -r \"average\" -tr 0.1 0.1 -co \"COMPRESS=DEFLATE\" -dstnodata -9999'))
+system(paste0(gdalwarp, ' TROP_OCSTHA_2m_1km_ll.tif OCSTHA_2m_10km.tif -r \"average\" -tr 0.1 0.1 -co \"COMPRESS=DEFLATE\" -dstnodata -9999'))
+system(paste0(gdalwarp, ' TROP_HISTPR_1km_ll.tif HISTPR_10km.tif -r \"average\" -tr 0.1 0.1 -co \"COMPRESS=DEFLATE\" -dstnodata 255'))
 
 ## Soil points:
 load("/data/models/SPROPS/ovA.rda")
 TROP_xy <- ovA[ovA$LATWGS84>-36&ovA$LATWGS84<36,c("SOURCEID","LONWGS84","LATWGS84","SOURCEDB","UHDICM","LHDICM","HZDTXT","ORCDRC","BLD","CRFVOL")]
+TROP_xy <- TROP_xy[!is.na(TROP_xy$LATWGS84)&!is.na(TROP_xy$ORCDRC),]
+unlink("TROP_soil_profiles.csv.gz")
 write.csv(TROP_xy, file="TROP_soil_profiles.csv")
 gzip("TROP_soil_profiles.csv")
+summary(as.factor(TROP_xy$SOURCEDB))
+plot(TROP_xy$LONWGS84, TROP_xy$LATWGS84, pch="+", col="red")
 rm(ovA)
 
 load("/data/models/TAXOUSDA/ov.TAXOUSDA.rda")
@@ -47,8 +76,12 @@ TROP_usda$LONWGS84 <- as.numeric(sapply(paste(TROP_usda$LOC_ID), function(i){str
 TROP_usda$HISTPR <- 0
 TROP_usda$HISTPR[grep(TROP_usda$TAXOUSDA.f, pattern="ist", ignore.case=TRUE)] <- 1
 summary(as.factor(TROP_usda$HISTPR))
+TROP_usda <- TROP_usda[!is.na(TROP_usda$LATWGS84)&!is.na(TROP_usda$TAXOUSDA.f),]
+unlink("TROP_soil_types_USDA.csv.gz")
 write.csv(TROP_usda[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","TAXOUSDA.f","HISTPR")], file="TROP_soil_types_USDA.csv")
 gzip("TROP_soil_types_USDA.csv")
+summary(TROP_usda$SOURCEDB)
+points(TROP_usda$LONWGS84, TROP_usda$LATWGS84, pch="+")
 
 load("/data/models/TAXNWRB/ov.TAXNWRB.rda")
 TROP_wrb <- ov[ov$LATWGS84>-36&ov$LATWGS84<36,c("SOURCEID","LOC_ID","LATWGS84","SOURCEDB","TAXNWRB.f")]
@@ -56,14 +89,11 @@ TROP_wrb$LONWGS84 <- as.numeric(sapply(paste(TROP_wrb$LOC_ID), function(i){strsp
 TROP_wrb$HISTPR <- 0
 TROP_wrb$HISTPR[grep(TROP_wrb$TAXNWRB.f, pattern="hist", ignore.case=TRUE)] <- 1
 summary(as.factor(TROP_wrb$HISTPR))
+TROP_wrb <- TROP_wrb[!is.na(TROP_wrb$LATWGS84)&!is.na(TROP_wrb$TAXNWRB.f),]
+unlink("TROP_soil_types_WRB.csv.gz")
 write.csv(TROP_wrb[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","TAXNWRB.f","HISTPR")], file="TROP_soil_types_WRB.csv")
 gzip("TROP_soil_types_WRB.csv")
 rm(ov)
-
-## plot HWSD and SoilGrids estimated SOCS next to each other:
-rob = "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
-system(paste0(gdalwarp, ' TROP_OCSTHA_1m_1km_ll.tif OCSTHA_1m_10km.tif -r \"average\" -tr 0.1 0.1 -co \"COMPRESS=DEFLATE\" -dstnodata -9999'))
-system(paste0(gdalwarp, ' TROP_OCSTHA_2m_1km_ll.tif OCSTHA_2m_10km.tif -r \"average\" -tr 0.1 0.1 -co \"COMPRESS=DEFLATE\" -dstnodata -9999'))
 
 ## Wetlands / land cover classes:
 glc.lst <- paste0("/data/GlobCover30/", c(paste0("L0",1:9,"GLC3a.tif"), "L10GLC3a.tif", "LMKGLC3a.tif"))
@@ -74,8 +104,8 @@ sfExport("gdalwarp","glc.lst")
 x <- sfClusterApplyLB(glc.lst, function(x){ try( system(paste0(gdalwarp, ' ', x, ' ', gsub("3a", "_10km", basename(x)),' -r \"average\" -tr 0.1 0.1 -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"')) ) })
 sfStop()
 
-## Upper and lower limits:
-tif.lst <- paste0("/data/GEOG/", c(paste0("ORCDRC_M_sd", 1:7, "_1km_ll.tif"), paste0("BLD_M_sd", 1:7, "_1km_ll.tif"), paste0("CRFVOL_M_sd", 1:7, "_1km_ll.tif")))
+## Upper and lower limits for OCS at 10 km:
+tif.lst <- paste0("/data/GEOG/", c(paste0("ORCDRC_M_sl", 1:7, "_1km_ll.tif"), paste0("BLDFIE_M_sl", 1:7, "_1km_ll.tif"), paste0("CRFVOL_M_sl", 1:7, "_1km_ll.tif")))
 sfInit(parallel=TRUE, cpus=length(tif.lst))
 sfLibrary(raster)
 sfLibrary(rgdal)
@@ -90,25 +120,28 @@ g10km <- raster::stack(list.files(pattern="10km"))
 names(g10km)
 g10km <- as(g10km, "SpatialGridDataFrame")
 ## Weighted average based on the thickness of horizon:
-g10km$BLD_M_1m_10km_ll <- rowSums(g10km@data[,paste0("BLD_M_sd", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7])
-g10km$ORCDRC_M_1m_10km_ll <- rowSums(g10km@data[,paste0("ORCDRC_M_sd", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7])
-g10km$CRFVOL_M_1m_10km_ll <- rowSums(g10km@data[,paste0("CRFVOL_M_sd", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7])
+g10km$BLDFIE_M_1m_10km_ll <- rowSums(g10km@data[,paste0("BLDFIE_M_sl", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7])
+g10km$ORCDRC_M_1m_10km_ll <- rowSums(g10km@data[,paste0("ORCDRC_M_sl", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7])
+g10km$CRFVOL_M_1m_10km_ll <- rowSums(g10km@data[,paste0("CRFVOL_M_sl", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7])
+g10km$ORCDRC_M_2m_10km_ll <- rowSums(g10km@data[,c("ORCDRC_M_sl6_10km_ll","ORCDRC_M_sl7_10km_ll")], na.rm=TRUE)
+g10km$BLDFIE_M_2m_10km_ll <- rowSums(g10km@data[,c("BLDFIE_M_sl6_10km_ll","BLDFIE_M_sl7_10km_ll")], na.rm=TRUE)
+g10km$CRFVOL_M_2m_10km_ll <- rowSums(g10km@data[,c("CRFVOL_M_sl6_10km_ll","CRFVOL_M_sl7_10km_ll")], na.rm=TRUE)
+plot(raster(g10km["BLD_M_sd1_10km_ll"]), col=SAGA_pal[[1]])
 g10km <- as(g10km, "SpatialPixelsDataFrame")
+g10km$HISTPR_10km <- readGDAL("HISTPR_10km.tif")$band1[g10km@grid.index]
 summary(!is.na(g10km$LMKGLC_10km))
 summary(!is.na(g10km$OCSTHA_2m_10km))
 g10km <- g10km[!is.na(g10km$LMKGLC_10km),]
-g10km$ORCDRC_M_2m_10km_ll <- rowSums(g10km@data[,c("ORCDRC_M_sd6_10km_ll","ORCDRC_M_sd7_10km_ll")], na.rm=TRUE)
-g10km$BLD_M_2m_10km_ll <- rowSums(g10km@data[,c("BLD_M_sd6_10km_ll","BLD_M_sd7_10km_ll")], na.rm=TRUE)
-g10km$CRFVOL_M_2m_10km_ll <- rowSums(g10km@data[,c("CRFVOL_M_sd6_10km_ll","CRFVOL_M_sd7_10km_ll")], na.rm=TRUE)
-plot(raster(g10km["BLD_M_sd1_10km_ll"]), col=SAGA_pal[[1]])
-plot(raster(g10km["BLD_M_1m_10km_ll"]), col=SAGA_pal[[1]])
+plot(raster(g10km["BLDFIE_M_sl1_10km_ll"]), col=SAGA_pal[[1]])
+plot(raster(g10km["HISTPR_10km"]), col=SAGA_pal[[1]])
+plot(raster(g10km["BLDFIE_M_1m_10km_ll"]), col=SAGA_pal[[1]])
 plot(log1p(raster(g10km["OCSTHA_1m_10km"])), col=SAGA_pal[[1]])
 plot(log1p(raster(g10km["OCSTHA_2m_10km"])), col=SAGA_pal[[1]])
 plot(log1p(raster(g10km["ORCDRC_M_1m_10km_ll"])), col=SAGA_pal[[1]])
 
 ## UPPER / LOWER UNCERTAINTY ESTIMATES:
-OCS_1m <- GSIF::OCSKGM(ORCDRC=g10km$ORCDRC_M_1m_10km_ll, BLD=g10km$BLD_M_1m_10km_ll, CRFVOL=g10km$CRFVOL_M_1m_10km_ll, HSIZE=100, ORCDRC.sd=15, BLD.sd=170) ## (expm1(log1p(g10km$ORCDRC_M_1m_10km_ll)+0.6)-expm1(log1p(g10km$ORCDRC_M_1m_10km_ll)-0.6))/2
-OCS_2m <- GSIF::OCSKGM(ORCDRC=g10km$ORCDRC_M_2m_10km_ll, BLD=g10km$BLD_M_2m_10km_ll, CRFVOL=g10km$CRFVOL_M_2m_10km_ll, HSIZE=100, ORCDRC.sd=15, BLD.sd=170)
+OCS_1m <- GSIF::OCSKGM(ORCDRC=g10km$ORCDRC_M_1m_10km_ll, BLD=g10km$BLDFIE_M_1m_10km_ll, CRFVOL=g10km$CRFVOL_M_1m_10km_ll, HSIZE=100, ORCDRC.sd=20, BLD.sd=170) ## (expm1(log1p(g10km$ORCDRC_M_1m_10km_ll)+0.6)-expm1(log1p(g10km$ORCDRC_M_1m_10km_ll)-0.6))/2
+OCS_2m <- GSIF::OCSKGM(ORCDRC=g10km$ORCDRC_M_2m_10km_ll, BLD=g10km$BLDFIE_M_2m_10km_ll, CRFVOL=g10km$CRFVOL_M_2m_10km_ll, HSIZE=100, ORCDRC.sd=20, BLD.sd=170)
 g10km$OCSTHA_1m_10km_UPPER <- g10km$OCSTHA_1m_10km + attr(OCS_1m, "measurementError")*10
 g10km$OCSTHA_1m_10km_LOWER <- g10km$OCSTHA_1m_10km - attr(OCS_1m, "measurementError")*10
 g10km$OCSTHA_1m_10km_LOWER <- ifelse(g10km$OCSTHA_1m_10km_LOWER<0, 0, g10km$OCSTHA_1m_10km_LOWER)
@@ -129,33 +162,41 @@ AREA <- unlist(parallel::mclapply( 1:length(g10km.pol), getArea, pol=g10km.pol, 
 g10km$AREA <- AREA
 summary(g10km$AREA)
 
-g10km.df = as.data.frame(g10km[,c("OCSTHA_1m_10km","OCSTHA_2m_10km","L05GLC_10km","BLD_M_1m_10km_ll","BLD_M_2m_10km_ll","ORCDRC_M_1m_10km_ll","ORCDRC_M_2m_10km_ll","OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km_UPPER","OCSTHA_2m_10km_LOWER","OCSTHA_2m_10km_UPPER","AREA")])
+g10km.df = as.data.frame(g10km[,c("OCSTHA_1m_10km","OCSTHA_2m_10km","HISTPR_10km","L05GLC_10km","BLDFIE_M_1m_10km_ll","BLDFIE_M_2m_10km_ll","ORCDRC_M_1m_10km_ll","ORCDRC_M_2m_10km_ll","OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km_UPPER","OCSTHA_2m_10km_LOWER","OCSTHA_2m_10km_UPPER","AREA")])
 unlink("TROP_grid10km.csv.gz")
 write.csv(g10km.df, file="TROP_grid10km.csv")
 gzip("TROP_grid10km.csv")
+## Kalimantan:
+kal = which(g10km.df$s1>110.6 & g10km.df$s1<110.8 & g10km.df$s2> -2.9 & g10km.df$s2 < -2.7)
+g10km.df[kal,c("OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km","OCSTHA_1m_10km_UPPER")]
 
 ## plot in Google Earth:
 setwd("/data/CIFOR")
-source("plotKML.GDALobj.R")
-source("legend.bar.R")
-r2 = raster("TROP_OCSTHA_2m_1km_ll.tif")
-r1 = raster("TROP_OCSTHA_1m_1km_ll.tif")
-hist(log1p(sampleRandom(r1, 1e3)))
-setwd("/data/CIFOR/OCSTHA_2m")
-beginCluster()
-r <- clusterR(r2, fun=log1p, filename="TROP_OCSTHA_2m_1km_ll_log1p.tif", options=c("COMPRESS=DEFLATE"))
-endCluster()
+#source("plotKML.GDALobj.R")
+#source("legend.bar.R")
+#r1 = raster("TROP_OCSTHA_1m_1km_ll.tif")
+#r2 = raster("TROP_OCSTHA_2m_1km_ll.tif")
+#r3 = raster("HISTPR_1km_ll.tif")
+#hist(log1p(sampleRandom(r1, 1e3)))
+#setwd("/data/CIFOR/OCSTHA_2m")
+#beginCluster()
+#r <- clusterR(r2, fun=log1p, filename="TROP_OCSTHA_2m_1km_ll_log1p.tif", options=c("COMPRESS=DEFLATE"))
+#endCluster()
 #writeRaster(log1p(r), "TROP_OCSTHA_2m_1km_ll_log1p.tif")
-obj = GDALinfo("TROP_OCSTHA_2m_1km_ll_log1p.tif")
-plotKML.GDALobj(obj, file.name="TROP_log_OCSTHA_2m_1km.kml", block.x=5, z.lim=c(0,7.2), colour_scale = SAGA_pal[[1]], CRS="+proj=longlat +datum=WGS84", plot.legend=FALSE) # z.lim=c(0,1200)
+#obj = GDALinfo("TROP_OCSTHA_2m_1km_ll_log1p.tif")
+#plotKML.GDALobj(obj, file.name="TROP_log_OCSTHA_2m_1km.kml", block.x=5, z.lim=c(0,7.2), colour_scale = SAGA_pal[[1]], CRS="+proj=longlat +datum=WGS84", plot.legend=FALSE) # z.lim=c(0,1200)
 
-setwd("/data/CIFOR/OCSTHA_1m")
-beginCluster()
-r <- clusterR(r1, fun=log1p, filename="TROP_OCSTHA_1m_1km_ll_log1p.tif", options=c("COMPRESS=DEFLATE"))
-endCluster()
-obj = GDALinfo("TROP_OCSTHA_1m_1km_ll_log1p.tif")
-plotKML.GDALobj(obj, file.name="TROP_log_OCSTHA_1m_1km.kml", block.x=5, z.lim=c(0,7.2), colour_scale = SAGA_pal[[1]], CRS="+proj=longlat +datum=WGS84", plot.legend=FALSE)
-setwd("/data/CIFOR")
+#setwd("/data/CIFOR/OCSTHA_1m")
+#beginCluster()
+#r <- clusterR(r1, fun=log1p, filename="TROP_OCSTHA_1m_1km_ll_log1p.tif", options=c("COMPRESS=DEFLATE"))
+#endCluster()
+#obj = GDALinfo("TROP_OCSTHA_1m_1km_ll_log1p.tif")
+#plotKML.GDALobj(obj, file.name="TROP_log_OCSTHA_1m_1km.kml", block.x=5, z.lim=c(0,7.2), colour_scale = SAGA_pal[[1]], CRS="+proj=longlat +datum=WGS84", plot.legend=FALSE)
+
+#setwd("/data/CIFOR/HISTPROB")
+#obj = GDALinfo("HISTPR_1km_ll.tif")
+#plotKML.GDALobj(obj, file.name="TROP_HISTPR_1km.kml", block.x=5, z.lim=c(0,40), colour_scale = SAGA_pal[["SG_COLORS_YELLOW_BLUE"]], CRS="+proj=longlat +datum=WGS84", plot.legend=FALSE)
+#setwd("/data/CIFOR")
 
 ## -tr 9000 9000 -s_srs \"+proj=longlat +datum=WGS84\" -t_srs \"', rob, '\" -co \"COMPRESS=DEFLATE\" -dstnodata -9999')) 
 te <- as.vector(extent(raster("OCSTHA_1m_10km.tif")))
@@ -194,6 +235,8 @@ image(log1p(raster(trop["SOCS_SGf"])), col=SAGA_pal[[1]], zlim=log1p(rn), main="
 lines(country)
 legend("left", rx, fill=rev(SAGA_pal[[1]][c(1,5,10,15,20)]), horiz=FALSE, cex=.8)
 dev.off()
+
+save.image()
 
 ## Scatter plot histograms:
 df.s <- trop@data[sample.int(length(trop),20000),]
