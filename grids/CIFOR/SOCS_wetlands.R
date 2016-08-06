@@ -196,11 +196,11 @@ kal = which(g10km.df$s1>110.6 & g10km.df$s1<110.8 & g10km.df$s2> -2.9 & g10km.df
 g10km.df[kal,c("OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km","OCSTHA_1m_10km_UPPER","Country_NAME")]
 ## Total estimate of OCS for 0-1 m and 1-2 m (total sum):
 sum(g10km.df$OCSTHA_1m_10km * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
-#sum(g10km.df$OCSTHA_1m_10km_LOWER * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
-#sum(g10km.df$OCSTHA_1m_10km_UPPER * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
 sum(g10km.df$OCSTHA_2m_10km * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
-#sum(g10km.df$OCSTHA_2m_10km_LOWER * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
-#sum(g10km.df$OCSTHA_2m_10km_UPPER * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
+## estimate of the total OCS for Indonesia:
+ind.sel = which(g10km.df$Country_NAME=="Indonesia")
+sum(g10km.df$OCSTHA_1m_10km[ind.sel] * g10km.df$AREA[ind.sel] * 1e6, na.rm = TRUE)/1e15
+sum(g10km.df$OCSTHA_2m_10km[ind.sel] * g10km.df$AREA[ind.sel] * 1e6, na.rm = TRUE)/1e15
 
 ## plot in Google Earth:
 setwd("/data/CIFOR")
