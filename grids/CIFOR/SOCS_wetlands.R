@@ -137,19 +137,20 @@ g10km <- raster::stack(tif.10km[grep(".tif", tif.10km)])
 names(g10km)
 g10km <- as(g10km, "SpatialGridDataFrame")
 ## Weighted average based on the thickness of horizon:
-g10km$BLDFIE_M_1m_10km_ll <- rowSums(g10km@data[,paste0("BLDFIE_M_sl", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7])
-g10km$ORCDRC_M_1m_10km_ll <- rowSums(g10km@data[,paste0("ORCDRC_M_sl", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7])
-g10km$CRFVOL_M_1m_10km_ll <- rowSums(g10km@data[,paste0("CRFVOL_M_sl", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7])
-g10km$ORCDRC_M_2m_10km_ll <- rowSums(g10km@data[,c("ORCDRC_M_sl6_10km_ll","ORCDRC_M_sl7_10km_ll")], na.rm=TRUE)
-g10km$BLDFIE_M_2m_10km_ll <- rowSums(g10km@data[,c("BLDFIE_M_sl6_10km_ll","BLDFIE_M_sl7_10km_ll")], na.rm=TRUE)
-g10km$CRFVOL_M_2m_10km_ll <- rowSums(g10km@data[,c("CRFVOL_M_sl6_10km_ll","CRFVOL_M_sl7_10km_ll")], na.rm=TRUE)
+g10km$BLDFIE_M_1m_10km_ll <- round(rowSums(g10km@data[,paste0("BLDFIE_M_sl", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7]))
+g10km$ORCDRC_M_1m_10km_ll <- round(rowSums(g10km@data[,paste0("ORCDRC_M_sl", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7]))
+g10km$CRFVOL_M_1m_10km_ll <- round(rowSums(g10km@data[,paste0("CRFVOL_M_sl", 1:6, "_10km_ll")] * data.frame(lapply(ds[-7], rep, length=nrow(g10km))), na.rm=TRUE) / sum(ds[-7]))
+g10km$ORCDRC_M_2m_10km_ll <- round(rowSums(g10km@data[,c("ORCDRC_M_sl6_10km_ll","ORCDRC_M_sl7_10km_ll")], na.rm=TRUE)/2)
+g10km$BLDFIE_M_2m_10km_ll <- round(rowSums(g10km@data[,c("BLDFIE_M_sl6_10km_ll","BLDFIE_M_sl7_10km_ll")], na.rm=TRUE)/2)
+g10km$CRFVOL_M_2m_10km_ll <- round(rowSums(g10km@data[,c("CRFVOL_M_sl6_10km_ll","CRFVOL_M_sl7_10km_ll")], na.rm=TRUE)/2)
 plot(raster(g10km["BLDFIE_M_sl1_10km_ll"]), col=SAGA_pal[[1]])
+plot(raster(g10km["BLDFIE_M_2m_10km_ll"]), col=SAGA_pal[[1]])
 g10km <- as(g10km, "SpatialPixelsDataFrame")
 g10km$HISTPR_10km <- readGDAL("HISTPR_10km.tif")$band1[g10km@grid.index]
 #g10km$Country <- readGDAL("countries_10km.sdat")$band1[g10km@grid.index]
 country.df = data.frame(Country=1:length(levels(countries.dbf[["dbf"]]$NAME)), NAME=levels(countries.dbf[["dbf"]]$NAME))
 g10km$Country_NAME <- plyr::join(data.frame(Country=g10km$countries_10km), country.df, type="left")$NAME
-spplot(g10km["Country_NAME"])
+#spplot(g10km["Country_NAME"])
 summary(!is.na(g10km$LMKGLC_10km))
 summary(!is.na(g10km$OCSTHA_2m_10km))
 g10km <- g10km[!is.na(g10km$LMKGLC_10km),]
@@ -163,12 +164,12 @@ plot(log1p(raster(g10km["ORCDRC_M_1m_10km_ll"])), col=SAGA_pal[[1]])
 ## UPPER / LOWER UNCERTAINTY ESTIMATES:
 OCS_1m <- GSIF::OCSKGM(ORCDRC=g10km$ORCDRC_M_1m_10km_ll, BLD=g10km$BLDFIE_M_1m_10km_ll, CRFVOL=g10km$CRFVOL_M_1m_10km_ll, HSIZE=100, ORCDRC.sd=15, BLD.sd=170) ## (expm1(log1p(g10km$ORCDRC_M_1m_10km_ll)+0.6)-expm1(log1p(g10km$ORCDRC_M_1m_10km_ll)-0.6))/2
 OCS_2m <- GSIF::OCSKGM(ORCDRC=g10km$ORCDRC_M_2m_10km_ll, BLD=g10km$BLDFIE_M_2m_10km_ll, CRFVOL=g10km$CRFVOL_M_2m_10km_ll, HSIZE=100, ORCDRC.sd=15, BLD.sd=170)
-g10km$OCSTHA_1m_10km_UPPER <- g10km$OCSTHA_1m_10km + attr(OCS_1m, "measurementError")*10
-g10km$OCSTHA_1m_10km_LOWER <- g10km$OCSTHA_1m_10km - attr(OCS_1m, "measurementError")*10
-g10km$OCSTHA_1m_10km_LOWER <- ifelse(g10km$OCSTHA_1m_10km_LOWER<0, 0, g10km$OCSTHA_1m_10km_LOWER)
-g10km$OCSTHA_2m_10km_UPPER <- g10km$OCSTHA_2m_10km + attr(OCS_2m, "measurementError")*10
-g10km$OCSTHA_2m_10km_LOWER <- g10km$OCSTHA_2m_10km - attr(OCS_2m, "measurementError")*10
-g10km$OCSTHA_2m_10km_LOWER <- ifelse(g10km$OCSTHA_2m_10km_LOWER<0, 0, g10km$OCSTHA_2m_10km_LOWER)
+g10km$OCSTHA_1m_10km_UPPER <- round(g10km$OCSTHA_1m_10km + attr(OCS_1m, "measurementError")*10)
+g10km$OCSTHA_1m_10km_LOWER <- round(g10km$OCSTHA_1m_10km - attr(OCS_1m, "measurementError")*10)
+g10km$OCSTHA_1m_10km_LOWER <- round(ifelse(g10km$OCSTHA_1m_10km_LOWER<0, 0, g10km$OCSTHA_1m_10km_LOWER))
+g10km$OCSTHA_2m_10km_UPPER <- round(g10km$OCSTHA_2m_10km + attr(OCS_2m, "measurementError")*10)
+g10km$OCSTHA_2m_10km_LOWER <- round(g10km$OCSTHA_2m_10km - attr(OCS_2m, "measurementError")*10)
+g10km$OCSTHA_2m_10km_LOWER <- round(ifelse(g10km$OCSTHA_2m_10km_LOWER<0, 0, g10km$OCSTHA_2m_10km_LOWER))
 ## test it:
 g10km@data[119000,c("OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km","OCSTHA_1m_10km_UPPER")]
 g10km@data[which(g10km$OCSTHA_1m_10km>2200)[1],c("OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km","OCSTHA_1m_10km_UPPER")]
@@ -185,7 +186,7 @@ AREA <- unlist(parallel::mclapply( 1:length(g10km.pol), getArea, pol=g10km.pol, 
 g10km$AREA <- AREA
 summary(g10km$AREA)
 
-g10km.df = as.data.frame(g10km[,c("OCSTHA_1m_10km","OCSTHA_2m_10km","HISTPR_10km","L05GLC_10km","BLDFIE_M_1m_10km_ll","BLDFIE_M_2m_10km_ll","ORCDRC_M_1m_10km_ll","ORCDRC_M_2m_10km_ll","OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km_UPPER","OCSTHA_2m_10km_LOWER","OCSTHA_2m_10km_UPPER","AREA","Country_NAME")])
+g10km.df = as.data.frame(g10km[,c("OCSTHA_1m_10km","OCSTHA_2m_10km","HISTPR_10km","L05GLC_10km","BLDFIE_M_1m_10km_ll","BLDFIE_M_2m_10km_ll","ORCDRC_M_1m_10km_ll","ORCDRC_M_2m_10km_ll","CRFVOL_M_1m_10km_ll","CRFVOL_M_2m_10km_ll","OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km_UPPER","OCSTHA_2m_10km_LOWER","OCSTHA_2m_10km_UPPER","AREA","Country_NAME")])
 str(g10km.df)
 summary(g10km.df$Country_NAME)[1:20]
 unlink("TROP_grid10km.csv.gz")
