@@ -128,6 +128,11 @@ xurcorner = 180
 yurcorner = 36
 system(paste0('/usr/local/bin/saga_cmd -c=48 grid_gridding 0 -INPUT \"ne_10m_admin_0_countries.shp\" -FIELD \"NAME_INT\" -GRID \"countries_10km.sgrd\" -GRID_TYPE 0 -TARGET_DEFINITION 0 -TARGET_USER_SIZE ', cellsize, ' -TARGET_USER_XMIN ', xllcorner+cellsize/2,' -TARGET_USER_XMAX ', xurcorner-cellsize/2, ' -TARGET_USER_YMIN ', yllcorner+cellsize/2,' -TARGET_USER_YMAX ', yurcorner-cellsize/2))
 system(paste0(gdalwarp, ' countries_10km.sdat countries_10km.tif -r \"near\" -tr 0.1 0.1 -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"'))
+## Peatlands Indonesia:
+system("7za e Indonesia_peatlands.zip")
+system(paste0('/usr/local/bin/saga_cmd -c=48 grid_gridding 0 -INPUT \"Indonesia_peatlands.shp\" -FIELD \"HECTARES\" -GRID \"peatlands_10km.sgrd\" -GRID_TYPE 0 -TARGET_DEFINITION 0 -TARGET_USER_SIZE ', cellsize, ' -TARGET_USER_XMIN ', xllcorner+cellsize/2,' -TARGET_USER_XMAX ', xurcorner-cellsize/2, ' -TARGET_USER_YMIN ', yllcorner+cellsize/2,' -TARGET_USER_YMAX ', yurcorner-cellsize/2))
+system(paste0(gdalwarp, ' peatlands_10km.sdat peatlands_10km.tif -r \"near\" -tr 0.1 0.1 -te -180 -36 180 36 -co \"COMPRESS=DEFLATE\"'))
+plot(raster("peatlands_10km.tif"))
 
 ## horizon thickness:
 ds <- get("stsize", envir = GSIF.opts)
@@ -186,7 +191,7 @@ AREA <- unlist(parallel::mclapply( 1:length(g10km.pol), getArea, pol=g10km.pol, 
 g10km$AREA <- AREA
 summary(g10km$AREA)
 
-g10km.df = as.data.frame(g10km[,c("OCSTHA_1m_10km","OCSTHA_2m_10km","HISTPR_10km","L05GLC_10km","BLDFIE_M_1m_10km_ll","BLDFIE_M_2m_10km_ll","ORCDRC_M_1m_10km_ll","ORCDRC_M_2m_10km_ll","CRFVOL_M_1m_10km_ll","CRFVOL_M_2m_10km_ll","OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km_UPPER","OCSTHA_2m_10km_LOWER","OCSTHA_2m_10km_UPPER","AREA","Country_NAME")])
+g10km.df = as.data.frame(g10km[,c("OCSTHA_1m_10km","OCSTHA_2m_10km","HISTPR_10km","L05GLC_10km","BLDFIE_M_1m_10km_ll","BLDFIE_M_2m_10km_ll","ORCDRC_M_1m_10km_ll","ORCDRC_M_2m_10km_ll","CRFVOL_M_1m_10km_ll","CRFVOL_M_2m_10km_ll","OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km_UPPER","OCSTHA_2m_10km_LOWER","OCSTHA_2m_10km_UPPER","AREA","Country_NAME","peatlands_10km")])
 str(g10km.df)
 summary(g10km.df$Country_NAME)[1:20]
 unlink("TROP_grid10km.csv.gz")
@@ -201,7 +206,17 @@ sum(g10km.df$OCSTHA_2m_10km * g10km.df$AREA * 1e6, na.rm = TRUE)/1e15
 ## estimate of the total OCS for Indonesia:
 ind.sel = which(g10km.df$Country_NAME=="Indonesia")
 sum(g10km.df$OCSTHA_1m_10km[ind.sel] * g10km.df$AREA[ind.sel] * 1e6, na.rm = TRUE)/1e15
+## 104.911
 sum(g10km.df$OCSTHA_2m_10km[ind.sel] * g10km.df$AREA[ind.sel] * 1e6, na.rm = TRUE)/1e15
+## 50.34261
+## estimate of the total OCS for Peatlands:
+pea.sel = which(!is.na(g10km.df$peatlands_10km))
+sum(g10km.df$OCSTHA_1m_10km[pea.sel] * g10km.df$AREA[pea.sel] * 1e6, na.rm = TRUE)/1e15
+## 15.12484
+sum(g10km.df$OCSTHA_2m_10km[pea.sel] * g10km.df$AREA[pea.sel] * 1e6, na.rm = TRUE)/1e15
+## 6.982348
+## Peatlands in Indonesia:
+(sum(!is.na(g10km.df$peatlands_10km), na.rm=TRUE)/sum(g10km.df$Country_NAME=="Indonesia", na.rm=TRUE))*100
 
 ## plot in Google Earth:
 setwd("/data/CIFOR")
