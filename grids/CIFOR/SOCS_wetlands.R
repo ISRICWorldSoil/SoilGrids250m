@@ -13,6 +13,13 @@ library(scales)
 library(R.utils)
 library(plotKML)
 library(GSIF)
+library(parallel)
+library(doParallel)
+library(foreign)
+library(tools)
+library(doSNOW)
+library(doMC)
+library(BSDA)
 plotKML.env(convert="convert", show.env=FALSE)
 
 if(.Platform$OS.type == "windows"){
@@ -178,8 +185,8 @@ g10km$OCSTHA_2m_10km_LOWER <- round(ifelse(g10km$OCSTHA_2m_10km_LOWER<0, 0, g10k
 ## test it:
 g10km@data[119000,c("OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km","OCSTHA_1m_10km_UPPER")]
 g10km@data[which(g10km$OCSTHA_1m_10km>2200)[1],c("OCSTHA_1m_10km_LOWER","OCSTHA_1m_10km","OCSTHA_1m_10km_UPPER")]
-
 save.image()
+
 g10km.pol <- grid2poly(g10km["LMKGLC_10km"]) ## Takes ca 10 mins!
 library(geosphere)
 ## Calculate area in ha for each pixel in latlon (run in parallel):
@@ -217,6 +224,24 @@ sum(g10km.df$OCSTHA_2m_10km[pea.sel] * g10km.df$AREA[pea.sel] * 1e6, na.rm = TRU
 ## 6.982348
 ## Peatlands in Indonesia:
 (sum(!is.na(g10km.df$peatlands_10km), na.rm=TRUE)/sum(g10km.df$Country_NAME=="Indonesia", na.rm=TRUE))*100
+## DERIVE Summary stats per country:
+g10km.df$OCS_1m_Pg_upper = g10km.df$OCSTHA_1m_10km_UPPER*g10km.df$AREA*1e6/1e15
+g10km.df$OCS_1m_Pg_lower = g10km.df$OCSTHA_1m_10km_LOWER*g10km.df$AREA*1e6/1e15
+g10km.df$OCS_1m_Pg = g10km.df$OCSTHA_1m_10km*g10km.df$AREA*1e6/1e15
+registerDoMC(36)
+SOC_agg <- ddply(g10km.df, .(Country_NAME), summarize, Total_OCS_1m_Pg=round(sum(OCSTHA_1m_10km*AREA*1e6,na.rm = TRUE)/1e15,1), Total_OCS_2m_Pg=round(sum(OCSTHA_2m_10km*AREA*1e6,na.rm = TRUE)/1e15,1), Total_OCS_1m_Pg_lower=round(sum(OCS_1m_Pg_lower, na.rm=TRUE)), Total_OCS_1m_Pg_upper=round(sum(OCS_1m_Pg_upper, na.rm=TRUE)), Total_OCS_1m_N=sum(!is.na(OCSTHA_1m_10km)), Total_AREA=sum(AREA,na.rm=TRUE)/1e6, .parallel = TRUE)
+## sqrt(mean((OCS_1m_Pg_upper-OCS_1m_Pg_lower)^2, na.rm=TRUE))
+closeAllConnections(); gc()
+str(SOC_agg)
+write.csv(SOC_agg[,c(1:3,6,7)], "Summary_OCS_per_country.csv")
+## https://www.r-bloggers.com/interval-estimation-of-the-population-mean/
+SOC_agg$Total_OCS_1m_Pg_lower=NA
+SOC_agg$Total_OCS_1m_Pg_upper=NA
+for(i in 1:nrow(SOC_agg)){
+  x = zsum.test(mean.x=SOC_agg$Total_OCS_1m_Pg[i], sigma.x = SOC_agg$Total_OCS_1m_Pg_sigma[i], n.x = SOC_agg$Total_OCS_1m_Pg_N[i], conf.level = 0.95)
+  SOC_agg$Total_OCS_1m_Pg_lower[i] = x$$conf.int[1]
+  SOC_agg$Total_OCS_1m_Pg_upper[i] = x$$conf.int[2]
+}
 
 ## plot in Google Earth:
 setwd("/data/CIFOR")
@@ -286,7 +311,6 @@ legend("left", rx, fill=rev(SAGA_pal[[1]][c(1,5,10,15,20)]), horiz=FALSE, cex=.8
 dev.off()
 
 save.image()
-
 ## Scatter plot histograms:
 df.s <- trop@data[sample.int(length(trop),20000),]
 with(df.s, scatter.hist(SOCS_old,OCSTHA_1m_10km, xlab="HWSD", ylab="SoilGrids", pch=19, col=alpha("lightblue", 0.6), cex=1.5))
