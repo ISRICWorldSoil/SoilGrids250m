@@ -1,0 +1,255 @@
+"","Country_NAME","Total_OCS_1m_Pg","Total_OCS_2m_Pg","Total_OCS_1m_N"
+"1","Abyei",0.3,0.1,10449
+"2","Afghanistan",9.7,2,888892
+"3","Aksai Chin",12.1,4.6,283235
+"4","Albania",17.6,5.4,629623
+"5","Algeria",6.7,0.8,2387265
+"6","American Samoa",9.6,2.3,947070
+"7","Andorra",257.5,80,9383619
+"8","Angola",12.8,3.1,1255054
+"9","Anguilla",3.3,0.7,177757
+"10","Antarctica",5.5,1.8,12934087
+"11","Antigua and Barbuda",0.4,0.1,14966
+"12","Argentina",61.9,18,3712950
+"13","Armenia",9.5,3.2,362890
+"14","Aruba",0,0,262
+"15","Arunachal Pradesh",3.2,0.5,69581
+"16","Ashmore and Cartier Islands",0,0,5612
+"17","Australia",57.7,13.2,8009878
+"18","Austria",5.2,1.3,543187
+"19","Azerbaijan",9.2,2.4,916893
+"20","Azores Islands",2.6,0.5,395306
+"21","Bahamas",1.1,0.4,18401
+"22","Bahrain",0,0,870
+"23","Baker Island",0,0,6
+"24","Bangladesh",5.9,2.6,144714
+"25","Barbados",0,0,494
+"26","Bassas da India",0,0,12
+"27","Belarus",10.1,4.3,206497
+"28","Belgium",0.5,0.2,31341
+"29","Belize",0.7,0.2,23357
+"30","Benin",0.6,0.1,117074
+"31","Bermuda",0,0,132
+"32","Bhutan",1.3,0.2,38244
+"33","Bird Island",0,0,2
+"34","Bolivia",16.2,4,1091143
+"35","Bosnia and Herzegovina",1.4,0.4,51976
+"36","Botswana",2.3,0.5,582306
+"37","Bouvet Island",0,0,62
+"38","Brazil",123.7,35,8533977
+"39","British Indian Ocean Territory",0,0,269
+"40","British Virgin Islands",0,0,361
+"41","Brunei Darussalam",0.6,0.3,6333
+"42","Bulgaria",2,0.5,111243
+"43","Burkina Faso",0.9,0.1,276092
+"44","Burundi",0.6,0.2,27343
+"45","Cambodia",4.8,1.8,181197
+"46","Cameroon",6.4,1.5,467510
+"47","Canada",717.3,354.9,10009171
+"48","Cape Verde",0.1,0,4700
+"49","Cayman Islands",0,0,413
+"50","Central African Republic",6.9,1.4,625105
+"51","Chad",5.7,1.2,1265394
+"52","Chile",26.1,6.7,789770
+"53","China",158.1,53.3,9354637
+"54","China/India",0.1,0,3555
+"55","Christmas Island",0,0,183
+"56","Clipperton Island",0,0,18
+"57","Cocos (Keeling) Islands",0,0,71
+"58","Colombia",38.2,14.3,1141909
+"59","Comoros",0.1,0,1916
+"60","Congo",6.9,2.2,341557
+"61","Cook Islands",0,0,617
+"62","Costa Rica",1.7,0.5,52753
+"63","Croatia",1.3,0.3,58104
+"64","Côte d'Ivoire",2.7,0.4,324652
+"65","Cuba",3.4,1,116490
+"66","Cyprus",0.1,0,9671
+"67","Czech Republic",1.6,0.4,78243
+"68","Democratic Republic of the Congo",39.4,11.2,2340940
+"69","Dem People's Rep of Korea",3.5,1.1,123572
+"70","Denmark",2,0.8,47143
+"71","Djibouti",0.1,0,22358
+"72","Dominica",0,0,854
+"73","Dominican Republic",1,0.3,48987
+"74","Ecuador",9,3.2,259111
+"75","Egypt",3.9,1,988078
+"76","El Salvador",0.3,0.1,20712
+"77","Equatorial Guinea",0.8,0.3,27540
+"78","Eritrea",0.6,0.1,123571
+"79","Estonia",3.1,1.3,47302
+"80","Ethiopia",12.3,3.1,1134927
+"81","Europa Island",0,0,51
+"82","Falkland Islands (Malvinas)",0.9,0.4,15460
+"83","Faroe Islands",0.1,0,1921
+"84","Fiji",0.6,0.2,21055
+"85","Finland",24.5,10.7,341798
+"86","France",11,3.1,550384
+"87","French Guiana",1.5,0.5,83341
+"88","French Polynesia",0.2,0.1,9629
+"89","French Southern and Antarctic Territories",0,0,9558
+"90","Gabon",8.6,3.3,264935
+"91","Gambia",0.2,0.1,11718
+"92","Gaza Strip",0,0,361
+"93","Georgia",2.1,0.5,69218
+"94","Germany",9.9,3.2,358515
+"95","Ghana",2,0.4,240018
+"96","Gibraltar",0,0,11
+"97","Glorioso Island",0,0,17
+"98","Greece",2.6,0.7,140329
+"99","Greenland",22.7,7.5,2188112
+"100","Grenada",0,0,422
+"101","Guadeloupe",0.1,0,2091
+"102","Guam",0,0,658
+"103","Guatemala",2.1,0.4,110370
+"104","Guernsey",0,0,163
+"105","Guinea",2.6,0.5,246682
+"106","Guinea-Bissau",0.6,0.2,34477
+"107","Guyana",4.6,1.6,211344
+"108","Haiti",0.5,0.1,28393
+"109","Hala'ib triangle",0,0,17682
+"110","Heard Island and McDonald Islands",0,0,508
+"111","Honduras",2.7,0.7,114183
+"112","Hong Kong",0,0,1474
+"113","Howland Island",0,0,7
+"114","Hungary",1.3,0.3,91713
+"115","Iceland",4.9,1.7,105540
+"116","Ilemi triangle",0,0,3331
+"117","India",29.9,7.4,2980459
+"118","Indonesia",105.2,43.8,1944800
+"119","Iran  (Islamic Republic of)",8.1,1.7,1679635
+"120","Iraq",2,0.4,437644
+"121","Ireland",4.3,1.6,72022
+"122","Isle of Man",0,0,671
+"123","Israel",0.1,0,21518
+"124","Italy",6.8,1.8,304763
+"125","Jamaica",0.3,0.1,11473
+"126","Jammu and Kashmir",4.1,0.5,187924
+"127","Japan",15,4.5,389891
+"128","Jarvis Island",0,0,8
+"129","Jersey",0,0,169
+"130","Johnston Atoll",0,0,16
+"131","Jordan",0.3,0,89406
+"132","Juan de Nova Island",0,0,13
+"133","Kazakhstan",80.3,35.4,2828671
+"134","Kenya",6.2,1.6,584644
+"135","Kingman Reef",0,0,494
+"136","Kiribati",0.1,0,2233
+"137","Kuril islands",0.3,0.1,5991
+"138","Kuwait",0,0,17566
+"139","Kyrgyzstan",5.2,1.4,198933
+"140","Lao People's Democratic Republic",4.5,1,231971
+"141","Latvia",4.3,2,64946
+"142","Lebanon",0.1,0,9997
+"143","Lesotho",0.5,0.1,29948
+"144","Liberia",1.4,0.3,96359
+"145","Libya",4.3,0.6,1623130
+"146","Liechtenstein",0,0,113
+"147","Lithuania",3.3,1.5,64985
+"148","Luxembourg",0.1,0,2435
+"149","Macau",0,0,31
+"150","Madagascar",8.5,2.4,597028
+"151","Madeira Islands",0,0,988
+"152","Malawi",0.9,0.2,119317
+"153","Malaysia",18,7.7,333915
+"154","Maldives",0,0,2124
+"155","Mali",3.7,0.4,1256588
+"156","Malta",0,0,424
+"157","Marshall Islands",0.1,0,2276
+"158","Martinique",0,0,1327
+"159","Ma'tan al-Sarra",0,0,1850
+"160","Mauritania",3.7,0.7,1042887
+"161","Mauritius",0.1,0,2333
+"162","Mayotte",0,0,542
+"163","Mexico",16.3,2.4,1965959
+"164","Micronesia (Federated States of)",0.1,0,2041
+"165","Midway Island",0,0,57
+"166","Moldova, Republic of",0.6,0.2,32682
+"167","Monaco",0,0,6
+"168","Mongolia",32.3,15,1554671
+"169","Montenegro",0.5,0.1,13459
+"170","Montserrat",0,0,135
+"171","Morocco",2.9,0.6,414403
+"172","Mozambique",7.3,1.7,789593
+"173","Myanmar",17.9,5,674953
+"174","Namibia",2.6,0.5,826420
+"175","Nauru",0,0,33
+"176","Navassa Island",0,0,9
+"177","Nepal",3.6,0.6,147357
+"178","Netherlands",1.7,0.8,35512
+"179","Netherlands Antilles",0,0,1031
+"180","New Caledonia",0.5,0.1,20878
+"181","New Zealand",11.9,3.7,280562
+"182","Nicaragua",2.8,0.9,129053
+"183","Niger",3,0.3,1187936
+"184","Nigeria",5.9,1.4,913893
+"185","Niue",0,0,316
+"186","Norfolk Island",0,0,71
+"187","Northern Mariana Islands",0,0,724
+"188","Norway",17.8,5.8,339139
+"189","Oman",0.9,0.1,309847
+"190","Pakistan",4.6,0.7,787711
+"191","Palau",0.1,0,825
+"192","Palmyra Atoll",0,0,22
+"193","Panama",2.8,1.1,78031
+"194","Papua New Guinea",20,7.3,475042
+"195","Paracel Islands",0,0,61
+"196","Paraguay",7.6,2.2,397841
+"197","Peru",35.4,12.3,1297761
+"198","Philippines",9.5,3.3,314472
+"199","Pitcairn",0,0,106
+"200","Poland",8.6,2.8,309570
+"201","Portugal",1.8,0.5,88793
+"202","Puerto Rico",0.2,0.1,9618
+"203","Qatar",0.1,0,12002
+"204","Republic of Korea",2.4,0.7,104948
+"205","Romania",5.1,1.4,237194
+"206","Réunion",0.1,0,2641
+"207","Russian Federation",947.5,449.6,16990830
+"208","Rwanda",0.6,0.2,24946
+"209","Saint Helena",0,0,542
+"210","Saint Kitts and Nevis",0,0,345
+"211","Saint Lucia",0,0,704
+"212","Saint Pierre et Miquelon",0,0,355
+"213","Saint Vincent and the Grenadines",0,0,658
+"214","Samoa",0.1,0,3170
+"215","San Marino",0,0,41
+"216","Sao Tome and Principe",0,0,1166
+"217","Saudi Arabia",4.3,0.4,1932500
+"218","Scarborough Reef",0,0,110
+"219","Senegal",1.4,0.4,196378
+"220","Senkaku Islands",0,0,30
+"221","Serbia",1.6,0.4,89153
+"222","Seychelles",0,0,991
+"223","Sierra Leone",1.1,0.3,72782
+"224","Singapore",0,0,739
+"225","Slovakia",1.1,0.3,49668
+"226","Slovenia",0.6,0.2,20350
+"227","Solomon Islands",1.2,0.4,33393
+"228","Somalia",4.7,1.1,636060
+"229","South Africa",10.2,2.2,1224625
+"230","South Georgia and the South Sandwich Islands",0.3,0,4677
+"231","South Sudan",6.9,1.7,629338
+"232","Spain",8.2,2.2,509112
+"233","Spratly Islands",0,0,17
+"234","Sri Lanka",2,0.8,67774
+"235","Sudan",5.3,0.7,1853258
+"236","Suriname",2.8,0.9,146611
+"237","Svalbard and Jan Mayen Islands",0.5,0.1,66786
+"238","Swaziland",0.2,0,17102
+"239","Sweden",27.8,10.6,453929
+"240","Switzerland",1.5,0.3,41960
+"241","Syrian Arab Republic",0.9,0.2,189538
+"242","Taiwan",1,0.2,37227
+"243","Tajikistan",2.9,0.4,140887
+"244","Thailand",9.2,2.7,523975
+"245","The former Yugoslav Republic of Macedonia",0.4,0.1,25074
+"246","Timor-Leste",0.2,0.1,15618
+"247","Togo",0.3,0,56018
+"248","Tokelau",0,0,133
+"249","Tonga",0.1,0,1389
+"250","Trinidad and Tobago",0.1,0,5601
+"251","Tromelin Island",0,0,5
+"252","Tunisia",1,0.2,156017
+"253","Turkey",12.4,2.9,783679
+"254","Turkmenistan",2.6,0.6,551315
