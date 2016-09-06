@@ -1,0 +1,88 @@
+Value,Count,OBJECTID_1,pmaterial_class,fg_pm_group,pmaterial_class_f
+1,"203,920,490",4,Alluvium,Waterlaid (or Transported) Deposits,Alluvium
+2,"56,131,950",17,Colluvium,Mass Movement Deposits,Colluvium
+3,"33,974,541",35,Eolian deposits,Eolian Deposits (nonvolcanic),Eolian Deposits (nonvolcanic)
+4,"170,350,772",77,Residuum,In-Place Deposits (nontransported),Residuum - Slope Alluvium
+5,"18,407,702",36,Eolian sands,Eolian Deposits (nonvolcanic),Eolian sands
+6,"28,717,241",NULL,Woody organic material,Organic Deposits,Woody organic material
+7,"19,608,480",95,Slope alluvium,Waterlaid (or Transported) Deposits,Residuum - Slope Alluvium
+8,"7,800,550",50,Lacustrine deposits,Waterlaid (or Transported) Deposits,Lacustrine deposits
+9,"10,470,955",106,Volcanic ash,Volcanic Deposits (unconsolidated; eolian and mass movement),Volcanic ash
+10,"2,232,225",69,Organic material,Organic Deposits,Organic material
+11,"207,036",15,Cinders,Volcanic Deposits (unconsolidated; eolian and mass movement),Cinders
+12,"10,013,664",70,Outwash,Glacial and Periglacial Deposits,Outwash
+13,"62,377,890",102,Till,Glacial and Periglacial Deposits,Basal till
+14,"94,059",18,Complex landslide deposits,Mass Movement Deposits,Complex landslide deposits
+15,"26,917",91,shale,Miscoded - should be pmorigin,shale
+16,"37,638",24,Debris flow deposits,Mass Movement Deposits,Debris flow deposits
+17,"81,519,434",57,Loess,Eolian Deposits (nonvolcanic),Eolian Deposits (nonvolcanic)
+18,"1,378,377",72,Pedisediment,Waterlaid (or Transported) Deposits,Pedisediment
+19,"138,549",60,Mass movement deposits,Mass Movement Deposits,Mass movement deposits
+20,"4,494,724",47,Herbaceous organic material,Organic Deposits,Herbaceous organic material
+21,"18,216,959",40,Fluviomarine deposits,Waterlaid (or Transported) Deposits,Fluviomarine deposits
+22,"64,649",31,Dredge spoils,Anthropogenic Deposits,Dredge spoils
+23,"45,507,505",58,Marine deposits,Waterlaid (or Transported) Deposits,Marine deposits
+24,"11,181,340",41,Glaciofluvial deposits,Glacial and Periglacial Deposits,Glaciofluvial deposits
+25,"10,651,568",42,Glaciolacustrine deposits,Glacial and Periglacial Deposits,Glaciolacustrine deposits
+26,"196,958",67,Mudflow deposits,Mass Movement Deposits,Mudflow deposits
+27,"509,146",73,Pumice,Volcanic Deposits (unconsolidated; eolian and mass movement),Pumice
+28,"13,144",87,Scoria,Volcanic Deposits (unconsolidated; eolian and mass movement),Scoria
+29,"199,965",37,Estuarine deposits,Waterlaid (or Transported) Deposits,Estuarine deposits
+30,"111,452",48,Human-transported material,Anthropogenic Deposits,Human-transported material
+31,"1,403,795",2,Ablation till,Glacial and Periglacial Deposits,Ablation till
+32,"3,051,615",14,Calcareous loess,Eolian Deposits (nonvolcanic),Calcareous loess
+33,"6,718,757",32,Drift,Glacial and Periglacial Deposits,Drift
+34,"29,861",74,Pyroclastic flow,Volcanic Deposits (unconsolidated; eolian and mass movement),Pyroclastic flow
+35,"117,314",52,Lahar deposits,Volcanic Deposits (unconsolidated; eolian and mass movement),Lahar deposits
+36,"4,181",23,Debris avalanche deposits,Mass Movement Deposits,Rock spread deposits
+37,"349,023",43,Glaciomarine deposits,Glacial and Periglacial Deposits,Glaciomarine deposits
+38,"4,702",25,Debris slide deposits,Mass Movement Deposits,Rock spread deposits
+39,"1,139,492",8,Basal till,Glacial and Periglacial Deposits,Basal till
+40,"61,800",6,Ash flow,Volcanic Deposits (unconsolidated; eolian and mass movement),Ash flow
+41,"4,457",85,sandstone,Miscoded - should be pmorigin,Miscellaneous Deposits
+42,"804,022",61,Melt-out till,Glacial and Periglacial Deposits,Melt-out till
+43,"40,538",29,Diatomaceous earth,Waterlaid (or Transported) Deposits,Diatomaceous earth
+44,"10,940",66,Mossy organic material,Organic Deposits,Mossy organic material
+45,"15,977",19,conglomerate,Miscoded - should be pmorigin,conglomerate
+46,"248,241",101,Tephra,Volcanic Deposits (unconsolidated; eolian and mass movement),Tephra
+47,"177,492",12,Beach sand,Waterlaid (or Transported) Deposits,Beach sand
+48,"29,288",59,Marl,Waterlaid (or Transported) Deposits,Marl
+49,"1,000,273",64,Mine spoil or earthy fill,Anthropogenic Deposits,Mine spoil or earthy fill
+50,"1,380,772",86,Saprolite,In-Place Deposits (nontransported),Saprolite
+51,"731,248",21,Creep deposits,Mass Movement Deposits,Creep deposits
+52,"38,313",53,Lateral spread deposits,Mass Movement Deposits,Lateral spread deposits
+53,913,33,Earth spread deposits,Mass Movement Deposits,Lateral spread deposits
+54,"5,831",62,Metal ore extraction mine spoil,Anthropogenic Deposits,Miscellaneous Deposits
+55,"122,946",34,Earthflow deposits,Mass Movement Deposits,Earthflow deposits
+56,"29,973",22,Cryoturbate,Glacial and Periglacial Deposits,Cryoturbate
+57,"81,067",105,Valley side alluvium,Waterlaid (or Transported) Deposits,Valley side alluvium
+58,"852,870",16,Coal extraction mine spoil,Anthropogenic Deposits,Coal extraction mine spoil
+59,"3,125,352",68,Noncalcareous loess,Eolian Deposits (nonvolcanic),Eolian Deposits (nonvolcanic)
+60,"48,927",20,Coprogenic material,Organic Deposits,Coprogenic material
+61,"17,149",44,Grassy organic material,Organic Deposits,Grassy organic material
+62,"1,519,137",98,Supraglacial meltout till,Glacial and Periglacial Deposits,Supraglacial meltout till
+63,"1,205,363",99,Supraglacial till,Glacial and Periglacial Deposits,Supraglacial till
+64,"6,115",28,Diamicton,Miscellaneous Deposits,Miscellaneous Deposits
+65,"8,369,690",56,Lodgment till,Glacial and Periglacial Deposits,Lodgment till
+66,"30,709",39,Flow till,Glacial and Periglacial Deposits,Flow till
+67,"1,415,223",97,Subglacial till,Glacial and Periglacial Deposits,Subglacial till
+68,"15,078",51,Lagoonal deposits,Waterlaid (or Transported) Deposits,Lagoonal deposits
+69,"265,372",7,Backswamp deposits,Waterlaid (or Transported) Deposits,Backswamp deposits
+70,"54,177",45,Greensands,Waterlaid (or Transported) Deposits,Greensands
+71,"14,994",54,limestone,Miscoded - should be pmorigin,limestone
+72,"1,963",71,Overbank deposits,Waterlaid (or Transported) Deposits,Miscellaneous Deposits
+73,"13,859",9,Basaltic volcanic ash,Volcanic Deposits (unconsolidated; eolian and mass movement),Volcanic Deposits
+74,856,5,Andesitic volcanic ash,Volcanic Deposits (unconsolidated; eolian and mass movement),Volcanic Deposits
+75,"68,609",38,Flow deposits,Mass Movement Deposits,Flow deposits
+76,"6,490",10,Basic volcanic ash,Volcanic Deposits (unconsolidated; eolian and mass movement),Volcanic Deposits
+77,"40,371",3,Acidic volcanic ash,Volcanic Deposits (unconsolidated; eolian and mass movement),Volcanic Deposits
+78,"39,572",81,Rockfall deposits,Mass Movement Deposits,Rockfall deposits
+79,"7,232",78,Rock spread deposits,Mass Movement Deposits,Rock spread deposits
+80,"1,721",65,mixed,Miscellaneous Deposits,Rock spread deposits
+81,"29,831",82,Rotational earth slide deposits,Mass Movement Deposits,Rotational earth slide deposits
+82,"8,274",83,Rotational slide deposits,Mass Movement Deposits,Rock spread deposits
+83,"66,146",94,Slide deposits,Mass Movement Deposits,Slide deposits
+84,"96,819",100,Talus,Mass Movement Deposits,Talus
+85,779,80,Rockfall avalanche deposits,Mass Movement Deposits,Rock spread deposits
+86,56,75,Pyroclastic surge,Volcanic Deposits (unconsolidated; eolian and mass movement),Volcanic Deposits
+87,"21,149",92,shale-calcareous,Miscoded - should be pmorigin,shale-calcareous
