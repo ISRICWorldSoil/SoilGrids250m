@@ -1,5 +1,5 @@
 ## Fit models for USDA GreatGroups, texture classes, and several soil properties using the NASIS points (ca 350,000)
-## Code by Tom.Hengl@isric.org / points prepared by Amanda Rachmaran () and Travis Nauman (tnauman@usgs.gov)
+## Code by Tom.Hengl@isric.org / points prepared by Amanda Rachmaran (a.m.ramcharan@gmail.com) and Travis Nauman (tnauman@usgs.gov)
 
 setwd("/data/NASIS")
 load(".RData")
@@ -27,6 +27,8 @@ library(GSIF)
 library(randomForestSRC)
 library(parallel)
 options(rf.cores=detectCores(), mc.cores=detectCores())
+source("/data/models/saveRDS_functions.R")
+source("functions_NASIS.R")
 
 if(.Platform$OS.type == "windows"){
   gdal.dir <- shortPathName("C:/Program files/GDAL")
@@ -39,18 +41,26 @@ if(.Platform$OS.type == "windows"){
   saga_cmd = "/usr/local/bin/saga_cmd"
 }
 
-source("/data/models/saveRDS_functions.R")
-source("functions_NASIS.R")
+r <- raster("/data/USA48/elev48i0100a.tif")
+extent(r)
+ncols = ncol(r)
+nrows = nrow(r)
+xllcorner = extent(r)[1]
+yllcorner = extent(r)[3]
+xurcorner = extent(r)[2]
+yurcorner = extent(r)[4]
+cellsize = res(r)[1]
+NODATA_value = -32768
 
 ## legends
-des <- read.csv("SoilGrids_USA48_Covs100m.csv")
-LNDCOV6.leg <- read.csv("/data/GEOG/NASIS/SoilGrids_USA48_LandCover.csv")
-PMTGSS7.leg <- read.csv("/data/GEOG/NASIS/SoilGrids_USA48_gSSURGO_pmaterial.csv")
-DRNGSS7.leg <- read.csv("/data/GEOG/NASIS/SoilGrids_USA48_gSSURGO_drainage.csv")
-PVEGKT6.leg <- read.csv("/data/GEOG/NASIS/potential_vegetation_legend.csv")
-COUNTY6.leg <- read.csv("/data/GEOG/NASIS/Counties_legend.csv")
-#GEOUSG6.leg <- read.csv("/data/GEOG/NASIS/geology_legend.csv")
-GESUSG6.leg <- read.csv("/data/GEOG/NASIS/surfacegeology_legend.csv")
+des <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_Covs100m.csv")
+LNDCOV6.leg <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_LandCover.csv")
+PMTGSS7.leg <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_gSSURGO_pmaterial.csv")
+DRNGSS7.leg <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_gSSURGO_drainage.csv")
+PVEGKT6.leg <- read.csv("/data/GEOG/NASIS/covs100m/potential_vegetation_legend.csv")
+COUNTY6.leg <- read.csv("/data/GEOG/NASIS/covs100m/Counties_legend.csv")
+#GEOUSG6.leg <- read.csv("/data/GEOG/NASIS/covs100m/geology_legend.csv")
+GESUSG6.leg <- read.csv("/data/GEOG/NASIS/covs100m/surfacegeology_legend.csv")
 
 ## Training points (taxonomy, texture classes):
 TAX_gg.pnts = readRDS("TAX_gg.pnts.rds")
@@ -122,6 +132,12 @@ sfLibrary(sp)
 out <- sfClusterApplyLB(as.numeric(t.sel), function(i){ try( make_RDS_tiles(i, tile.tbl=tile.tbl, covs.lst=covs.lst, LNDCOV6.leg=LNDCOV6.leg, PMTGSS7.leg=PMTGSS7.leg, DRNGSS7.leg=DRNGSS7.leg, PVEGKT6.leg=PVEGKT6.leg, COUNTY6.leg=COUNTY6.leg, GESUSG6.leg=GESUSG6.leg) ) } )
 sfStop()
 save.image()
+
+## Gap-filled Parent material map:
+pm.tif = list.files(path="/data/NASIS/covs100m", pattern="PMTGSS7_predicted", recursive = TRUE, full.names = TRUE)
+cat(pm.tif, sep="\n", file="my_liste.txt")
+system(paste0(gdalbuildvrt, ' -input_file_list my_liste.txt PMTGSS7_f.vrt'))
+system(paste0(gdalwarp, ' PMTGSS7_f.vrt PMTGSS7_f.tif -r \"near\" -co \"COMPRESS=DEFLATE\" -co \"BIGTIFF=YES\" -wm 2000 -tr ', cellsize, ' ', cellsize, ' -te ', paste(as.vector(extent(r))[c(1,3,2,4)], collapse=" ")))
 
 ## OVERLAY (takes ca 15 mins):
 ov <- extract.tiled(x=pnts, tile.pol=tile.pol, path="/data/NASIS/covs100m", ID="ID", cpus=48)
@@ -212,35 +228,77 @@ for(j in t.fvars){
   }
 }
 
-## test prediction:
-## Check:
-m = readRDS("./covs100m/T1049/T1049.rds")
-str(m@data)
-spplot(m["LNDCOV6"])
-#spplot(m["PMTGSS7"])
-#spplot(m["PMTGSS7.f"])
-spplot(m["EX2MOD5"])
-#spplot(m["DRNGSS7"])
+## Predict classes in parallel:
 mRF = readRDS.gz("mRF_soiltype.rds")
-m$PMTGSS7 = factor(m$PMTGSS7, levels=unique(PMTGSS7.leg$pmaterial_class_f))
-m$DRNGSS7 = factor(m$DRNGSS7, levels=unique(DRNGSS7.leg$drainage_class))
-m.PVEGKT6 = data.frame(model.matrix(~PVEGKT6-1, m@data))
-m.LNDCOV6 = data.frame(model.matrix(~LNDCOV6-1, m@data))
-m.PMTGSS7 = data.frame(model.matrix(~PMTGSS7-1, m@data))
-m.DRNGSS7 = data.frame(model.matrix(~DRNGSS7-1, m@data))
-#mRF$xvar.names[which(!mRF$xvar.names %in% names(cbind(m@data, m.PVEGKT6, m.LNDCOV6, m.PMTGSS7, m.DRNGSS7)))]
-m@data = cbind(m@data, m.PVEGKT6, m.LNDCOV6, m.PMTGSS7, m.DRNGSS7)[,mRF$xvar.names]
-soiltype.RF = predict.rfsrc(mRF, m@data, na.action="na.impute", importance=FALSE, membership=TRUE)
-m1 = m[1]
-m1@data = data.frame(soiltype.RF$predicted)*100
-plot(stack(m1[30:40]))
-for(j in 1:ncol(m1)){
-  out <- paste0("/data/NASIS/predicted100m/T1049/TAXgg_", names(m1)[j], "_T1049.tif")
-  if(!file.exists(out)){
-    writeGDAL(m1[j], out, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
-  }
-}
+#str(mRF)
+levs = attr(mRF$predicted, "dimnames")[[2]]
+varn = "TAXgg"
+#predict_factor_tile(i=1042, mRF, varn="TAXgg", levs=levs, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", PMTGSS7.leg=PMTGSS7.leg, DRNGSS7.leg=DRNGSS7.leg)
+gc(); gc()
+save.image()
+
+sfInit(parallel=TRUE, cpus=6)
+sfExport("predict_factor_tile", "mRF", "PMTGSS7.leg", "DRNGSS7.leg", "levs", "t.sel", "varn")
+sfLibrary(plyr)
+sfLibrary(rgdal)
+sfLibrary(randomForestSRC)
+out <- sfClusterApplyLB(as.numeric(t.sel), function(i){ try( predict_factor_tile(i, mRF, varn=varn, levs=levs, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", PMTGSS7.leg=PMTGSS7.leg, DRNGSS7.leg=DRNGSS7.leg) ) } )
+sfStop()
+
+## Make mosaics:
+te = paste(as.vector(extent(r))[c(1,3,2,4)], collapse=" ")
+sfInit(parallel=TRUE, cpus=ifelse(length(levs)>46, 46, length(levs)))
+sfExport("gdalbuildvrt", "gdalwarp", "levs", "mosaic_tiles_100m", "varn", "te")
+out <- sfClusterApplyLB(levs, function(x){try( mosaic_tiles_100m(x, in.path="/data/NASIS/predicted100m", varn=varn, out.path="/data/GEOG/NASIS/predicted100m/", te=te) )})
+sfStop()
+## most probable class:
+tmp.lst <- c(list.files(path="/data/NASIS/predicted100m", pattern=glob2rx(paste0(varn, "_T????.tif$")), full.names=TRUE, recursive=TRUE), list.files(path="/data/NASIS/predicted100m", pattern=glob2rx(paste0(varn, "_T???.tif$")), full.names=TRUE, recursive=TRUE))
+out.tmp <- tempfile(fileext = ".txt")
+vrt.tmp <- tempfile(fileext = ".vrt")
+cat(tmp.lst, sep="\n", file=out.tmp)
+system(paste0(gdalbuildvrt, ' -input_file_list ', out.tmp, ' ', vrt.tmp))
+system(paste0(gdalwarp, ' ', vrt.tmp, ' /data/GEOG/NASIS/predicted100m/TAXgg_100m.tif -ot \"Int16\" -dstnodata \"32767\" -co \"BIGTIFF=YES\" -multi -wm 2000 -co \"COMPRESS=DEFLATE\" -tr 100 100 -r \"near\" -te ', te))
+write.csv(data.frame(Value=1:length(levs), Class=levs), file="/data/GEOG/NASIS/predicted100m/TAXgg_100m.tif.csv")
+save.image()
+
+## Soil texture families:
+mRF = readRDS.gz("mRF_textype.rds")
+#str(mRF)
+levs = attr(mRF$predicted, "dimnames")[[2]]
+varn = "PSCS"
+#predict_factor_tile(i=1042, mRF, varn=varn, levs=levs, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", PMTGSS7.leg=PMTGSS7.leg, DRNGSS7.leg=DRNGSS7.leg)
+gc(); gc()
+
+## Because textype has only 20+ classes we can use more cores
+sfInit(parallel=TRUE, cpus=12)
+sfExport("predict_factor_tile", "mRF", "PMTGSS7.leg", "DRNGSS7.leg", "levs", "t.sel", "varn")
+sfLibrary(plyr)
+sfLibrary(rgdal)
+sfLibrary(randomForestSRC)
+out <- sfClusterApplyLB(as.numeric(t.sel), function(i){ try( predict_factor_tile(i, mRF, varn=varn, levs=levs, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", PMTGSS7.leg=PMTGSS7.leg, DRNGSS7.leg=DRNGSS7.leg) ) } )
+sfStop()
+save.image()
+
+## Make mosaics:
+te = paste(as.vector(extent(r))[c(1,3,2,4)], collapse=" ")
+levsF = basename(list.files(path="/data/NASIS/predicted100m/T1042", pattern=glob2rx("PSCS_*_T1042.tif$")))
+levsF = sapply(levsF, function(x){strsplit(x, "_")[[1]][2]})
+sfInit(parallel=TRUE, cpus=ifelse(length(levsF)>46, 46, length(levsF)))
+sfExport("gdalbuildvrt", "gdalwarp", "levsF", "mosaic_tiles_100m", "varn", "te")
+out <- sfClusterApplyLB(levsF, function(x){try( mosaic_tiles_100m(x, in.path="/data/NASIS/predicted100m", varn=varn, out.path="/data/GEOG/NASIS/predicted100m/", te=te) )})
+sfStop()
+## most probable class:
+tmp.lst <- c(list.files(path="/data/NASIS/predicted100m", pattern=glob2rx(paste0(varn, "_T????.tif$")), full.names=TRUE, recursive=TRUE), list.files(path="/data/NASIS/predicted100m", pattern=glob2rx(paste0(varn, "_T???.tif$")), full.names=TRUE, recursive=TRUE))
+out.tmp <- tempfile(fileext = ".txt")
+vrt.tmp <- tempfile(fileext = ".vrt")
+cat(tmp.lst, sep="\n", file=out.tmp)
+system(paste0(gdalbuildvrt, ' -input_file_list ', out.tmp, ' ', vrt.tmp))
+system(paste0(gdalwarp, ' ', vrt.tmp, ' /data/GEOG/NASIS/predicted100m/PSCS_100m.tif -ot \"Int16\" -dstnodata \"32767\" -co \"BIGTIFF=YES\" -multi -wm 2000 -co \"COMPRESS=DEFLATE\" -tr 100 100 -r \"near\" -te ', te))
+write.csv(data.frame(Value=1:length(levs), Class=levs), file="/data/GEOG/NASIS/predicted100m/PSCS_100m.tif.csv")
+save.image()
+
 
 ## FIT MODELS FOR NUMERIC VARIABLES:
+
 
 

@@ -86,4 +86,52 @@ extract.tiled <- function(x, tile.pol, path="/data/NASIS/covs100m", ID="ID", cpu
   return(out)
 }
 
-  
+
+## Predict classes in loop:
+predict_factor_tile <- function(i, mRF, varn, levs, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", PMTGSS7.leg, DRNGSS7.leg){
+  options(rf.cores=15, mc.cores=15)
+  gc(); gc()
+  out.c <- paste0(out.path, "/T", i, "/", varn, "_", levs, "_T", i, ".tif")
+  if(any(!file.exists(out.c))){
+    m <- readRDS(paste0(in.path, "/T", i, "/T", i, ".rds"))
+    if(is.character(mRF)){
+      mRF = readRDS.gz(mRF)
+    }
+    m$PMTGSS7 = factor(m$PMTGSS7, levels=unique(PMTGSS7.leg$pmaterial_class_f))
+    m$DRNGSS7 = factor(m$DRNGSS7, levels=unique(DRNGSS7.leg$drainage_class))
+    m$ID = m@grid.index
+    m.PVEGKT6 = data.frame(model.matrix(~PVEGKT6-1, m@data))
+    m.PVEGKT6$ID = row.names(m.PVEGKT6)
+    m.LNDCOV6 = data.frame(model.matrix(~LNDCOV6-1, m@data))
+    m.LNDCOV6$ID = row.names(m.LNDCOV6)
+    m.PMTGSS7 = data.frame(model.matrix(~PMTGSS7-1, m@data))
+    m.PMTGSS7$ID = row.names(m.PMTGSS7)
+    m.DRNGSS7 = data.frame(model.matrix(~DRNGSS7-1, m@data))
+    m.DRNGSS7$ID = row.names(m.DRNGSS7)
+    m@data = plyr::join_all(list(m@data, m.PVEGKT6, m.LNDCOV6, m.PMTGSS7, m.DRNGSS7), by="ID")[,mRF$xvar.names]
+    v = predict.rfsrc(mRF, m@data, na.action="na.impute", importance=FALSE, membership=TRUE)
+    m@data = data.frame(v$predicted)*100
+    ## probabilities:
+    for(j in 1:ncol(m)){
+      out <- paste0(out.path, "/T", i, "/", varn, "_", names(m)[j], "_T", i, ".tif")
+      writeGDAL(m[j], out, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
+    }
+    ## dominant class
+    m@data[,varn] = as.integer(v$class)
+    writeGDAL(m[varn], paste0(out.path, "/T", i, "/", varn, "_T", i, ".tif"), type="Int16", mvFlag=32767, options="COMPRESS=DEFLATE")
+    gc(); gc()
+  }  
+}
+
+## Create mosaics:
+mosaic_tiles_100m <- function(j, in.path, varn, r="bilinear", ot="Byte", dstnodata=255, out.path, te){
+  out.tif <- paste0(out.path, varn, "_", j, "_100m.tif")
+  if(!file.exists(out.tif)){
+    tmp.lst <- list.files(path=in.path, pattern=glob2rx(paste0(varn, "_", j, "_*.tif$")), full.names=TRUE, recursive=TRUE)
+    out.tmp <- tempfile(fileext = ".txt")
+    vrt.tmp <- tempfile(fileext = ".vrt")
+    cat(tmp.lst, sep="\n", file=out.tmp)
+    system(paste0(gdalbuildvrt, ' -input_file_list ', out.tmp, ' ', vrt.tmp))
+    system(paste0(gdalwarp, ' ', vrt.tmp, ' ', out.tif, ' -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -co \"BIGTIFF=YES\" -wm 2000 -co \"COMPRESS=DEFLATE\" -tr 100 100 -r \"', r, '\" -te ', te))
+  }
+}
