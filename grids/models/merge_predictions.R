@@ -179,6 +179,6 @@ x = sapply(1:length(from), function(x){ if(file.exists(from[x])){ file.rename(fr
 saveRDS(grid50km, file="SoilGrids50km.rds")
 unlink(to)
 
-
-
-
+## zip covs only for Ghana:
+ghana = readOGR("/data/AFMicroNutrients/equi7_ghana.shp", "equi7_ghana")
+system(paste0("7z a -tzip /data/AFMicroNutrients/Ghana_covariates250m.zip -r ", paste0("/data/covs1t/AF_",ghana$TILE,"/*.tif", collapse=" ")))

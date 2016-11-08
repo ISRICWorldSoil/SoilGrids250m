@@ -76,3 +76,5 @@ sfStop()
 #   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
 # }
+
+
