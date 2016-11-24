@@ -217,12 +217,13 @@ split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5,
 }
 
 ## Sum up predictions
-sum_predict_ensemble <- function(i, in.path, out.path, varn, num_splits, zmin, zmax, gm1.w, gm2.w, type="Int16", mvFlag=-32768, depths=TRUE){
+sum_predict_ensemble <- function(i, in.path, out.path, varn, num_splits, zmin, zmax, gm1.w, gm2.w, type="Int16", mvFlag=-32768, depths=TRUE, rds.file){
   if(length(list.files(path = paste0(out.path, "/", i, "/"), glob2rx(paste0("^",varn,"_M_*.tif$"))))==0){
-    m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
+    if(missing(rds.file)){ rds.file = paste0(in.path, "/", i, "/", i, ".rds") }
+    m <- readRDS(rds.file)
     if(nrow(m@data)>1){
       ## import all predictions:
-      if(is.null(split_no)){
+      if(is.null(num_splits)){
         rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf.rds")
         v1 <- readRDS(rf.ls)
       } else {

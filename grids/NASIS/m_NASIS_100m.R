@@ -14,7 +14,6 @@ library(dplyr)
 library(sp)
 library(devtools)
 library(caret)
-#devtools::install_github("imbs-hl/ranger/ranger-r-package/ranger") ## version to deal with Memory problems
 library(ranger)
 library(xgboost)
 library(nnet)
@@ -69,7 +68,6 @@ s = raster::stack(paste0('/data/GEOG/NASIS/covs100m/', des$WORLDGRIDS_CODE, ".ti
 #str(s[1])
 
 ## legends
-des <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_Covs100m.csv")
 LNDCOV6.leg <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_LandCover.csv")
 PMTGSS7.leg <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_gSSURGO_pmaterial.csv")
 DRNGSS7.leg <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_gSSURGO_drainage.csv")
@@ -133,7 +131,6 @@ x <- lapply(new.dirs, dir.create, recursive=TRUE, showWarnings=FALSE)
 x <- lapply(gsub("covs100m", "predicted100m", new.dirs), dir.create, recursive=TRUE, showWarnings=FALSE)
 ## run in parallel:
 covs.lst = as.character(des$WORLDGRIDS_CODE[-which(des$WORLDGRIDS_CODE=="COUNTY6")])
-#make_RDS_tiles(i=as.numeric(t.sel)[1], tile.tbl=tile.tbl, covs.lst=covs.lst, LNDCOV6.leg=LNDCOV6.leg, PMTGSS7.leg=PMTGSS7.leg, DRNGSS7.leg=DRNGSS7.leg, PVEGKT6.leg=PVEGKT6.leg, COUNTY6.leg=COUNTY6.leg)
 
 ## Clean up:
 #rds.lst = list.files(path="./covs100m", pattern=glob2rx("*.rds"), recursive = TRUE, full.names = TRUE)
@@ -155,7 +152,6 @@ save.image()
 
 ## Clean up empty dirs
 pr.dirs <- basename(dirname(list.files(path="/data/NASIS/covs100m", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
-## 3397
 pr.dirs.c <- list.dirs("/data/NASIS/covs100m")[-1]
 selD <- which(!basename(pr.dirs.c) %in% pr.dirs)
 #x = sapply(selD, function(x){unlink(pr.dirs.c[x], recursive = TRUE, force = TRUE)})
@@ -468,9 +464,9 @@ for(j in t.props){
   cpus = unclass(round((256-50)/(3.5*(object.size(gm)/1e9))))
   cl <- makeCluster(ifelse(cpus>35, 35, cpus), type="FORK")
   if(j == "n_tot"){
-    x = parLapply(cl, paste0("T", t.sel), fun=function(x){ if(!file.exists(paste0("/data/NASIS/predicted100m/", x, "/", j,"_", x, "_rf.rds"))){ try( split_predict_n(x, gm, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", split_no=NULL, varn=j, method="ranger", DEPTH.col="DEPTH", multiplier=multiplier, rds.file=paste0(in.path, "/", x, "/c", x,".rds"), SG.col=NULL ) ) } } )
+    x = parLapply(cl, paste0("T", t.sel), fun=function(x){ if(!file.exists(paste0("/data/NASIS/predicted100m/", x, "/", j,"_", x, "_rf.rds"))){ try( split_predict_n(x, gm, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", split_no=NULL, varn=j, method="ranger", DEPTH.col="DEPTH", multiplier=multiplier, rds.file=paste0("/data/NASIS/covs100m/", x, "/c", x,".rds"), SG.col=NULL ) ) } } )
   } else {
-    x = parLapply(cl, paste0("T", t.sel), fun=function(x){ if(!file.exists(paste0("/data/NASIS/predicted100m/", x, "/", j,"_", x, "_rf.rds"))){ try( split_predict_n(x, gm, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", split_no=NULL, varn=j, method="ranger", DEPTH.col="DEPTH", multiplier=multiplier, rds.file=paste0(in.path, "/", x, "/c", x,".rds"), SG.col=paste0(sg.var[j], "_M_sl", 1:7, "_100m") ) ) } } )  
+    x = parLapply(cl, paste0("T", t.sel), fun=function(x){ if(!file.exists(paste0("/data/NASIS/predicted100m/", x, "/", j,"_", x, "_rf.rds"))){ try( split_predict_n(x, gm, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", split_no=NULL, varn=j, method="ranger", DEPTH.col="DEPTH", multiplier=multiplier, rds.file=paste0("/data/NASIS/covs100m/", x, "/c", x,".rds"), SG.col=paste0(sg.var[j], "_M_sl", 1:7, "_100m") ) ) } } )  
   }
   stopCluster(cl)
   gc(); gc()
@@ -480,9 +476,9 @@ for(j in t.props){
   cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
   cl <- makeCluster(ifelse(cpus>35, 35, cpus), type="FORK")
   if(j == "n_tot"){
-    x = parLapply(cl, paste0("T", t.sel), fun=function(x){ if(!file.exists(paste0("/data/NASIS/predicted100m/", x, "/", j,"_", x, "_xgb.rds"))){ try( split_predict_n(x, gm, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", split_no=NULL, varn=j, method="xgboost", DEPTH.col="DEPTH", multiplier=multiplier, rds.file=paste0(in.path, "/", x, "/c", x,".rds"), SG.col=NULL ) ) } } )
+    x = parLapply(cl, paste0("T", t.sel), fun=function(x){ if(!file.exists(paste0("/data/NASIS/predicted100m/", x, "/", j,"_", x, "_xgb.rds"))){ try( split_predict_n(x, gm, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", split_no=NULL, varn=j, method="xgboost", DEPTH.col="DEPTH", multiplier=multiplier, rds.file=paste0("/data/NASIS/covs100m/", x, "/c", x,".rds"), SG.col=NULL ) ) } } )
   } else {
-    x = parLapply(cl, paste0("T", t.sel), fun=function(x){ if(!file.exists(paste0("/data/NASIS/predicted100m/", x, "/", j,"_", x, "_xgb.rds"))){ try( split_predict_n(x, gm, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", split_no=NULL, varn=j, method="xgboost", DEPTH.col="DEPTH", multiplier=multiplier, rds.file=paste0(in.path, "/", x, "/c", x,".rds"), SG.col=paste0(sg.var[j], "_M_sl", 1:7, "_100m") ) ) } } )  
+    x = parLapply(cl, paste0("T", t.sel), fun=function(x){ if(!file.exists(paste0("/data/NASIS/predicted100m/", x, "/", j,"_", x, "_xgb.rds"))){ try( split_predict_n(x, gm, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", split_no=NULL, varn=j, method="xgboost", DEPTH.col="DEPTH", multiplier=multiplier, rds.file=paste0("/data/NASIS/covs100m/", x, "/c", x,".rds"), SG.col=paste0(sg.var[j], "_M_sl", 1:7, "_100m") ) ) } } )  
   }
   stopCluster(cl)
   rm(gm)
@@ -493,22 +489,22 @@ for(j in t.props){
   sfExport("t.sel", "sum_predict_ensemble", "j", "z.min", "z.max", "gm1.w", "gm2.w", "type.lst", "mvFlag.lst")
   sfLibrary(rgdal)
   sfLibrary(plyr)
-  x <- sfClusterApplyLB(paste0("T", t.sel), fun=function(x){ try( if(length(list.files(path = paste0("/data/NASIS/predicted100m/", x, "/"), glob2rx(paste0("^", j, "_M_sl*_", x, ".tif$"))))==0){ try( sum_predict_ensemble(x, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", varn=j, num_splits=NULL, zmin=z.min[[j]], zmax=z.max[[j]], gm1.w=gm1.w, gm2.w=gm2.w, type=type.lst[[j]], mvFlag=mvFlag.lst[[j]]) ) } )  } )
+  x <- sfClusterApplyLB(paste0("T", t.sel), fun=function(x){ try( if(length(list.files(path = paste0("/data/NASIS/predicted100m/", x, "/"), glob2rx(paste0("^", j, "_M_sl*_", x, ".tif$"))))==0){ try( sum_predict_ensemble(x, in.path="/data/NASIS/covs100m", out.path="/data/NASIS/predicted100m", varn=j, num_splits=NULL, zmin=z.min[[j]], zmax=z.max[[j]], gm1.w=gm1.w, gm2.w=gm2.w, type=type.lst[[j]], mvFlag=mvFlag.lst[[j]], rds.file=paste0("/data/NASIS/covs100m/", x, "/c", x,".rds")) ) } )  } )
   sfStop()
 }
 
 ## corrupt or missing tiles:
-sfInit(parallel=TRUE, cpus=length(t.vars))
+sfInit(parallel=TRUE, cpus=length(t.props))
 sfLibrary(raster)
 sfLibrary(rgdal)
-sfExport("missing.tiles", "t.vars", "pr.dirs")
-missing.lst <- sfLapply(t.vars, missing.tiles, pr.dirs=pr.dirs)
+sfExport("missing.tiles", "t.props", "t.sel")
+missing.lst <- sfLapply(paste0("T", t.sel), missing.tiles, pr.dirs=pr.dirs)
 sfStop()
 names(missing.lst) = t.vars
 
 ## mosaic tiles:
-levs = list.files(path="./predicted100m/T5445", pattern=glob2rx(paste0("^",varn,"_*_T*.tif$")))
-levs = sapply(basename(levs), function(x){strsplit(x, "_")[[1]][2]})
+varn = t.props[1]
+levs = paste0("M_sl", 1:7)
 sfInit(parallel=TRUE, cpus=ifelse(length(levs)>46, 46, length(levs)))
 sfExport("gdalbuildvrt", "gdalwarp", "levs", "mosaic_tiles_100m", "varn", "te")
 out <- sfClusterApplyLB(levs, function(x){try( mosaic_tiles_100m(x, in.path="/data/NASIS/predicted100m", varn=varn, te=te) )})
