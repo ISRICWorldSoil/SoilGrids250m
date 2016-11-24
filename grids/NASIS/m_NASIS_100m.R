@@ -14,6 +14,7 @@ library(dplyr)
 library(sp)
 library(devtools)
 library(caret)
+#devtools::install_github("imbs-hl/ranger/ranger-r-package/ranger") ## version to deal with Memory problems
 library(ranger)
 library(xgboost)
 library(nnet)
@@ -68,6 +69,7 @@ s = raster::stack(paste0('/data/GEOG/NASIS/covs100m/', des$WORLDGRIDS_CODE, ".ti
 #str(s[1])
 
 ## legends
+des <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_Covs100m.csv")
 LNDCOV6.leg <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_LandCover.csv")
 PMTGSS7.leg <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_gSSURGO_pmaterial.csv")
 DRNGSS7.leg <- read.csv("/data/GEOG/NASIS/covs100m/SoilGrids_USA48_gSSURGO_drainage.csv")
@@ -131,6 +133,7 @@ x <- lapply(new.dirs, dir.create, recursive=TRUE, showWarnings=FALSE)
 x <- lapply(gsub("covs100m", "predicted100m", new.dirs), dir.create, recursive=TRUE, showWarnings=FALSE)
 ## run in parallel:
 covs.lst = as.character(des$WORLDGRIDS_CODE[-which(des$WORLDGRIDS_CODE=="COUNTY6")])
+#make_RDS_tiles(i=as.numeric(t.sel)[1], tile.tbl=tile.tbl, covs.lst=covs.lst, LNDCOV6.leg=LNDCOV6.leg, PMTGSS7.leg=PMTGSS7.leg, DRNGSS7.leg=DRNGSS7.leg, PVEGKT6.leg=PVEGKT6.leg, COUNTY6.leg=COUNTY6.leg)
 
 ## Clean up:
 #rds.lst = list.files(path="./covs100m", pattern=glob2rx("*.rds"), recursive = TRUE, full.names = TRUE)
@@ -152,6 +155,7 @@ save.image()
 
 ## Clean up empty dirs
 pr.dirs <- basename(dirname(list.files(path="/data/NASIS/covs100m", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
+## 3397
 pr.dirs.c <- list.dirs("/data/NASIS/covs100m")[-1]
 selD <- which(!basename(pr.dirs.c) %in% pr.dirs)
 #x = sapply(selD, function(x){unlink(pr.dirs.c[x], recursive = TRUE, force = TRUE)})

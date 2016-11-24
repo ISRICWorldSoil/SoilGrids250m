@@ -109,6 +109,9 @@ extract.tiled <- function(x, tile.pol, path="/data/NASIS/covs100m", ID="ID", cpu
 make_newdata <- function(i, in.path="/data/NASIS/covs100m", PMTGSS7.leg, DRNGSS7.leg, independent.variable.names){
   if(!file.exists(paste0(in.path, "/T", i, "/cT", i, ".rds"))){
     m <- readRDS(paste0(in.path, "/T", i, "/T", i, ".rds"))
+    if(is.character(mRF)){
+      mRF = readRDS.gz(mRF)
+    }
     m$PMTGSS7 = factor(m$PMTGSS7, levels=unique(PMTGSS7.leg$pmaterial_class_f))
     m$DRNGSS7 = factor(m$DRNGSS7, levels=unique(DRNGSS7.leg$drainage_class))
     m$WETGSS7 = ifelse(is.na(m$WETGSS7), 0, m$WETGSS7)
