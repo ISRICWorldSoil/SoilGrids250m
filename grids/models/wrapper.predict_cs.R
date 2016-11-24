@@ -160,7 +160,7 @@ most_probable_fix <- function(i, in.path, out.path, varn, col.legend, check.name
       m$cl <- col.tbl[match(apply(m@data,1,which.max), col.tbl$int),"Number"]
       unlink(out.c)
       writeGDAL(m["cl"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(col.tbl$Group)))
-      gc()
+      gc(); gc()
     }
   }
 }
@@ -171,16 +171,21 @@ most_probable_fix <- function(i, in.path, out.path, varn, col.legend, check.name
 ## -------------------------------
 
 ## 7 standard dephts
-split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5, 15, 30, 60, 100, 200), method, multiplier=1, depths=TRUE, DEPTH.col="DEPTH.f"){
+split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5, 15, 30, 60, 100, 200), method, multiplier=1, depths=TRUE, DEPTH.col="DEPTH.f", rds.file, SG.col=NULL){
   if(method=="ranger"){
-    rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", split_no, ".rds")
+    if(is.null(split_no)){
+      rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf.rds")
+    } else {
+      rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", split_no, ".rds")
+    }
   }
   if(method=="xgboost"){
     rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_xgb.rds")
   }
   if(any(c(!file.exists(rds.out),file.size(rds.out)==0))){
-    rds.file = paste0(in.path, "/", i, "/", i, ".rds")
+    if(missing(rds.file)){ rds.file = paste0(in.path, "/", i, "/", i, ".rds") }
     if(file.exists(rds.file)&file.size(rds.file)>1e3){ 
+      gc(); gc()
       #message("Predicting from .rds file...")
       m <- readRDS(rds.file)
       if(depths==FALSE){
@@ -194,6 +199,9 @@ split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5,
         x <- matrix(data=NA, nrow=nrow(m), ncol=length(sd))
         for(l in 1:length(sd)){
           m@data[,DEPTH.col] = sd[l]
+          if(all(!is.null(SG.col))){
+            m@data[,paste0("sg_", varn)] = m@data[,SG.col[l]]
+          }
           if(method=="ranger"){
             v = predict(gm, m@data, na.action=na.pass)$predictions * multiplier
           } else {
@@ -203,6 +211,7 @@ split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5,
         }
       }
       saveRDS(x, file=rds.out)
+      gc(); gc()
     }
   }
 }
@@ -213,10 +222,15 @@ sum_predict_ensemble <- function(i, in.path, out.path, varn, num_splits, zmin, z
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
     if(nrow(m@data)>1){
       ## import all predictions:
-      rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", 1:num_splits, ".rds")
+      if(is.null(split_no)){
+        rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf.rds")
+        v1 <- readRDS(rf.ls)
+      } else {
+        rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", 1:num_splits, ".rds")
+        v1 <- lapply(rf.ls, readRDS)
+        v1 <- Reduce("+", v1) / num_splits
+      }
       gb = paste0(out.path, "/", i, "/", varn,"_", i, "_xgb.rds")
-      v1 <- lapply(rf.ls, readRDS)
-      v1 <- Reduce("+", v1) / num_splits
       v2 <- readRDS(gb)
       ## weighted average:
       m@data <- data.frame(Reduce("+", list(v1*gm1.w, v2*gm2.w)) / (gm1.w+gm2.w))
@@ -234,8 +248,9 @@ sum_predict_ensemble <- function(i, in.path, out.path, varn, num_splits, zmin, z
         }
       }
       ## cleanup:
-      unlink(rf.ls)
+      unlink(rf.ls) 
       unlink(gb)
+      gc(); gc()
     }
   }
 }
