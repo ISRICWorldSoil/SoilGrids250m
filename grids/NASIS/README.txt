@@ -1,6 +1,6 @@
-Preliminary predictions for USDA Great Groups (see NASIS domain name: "taxonomic_great_group"), PSCS classes (texture determination on field; see NASIS domain name: "taxonomic_family_particle_size") and selection of soil properties (clay, sand, organic carbon, bulk density, total N) for Continental USA (USA48)
+Code used to generate spatial predictions for USDA Great Groups (see NASIS domain name: "taxonomic_great_group"), PSCS classes (texture determination on field; see NASIS domain name: "taxonomic_family_particle_size") and selection of soil properties (clay, sand, organic carbon, bulk density, total N) for Continental USA (USA48)
 
-Points prepared by: T. Nauman (tnauman@usgs.gov), Amanda Ramcharan (a.m.ramcharan@gmail.com), Sharon Waltman (skwwaltman@gmail.com) and D. Beaudette (debeaudette@ucdavis.edu)
+Points prepared by: T. Nauman (tnauman@usgs.gov), Amanda Ramcharan (a.m.ramcharan@gmail.com), Sharon Waltman (skwwaltman@gmail.com), Colby Brungard (cbrung@ad.nmsu.edu), Sky Wills (skye.wills@gmail.com) and D. Beaudette (debeaudette@ucdavis.edu)
 Model fitting and predictions by: T. Hengl (tom.hengl@isric.org) and Amanda Ramcharan (a.m.ramcharan@gmail.com)
 
 Inputs: National Soil Information System (NASIS) and NCRS National Soil Characterisation DB; about 350,000 points in total; as covariates we use a selection of USA48 covariates global SoilGrids250m covariates (https://github.com/ISRICWorldSoil/SoilGrids250m/blob/master/grids/NASIS/SoilGrids_USA48_Covs100m.csv) ca 200 layers (when counted together with indicators);
