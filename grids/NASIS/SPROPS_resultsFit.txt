@@ -1,6 +1,6 @@
 Results of model fitting 'randomForest / XGBoost':
 
-Clay content
+
 
 Ranger result
 
@@ -213,7 +213,6 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta = 0.4
 150:      NA          NA          NA         NA
 --------------------------------------
 
-Sand content
 
 Ranger result
 
@@ -426,7 +425,6 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta = 0.4
 150:      NA          NA          NA          NA
 --------------------------------------
 
-Soil organic carbon
 
 Ranger result
 
@@ -639,7 +637,6 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta = 0.3
 150:                                 NA         NA          NA          NA
 --------------------------------------
 
-Bulk density
 
 Ranger result
 
@@ -852,7 +849,6 @@ The final values used for the model were nrounds = 100, max_depth = 3, eta = 0.4
 150:      NA         NA          NA          NA
 --------------------------------------
 
-Total N
 
 Ranger result
 
