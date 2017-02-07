@@ -1,5 +1,5 @@
 ## Fit models for depth to bedrock and generate predictions - SoilGrids250m
-## Tom.Hengl@isric.org & shanggv@hotmail.com
+## Wei.Shangguan (shgwei@mail.sysu.edu.cn) & Tom.Hengl@isric.org 
 
 load(".RData")
 library(plyr)
@@ -16,35 +16,69 @@ library(ranger)
 library(caret)
 library(hexbin)
 library(gridExtra)
-library(snowfall)
+#library(snowfall)
 library(utils)
 library(plotKML)
 library(GSIF)
+library(R.utils)
 
 plotKML.env(convert="convert", show.env=FALSE)
 options(bitmapType='cairo')
-gdalwarp = "/usr/local/bin/gdalwarp"
-gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
-system("/usr/local/bin/gdal-config --version")
-source("../extract.equi7t3.R")
+system("gdal-config --version")
 source("../wrapper.predict_cs.R")
 source("../saveRDS_functions.R")
-load("../equi7t3.rda")
 des <- read.csv("../SoilGrids250m_COVS250m.csv")
 mask_value <- as.list(des$MASK_VALUE)
 names(mask_value) = des$WORLDGRIDS_CODE
 
-## points:
-load("../../profs/BDR/BDR.pnts.rda")
-load("../../profs/BDR/BDR_all.pnts.rda")
-ov <- extract.equi7t3(x=BDR.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=48) 
-## TAKES CA 30 mins!
+## load points:
+load("/data/profs/BDR/BDR.pnts.rda")
+load("/data/profs/BDR/BDR_all.pnts.rda")
+str(BDR.pnts@data)
+
+## overlay:
+covs.lst = list.files(path="/data/stacked250m", pattern=glob2rx("*.tif$"), full.names = TRUE)
+#x = raster::stack(covs.lst)
+## 195
+extract.tif = function(x, y){
+  if(!file.exists(paste0("./tmp/",basename(x),".rds"))){
+    r = raster(x)
+    if(!is.na(proj4string(r))){
+      y = spTransform(y, proj4string(r))
+    }
+    out = round(raster::extract(y=y, x=r))
+    ## write temp file otherwise RAM problems
+    saveRDS(out, paste0("./tmp/",basename(x),".rds"))
+    gc(); gc()
+  }
+}
+## overlay in parallel TAKES 7 hours:
+detach("package:snowfall", unload=TRUE)
+detach("package:snow", unload=TRUE)
+library(parallel)
+library(raster)
+cl <- makeCluster(56, type="FORK")
+ov = parLapply(cl, covs.lst, function(i){try( extract.tif(i, BDR.pnts) )})
+stopCluster(cl)
+## read to R:
+lst.rds = list.files("./tmp", pattern = ".rds", full.names = TRUE)
+cl <- makeCluster(56)
+ov <- as.data.frame(parLapply(cl, lst.rds, readRDS))
+names(ov) = gsub(".rds", "", basename(lst.rds))
+stopCluster(cl)
+#sfInit(parallel=TRUE, cpus=56)
+#sfExport("BDR.pnts", "covs.lst", "extract.tif")
+#sfLibrary(rgdal)
+#sfLibrary(raster)
+#ov <- data.frame(sfClusterApplyLB(covs.lst, function(i){try( extract.tif(i, BDR.pnts) )}))
+#sfStop()
+ov$LOC_ID = BDR.pnts$LOC_ID
 #str(ov)
 ovA <- join(BDR_all.pnts, ov, type="left", by="LOC_ID")
 write.csv(ovA, file="ov.BDR_SoilGrids250m.csv")
 unlink("ov.BDR_SoilGrids250m.csv.gz")
 gzip("ov.BDR_SoilGrids250m.csv")
-#save(ovA, file="ovA.rda", compression_level="xz")
+save(ovA, file="ovA.rda", compression_level="xz")
 #load("ovA.rda")
 ## 1.3GB object
 
@@ -57,9 +91,14 @@ range(ovA$BDTICM, na.rm=TRUE)
 ## Remove any negative values:
 summary(ovA$BDTICM)
 ovA$BDTICM <- ifelse(ovA$BDTICM<0, NA, ovA$BDTICM)
-## use log to put more emphasis on lower values?
 #ovA$logBDTICM <- log1p(ovA$BDTICM)
-#hist(log1p(ovA$BDTICM), breaks=40, col="grey", xlab="log-BDTICM", main="Histogram")
+hist(log1p(ovA$BDTICM), breaks=40, col="grey", xlab="log-BDTICM", main="Histogram")
+## mask out water bodies and permanent ice:
+ovA$OCCGSW7.tif = ifelse(ovA$OCCGSW7.tif>99, NA, ovA$OCCGSW7.tif)
+ovA$LCEE10.tif = ifelse(ovA$LCEE10.tif==220, NA, ovA$LCEE10.tif)
+summary(is.na(ovA$LCEE10.tif))
+## 1288 fall in permanent ice
+save.image()
 
 ## ------------- MODEL FITTING -----------
 
@@ -69,17 +108,22 @@ names(z.min) = t.vars
 z.max <- as.list(c(200,100,Inf))
 names(z.max) = t.vars
 
-pr.lst <- as.character(des$WORLDGRIDS_CODE)
+pr.lst <- gsub(".rds", "", basename(lst.rds))
 ## remove some predictors that might lead to artifacts (buffer maps and land cover):
-pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","VOLNOA3","C??GLC5"), function(x){grep(glob2rx(x), pr.lst)}))]
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10"), function(x){grep(x, pr.lst)}))]
 formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ ', paste(pr.lst, collapse="+")))}) ## LATWGS84 +
 ## For BDTICM we can not use latitude, quakes and volcano density as predictor because points are somewhat clustered in LAT space --> predictions lead to artifacts 
 #formulaString.lst[[3]] = as.formula(paste(t.vars[3], ' ~ ', paste(pr.lst, collapse="+")))
 
 ## sub-sample to speed up model fitting:
-Nsub <- 1.5e4 
+Nsub <- 2e4 
+## Caret training settings (reduce number of combinations to speed up):
+ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
+gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
+rf.tuneGrid <- expand.grid(mtry = seq(10,60,by=5))
+
 ## Initiate cluster
-cl <- makeCluster(48)
+cl <- makeCluster(56)
 registerDoParallel(cl)
 ## Write results of model fitting into a text file:
 cat("Results of model fitting 'randomForest / XGBoost':\n\n", file="BDR_resultsFit.txt")
@@ -88,10 +132,6 @@ for(j in 1:length(t.vars)){
   cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="BDR_resultsFit.txt", append=TRUE)
   cat("\n", file="BDR_resultsFit.txt", append=TRUE)
   LOC_ID <- ovA$LOC_ID
-  ## Caret training settings (reduce number of combinations to speed up):
-  ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
-  gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
-  rf.tuneGrid <- expand.grid(mtry = seq(10,60,by=5))
   out.rf <- paste0("mrf.",t.vars[j],".rds")
   if(!file.exists(out.rf)){
     dfs <- ovA[,all.vars(formulaString.lst[[j]])]
@@ -99,20 +139,21 @@ for(j in 1:length(t.vars)){
     dfs <- dfs[sel,]
     ## optimize mtry parameter:
     if(!file.exists(gsub("mrf","t.mrf",out.rf))){
-      t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
+      t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="ranger", trControl=ctrl, tuneGrid=rf.tuneGrid)
       saveRDS.gz(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
     } else {
       t.mrfX <- readRDS.gz(gsub("mrf","t.mrf",out.rf))
     }
     ## fit RF model using 'ranger' (fully parallelized)
-    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=300)
+    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=85)
     saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
-    ## Top 15 covariates:
+    #mrfX <- readRDS.gz(file=paste0("mrf.",t.vars[j],".rds"))
+    ## Top 25 covariates:
     sink(file="BDR_resultsFit.txt", append=TRUE, type="output")
     print(mrfX)
     cat("\n Variable importance:\n", file="BDR_resultsFit.txt", append=TRUE)
     xl <- as.list(ranger::importance(mrfX))
-    print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:15]])))
+    print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:25]])))
     ## save fitting success vectors:
     fit.df <- data.frame(LOC_ID=LOC_ID[sel], observed=dfs[,1], predicted=predictions(mrfX))
     unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
@@ -131,7 +172,7 @@ for(j in 1:length(t.vars)){
     cat("\n", file="BDR_resultsFit.txt", append=TRUE)
     print(mgbX)
     cat("\n XGBoost variable importance:\n", file="BDR_resultsFit.txt", append=TRUE)
-    print(importance_matrix[1:15,])
+    print(importance_matrix[1:25,])
     cat("--------------------------------------\n", file="BDR_resultsFit.txt", append=TRUE)
     sink()
   }
@@ -273,7 +314,7 @@ for(j in 1:length(t.vars)){
 source("../plot_hexbin.R")
 plt.names <- c("Depth to bedrock (up to 250 cm)", "Occurrence of the R horizon", "Absolute depth to bedrock (in cm)")
 names(plt.names) = t.vars
-breaks.lst <- list(c(seq(0,280,length=40)), seq(0,1,length=30), seq(0,50000,length=50))
+breaks.lst <- list(c(seq(0,280,length=20)), seq(0,1,length=30), seq(0,50000,length=50))
 names(breaks.lst) = t.vars
 plt.log <- c(FALSE, FALSE, TRUE)
 names(plt.log) = t.vars
