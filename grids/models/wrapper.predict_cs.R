@@ -171,7 +171,7 @@ most_probable_fix <- function(i, in.path, out.path, varn, col.legend, check.name
 ## -------------------------------
 
 ## 7 standard dephts
-split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5, 15, 30, 60, 100, 200), method, multiplier=1, depths=TRUE, DEPTH.col="DEPTH.f", rds.file, SG.col=NULL){
+split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5, 15, 30, 60, 100, 200), method, multiplier=1, depths=TRUE, DEPTH.col="DEPTH.f", rds.file, SG.col=NULL, SG.col.name){
   if(method=="ranger"){
     if(is.null(split_no)){
       rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf.rds")
@@ -197,10 +197,11 @@ split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5,
         }
       } else {
         x <- matrix(data=NA, nrow=nrow(m), ncol=length(sd))
+        if(missing(SG.col.name)){ SG.col.name=paste0("sg_", varn) }
         for(l in 1:length(sd)){
           m@data[,DEPTH.col] = sd[l]
           if(all(!is.null(SG.col))){
-            m@data[,paste0("sg_", varn)] = m@data[,SG.col[l]]
+            m@data[,SG.col.name] = m@data[,SG.col[l]]
           }
           if(method=="ranger"){
             v = predict(gm, m@data, na.action=na.pass)$predictions * multiplier
@@ -218,40 +219,52 @@ split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5,
 
 ## Sum up predictions
 sum_predict_ensemble <- function(i, in.path, out.path, varn, num_splits, zmin, zmax, gm1.w, gm2.w, type="Int16", mvFlag=-32768, depths=TRUE, rds.file){
-  if(length(list.files(path = paste0(out.path, "/", i, "/"), glob2rx(paste0("^",varn,"_M_*.tif$"))))==0){
+  if(depths==FALSE){
+    out.tif = paste0(out.path, "/", i, "/", varn, "_M_", i, ".tif")
+    test = !file.exists(out.tif)
+  } else {
+    test = length(list.files(path = paste0(out.path, "/", i, "/"), glob2rx(paste0("^",varn,"_M_sl*_*.tif$"))))==0
+  }
+  if(test){
     if(missing(rds.file)){ rds.file = paste0(in.path, "/", i, "/", i, ".rds") }
-    m <- readRDS(rds.file)
-    if(nrow(m@data)>1){
-      ## import all predictions:
-      if(is.null(num_splits)){
-        rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf.rds")
-        v1 <- readRDS(rf.ls)
-      } else {
-        rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", 1:num_splits, ".rds")
-        v1 <- lapply(rf.ls, readRDS)
-        v1 <- Reduce("+", v1) / num_splits
-      }
-      gb = paste0(out.path, "/", i, "/", varn,"_", i, "_xgb.rds")
-      v2 <- readRDS(gb)
-      ## weighted average:
-      m@data <- data.frame(Reduce("+", list(v1*gm1.w, v2*gm2.w)) / (gm1.w+gm2.w))
-      if(depths==FALSE){
-        ## Write GeoTiffs (2D case):
-        out.tif = paste0(out.path, "/", i, "/", varn, "_M_", i, ".tif")
-        m@data[,1] <- ifelse(m@data[,1] < zmin, zmin, ifelse(m@data[,1] > zmax, zmax, m@data[,1]))
-        writeGDAL(m[1], out.tif, type=type, mvFlag=mvFlag, options="COMPRESS=DEFLATE")
-      } else {
-        ## Write GeoTiffs (per depth):
-        for(l in 1:ncol(m)){
-          out.tif = paste0(out.path, "/", i, "/", varn, "_M_sl", l, "_", i, ".tif")
-          m@data[,l] <- ifelse(m@data[,l] < zmin, zmin, ifelse(m@data[,l] > zmax, zmax, m@data[,l]))
-          writeGDAL(m[l], out.tif, type=type, mvFlag=mvFlag, options="COMPRESS=DEFLATE")
+    if(file.exists(rds.file)){
+      m <- readRDS(rds.file)
+      if(nrow(m@data)>1){
+        gb = paste0(out.path, "/", i, "/", varn,"_", i, "_xgb.rds")
+        if(is.null(num_splits)){
+          rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf.rds")
+        } else {
+          rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", 1:num_splits, ".rds")
+        }
+        if(all(file.exists(c(rf.ls,gb)))){
+          ## import all predictions:
+          if(is.null(num_splits)){
+            v1 <- readRDS(rf.ls)
+          } else {
+            v1 <- lapply(rf.ls, readRDS)
+            v1 <- Reduce("+", v1) / num_splits
+          }
+          v2 <- readRDS(gb)
+          ## weighted average:
+          m@data <- data.frame(Reduce("+", list(v1*gm1.w, v2*gm2.w)) / (gm1.w+gm2.w))
+          if(depths==FALSE){
+            ## Write GeoTiffs (2D case):
+            m@data[,1] <- ifelse(m@data[,1] < zmin, zmin, ifelse(m@data[,1] > zmax, zmax, m@data[,1]))
+            writeGDAL(m[1], out.tif, type=type, mvFlag=mvFlag, options="COMPRESS=DEFLATE")
+          } else {
+            ## Write GeoTiffs (per depth):
+            for(l in 1:ncol(m)){
+              out.tif = paste0(out.path, "/", i, "/", varn, "_M_sl", l, "_", i, ".tif")
+              m@data[,l] <- ifelse(m@data[,l] < zmin, zmin, ifelse(m@data[,l] > zmax, zmax, m@data[,l]))
+              writeGDAL(m[l], out.tif, type=type, mvFlag=mvFlag, options="COMPRESS=DEFLATE")
+            }
+          }
+          ## cleanup:
+          unlink(rf.ls) 
+          unlink(gb)
+          gc(); gc()
         }
       }
-      ## cleanup:
-      unlink(rf.ls) 
-      unlink(gb)
-      gc(); gc()
     }
   }
 }

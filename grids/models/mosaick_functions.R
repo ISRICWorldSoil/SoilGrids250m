@@ -1,8 +1,8 @@
 ## Functions for mosaicking SoilGrids using the EQUI7 grid system (https://github.com/TUW-GEO/Equi7Grid)
 ## Tom.Hengl@isric.org
 
-load("equi7t1.rda")
-load("equi7t3.rda")
+load("/data/models/equi7t1.rda")
+load("/data/models/equi7t3.rda")
 tile.names <- names(equi7t1)
 ## Continents:
 ext <- as.list(1:7)
@@ -16,7 +16,7 @@ ext[[7]] <- c(-122.85, -56.29, -16.04, 20.23) ## "SA"
 names(ext) <- names(equi7t3)
 
 ## Create mosaicks:
-mosaick.equi7t3 <- function(i, j, varn, in.path, r, te, tr, ot, dstnodata, out.path='/data/GEOG', compress, vrt.tmp=NULL){
+mosaick.equi7t3 <- function(i, j, varn, in.path='./', r, te, tr, ot, dstnodata, out.path='/data/GEOG', compress=TRUE, vrt.tmp=NULL){
   if(i=="dominant"){
     out.tif <- paste0(out.path, "/", j, '/', varn, '_', j, '_250m_r.tif')
   } else {
@@ -46,7 +46,7 @@ mosaick.equi7t3 <- function(i, j, varn, in.path, r, te, tr, ot, dstnodata, out.p
       system(paste0('gdalwarp ', vrt.tmp, ' ', gsub("/OC/", "/pacific/", out.tif), ' -t_srs \"+proj=longlat +datum=WGS84\" -overwrite -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te -180 -62 -120 15 -tr ', tr, ' ', tr, ' -co \"COMPRESS=DEFLATE\" -co \"BIGTIFF=YES\" -wm 2000')) ## Pacific islands
     }
     if(compress==TRUE){
-      system(paste0('gdalwarp ', vrt.tmp, ' ', out.tif, ' -t_srs \"+proj=longlat +datum=WGS84\" -overwrite -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te ', paste(te, collapse=" "),' -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 2000 -co \"COMPRESS=DEFLATE\"')) ## <-- compression takes MORE time. Maybe not necessary ?
+      system(paste0('gdalwarp ', vrt.tmp, ' ', out.tif, ' -t_srs \"+proj=longlat +datum=WGS84\" -overwrite -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te ', paste(te, collapse=" "),' -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 2000 -co \"COMPRESS=DEFLATE\"')) ## <-- compression takes MORE time. Maybe not necessary to generate temp files?
     } else {
       system(paste0('gdalwarp ', vrt.tmp, ' ', out.tif, ' -t_srs \"+proj=longlat +datum=WGS84\" -overwrite -r \"', r,'\" -ot \"', ot, '\" -dstnodata \"',  dstnodata, '\" -te ', paste(te, collapse=" "),' -tr ', tr, ' ', tr, ' -co \"BIGTIFF=YES\" -wm 2000'))
     }
@@ -54,7 +54,7 @@ mosaick.equi7t3 <- function(i, j, varn, in.path, r, te, tr, ot, dstnodata, out.p
 }
 
 ## Merge everything into a single mosaick
-make_mosaick <- function(i, varn, ext, resample1="bilinear", resample2="average", r250m=TRUE, tr=0.002083333, r="bilinear", in.path="/data/predicted", ot="Byte", dstnodata=255, tile.names, out.path='/data/GEOG', compress=TRUE, build.pyramids=TRUE, vrt.tmp=NULL){
+make_mosaick <- function(i, varn, ext, resample1="bilinear", resample2="average", r250m=TRUE, tr=0.002083333, in.path="./", ot="Byte", dstnodata=255, tile.names, out.path='/data/GEOG', compress=TRUE, build.pyramids=TRUE, vrt.tmp=NULL, cleanup=TRUE){
   if(i=="dominant"){
     out.tif <- paste0(out.path, "/", varn, "_250m_ll.tif")
     r = "near"
@@ -64,9 +64,9 @@ make_mosaick <- function(i, varn, ext, resample1="bilinear", resample2="average"
   if(!file.exists(out.tif)){
     ## build mosaics per continent:
     if(is.null(vrt.tmp)){ 
-      x <- sapply(1:length(ext), function(x){ mosaick.equi7t3(j=tile.names[x], i=i, varn=varn, te=ext[[x]], tr=tr, r=r, in.path=in.path, ot=ot, dstnodata=dstnodata, compress=compress, out.path=out.path) })
+      x <- sapply(1:length(ext), function(x){ mosaick.equi7t3(j=tile.names[x], i=i, varn=varn, te=ext[[x]], tr=tr, r=resample1, in.path=in.path, ot=ot, dstnodata=dstnodata, compress=compress, out.path=out.path) })
     } else {
-      x <- sapply(1:length(ext), function(x){ mosaick.equi7t3(j=tile.names[x], i=i, varn=varn, te=ext[[x]], tr=tr, r=r, in.path=in.path, ot=ot, dstnodata=dstnodata, compress=compress, out.path=out.path, vrt.tmp=vrt.tmp[x]) })
+      x <- sapply(1:length(ext), function(x){ mosaick.equi7t3(j=tile.names[x], i=i, varn=varn, te=ext[[x]], tr=tr, r=resample1, ot=ot, dstnodata=dstnodata, compress=compress, out.path=out.path, vrt.tmp=vrt.tmp[x]) })
     }
     if(i=="dominant"){
       in.tif <- list.files(path=out.path, pattern=glob2rx(paste0(varn, "_*_250m_r.tif$")), full.names=TRUE, recursive=TRUE)
@@ -79,8 +79,8 @@ make_mosaick <- function(i, varn, ext, resample1="bilinear", resample2="average"
       ## sort based on priority? 
       sort.lst = lapply(c("AN","chukotka","pacific","AS","OC","SA","AF","EU","NA"), function(x){grep(x, in.tif)})
       sort.lst = unlist(sort.lst[sapply(sort.lst, function(x){length(x)>0})])
-      cat(in.tif[sort.lst], sep="\n", file=outG.tmp)
-      system(paste0('gdalbuildvrt -input_file_list ', outG.tmp, ' ', vrtG.tmp))
+      cat(unique(in.tif[sort.lst]), sep="\n", file=outG.tmp)
+      system(paste0('gdalbuildvrt -input_file_list ', outG.tmp, ' ', vrtG.tmp, ' -srcnodata ', dstnodata))
       if(r250m == TRUE){
         if(build.pyramids==TRUE){
           system(paste0('gdalwarp ', vrtG.tmp, ' ', out.tif, ' -ot \"', ot, '\" -dstnodata \"', dstnodata, '\" -overwrite -r \"', resample1, '\" -co \"COMPRESS=DEFLATE\" -co \"TILED=YES\" -co \"BLOCKXSIZE=512\" -co \"BLOCKYSIZE=512\" -wm 2000 -co \"BIGTIFF=YES\"'))
@@ -91,9 +91,11 @@ make_mosaick <- function(i, varn, ext, resample1="bilinear", resample2="average"
       }
       ## gdal_translate relatively faster?
       system(paste0('gdal_translate -of GTiff -r \"', resample2,'\" -tr 0.008333333 0.008333333 ', vrtG.tmp, ' ', gsub("250m_ll.tif", "1km_ll.tif", out.tif), ' -ot \"', ot, '\" -a_nodata \"', dstnodata, '\" -co \"COMPRESS=DEFLATE\" -co \"BIGTIFF=YES\"'))
-      unlink(outG.tmp)
-      unlink(vrtG.tmp)
-      unlink(in.tif)      
+      if(cleanup==TRUE){
+        unlink(outG.tmp)
+        unlink(vrtG.tmp)
+        unlink(in.tif)
+      }
     }
   }
 }
