@@ -1,6 +1,11 @@
 ## Fit models for depth to bedrock and generate predictions - SoilGrids250m
 ## Wei.Shangguan (shgwei@mail.sysu.edu.cn) & Tom.Hengl@isric.org 
 
+list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "hexbin", "gridExtra", "ranger", "xgboost", "stringr", "caret", "plotKML", "maptools", "maps")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+setwd("/data/models/BDR")
 load(".RData")
 library(plyr)
 library(stringr)
@@ -25,9 +30,15 @@ library(R.utils)
 plotKML.env(convert="convert", show.env=FALSE)
 options(bitmapType='cairo')
 system("gdal-config --version")
-source("../wrapper.predict_cs.R")
-source("../saveRDS_functions.R")
-des <- read.csv("../SoilGrids250m_COVS250m.csv")
+source("/data/models/wrapper.predict_cs.R")
+source("/data/models/saveRDS_functions.R")
+source('/data/models/mosaick_functions_ll.R')
+source('/data/models/extract_tiled.R')
+## metadata:
+metasd <- read.csv('/data/GEOG/META_GEOTIFF_1B.csv', stringsAsFactors = FALSE)
+sel.metasd = names(metasd)[-sapply(c("FileName","VARIABLE_NAME"), function(x){grep(x, names(metasd))})]
+## covariates:
+des <- read.csv("/data/models/SoilGrids250m_COVS250m.csv")
 mask_value <- as.list(des$MASK_VALUE)
 names(mask_value) = des$WORLDGRIDS_CODE
 
@@ -36,41 +47,11 @@ load("/data/profs/BDR/BDR.pnts.rda")
 load("/data/profs/BDR/BDR_all.pnts.rda")
 str(BDR.pnts@data)
 
-## overlay:
-covs.lst = list.files(path="/data/stacked250m", pattern=glob2rx("*.tif$"), full.names = TRUE)
-#x = raster::stack(covs.lst)
-## 195
-extract.tif = function(x, y){
-  if(!file.exists(paste0("./tmp/",basename(x),".rds"))){
-    r = raster(x)
-    if(!is.na(proj4string(r))){
-      y = spTransform(y, proj4string(r))
-    }
-    out = round(raster::extract(y=y, x=r))
-    ## write temp file otherwise RAM problems
-    saveRDS(out, paste0("./tmp/",basename(x),".rds"))
-    gc(); gc()
-  }
-}
-## overlay in parallel TAKES 7 hours:
-detach("package:snowfall", unload=TRUE)
-detach("package:snow", unload=TRUE)
-library(parallel)
-library(raster)
-cl <- makeCluster(56, type="FORK")
-ov = parLapply(cl, covs.lst, function(i){try( extract.tif(i, BDR.pnts) )})
-stopCluster(cl)
-## read to R:
-lst.rds = list.files("./tmp", pattern = ".rds", full.names = TRUE)
-cl <- makeCluster(56)
-ov <- as.data.frame(parLapply(cl, lst.rds, readRDS))
-names(ov) = gsub(".rds", "", basename(lst.rds))
-stopCluster(cl)
-#sfInit(parallel=TRUE, cpus=56)
-#sfExport("BDR.pnts", "covs.lst", "extract.tif")
-#sfLibrary(rgdal)
-#sfLibrary(raster)
-#ov <- data.frame(sfClusterApplyLB(covs.lst, function(i){try( extract.tif(i, BDR.pnts) )}))
+## OVERLAY (takes ca 1 hr):
+tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
+#tile.pol = readRDS("stacked250m_tiles_pol.rds")
+ov <- extract.tiled(x=BDR.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=56)
+
 #sfStop()
 ov$LOC_ID = BDR.pnts$LOC_ID
 #str(ov)
@@ -86,7 +67,7 @@ save(ovA, file="ovA.rda", compression_level="xz")
 ## BDRLOG = occurrence of R horizon 0 / 1
 ## BDTICM = absolute depth to bedrock
 hist(ovA$BDRICM)
-## TH: filter out few very high values?
+## filter out few very high values?
 range(ovA$BDTICM, na.rm=TRUE)
 ## Remove any negative values:
 summary(ovA$BDTICM)
@@ -94,13 +75,14 @@ ovA$BDTICM <- ifelse(ovA$BDTICM<0, NA, ovA$BDTICM)
 #ovA$logBDTICM <- log1p(ovA$BDTICM)
 hist(log1p(ovA$BDTICM), breaks=40, col="grey", xlab="log-BDTICM", main="Histogram")
 ## mask out water bodies and permanent ice:
-ovA$OCCGSW7.tif = ifelse(ovA$OCCGSW7.tif>99, NA, ovA$OCCGSW7.tif)
+#ovA$OCCGSW7.tif = ifelse(ovA$OCCGSW7.tif>100, 0, ovA$OCCGSW7.tif)
 ovA$LCEE10.tif = ifelse(ovA$LCEE10.tif==220, NA, ovA$LCEE10.tif)
 summary(is.na(ovA$LCEE10.tif))
-## 1288 fall in permanent ice
+## 44,489 fall in permanent ice or water
 save.image()
 
 ## ------------- MODEL FITTING -----------
+## TAKES ca 1 hr
 
 t.vars <- c("BDRICM", "BDRLOG", "BDTICM")
 z.min <- as.list(c(0,0,0))
@@ -108,12 +90,11 @@ names(z.min) = t.vars
 z.max <- as.list(c(200,100,Inf))
 names(z.max) = t.vars
 
-pr.lst <- gsub(".rds", "", basename(lst.rds))
+pr.lst <- basename(list.files(path="/data/stacked250m", ".tif"))
 ## remove some predictors that might lead to artifacts (buffer maps and land cover):
 pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10"), function(x){grep(x, pr.lst)}))]
 formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ ', paste(pr.lst, collapse="+")))}) ## LATWGS84 +
 ## For BDTICM we can not use latitude, quakes and volcano density as predictor because points are somewhat clustered in LAT space --> predictions lead to artifacts 
-#formulaString.lst[[3]] = as.formula(paste(t.vars[3], ' ~ ', paste(pr.lst, collapse="+")))
 
 ## sub-sample to speed up model fitting:
 Nsub <- 2e4 
@@ -122,8 +103,13 @@ ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
 gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
 rf.tuneGrid <- expand.grid(mtry = seq(10,60,by=5))
 
+## clean-up:
+unlink(list.files(pattern="^mrf."))
+unlink(list.files(pattern="^t.mrf."))
+unlink(list.files(pattern="^mgb."))
+
 ## Initiate cluster
-cl <- makeCluster(56)
+cl <- parallel::makeCluster(56)
 registerDoParallel(cl)
 ## Write results of model fitting into a text file:
 cat("Results of model fitting 'randomForest / XGBoost':\n\n", file="BDR_resultsFit.txt")
@@ -170,6 +156,7 @@ for(j in 1:length(t.vars)){
     }
     importance_matrix <- xgb.importance(mgbX$coefnames, model = mgbX$finalModel)
     cat("\n", file="BDR_resultsFit.txt", append=TRUE)
+    #mgbX <- readRDS.gz(paste0("mgb.",t.vars[j],".rds"))
     print(mgbX)
     cat("\n XGBoost variable importance:\n", file="BDR_resultsFit.txt", append=TRUE)
     print(importance_matrix[1:25,])
@@ -179,87 +166,41 @@ for(j in 1:length(t.vars)){
 }
 rm(mrfX); rm(mgbX)
 stopCluster(cl); closeAllConnections()
-
-mrfX_lst <- list.files(pattern="^mrf.")
-mgbX_lst <- list.files(pattern="^mgb.")
-names(mrfX_lst) <- paste(sapply(mrfX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
-names(mgbX_lst) <- paste(sapply(mgbX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
+save.image()
 
 ## ------------- PREDICTIONS -----------
 
 ## Predict per tile:
-pr.dirs <- basename(dirname(list.files(path="/data/covs1t", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
+pr.dirs <- basename(dirname(list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^T*.rds$"), recursive = TRUE, full.names = TRUE)))
 str(pr.dirs)
 #save(pr.dirs, file="pr.dirs.rda")
-## 16,561 dirs
+## 18,653 dirs
 
-## Split RF models (otherwise memory limit problems):
-num_splits = 3
-for(j in t.vars){
-  mrfX = readRDS.gz(mrfX_lst[[j]])
-  mrfX_final <- split_rf(mrfX, num_splits)
-  for(k in 1:length(mrfX_final)){
-    gm = mrfX_final[[k]]
-    saveRDS.gz(gm, file=paste0("mrfX_", k, "_", j,".rds"))
-  }
-}
-rm(mrfX); rm(mrfX_final)
-gc(); gc()
-save.image()
-
+## Predictions:
 type.lst <- c("Byte", "Byte", "Int32")
 names(type.lst) = t.vars
 mvFlag.lst <- c(255, 255, -32768)
 names(mvFlag.lst) = t.vars
+source("predict.BDR.R")
 
-## Run per property (TAKES ABOUT 20-30 HOURS OF COMPUTING PER PROPERTY)
-## To avoid memory problems with RF objects, we split predictions into e.g. 3 parts
-for(j in t.vars[3]){ # t.vars
-  if(j=="BDRLOG"){ multiplier = 100 }
-  if(j %in% c("BDRICM","BDTICM")){ multiplier = 1 }
-  ## Random forest predictions (splits):
-  gm = readRDS.gz(mrfX_lst[[j]])
-  gm1.w = 1/gm$prediction.error
-  rm(gm)
-  for(k in 1:num_splits){
-    gm = readRDS.gz(paste0("mrfX_", k, "_", j,".rds"))
-    gc()
-    cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
-    sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
-    sfExport("gm", "pr.dirs", "split_predict_n", "j", "k", "multiplier")
-    sfLibrary(ranger)
-    x <- sfLapply(pr.dirs, fun=function(x){ if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ try( split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", split_no=k, varn=j, method="ranger", multiplier=multiplier, depths=FALSE) ) } } )
-    sfStop()
-    rm(gm)
-  }
-  ## XGBoost:
-  gm = readRDS.gz(paste0("mgb.", j,".rds"))
-  gm2.w = 1/(min(gm$results$RMSE, na.rm=TRUE)^2)
-  cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
-  gc()
-  sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
-  sfExport("gm", "pr.dirs", "split_predict_n", "j", "multiplier")
-  sfLibrary(xgboost)
-  x <- sfLapply(pr.dirs, fun=function(x){ try( if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", varn=j, method="xgboost", multiplier=multiplier, depths=FALSE) } ) } )
-  sfStop()
-  rm(gm)
-  ## sum up predictions:
-  sfInit(parallel=TRUE, cpus=45)
-  sfExport("pr.dirs", "sum_predict_ensemble", "num_splits", "j", "z.min", "z.max", "gm1.w", "gm2.w", "mvFlag.lst", "type.lst")
-  sfLibrary(rgdal)
-  sfLibrary(plyr)
-  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ sum_predict_ensemble(x, in.path="/data/covs1t", out.path="/data/predicted", varn=j, num_splits, zmin=z.min[[j]], zmax=z.max[[j]], gm1.w=gm1.w, gm2.w=gm2.w, type=type.lst[[j]], mvFlag=mvFlag.lst[[j]], depths=FALSE) } )  } )
-  sfStop()
-}
+## rename files:
+#lst.tif = list.files("/data/tt/SoilGrids250m/predicted250m/", "BDRICM_M_", full.names=TRUE, recursive = TRUE)
+#file.rename(lst.tif, gsub("_M_sl1_", "_M_", lst.tif))
+
+## Mosaick:
+sfInit(parallel=TRUE, cpus=ifelse(length(t.vars)>45, 45, length(t.vars)))
+sfExport("t.vars", "mvFlag.lst", "make_mosaick_ll", "type.lst", "metasd")
+out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i="M", in.path="/data/tt/SoilGrids250m/predicted250m", ot=type.lst[x], dstnodata=mvFlag.lst[x], metadata=metasd[grep(t.vars[x], metasd$FileName),sel.metasd]) )})
+sfStop()
 
 ## ------------- VISUALIZATIONS -----------
 
-x <- readGDAL("/data/predicted/NA_060_036/BDRLOG_M_NA_060_036.tif")
+x <- readGDAL("/data/tt/SoilGrids250m/predicted250m/T34122/BDRLOG_M_T34122.tif")
 x.ll <- reproject(x)
-kml(x.ll, file.name="BDRLOG_M_NA_060_036.kml", folder.name="R horizon", colour=band1, z.lim=c(0,100), colour_scale=SAGA_pal[["SG_COLORS_YELLOW_RED"]], raster_name="BDRLOG_M_NA_060_036.png")
-x <- readGDAL("/data/predicted/NA_060_036/BDTICM_M_NA_060_036.tif")
+kml(x.ll, file.name="BDRLOG_M_T34122.kml", folder.name="R horizon", colour=band1, z.lim=c(0,100), colour_scale=SAGA_pal[["SG_COLORS_YELLOW_RED"]], raster_name="BDRLOG_M_T34122.png")
+x <- readGDAL("/data/tt/SoilGrids250m/predicted250m/T34122/BDTICM_M_T34122.tif")
 x.ll <- reproject(x)
-kml(x.ll, file.name="BDTICM_M_NA_060_036.kml", folder.name="Absolute depth in cm", colour=band1, colour_scale=SAGA_pal[[1]], raster_name="BDTICM_M_NA_060_036.png", z.lim=c(0,7000))
+kml(x.ll, file.name="BDTICM_M_T34122.kml", folder.name="Absolute depth in cm", colour=band1, colour_scale=SAGA_pal[[1]], raster_name="BDTICM_M_T34122.png", z.lim=c(0,7000))
 
 ## world plot - overlay and plot points and maps:
 xy.pnts <- join(ovA[complete.cases(ovA[,c("SOURCEID","SOURCEDB")]),], as.data.frame(BDR.pnts[c("SOURCEID")]), type="left", match="first")
@@ -340,10 +281,10 @@ sink()
 
 ## clean-up:
 # for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
-#   del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+#   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
 # }
 # for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
-#   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+#   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
 # }

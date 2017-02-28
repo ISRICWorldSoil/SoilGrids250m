@@ -1,7 +1,12 @@
 ## Fit models for TAXOUSDA and generate predictions - SoilGrids250m
 ## By Tom.Hengl@isric.org with help from Marvin N. Wright <wright at imbs.uni-luebeck.de>
 
+list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
 setwd("/data/models/TAXOUSDA")
+load(".RData")
 library(aqp)
 library(plyr)
 library(stringr)
@@ -28,16 +33,21 @@ library(plotKML)
 library(GSIF)
 
 plotKML.env(convert="convert", show.env=FALSE)
-gdalwarp = "/usr/local/bin/gdalwarp"
-gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
-system("/usr/local/bin/gdal-config --version")
-source("../extract.equi7t3.R")
-source("../saveRDS_functions.R")
-source("../wrapper.predict_cs.R")
+gdalwarp = "gdalwarp"
+gdalbuildvrt = "gdalbuildvrt"
+system("gdal-config --version")
+source("/data/models/wrapper.predict_cs.R")
+source("/data/models/saveRDS_functions.R")
+source('/data/models/mosaick_functions_ll.R')
 
-load("../equi7t3.rda")
-load("../equi7t1.rda")
-des <- read.csv("../SoilGrids250m_COVS250m.csv")
+source('/data/models/extract_tiled.R')
+## metadata:
+metasd <- read.csv('/data/GEOG/META_GEOTIFF_1B.csv', stringsAsFactors = FALSE)
+sel.metasd = names(metasd)[-sapply(c("FileName","VARIABLE_NAME"), function(x){grep(x, names(metasd))})]
+## covariates:
+des <- read.csv("/data/models/SoilGrids250m_COVS250m.csv")
+mask_value <- as.list(des$MASK_VALUE)
+names(mask_value) = des$WORLDGRIDS_CODE
 
 ## class definitions:
 col.legend <- read.csv("TAXOUSDA_legend.csv")
@@ -46,54 +56,70 @@ col.legend$COLOR <- rgb(red=col.legend$R/255, green=col.legend$G/255, blue=col.l
 unlink("TAXOUSDA.txt")
 makeSAGAlegend(x=as.factor(paste(col.legend$Group)), MINIMUM=col.legend$Number, MAXIMUM=col.legend$Number+1, col_pal=col.legend$COLOR, filename="TAXOUSDA.txt")
 
-load("../../profs/TAXOUSDA/TAXOUSDA.pnts.rda")
-## 58,124 points!
+load("/data/profs/TAXOUSDA/TAXOUSDA.pnts.rda")
+str(TAXOUSDA.pnts@data)
+#summary(TAXOUSDA.pnts$TAXOUSDA.f)
+## 342,745 points!
+xs = summary(TAXOUSDA.pnts$TAXOUSDA.f, maxsum=length(levels(TAXOUSDA.pnts$TAXOUSDA.f)))
+sel.levs = attr(xs, "names")[xs > 10]
+TAXOUSDA.pnts$soiltype <- TAXOUSDA.pnts$TAXOUSDA.f
+TAXOUSDA.pnts$soiltype[which(!TAXOUSDA.pnts$TAXOUSDA.f %in% sel.levs)] <- NA
+TAXOUSDA.pnts$soiltype <- droplevels(TAXOUSDA.pnts$soiltype)
+TAXOUSDA.pnts <- TAXOUSDA.pnts[!is.na(TAXOUSDA.pnts$soiltype),]
+summary(TAXOUSDA.pnts$soiltype)
+
 ## Post-processing filter:
-soil.clim <- read.csv("../SOIL_CLIMATE_MATRIX.csv")
+soil.clim <- read.csv("/data/models/SOIL_CLIMATE_MATRIX.csv")
 soil.clim <- soil.clim[soil.clim$Classification_system=="TAXOUSDA",-which(names(soil.clim) %in% c("Classification_system","COUNT_training","Min_lat","Max_lat","Max_elevation"))]
 soil.fix <- data.frame(t(soil.clim[,-1]))
 names(soil.fix) = gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\.\\.", soil.clim$Name)))
 soil.fix <- lapply(soil.fix, function(i){grep("x",i)})
 soil.fix <- soil.fix[sapply(soil.fix, function(i){length(i)>0})]
+## subset to existing classes:
+soil.fix <- soil.fix[names(soil.fix) %in% levels(TAXOUSDA.pnts$soiltype)]
 
 ## OVERLAY AND FIT MODELS:
-ov <- extract.equi7t3(x=TAXOUSDA.pnts, y=des$WORLDGRIDS_CODE, equi7t3=equi7t3, path="/data/covs", cpus=48)
-## TAKES ca 10 MINS FOR 40k points
+tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
+#tile.pol = readRDS("/data/models/stacked250m_tiles_pol.rds")
+ov <- extract.tiled(x=TAXOUSDA.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=56)
+
+## TAKES ca 10 MINS FOR 300k points
 #str(ov)
-## remove all NA values:
-#NA.rows <- which(!complete.cases(ov))
-#ov$LATWGS84 <- TAXOUSDA.pnts@coords[,2]
 write.csv(ov, file="ov.TAXOUSDA_SoilGrids250m.csv")
 unlink("ov.TAXOUSDA_SoilGrids250m.csv.gz")
-gzip("ov.TAXOUSDA_SoilGrids250m.csv")
+R.utils::gzip("ov.TAXOUSDA_SoilGrids250m.csv")
 save(ov, file="ov.TAXOUSDA.rda")
-summary(ov$TAXOUSDA.f)
+#summary(ov$soiltype)
 #load("ov.TAXOUSDA.rda")
+save.image()
 
 ## ------------- MODEL FITTING -----------
 
-pr.lst <- des$WORLDGRIDS_CODE
-formulaString.USDA = as.formula(paste('TAXOUSDA.f ~ ', paste(pr.lst, collapse="+"))) 
-## Exclude latitude otherwise artifacts are possible ' LATWGS84 + '
-formulaString.USDA
+pr.lst <- basename(list.files(path="/data/stacked250m", ".tif"))
+## remove some predictors that might lead to artifacts (buffer maps and land cover):
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10"), function(x){grep(x, pr.lst)}))]
+formulaString.USDA = as.formula(paste('soiltype ~ ', paste(pr.lst, collapse="+")))
+#formulaString.USDA
 
 ## Use Caret package to optimize model fitting
 ## http://stackoverflow.com/questions/18705159/r-caret-nnet-package-in-multicore
 ## fitting takes ca 30-60 mins
-Nsub <- 1.5e4
+Nsub <- 8e3
 library(doParallel)
 cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 ctrl <- trainControl("boot",number=5)
 max.Mtry = round((length(all.vars(formulaString.USDA)[-1]))/3)
-rf.tuneGrid <- expand.grid(mtry = seq(5,max.Mtry,by=5))
-#m_TAXOUSDA <- nnet::multinom(formulaString.USDA, ov, MaxNWts = 19000)
-mnetX_TAXOUSDA <- caret::train(formulaString.USDA, data=ov, method="multinom", trControl=ctrl, MaxNWts = 19000, na.action=na.omit) ## 20 minutes
+rf.tuneGrid <- expand.grid(mtry = seq(10,max.Mtry,by=5))
+#mnetX_TAXOUSDA <- caret::train(formulaString.USDA, data=ov, method="multinom", trControl=ctrl, MaxNWts = 19000, na.action=na.omit) ## ?? minutes
 ## Optimize fitting of random forest:
-t.mrfX <- caret::train(formulaString.USDA, data=ov[sample.int(nrow(ov), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
-## Ranger package (https://github.com/imbs-hl/ranger)
-mrfX_TAXOUSDA <- ranger::ranger(formulaString.USDA, ov[complete.cases(ov[,all.vars(formulaString.USDA)]),], importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, probability=TRUE) ## TAKES 10 minutes
-## to reduce the size of output objects use: 'num.trees=291'
+dsf = ov[sample.int(nrow(ov), Nsub),]
+dsf = dsf[complete.cases(dsf[,all.vars(formulaString.USDA)]),]
+dsf$soiltype = droplevels(dsf$soiltype)
+t.mrfX <- caret::train(formulaString.USDA, data=dsf, method="ranger", trControl=ctrl, tuneGrid=rf.tuneGrid)
+## Ranger package:
+mrfX_TAXOUSDA <- ranger::ranger(formulaString.USDA, ov[complete.cases(ov[,all.vars(formulaString.USDA)]),], importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, probability=TRUE, num.trees=85) ## TAKES 10 minutes
+## 'num.trees' - to reduce the size of output objects 
 stopCluster(cl)
 
 cat("Results of model fitting 'nnet / randomForest':\n", file="TAXOUSDA_resultsFit.txt")
@@ -101,7 +127,7 @@ cat("\n", file="TAXOUSDA_resultsFit.txt", append=TRUE)
 cat(paste("Variable:", all.vars(formulaString.USDA)[1]), file="TAXOUSDA_resultsFit.txt", append=TRUE)
 cat("\n", file="TAXOUSDA_resultsFit.txt", append=TRUE)
 sink(file="TAXOUSDA_resultsFit.txt", append=TRUE, type="output")
-print(mnetX_TAXOUSDA)
+#print(mnetX_TAXOUSDA)
 cat("\n Random forest model:", file="TAXOUSDA_resultsFit.txt", append=TRUE)
 print(mrfX_TAXOUSDA)
 cat("\n Variable importance:\n", file="TAXOUSDA_resultsFit.txt", append=TRUE)
@@ -110,93 +136,65 @@ print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:15]])))
 sink()
 
 ## save objects in parallel:
-saveRDS.gz(mnetX_TAXOUSDA, file="mnetX_TAXOUSDA.rds")
+#saveRDS.gz(mnetX_TAXOUSDA, file="mnetX_TAXOUSDA.rds")
 saveRDS.gz(mrfX_TAXOUSDA, file="mrfX_TAXOUSDA.rds")
 save.image()
 
 ## ------------- PREDICTIONS -----------
 
 ## for weigths use prediction accuracy (assessed using OOB/boosting):
-gm1.w <- max(mnetX_TAXOUSDA$results$Accuracy, na.rm=TRUE)
+#gm1.w <- max(mnetX_TAXOUSDA$results$Accuracy, na.rm=TRUE)
 gm2.w <- 1-mrfX_TAXOUSDA$prediction.error
-mnetX_TAXOUSDA_final <- mnetX_TAXOUSDA$finalModel
-rm(mnetX_TAXOUSDA)
-gc(); gc()
+lev <- mrfX_TAXOUSDA$forest$levels
+
 
 ## clean-up:
-#del.lst <- list.files(path="/data/predicted", pattern=glob2rx("^TAXOUSDA*.tif"), full.names=TRUE, recursive=TRUE)
+#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^TAXOUSDA*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
-#del.lst <- list.files(path="/data/predicted1km", pattern=glob2rx("^TAXOUSDA*.tif"), full.names=TRUE, recursive=TRUE)
+#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m1km", pattern=glob2rx("^TAXOUSDA*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
-
-## test predictions for a sample area:
-#system.time( wrapper.predict_c(i="NA_060_036", varn="TAXOUSDA", gm1=mnetX_TAXOUSDA_final, gm2=mrfX_TAXOUSDA, in.path="/data/covs1t", out.path="/data/predicted", col.legend=col.legend, soil.fix=soil.fix, gm1.w=gm1.w, gm2.w=gm2.w) )
-## plot in GE:
-#x <- readGDAL("/data/predicted/NA_060_036/TAXOUSDA_Xeralfs_NA_060_036.tif")
-#kml(x, file.name="TAXOUSDA_Xeralfs_NA_060_036.kml", folder.name="Xeralfs", colour=band1, z.lim=c(0,60), colour_scale=SAGA_pal[["SG_COLORS_YELLOW_RED"]], raster_name="TAXOUSDA_Xeralfs_NA_060_036.png")
 
 ## run all predictions in parallel
-pr.dirs <- basename(dirname(list.files(path="/data/covs1t", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
+pr.dirs <- basename(dirname(list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
 str(pr.dirs)
-## 16,561 dirs
+## 18,653
 
-## Split models otherwise too large in size:
-mrfX_TAXOUSDA_final <- split_rf(mrfX_TAXOUSDA)
-rm(mrfX_TAXOUSDA)
+## test prediction:
+#factor_predict_ranger(i="T38275", gm=mrfX_TAXOUSDA, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXOUSDA", col.legend=col.legend, soil.fix=soil.fix)
+#factor_predict_ranger(i="T40502", gm=mrfX_TAXOUSDA, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXOUSDA", col.legend=col.legend, soil.fix=soil.fix)
+
+## ranger model only:
+## ca 14 hrs of computing
+try( detach("package:snowfall", unload=TRUE), silent=TRUE)
+try( detach("package:snow", unload=TRUE), silent=TRUE)
+library(parallel)
+library(ranger)
+library(rgdal)
+library(plyr)
+cpus = unclass(round((500-35)/(3.5*(object.size(mrfX_TAXOUSDA)/1e9))))
+cl <- parallel::makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
+x = parLapply(cl, pr.dirs, fun=function(x){ try( factor_predict_ranger(i=x, gm=mrfX_TAXOUSDA, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXOUSDA", col.legend=col.legend, soil.fix=soil.fix)  ) } )
+stopCluster(cl)
 gc(); gc()
 
-## First, predict randomForest in parallel
-## TAKES 8 hours
-## Split to minimize problems of object size
-for(j in 1:length(mrfX_TAXOUSDA_final)){
-  gm = mrfX_TAXOUSDA_final[[j]]
-  sfInit(parallel=TRUE, cpus=48)
-  sfExport("gm", "pr.dirs", "split_predict_c", "j")
-  sfLibrary(ranger)
-  x <- sfLapply(pr.dirs, fun=function(x){ try( split_predict_c(x, gm, in.path="/data/covs1t", out.path="/data/predicted", split_no=j, varn="TAXOUSDA") )  } )
-  sfStop()
-}
-
-## Second, predict nnet model in parallel
-## TAKES ca 4 hrs
-#cpus = unclass(round((256-30)/(2*(object.size(mnetX_TAXOUSDA_final)/1e9))))
-sfInit(parallel=TRUE, cpus=48)
-sfExport("mnetX_TAXOUSDA_final", "pr.dirs", "predict_nnet")
-sfLibrary(nnet)
-x <- sfLapply(pr.dirs, fun=function(x){ try( predict_nnet(x, mnetX_TAXOUSDA_final, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXOUSDA") )  } )
-sfStop()
-
-## Finally, sum up all predictions and generate geotifs
-## TAKES ca 2.5 hrs
-## this will also remove all temporary files
-lev = mnetX_TAXOUSDA_final$lev
-sfInit(parallel=TRUE, cpus=48)
-sfExport("pr.dirs", "sum_predictions", "gm1.w", "gm2.w", "soil.fix", "lev", "col.legend")
-sfLibrary(rgdal)
-sfLibrary(plyr)
-x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( sum_predictions(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXOUSDA", gm1.w=gm1.w, gm2.w=gm2.w, col.legend=col.legend, soil.fix=soil.fix, lev=lev) )  } )
-sfStop()
-
-## most probable class fix:
-sfInit(parallel=TRUE, cpus=46)
-sfExport("pr.dirs", "most_probable_fix", "lev", "col.legend") ## pr.dirs
-sfLibrary(rgdal)
-sfLibrary(plyr)
-sfLibrary(raster)
-sfLibrary(sp)
-x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( most_probable_fix(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXOUSDA", col.legend=col.legend, lev=lev) )  } )
+## Mosaick:
+t.vars = paste0("TAXOUSDA_", lev)
+library(snowfall)
+sfInit(parallel=TRUE, cpus=ifelse(length(t.vars)>45, 45, length(t.vars)))
+sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd")
+out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i=NULL, in.path="/data/tt/SoilGrids250m/predicted250m", ot="Byte", dstnodata=255, metadata=metasd[grep(t.vars[x], metasd$FileName), sel.metasd]) )})
 sfStop()
 
 
 ## ------------- VISUALIZATION -----------
 
 ## world plot - overlay and plot points and maps:
-xy.pnts <- join(ov[,c("SOURCEID","SOURCEDB","TAXOUSDA.f")], as.data.frame(TAXOUSDA.pnts[c("SOURCEID")]), type="left", match="first")
+xy.pnts <- join(ov[,c("SOURCEID","SOURCEDB","soiltype")], as.data.frame(TAXOUSDA.pnts[c("SOURCEID")]), type="left", match="first")
 xy.pnts <- xy.pnts[!duplicated(xy.pnts$SOURCEID),]
 coordinates(xy.pnts) = ~ LONWGS84+LATWGS84
 proj4string(xy.pnts) = proj4string(TAXOUSDA.pnts)
-lev.leg <- join(data.frame(Group=levels(xy.pnts$TAXOUSDA.f)), col.legend[,c("Group","COLOR")], type="left")
-plotKML(xy.pnts["TAXOUSDA.f"], folder.name="USDA classifications", file.name="TAXOUSDA_observed.kml", colour_scale=lev.leg$COLOR)
+lev.leg <- join(data.frame(Group=levels(xy.pnts$soiltype)), col.legend[,c("Group","COLOR")], type="left")
+plotKML(xy.pnts["soiltype"], folder.name="USDA classifications", file.name="TAXOUSDA_observed.kml", colour_scale=lev.leg$COLOR)
 zip(zipfile="TAXOUSDA_observed.kmz", files="TAXOUSDA_observed.kml", zip="zip")
 
 require(maptools)
@@ -212,7 +210,7 @@ points(xy.pnts[!xy.pnts$SOURCEDB=="Simulated"&no.plt,], pch=21, bg=alpha("red", 
 dev.off()
 
 ## world plot - organic vs histosols:
-hist.sel <- grep("Hist", xy.pnts$TAXOUSDA.f)
+hist.sel <- grep("Hist", xy.pnts$soiltype)
 length(hist.sel)
 png(file = "Fig_global_distribution_Histosols_USDA.png", res = 150, width = 2000, height = 900)
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
@@ -230,17 +228,10 @@ dev.off()
 # }
 
 ## Cross-validation 10-fold:
-source("../../cv/cv_functions.R")
-## Remove classes with too little observations:
-summary(ov$TAXOUSDA.f)
-xs = summary(ov$TAXOUSDA.f, maxsum=length(levels(ov$TAXOUSDA.f)))
-sel.levs = attr(xs, "names")[xs > 5]
-ov$TAXOUSDA.f2 <- ov$TAXOUSDA.f
-ov$TAXOUSDA.f2[which(!ov$TAXOUSDA.f %in% sel.levs)] <- NA
-ov$TAXOUSDA.f2 <- droplevels(ov$TAXOUSDA.f2)
+source("/data/cv/cv_functions.R")
 
 ## TAKES CA 1hr
-formulaString2.USDA = as.formula(paste('TAXOUSDA.f2 ~ ', paste(pr.lst, collapse="+")))
+formulaString2.USDA = as.formula(paste('soiltype ~ ', paste(pr.lst, collapse="+")))
 test.USDA <- cv_factor(formulaString2.USDA, ov[complete.cases(ov[,all.vars(formulaString2.USDA)]),], nfold=10, idcol="SOURCEID")
 str(test.USDA)
 test.USDA[["Cohen.Kappa"]]

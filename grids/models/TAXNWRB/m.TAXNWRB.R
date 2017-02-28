@@ -1,6 +1,10 @@
 ## Fit models for TAXNWRB and generate predictions - SoilGrids250m
 ## Tom.Hengl@isric.org
 
+list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
 setwd("/data/models/TAXNWRB")
 library(aqp)
 library(plyr)
@@ -10,11 +14,6 @@ library(sp)
 library(devtools)
 #devtools::install_github('topepo/caret/pkg/caret')
 library(caret)
-#install_bitbucket("mkuhn/parallelRandomForest", ref="parallelRandomForest")
-#library(parallelRandomForest)
-#library(e1071)
-#library(randomForest)
-#devtools::install_github("imbs-hl/ranger/ranger-r-package/ranger", ref="forest_memory") ## version to deal with Memory problems
 library(ranger)
 library(nnet)
 library(ROCR)
@@ -26,45 +25,56 @@ library(utils)
 library(R.utils)
 library(plotKML)
 library(GSIF)
+
 #library(mnlogit)
 plotKML.env(convert="convert", show.env=FALSE)
-gdalwarp = "/usr/local/bin/gdalwarp"
-gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
-system("/usr/local/bin/gdal-config --version")
-source("../extract.equi7t3.R")
-source("../saveRDS_functions.R")
-source("../wrapper.predict_cs.R")
+gdalwarp = "gdalwarp"
+gdalbuildvrt = "gdalbuildvrt"
+system("gdal-config --version")
+source("/data/models/wrapper.predict_cs.R")
+source("/data/models/saveRDS_functions.R")
+source('/data/models/mosaick_functions_ll.R')
 
-load("../equi7t3.rda")
-load("../equi7t1.rda")
-des <- read.csv("../SoilGrids250m_COVS250m.csv")
+source('/data/models/extract_tiled.R')
+## metadata:
+metasd <- read.csv('/data/GEOG/META_GEOTIFF_1B.csv', stringsAsFactors = FALSE)
+sel.metasd = names(metasd)[-sapply(c("FileName","VARIABLE_NAME"), function(x){grep(x, names(metasd))})]
+## covariates:
+des <- read.csv("/data/models/SoilGrids250m_COVS250m.csv")
+mask_value <- as.list(des$MASK_VALUE)
+names(mask_value) = des$WORLDGRIDS_CODE
 
 ## class definitions:
 col.legend <- read.csv("TAXNWRB_legend.csv")
-## 107 classes
+## 118 classes
 col.legend <- col.legend[!is.na(col.legend$R),]
 col.legend$COLOR <- rgb(red=col.legend$R/255, green=col.legend$G/255, blue=col.legend$B/255)
 unlink("TAXNWRB.txt")
 makeSAGAlegend(x=as.factor(as.character(col.legend$Group)), MINIMUM=1:nrow(col.legend), MAXIMUM=1:nrow(col.legend)+1, col_pal=col.legend$COLOR, filename="TAXNWRB.txt")
 ## training points:
-load("../../profs/TAXNWRB/TAXNWRB.pnts.rda")
+load("/data/profs/TAXNWRB/TAXNWRB.pnts.rda")
 #str(TAXNWRB.pnts)
-## 64,625 points
+## 70,560 points
 ## Post-processing filter:
-soil.clim <- read.csv("../SOIL_CLIMATE_MATRIX.csv")
+soil.clim <- read.csv("/data/models/SOIL_CLIMATE_MATRIX.csv")
 soil.clim <- soil.clim[soil.clim$Classification_system=="TAXNWRB",-which(names(soil.clim) %in% c("Classification_system","COUNT_training","Min_lat","Max_lat","Max_elevation"))]
 soil.fix <- data.frame(t(soil.clim[,-1]))
 names(soil.fix) = gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\.\\.", soil.clim$Name)))
 soil.fix <- lapply(soil.fix, function(i){grep("x",i)})
 soil.fix <- soil.fix[sapply(soil.fix, function(i){length(i)>0})]
+## subset to existing classes:
+soil.fix <- soil.fix[names(soil.fix) %in% gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\.\\.",levels(TAXNWRB.pnts$TAXNWRB.f))))]
+str(soil.fix)
+## 24 classes need fixing
 
 ## spatial overlay (takes ca 20+ mins):
-ov <- extract.equi7(x=TAXNWRB.pnts, y=des$WORLDGRIDS_CODE, equi7=equi7t3, path="/data/covs", cpus=48) 
+tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
+ov <- extract.tiled(x=TAXNWRB.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=56)
 str(ov)
-## 64,623 obs. of  174 variables
+## 70,560 obs. of  198 variables
 write.csv(ov, file="ov.TAXNWRB_SoilGrids250m.csv")
 unlink("ov.TAXNWRB_SoilGrids250m.csv.gz")
-gzip("ov.TAXNWRB_SoilGrids250m.csv")
+R.utils::gzip("ov.TAXNWRB_SoilGrids250m.csv")
 unlink("ov.TAXNWRB.rda")
 save(ov, file="ov.TAXNWRB.rda")
 #load("ov.TAXNWRB.rda")
@@ -72,28 +82,31 @@ summary(ov$TAXNWRB.f)
 
 ## ------------- MODEL FITTING -----------
 
-pr.lst <- des$WORLDGRIDS_CODE
-formulaString.WRB = as.formula(paste('TAXNWRB.f ~ ', paste(pr.lst, collapse="+"))) 
-## Exclude latitude otherwise artifacts are possible ' LATWGS84 + '
-formulaString.WRB
+pr.lst <- basename(list.files(path="/data/stacked250m", ".tif"))
+## remove some predictors that might lead to artifacts (buffer maps and land cover):
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10"), function(x){grep(x, pr.lst)}))]
+formulaString.WRB = as.formula(paste('TAXNWRB.f ~ ', paste(pr.lst, collapse="+")))
+#formulaString.WRB
 
 ## Use Caret package to optimize model fitting
 ## http://stackoverflow.com/questions/18705159/r-caret-nnet-package-in-multicore
 ## fitting takes ca 30-60 mins
-Nsub <- 1.5e4
+Nsub <- 8e3
 library(doParallel)
 cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 ctrl <- trainControl("boot",number=5)
 max.Mtry = round((length(all.vars(formulaString.WRB)[-1]))/3)
-rf.tuneGrid <- expand.grid(mtry = seq(5,max.Mtry,by=5))
-#m_TAXNWRB <- nnet::multinom(formulaString.WRB, ov, MaxNWts = 19000)
-mnetX_TAXNWRB <- caret::train(formulaString.WRB, data=ov, method="multinom", trControl=ctrl, MaxNWts = 19000, na.action=na.omit) ## 10 minutes
+rf.tuneGrid <- expand.grid(mtry = seq(10,max.Mtry,by=5))
+#mnetX_TAXNWRB <- caret::train(formulaString.WRB, data=ov, method="multinom", trControl=ctrl, MaxNWts = 19000, na.action=na.omit)
 ## Optimize fitting of random forest:
-t.mrfX <- caret::train(formulaString.WRB, data=ov[sample.int(nrow(ov), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
-## Ranger package (https://github.com/imbs-hl/ranger)
-mrfX_TAXNWRB <- ranger::ranger(formulaString.WRB, ov[complete.cases(ov[,all.vars(formulaString.WRB)]),], importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, probability=TRUE) ## TAKES 10 minutes
-## to reduce the size of output objects use: 'num.trees=291'
+dsf = ov[sample.int(nrow(ov), Nsub),]
+dsf = dsf[complete.cases(dsf[,all.vars(formulaString.WRB)]),]
+dsf$TAXNWRB.f = droplevels(dsf$TAXNWRB.f)
+t.mrfX <- caret::train(formulaString.WRB, data=dsf, method="ranger", trControl=ctrl, tuneGrid=rf.tuneGrid)
+## Ranger package:
+mrfX_TAXNWRB <- ranger::ranger(formulaString.WRB, ov[complete.cases(ov[,all.vars(formulaString.WRB)]),], importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, probability=TRUE, num.trees=85) ## TAKES 10 minutes
+## 'num.trees' - to reduce the size of output objects 
 stopCluster(cl)
 
 cat("Results of model fitting 'nnet / randomForest':\n", file="TAXNWRB_resultsFit.txt")
@@ -101,7 +114,7 @@ cat("\n", file="TAXNWRB_resultsFit.txt", append=TRUE)
 cat(paste("Variable:", all.vars(formulaString.WRB)[1]), file="TAXNWRB_resultsFit.txt", append=TRUE)
 cat("\n", file="TAXNWRB_resultsFit.txt", append=TRUE)
 sink(file="TAXNWRB_resultsFit.txt", append=TRUE, type="output")
-print(mnetX_TAXNWRB)
+#print(mnetX_TAXNWRB)
 cat("\n Random forest model:", file="TAXNWRB_resultsFit.txt", append=TRUE)
 print(mrfX_TAXNWRB)
 cat("\n Variable importance:\n", file="TAXNWRB_resultsFit.txt", append=TRUE)
@@ -110,7 +123,7 @@ print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:15]])))
 sink()
 
 ## save objects in parallel:
-saveRDS.gz(mnetX_TAXNWRB, file="mnetX_TAXNWRB.rds")
+#saveRDS.gz(mnetX_TAXNWRB, file="mnetX_TAXNWRB.rds")
 saveRDS.gz(mrfX_TAXNWRB, file="mrfX_TAXNWRB.rds")
 save.image()
 
@@ -120,83 +133,44 @@ save.image()
 
 ## ------------- PREDICTIONS -----------
 
-## for weigths use prediction accuracy (assessed using OOB/boosting):
-gm1.w <- max(mnetX_TAXNWRB$results$Accuracy, na.rm=TRUE) 
+#gm1.w <- max(mnetX_TAXNWRB$results$Accuracy, na.rm=TRUE)
 gm2.w <- 1-mrfX_TAXNWRB$prediction.error
-## We only need to export the final model from caret to make predictions
-## (http://stackoverflow.com/questions/21096909/difference-betweeen-predictmodel-and-predictmodelfinalmodel-using-caret-for)
-mnetX_TAXNWRB_final <- mnetX_TAXNWRB$finalModel
-rm(mnetX_TAXNWRB)
-gc(); gc()
-
-## test predictions for a sample area:
-#system.time( wrapper.predict_c(i="NA_061_036", varn="TAXNWRB", gm1=mnetX_TAXNWRB_final, gm2=mrfX_TAXNWRB, in.path="/data/covs1t", out.path="/data/predicted", col.legend=col.legend, soil.fix=soil.fix, mask_value=mask_value, gm1.w=gm1.w, gm2.w=gm2.w) )
-#rm(gm1); rm(gm2)
-#gc(); gc()
+lev <- mrfX_TAXNWRB$forest$levels
 
 ## clean-up:
-#del.lst <- list.files(path="/data/predicted", pattern=glob2rx("^TAXNWRB*.tif"), full.names=TRUE, recursive=TRUE)
-#unlink(del.lst)
-#del.lst <- list.files(path="/data/predicted", pattern=glob2rx("^TAXNWRB_*.rds$"), full.names=TRUE, recursive=TRUE)
+#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^TAXNWRB_*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 
 ## run all predictions in parallel
-pr.dirs <- basename(dirname(list.files(path="/data/covs1t", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
+pr.dirs <- basename(dirname(list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
 str(pr.dirs)
-## 16,561 dirs
+## 18,653
 
-## Split models otherwise too large in size:
-mrfX_TAXNWRB_final <- split_rf(mrfX_TAXNWRB)
-rm(mrfX_TAXNWRB)
+## test prediction:
+#factor_predict_ranger(i="T38275", gm=mrfX_TAXNWRB, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXNWRB", col.legend=col.legend, soil.fix=soil.fix, check.names=TRUE)
+#factor_predict_ranger(i="T40505", gm=mrfX_TAXNWRB, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXNWRB", col.legend=col.legend, soil.fix=soil.fix, check.names=TRUE)
+
+## ranger model only:
+## ca 10-14 hrs of computing
+try( detach("package:snowfall", unload=TRUE), silent=TRUE)
+try( detach("package:snow", unload=TRUE), silent=TRUE)
+library(parallel)
+library(ranger)
+library(rgdal)
+library(plyr)
+cpus = unclass(round((500-35)/(3.5*(object.size(mrfX_TAXNWRB)/1e9))))
+cl <- parallel::makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
+x = parLapply(cl, pr.dirs, fun=function(x){ try( factor_predict_ranger(i=x, gm=mrfX_TAXNWRB, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXNWRB", col.legend=col.legend, soil.fix=soil.fix, check.names=TRUE)  ) } )
+stopCluster(cl)
 gc(); gc()
-save.image()
 
-## Test it:
-#predict_tile("EU_039_014", gm1=mnetX_TAXNWRB_final, gm2=mrfX_TAXNWRB_final, gm1.w=gm1.w, gm2.w=gm2.w)
-
-## First, predict randomForest in parallel
-## TAKES ca 8 hours
-## Split to minimize problems of object size (ranger object)
-for(j in 1:length(mrfX_TAXNWRB_final)){
-  gm = mrfX_TAXNWRB_final[[j]]
-  cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
-  sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
-  sfExport("gm", "pr.dirs", "split_predict_c", "j")
-  sfLibrary(ranger)
-  x <- sfLapply(pr.dirs, fun=function(x){ try( split_predict_c(x, gm, in.path="/data/covs1t", out.path="/data/predicted", split_no=j, varn="TAXNWRB") )  } ) 
-  sfStop()
-  rm(gm)
-}
-
-## Second, predict nnet model in parallel
-## TAKES ca 4 hrs
-cpus = unclass(round((256-30)/(3.5*(object.size(mnetX_TAXNWRB_final)/1e9))))
-sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
-sfExport("mnetX_TAXNWRB_final", "pr.dirs", "predict_nnet")
-sfLibrary(nnet)
-x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( predict_nnet(x, mnetX_TAXNWRB_final, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB") )  } )
+## Mosaick:
+t.vars = paste0("TAXNWRB_", gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\.\\.", lev))))
+library(snowfall)
+sfInit(parallel=TRUE, cpus=ifelse(length(t.vars)>45, 45, length(t.vars)))
+sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd")
+out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i=NULL, in.path="/data/tt/SoilGrids250m/predicted250m", ot="Byte", dstnodata=255, metadata=metasd[grep(t.vars[x], metasd$FileName), sel.metasd]) )})
 sfStop()
-
-## Finally, sum up all predictions and generate geotifs
-## TAKES ca 2.5 hrs
-## this will also remove all temporary files
-lev = mnetX_TAXNWRB_final$lev
-sfInit(parallel=TRUE, cpus=46)
-sfExport("pr.dirs", "sum_predictions", "gm1.w", "gm2.w", "soil.fix", "lev", "col.legend")
-sfLibrary(rgdal)
-sfLibrary(plyr)
-x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( sum_predictions(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB", gm1.w=gm1.w, gm2.w=gm2.w, col.legend=col.legend, soil.fix=soil.fix, lev=lev, check.names=TRUE) )  } )
-sfStop()
-
-## most probable class fix:
-sfInit(parallel=TRUE, cpus=48)
-sfExport("pr.dirs", "most_probable_fix", "lev", "col.legend")
-sfLibrary(rgdal)
-sfLibrary(plyr)
-sfLibrary(raster)
-x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( most_probable_fix(x, in.path="/data/covs1t", out.path="/data/predicted", varn="TAXNWRB", col.legend=col.legend, lev=lev, check.names=TRUE) )  } )
-sfStop()
-
 
 ## ------------- VISUALIZATION -----------
 

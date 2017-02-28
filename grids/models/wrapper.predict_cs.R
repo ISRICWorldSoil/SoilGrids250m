@@ -24,7 +24,11 @@ split_rf <- function(rf, num_splits=4){
 
 split_predict_c <- function(i, gm, in.path, out.path, split_no, varn, num.threads=1){
   if(dir.exists(out.path)){
-    rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", split_no, ".rds")
+    if(is.null(num_splits)){ 
+      rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf.rds")
+    } else {
+      rds.out = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", split_no, ".rds")
+    }
     if(any(c(!file.exists(rds.out),file.size(rds.out)==0))){
       m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
       ## round up numbers otherwise too large objects
@@ -51,9 +55,13 @@ sum_predictions <- function(i, in.path, out.path, varn, gm1.w, gm2.w, col.legend
     if(nrow(m@data)>1){
       mfix <- m$BICUSG5
       lfix <- levels(as.factor(paste(mfix)))
-      rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", 1:num_splits, ".rds")
-      probs2 <- lapply(rf.ls, readRDS)
-      probs2 <- Reduce("+", probs2) / num_splits
+      if(is.null(num_splits)){
+        probs2 <- readRDS(paste0(out.path, "/", i, "/", varn,"_", i, "_rf.rds"))
+      } else {
+        rf.ls = paste0(out.path, "/", i, "/", varn,"_", i, "_rf", 1:num_splits, ".rds")
+        probs2 <- lapply(rf.ls, readRDS)
+        probs2 <- Reduce("+", probs2) / num_splits
+      }
       probs1 <- readRDS(paste0(out.path, "/", i, "/", varn,"_", i, "_nnet.rds"))
       ## weighted average:
       probs <- list(probs1[,lev]*gm1.w, probs2[,lev]*gm2.w)
@@ -97,6 +105,55 @@ sum_predictions <- function(i, in.path, out.path, varn, gm1.w, gm2.w, col.legend
   }
 }
 
+
+## predict using ranger model only (model splitting not needed):
+factor_predict_ranger <- function(i, gm, in.path, out.path, varn, col.legend, soil.fix, check.names=FALSE){
+  out.c <- paste0(out.path, "/", i, "/", varn, "_", i, ".tif")
+  if(!file.exists(out.c)){
+    ## load all objects:
+    m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
+    #if(any(names(m) %in% "OCCGSW7.tif")){ m$OCCGSW7.tif = ifelse(m$OCCGSW7.tif>100, 0, m$OCCGSW7.tif) }
+    if(nrow(m@data)>1){
+      mfix <- m$BICUSG5.tif
+      lfix <- levels(as.factor(paste(mfix)))
+      probs = data.frame(round(predict(gm, m@data, probability=TRUE, na.action = na.pass)$predictions*100))
+      if(any(unique(unlist(soil.fix)) %in% lfix)){
+        ## correct probabilities using soil-climate matrix:
+        for(k in lfix){
+          sel = sapply(soil.fix, function(i){i[grep(k, i)]})
+          sel <- sel[sapply(sel, function(i){length(i)>0})]
+          if(length(sel)>0){ probs[mfix==k,names(sel)] <- 0 }
+        }
+      }
+      ## Standardize ('rescale') values so they sums up to 100:
+      rs <- rowSums(probs, na.rm=TRUE)
+      m@data <- data.frame(lapply(probs, function(i){i/rs}))
+      ## Write GeoTiffs:
+      if(sum(rs,na.rm=TRUE)>0&length(rs)>0){
+        tax <- names(m)
+        for(j in 1:ncol(m)){
+          out <- paste0(out.path, "/", i, "/", varn, "_", tax[j], "_", i, ".tif")
+          if(!file.exists(out)){
+            m$v <- round(m@data[,j]*100)
+            writeGDAL(m["v"], out, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
+          }
+        }
+        ## most probable class:
+        if(check.names==TRUE){ 
+          Group = gsub("\\.", " ", gsub("\\.$", "\\)", gsub("\\.\\.", " \\(", tax))) 
+        } else {
+          Group = tax
+        }
+        col.tbl <- plyr::join(data.frame(Group=Group, int=1:length(tax)), col.legend, type="left")
+        ## match most probable class
+        m$cl <- col.tbl[match(apply(m@data,1,which.max), col.tbl$int),"Number"]  
+        writeGDAL(m["cl"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(col.tbl$Group))) 
+      }
+      gc(); gc()
+    }  
+  }
+}
+
 ## This one for testing purposes only:
 predict_tile <- function(x, gm1, gm2, gm1.w, gm2.w){
   for(j in 1:length(gm2)){
@@ -111,7 +168,7 @@ predict_tile <- function(x, gm1, gm2, gm1.w, gm2.w){
 
 ## simple ranger predict function:
 sum_predict_ranger <- function(i, in.path, out.path, varn, num_splits){
-  if(length(list.files(path = paste0(out.path, "/", i, "/"), glob2rx(paste0("^",varn,"_*_*_*_*.tif$"))))==0){
+  if(length(list.files(path = paste0(out.path, "/", i, "/"), glob2rx(paste0("^", varn, "_*_*_*_*.tif$"))))==0){
     ## load all objects:
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
     if(nrow(m@data)>1){
@@ -188,6 +245,7 @@ split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5,
       gc(); gc()
       #message("Predicting from .rds file...")
       m <- readRDS(rds.file)
+      if(any(names(m) %in% "OCCGSW7.tif")){ m$OCCGSW7.tif = ifelse(m$OCCGSW7.tif>100, 0, m$OCCGSW7.tif) }
       if(depths==FALSE){
         x <- matrix(data=NA, nrow=nrow(m), ncol=1)
         if(method=="ranger"){

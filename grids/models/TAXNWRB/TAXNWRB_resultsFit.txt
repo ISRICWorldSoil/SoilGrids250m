@@ -1,53 +1,35 @@
 Results of model fitting 'nnet / randomForest':
 
 Variable: TAXNWRB.f
-Penalized Multinomial Regression 
-
-64625 samples
-  171 predictor
-  118 classes: 'Acric Ferralsols', 'Acric Plinthosols', 'Albic Arenosols', 'Albic Luvisols', 'Alic Nitisols', 'Aluandic Andosols', 'Aric Regosols', 'Calcaric Regosols', 'Calcic Chernozems', 'Calcic Gleysols', 'Calcic Gypsisols', 'Calcic Histosols', 'Calcic Kastanozems', 'Calcic Luvisols', 'Calcic Solonetz', 'Calcic Vertisols', 'Cryic Histosols', 'Cutanic Alisols', 'Endogleyic Cambisols', 'Endogleyic Planosols', 'Ferralic Arenosols', 'Ferralic Cambisols', 'Fibric Histosols', 'Gleyic Luvisols', 'Gleyic Podzols', 'Gleyic Solonetz', 'Gypsic Solonchaks', 'Haplic Acrisols', 'Haplic Acrisols (Alumic)', 'Haplic Acrisols (Ferric)', 'Haplic Acrisols (Humic)', 'Haplic Albeluvisols', 'Haplic Alisols', 'Haplic Andosols', 'Haplic Arenosols', 'Haplic Arenosols (Calcaric)', 'Haplic Calcisols', 'Haplic Calcisols (Sodic)', 'Haplic Cambisols', 'Haplic Cambisols (Calcaric)', 'Haplic Cambisols (Chromic)', 'Haplic Cambisols (Dystric)', 'Haplic Cambisols (Eutric)', 'Haplic Cambisols (Humic)', 'Haplic Cambisols (Sodic)', 'Haplic Chernozems', 'Haplic Cryosols', 'Haplic Ferralsols', 'Haplic Ferralsols (Rhodic)', 'Haplic Ferralsols (Xanthic)', 'Haplic Fluvisols', 'Haplic Fluvisols (Arenic)', 'Haplic Fluvisols (Calcaric)', 'Haplic Fluvisols (Dystric)', 'Haplic Fluvisols (Eutric)', 'Haplic Gleysols', 'Haplic Gleysols (Dystric)', 'Haplic Gleysols (Eutric)', 'Haplic Gypsisols', 'Haplic Kastanozems', 'Haplic Leptosols', 'Haplic Leptosols (Eutric)', 'Haplic Lixisols', 'Haplic Lixisols (Chromic)', 'Haplic Lixisols (Ferric)', 'Haplic Luvisols', 'Haplic Luvisols (Chromic)', 'Haplic Luvisols (Ferric)', 'Haplic Nitisols (Rhodic)', 'Haplic Phaeozems', 'Haplic Planosols (Dystric)', 'Haplic Planosols (Eutric)', 'Haplic Podzols', 'Haplic Regosols (Dystric)', 'Haplic Regosols (Eutric)', 'Haplic Regosols (Sodic)', 'Haplic Solonchaks', 'Haplic Solonchaks (Sodic)', 'Haplic Solonetz', 'Haplic Umbrisols', 'Haplic Vertisols', 'Haplic Vertisols (Eutric)', 'Hemic Histosols', 'Histic Albeluvisols', 'Hypoluvic Arenosols', 'Leptic Cambisols', 'Leptic Luvisols', 'Leptic Phaeozems', 'Leptic Regosols', 'Leptic Umbrisols', 'Lithic Leptosols', 'Lixic Plinthosols', 'Luvic Calcisols', 'Luvic Chernozems', 'Luvic Phaeozems', 'Luvic Planosols', 'Luvic Stagnosols', 'Mollic Gleysols', 'Mollic Leptosols', 'Mollic Solonetz', 'Mollic Vertisols', 'Petric Calcisols', 'Petric Durisols', 'Plinthic Acrisols', 'Protic Arenosols', 'Rendzic Leptosols', 'Sapric Histosols', 'Solodic Planosols', 'Stagnic Luvisols', 'Turbic Cryosols', 'Umbric Albeluvisols', 'Umbric Ferralsols', 'Umbric Gleysols', 'Vertic Cambisols', 'Vertic Luvisols', 'Vetic Acrisols', 'Vitric Andosols', 'Vitric Cryosols' 
-
-No pre-processing
-Resampling: Bootstrapped (5 reps) 
-Summary of sample sizes: 63115, 63115, 63115, 63115, 63115 
-Resampling results across tuning parameters:
-
-  decay  Accuracy  Kappa    
-  0e+00  0.193249  0.1600955
-  1e-04  0.193249  0.1600954
-  1e-01  0.193249  0.1600954
-
-Accuracy was used to select the optimal model using  the largest value.
-The final value used for the model was decay = 0.1. 
 
  Random forest model:Ranger result
 
 Call:
- ranger::ranger(formulaString.WRB, ov[complete.cases(ov[, all.vars(formulaString.WRB)]),      ], importance = "impurity", write.forest = TRUE, mtry = t.mrfX$bestTune$mtry,      probability = TRUE) 
+ ranger::ranger(formulaString.WRB, ov[complete.cases(ov[, all.vars(formulaString.WRB)]),      ], importance = "impurity", write.forest = TRUE, mtry = t.mrfX$bestTune$mtry,      probability = TRUE, num.trees = 85) 
 
 Type:                             Probability estimation 
-Number of trees:                  500 
-Sample size:                      63115 
-Number of independent variables:  156 
-Mtry:                             35 
+Number of trees:                  85 
+Sample size:                      67615 
+Number of independent variables:  198 
+Mtry:                             30 
 Target node size:                 10 
 Variable importance mode:         impurity 
-OOB prediction error:             0.7300144 
+OOB prediction error:             0.7001606 
 
  Variable importance:
-            [,1]
-VW5MOD1 635409.8
-VDPMRG5 565965.6
-DEMMRG5 551467.7
-ES5MOD5 546908.4
-TWIMRG5 536911.0
-ES3MOD5 528694.7
-T08MOD3 515137.2
-VBFMRG5 513701.9
-M04MOD4 502030.6
-DVMMRG5 496429.7
-M07MOD4 482911.4
-I08MOD4 482274.5
-EX6MOD5 480640.9
-M01MOD4 476534.1
-VW4MOD1 476447.5
+                [,1]
+DEMENV5.tif 511.2131
+PRSCHE3.tif 491.8523
+B04CHE3.tif 449.7778
+C09MCF5.tif 425.0257
+T09MOD3.tif 419.7042
+P03CHE3.tif 419.4006
+P11CHE3.tif 418.3841
+VW1MOD1.tif 415.0607
+VBFMRG5.tif 405.8325
+C08MCF5.tif 397.4001
+VDPMRG5.tif 397.3239
+P10CHE3.tif 395.7829
+VW6MOD1.tif 390.5346
+C07MCF5.tif 387.5004
+C10MCF5.tif 379.6845

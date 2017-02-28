@@ -77,13 +77,15 @@ tile.pol = SpatialPolygonsDataFrame(tile.lst, tile.tbl)
 unlink("tiles_ll_100km.shp")
 writeOGR(tile.pol, "tiles_ll_100km.shp", "tiles_ll_100km", "ESRI Shapefile")
 saveRDS(tile.tbl, "stacked250m_tiles.rds")
+saveRDS(tile.pol, "stacked250m_tiles_pol.rds")
 ## create new dirs:
 #tile.tbl = readRDS("stacked250m_tiles.rds")
 new.dirs <- paste0("/data/tt/SoilGrids250m/predicted250m/T", tile.tbl$ID)
 x <- lapply(new.dirs, dir.create, recursive=TRUE, showWarnings=FALSE)
 
 covs.lst = list.files(path="/data/stacked250m", pattern=glob2rx("*.tif$"), full.names = TRUE)
-covs.lst <- covs.lst[-unlist(sapply(c("OCCGSW7","LCEE10"), function(x){grep(x, covs.lst)}))]
+covs.lst <- covs.lst[-unlist(sapply(c("OCCGSW7","LCEE10","CSCMCF5","B08CHE3","B09CHE3","S01ESA4","S02ESA4","S11ESA4","S12ESA4"), function(x){grep(x, covs.lst)}))]
+## 198
 ov.quant <- as.list(des[match(basename(covs.lst), paste0(des$WORLDGRIDS_CODE,".tif")),"MASK_VALUE"])
 names(ov.quant) = basename(covs.lst)
 
@@ -91,6 +93,8 @@ names(ov.quant) = basename(covs.lst)
 
 ## Total clean-up:
 #del.lst = list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern = ".rds", recursive = TRUE, full.names = TRUE)
+#unlink(del.lst)
+#del.lst = list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern = ".tif", recursive = TRUE, full.names = TRUE)
 #unlink(del.lst)
 
 ## Function to make predictions locations
@@ -100,8 +104,10 @@ make_newdata <- function(i, tile.tbl, covs.lst, out.path="/data/tt/SoilGrids250m
     m = readGDAL(fname=mask.l, offset=unlist(tile.tbl[i,c("offset.y","offset.x")]), region.dim=unlist(tile.tbl[i,c("region.dim.y","region.dim.x")]), output.dim=unlist(tile.tbl[i,c("region.dim.y","region.dim.x")]), silent = TRUE)
     names(m) = "LCEE10.tif"
     m$OCCGSW7.tif = readGDAL(fname=mask.w, offset=unlist(tile.tbl[i,c("offset.y","offset.x")]), region.dim=unlist(tile.tbl[i,c("region.dim.y","region.dim.x")]), output.dim=unlist(tile.tbl[i,c("region.dim.y","region.dim.x")]), silent = TRUE)$band1
-    m$OCCGSW7.tif = ifelse(m$LCEE10.tif==220|m$OCCGSW7.tif>90|m$LCEE10.tif==210, NA, m$OCCGSW7.tif)
-    sel.p = !is.na(m$OCCGSW7.tif)
+    ## DEFINITION OF LAND MASK:
+    #m$OCCGSW7.tif = ifelse(m$LCEE10.tif==220|m$OCCGSW7.tif>95|m$LCEE10.tif==210, NA, m$OCCGSW7.tif)
+    m$LCEE10.tif = ifelse(m$LCEE10.tif==220|m$LCEE10.tif==210, NA, m$LCEE10.tif)
+    sel.p = !is.na(m$LCEE10.tif)
     if(sum(sel.p)>1){
       m = as(m, "SpatialPixelsDataFrame")
       m = m[which(sel.p),]
@@ -131,20 +137,26 @@ make_newdata <- function(i, tile.tbl, covs.lst, out.path="/data/tt/SoilGrids250m
   }
 }
 ## Test:
-make_newdata(i=38275, tile.tbl, covs.lst, out.path="/data/tt/SoilGrids250m/predicted250m", mask.l="/data/stacked250m/LCEE10.tif", mask.w="/data/stacked250m/OCCGSW7.tif", ov.quant)
-make_newdata(i=40502, tile.tbl, covs.lst, out.path="/data/tt/SoilGrids250m/predicted250m", mask.l="/data/stacked250m/LCEE10.tif", mask.w="/data/stacked250m/OCCGSW7.tif", ov.quant)
+#make_newdata(i=38275, tile.tbl, covs.lst, out.path="/data/tt/SoilGrids250m/predicted250m", mask.l="/data/stacked250m/LCEE10.tif", mask.w="/data/stacked250m/OCCGSW7.tif", ov.quant)
+#make_newdata(i=40502, tile.tbl, covs.lst, out.path="/data/tt/SoilGrids250m/predicted250m", mask.l="/data/stacked250m/LCEE10.tif", mask.w="/data/stacked250m/OCCGSW7.tif", ov.quant)
+#make_newdata(i=45489, tile.tbl, covs.lst, out.path="/data/tt/SoilGrids250m/predicted250m", mask.l="/data/stacked250m/LCEE10.tif", mask.w="/data/stacked250m/OCCGSW7.tif", ov.quant)
+
+## Filter some layers:
+## OCCGSW7.tif == 101 => missing values
+## REDL00, NIRL00, SW1L00, SW2L00 == 0 => missing value
 
 ## run in parallel (TAKES ca. 6 hrs):
 library(snowfall)
-sfInit(parallel=TRUE, cpus=54)
-sfLibrary(rgdal)
-sfExport("make_newdata", "tile.tbl", "ov.quant", "covs.lst")
-out <- sfClusterApplyLB(as.numeric(paste(tile.tbl$ID)), function(i){ make_newdata(i, tile.tbl, covs.lst, out.path="/data/tt/SoilGrids250m/predicted250m", mask.l="/data/stacked250m/LCEE10.tif", mask.w="/data/stacked250m/OCCGSW7.tif", ov.quant) })
-sfStop()
-## 17532 dirs
+snowfall::sfInit(parallel=TRUE, cpus=54)
+snowfall::sfLibrary(rgdal)
+snowfall::sfExport("make_newdata", "tile.tbl", "ov.quant", "covs.lst")
+out <- snowfall::sfClusterApplyLB(as.numeric(paste(tile.tbl$ID)), function(i){ make_newdata(i, tile.tbl, covs.lst, out.path="/data/tt/SoilGrids250m/predicted250m", mask.l="/data/stacked250m/LCEE10.tif", mask.w="/data/stacked250m/OCCGSW7.tif", ov.quant) })
+snowfall::sfStop()
 
 ## remove all directories with empty landmask (CAREFULL!)
 pr.dirs <- basename(dirname(list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
 pr.dirs.c <- list.dirs("/data/tt/SoilGrids250m/predicted250m")[-1]
 selD <- which(!basename(pr.dirs.c) %in% pr.dirs)
 x = sapply(selD, function(x){unlink(pr.dirs.c[x], recursive = TRUE, force = TRUE)})
+saveRDS(pr.dirs, "prediction_dirs.rds")
+## 18,653 dirs on the end

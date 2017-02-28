@@ -1,53 +1,35 @@
 Results of model fitting 'nnet / randomForest':
 
-Variable: TAXOUSDA.f
-Penalized Multinomial Regression 
-
-58124 samples
-  173 predictor
-   67 classes: 'Albolls', 'Aqualfs', 'Aquands', 'Aquents', 'Aquepts', 'Aquerts', 'Aquods', 'Aquolls', 'Aquox', 'Aquults', 'Arents', 'Argids', 'Borolls', 'Calcids', 'Cambids', 'Cryalfs', 'Cryands', 'Cryepts', 'Cryids', 'Cryods', 'Cryolls', 'Durids', 'Fibrists', 'Fluvents', 'Folists', 'Gelands', 'Gelepts', 'Gelods', 'Gypsids', 'Hemists', 'Histels', 'Humods', 'Humults', 'Ochrepts', 'Orthels', 'Orthents', 'Orthods', 'Perox', 'Psamments', 'Rendolls', 'Salids', 'Saprists', 'Torrands', 'Torrerts', 'Torrox', 'Turbels', 'Udalfs', 'Udands', 'Udepts', 'Uderts', 'Udolls', 'Udox', 'Udults', 'Ustalfs', 'Ustands', 'Ustepts', 'Usterts', 'Ustolls', 'Ustox', 'Ustults', 'Vitrands', 'Xeralfs', 'Xerands', 'Xerepts', 'Xererts', 'Xerolls', 'Xerults' 
-
-No pre-processing
-Resampling: Bootstrapped (5 reps) 
-Summary of sample sizes: 56668, 56668, 56668, 56668, 56668 
-Resampling results across tuning parameters:
-
-  decay  Accuracy   Kappa    
-  0e+00  0.3492453  0.3108771
-  1e-04  0.3492453  0.3108771
-  1e-01  0.3492453  0.3108771
-
-Accuracy was used to select the optimal model using  the largest value.
-The final value used for the model was decay = 0.1. 
+Variable: soiltype
 
  Random forest model:Ranger result
 
 Call:
- ranger::ranger(formulaString.USDA, ov[complete.cases(ov[, all.vars(formulaString.USDA)]),      ], importance = "impurity", write.forest = TRUE, mtry = t.mrfX$bestTune$mtry,      probability = TRUE) 
+ ranger::ranger(formulaString.USDA, ov[complete.cases(ov[, all.vars(formulaString.USDA)]),      ], importance = "impurity", write.forest = TRUE, mtry = t.mrfX$bestTune$mtry,      probability = TRUE, num.trees = 85) 
 
 Type:                             Probability estimation 
-Number of trees:                  500 
-Sample size:                      56668 
-Number of independent variables:  156 
-Mtry:                             15 
+Number of trees:                  85 
+Sample size:                      339016 
+Number of independent variables:  198 
+Mtry:                             55 
 Target node size:                 10 
 Variable importance mode:         impurity 
-OOB prediction error:             0.5260398 
+OOB prediction error:             0.3461381 
 
  Variable importance:
-            [,1]
-ASSDAC3 420005.8
-TWIMRG5 368868.6
-T12MOD3 351073.5
-GTDHYS3 308402.5
-DEMMRG5 304988.8
-VBFMRG5 301919.0
-T02MOD3 290957.5
-T03MOD3 288409.3
-T01MOD3 284328.4
-I01MOD4 277006.3
-I02MOD4 269594.0
-PRSMRG3 257145.1
-VW1MOD1 247010.8
-VDPMRG5 226908.3
-N03MOD3 224036.6
+                [,1]
+T07MOD3.tif 5049.289
+DEMENV5.tif 4552.474
+B04CHE3.tif 4499.189
+P07CHE3.tif 4422.512
+P04CHE3.tif 4329.513
+P06CHE3.tif 3693.717
+MANMCF5.tif 3447.505
+EX4MOD5.tif 3158.162
+VDPMRG5.tif 2859.714
+P01CHE3.tif 2755.068
+C05MCF5.tif 2723.562
+VW4MOD1.tif 2713.900
+C08MCF5.tif 2701.320
+C11MCF5.tif 2666.508
+C01MCF5.tif 2660.842
