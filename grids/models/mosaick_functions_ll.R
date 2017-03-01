@@ -25,9 +25,9 @@ make_mosaick_ll <- function(varn, i, in.path="/data/tt/SoilGrids250m/predicted25
     }
     ## 1 km resolution:
     if(dominant==TRUE){
-      system(paste0('gdal_translate -of GTiff -r \"near\" -tr ', 1/120, ' ', 1/120, ' ', vrt.tmp, ' ', gsub("/data/GEOG", "/data/GEOG/SoilGrids1km", gsub("_250m.tif", "_1km.tif", out.tif)), ' -ot \"', paste(ot), '\" -a_nodata \"', paste(dstnodata), '\" -co \"COMPRESS=DEFLATE\" -co \"BIGTIFF=YES\"'))
+      system(paste0('gdal_translate -of GTiff -r \"near\" -tr ', 1/120, ' ', 1/120, ' ', vrt.tmp, ' ', gsub("/data/GEOG", "/data/GEOG/SoilGrids1km", gsub("_250m_ll.tif", "_1km_ll.tif", out.tif)), ' -ot \"', paste(ot), '\" -a_nodata \"', paste(dstnodata), '\" -co \"COMPRESS=DEFLATE\" -co \"BIGTIFF=YES\"'))
     } else {
-      system(paste0('gdal_translate -of GTiff -r \"average\" -tr ', 1/120, ' ', 1/120, ' ', vrt.tmp, ' ', gsub("/data/GEOG", "/data/GEOG/SoilGrids1km", gsub("_250m.tif", "_1km.tif", out.tif)), ' -ot \"', paste(ot), '\" -a_nodata \"', paste(dstnodata), '\" -co \"COMPRESS=DEFLATE\" -co \"BIGTIFF=YES\"'))
+      system(paste0('gdal_translate -of GTiff -r \"average\" -tr ', 1/120, ' ', 1/120, ' ', vrt.tmp, ' ', gsub("/data/GEOG", "/data/GEOG/SoilGrids1km", gsub("_250m_ll.tif", "_1km_ll.tif", out.tif)), ' -ot \"', paste(ot), '\" -a_nodata \"', paste(dstnodata), '\" -co \"COMPRESS=DEFLATE\" -co \"BIGTIFF=YES\"'))
     }
     unlink(vrt.tmp)
     unlink(out.tmp)

@@ -245,7 +245,7 @@ split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5,
       gc(); gc()
       #message("Predicting from .rds file...")
       m <- readRDS(rds.file)
-      if(any(names(m) %in% "OCCGSW7.tif")){ m$OCCGSW7.tif = ifelse(m$OCCGSW7.tif>100, 0, m$OCCGSW7.tif) }
+      #if(any(names(m) %in% "OCCGSW7.tif")){ m$OCCGSW7.tif = ifelse(m$OCCGSW7.tif>100, 0, m$OCCGSW7.tif) }
       if(depths==FALSE){
         x <- matrix(data=NA, nrow=nrow(m), ncol=1)
         if(method=="ranger"){

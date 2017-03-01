@@ -1,7 +1,12 @@
 ## Fit models for soil properties and generate predictions - SoilGrids250m
 ## Tom.Hengl@isric.org
 
+list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps", "stringr", "R.utils", "grDevices")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
 setwd("/data/models/SPROPS")
+load(".RData")
 library(plyr)
 library(stringr)
 library(sp)
@@ -24,84 +29,133 @@ library(plotKML)
 library(R.utils)
 library(GSIF)
 library(parallel)
-library(doParallel)
+#library(doParallel)
 
 plotKML.env(convert="convert", show.env=FALSE)
-gdalwarp = "/usr/local/bin/gdalwarp"
-gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
-system("/usr/local/bin/gdal-config --version")
-source("../extract.equi7t3.R")
-source('/data/models/objects_in_memory.R')
-#source("../wrapper.predict_np.R")
-source("../wrapper.predict_cs.R")
-source("../saveRDS_functions.R")
-
-load("../equi7t3.rda")
-load("../equi7t1.rda")
-des <- read.csv("../SoilGrids250m_COVS250m.csv")
+gdalwarp = "gdalwarp"
+gdalbuildvrt = "gdalbuildvrt"
+system("gdal-config --version")
+source("/data/models/wrapper.predict_cs.R")
+source("/data/models/saveRDS_functions.R")
+source('/data/models/mosaick_functions_ll.R')
+source('/data/models/extract_tiled.R')
+## metadata:
+metasd <- read.csv('/data/GEOG/META_GEOTIFF_1B.csv', stringsAsFactors = FALSE)
+sel.metasd = names(metasd)[-sapply(c("FileName","VARIABLE_NAME"), function(x){grep(x, names(metasd))})]
+## covariates:
+des <- read.csv("/data/models/SoilGrids250m_COVS250m.csv")
+mask_value <- as.list(des$MASK_VALUE)
+names(mask_value) = des$WORLDGRIDS_CODE
 
 ## points:
-load("../../profs/SPROPS/SPROPS.pnts.rda")
-load("../../profs/SPROPS/all.pnts.rda")
-ov <- extract.equi7(x=SPROPS.pnts, y=des$WORLDGRIDS_CODE, equi7=equi7t3, path="/data/covs", cpus=48) 
+load("/data/profs/SPROPS/SPROPS.pnts.rda") ## spatial locations only
+load("/data/profs/SPROPS/all.pnts.rda")
+
+## spatia overlay (20 mins):
+tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
+ov <- extract.tiled(x=SPROPS.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=56)
 #str(ov)
 ovA <- join(all.pnts, ov, type="left", by="LOC_ID")
-## 752,161 obs
-for(i in des$WORLDGRIDS_CODE){ ovA[,i] <- ifelse(ovA[,i]<= -10000, NA, ovA[,i])  }
-## Check values:
+## 803,864 rows
+
+## Data inspection (final checks)
 hist(log1p(ovA$CECSUM))
 hist(ovA$BLD)
-summary(ovA$BLD)
+summary(ovA$BLD) ## many missing values
+hist(ovA$CRFVOL) ## probably many missing values are 0?
 hist(log1p(ovA$ORCDRC))
 hist(ovA$PHIHOX)
-summary(ovA$PHIKCL)
+summary(ovA$PHIKCL) ## also many missing values
 summary(ovA$DEPTH.f)
-## mask out datasets that still need to be checked:
-ovA <- ovA[!ovA$SOURCEDB %in% c("Artic"),]
-## 765,539
-
+ovA <- ovA[ovA$DEPTH.f >= 0,]
+summary(ovA$DEPTH.f>600)
+ovA[which(ovA$DEPTH.f>600)[1],1:20]
+## mask out "Artic" data?
+#ovA <- ovA[!ovA$SOURCEDB %in% c("Artic"),]
+summary(ovA$ORCDRC > 80) ## 5% of profiles >8% ORC
+## Fill in gaps in soil BLD - we can make a PedoTransfer function:
+ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
+fm.BLD = as.formula("BLD ~ ORCDRC + CLYPPT + SNDPPT + PHIHOX + DEPTH.f")
+dfs = ovA[complete.cases(ovA[,all.vars(fm.BLD)]),all.vars(fm.BLD)]
+## 116,940 points
+m.BLD_PTF <- ranger(fm.BLD, dfs, mtry = 2, num.trees = 85, importance='impurity')
+#m.BLD_PTF <- caret::train(BLD~log1p(ORCDRC)+log1p(DEPTH.f)+PHIHOX+SNDPPT+CLYPPT, method="lm", ovA, na.action=na.omit, trControl=ctrl)
+m.BLD_PTF
+saveRDS.gz(m.BLD_PTF, "m_BLD_PTF.rds")
+predict(m.BLD_PTF, data.frame(ORCDRC=220, CLYPPT=15, PHIHOX=4.5, CLYPPT=15, SNDPPT=35, DEPTH.f=5))$predictions
+## Simple correction from Kochy et al (2015):
+round((-0.31 * log1p(220/10) + 1.38)*1000)
+sel.BLD = complete.cases(ovA[,all.vars(fm.BLD)[-1]])
+## Take weighted average because the PTF over-estimates BLD for high ORC
+BLD.f = (predict(m.BLD_PTF, ovA[sel.BLD,])$predictions + round((-0.31 * log1p(ovA[sel.BLD,"ORCDRC"]/10) + 1.38)*1000))/2
+BLD.f = ifelse(is.nan(BLD.f), NA, BLD.f)
+library(scales)
+xyplot(ovA$BLD~ovA$ORCDRC, par.settings=list(plot.symbol=list(col=alpha("black", 0.6), fill=alpha("red", 0.6), pch=21, cex=0.6)), ylim=c(0,2500))
+xyplot(BLD.f~ovA[sel.BLD,"ORCDRC"], par.settings=list(plot.symbol=list(col=alpha("black", 0.6), fill=alpha("red", 0.6), pch=21, cex=0.6)), ylim=c(0,2500))
+## replace values where missing:
+ovA[sel.BLD,"BLD.f"] = BLD.f 
+ovA$BLD.f = round(ifelse(is.na(ovA$BLD), ovA$BLD.f, ovA$BLD))
+## Soil organic carbon density:
+ovA$OCDENS = round(ovA$ORCDRC/1000 * ovA$BLD.f)
+hist(ovA$OCDENS)
+  
 write.csv(ovA, file="ov.SPROPS_SoilGrids250m.csv")
 unlink("ov.SPROPS_SoilGrids250m.csv.gz")
 gzip("ov.SPROPS_SoilGrids250m.csv")
-save(ovA, file="ovA.rda", compression_level="xz")
+save(ovA, file="ovA.rda")
 #load("ovA.rda")
 ## 1.3GB
-load(".RData")
+#load(".RData")
 
 ## ------------- MODEL FITTING -----------
 
-t.vars <- c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD", "CECSUM")
+t.vars <- c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD.f", "CECSUM", "OCDENS")
 #lapply(ovA[,t.vars], quantile, probs=c(0.01,0.5,0.99), na.rm=TRUE)
 
-z.min <- as.list(c(0,20,20,0,0,0,0,50,0))
+z.min <- as.list(c(0,20,20,0,0,0,0,50,0,0))
 names(z.min) = t.vars
-z.max <- as.list(c(800,110,110,100,100,100,100,3500,2200))
+z.max <- as.list(c(800,110,110,100,100,100,100,3500,2200,1000))
 names(z.max) = t.vars
 ## FIT MODELS:
-pr.lst <- des$WORLDGRIDS_CODE
-formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ DEPTH.f +', paste(pr.lst, collapse="+")))}) ## LATWGS84 +
+pr.lst <- basename(list.files(path="/data/stacked250m", ".tif"))
+## remove some predictors that might lead to artifacts (buffer maps and land cover):
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10"), function(x){grep(x, pr.lst)}))]
+formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ DEPTH.f +', paste(pr.lst, collapse="+")))})
 #all.vars(formulaString.lst[[1]])
+save.image()
 
 ## Median value per cov:
-#cov.m <- lapply(ovA[,all.vars(formulaString.lst[[1]])[-1]], function(x){quantile(x, probs=c(0.01,0.5,0.99), na.rm=TRUE)})
-#col.m <- as.data.frame(cov.m)
+cov.m <- lapply(ovA[,all.vars(formulaString.lst[[1]])[-1]], function(x){quantile(x, probs=c(0.01,0.5,0.99), na.rm=TRUE)})
+col.m <- as.data.frame(cov.m)
+write.csv(col.m, "covs_quantiles.csv")
+
+## cleanup:
+#unlink(list.files(pattern=glob2rx("^mrf.*.rds")))
+#unlink(list.files(pattern=glob2rx("^t.mrf.*.rds")))
+#unlink(list.files(pattern=glob2rx("^Xgb.*")))
+#unlink(list.files(pattern=glob2rx("^mgb.*.rds")))
+#unlink(list.files(pattern=glob2rx("^mrf.*.rds")))
+#unlink(list.files(pattern=glob2rx("^mrfX_*_*.rds")))
+#unlink(list.files(pattern=glob2rx("^RF_fit_*.csv.gz")))
 
 ## sub-sample to speed up model fitting:
-Nsub <- 1.5e4 
+## TAKES >2 hrs to fit all models
+Nsub <- 1.2e4 
+## Caret training settings (reduce number of combinations to speed up):
+ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
+gb.tuneGrid <- expand.grid(eta = c(0.3,0.4,0.5), nrounds = c(50,100,150), max_depth = 2:4, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
+rf.tuneGrid <- expand.grid(mtry = seq(5,50,by=5))
 ## Initiate cluster
-cl <- makeCluster(48)
-registerDoParallel(cl)
+cl <- makeCluster(56)
+doParallel::registerDoParallel(cl)
 ## Takes 1 hour to fit all models:
-cat("Results of model fitting 'randomForest / XGBoost':\n\n", file="SPROPS_resultsFit.txt")
 for(j in 1:length(t.vars)){
-  cat("\n", file="SPROPS_resultsFit.txt", append=TRUE)
-  cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="SPROPS_resultsFit.txt", append=TRUE)
-  cat("\n", file="SPROPS_resultsFit.txt", append=TRUE)
+  out.file = paste0(t.vars[j],"_resultsFit.txt")
+  cat("Results of model fitting 'randomForest / XGBoost':\n\n", file=out.file)
+  cat("\n", file=out.file, append=TRUE)
+  cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file=out.file, append=TRUE)
+  cat("\n", file=out.file, append=TRUE)
   LOC_ID <- ovA$LOC_ID
-  ## Caret training settings (reduce number of combinations to speed up):
-  ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
-  gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
-  rf.tuneGrid <- expand.grid(mtry = seq(10,60,by=5))
   out.rf <- paste0("mrf.",t.vars[j],".rds")
   if(!file.exists(out.rf)){
     dfs <- ovA[,all.vars(formulaString.lst[[j]])]
@@ -109,21 +163,21 @@ for(j in 1:length(t.vars)){
     dfs <- dfs[sel,]
     ## optimize mtry parameter:
     if(!file.exists(gsub("mrf","t.mrf",out.rf))){
-      t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
+      t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="ranger", trControl=ctrl, tuneGrid=rf.tuneGrid)
       saveRDS.gz(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
     } else {
       t.mrfX <- readRDS.gz(gsub("mrf","t.mrf",out.rf))
     }
     ## fit RF model using 'ranger' (fully parallelized)
     ## reduce number of trees so the output objects do not get TOO LARGE i.e. >5GB
-    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=300)  
+    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=85)  
     saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
     ## Top 15 covariates:
-    sink(file="SPROPS_resultsFit.txt", append=TRUE, type="output")
+    sink(file=out.file, append=TRUE, type="output")
     print(mrfX)
-    cat("\n Variable importance:\n", file="SPROPS_resultsFit.txt", append=TRUE)
+    cat("\n Variable importance:\n", file=out.file, append=TRUE)
     xl <- as.list(ranger::importance(mrfX))
-    print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:15]])))
+    print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:35]])))
     ## save fitting success vectors:
     fit.df <- data.frame(LOC_ID=LOC_ID[sel], observed=dfs[,1], predicted=predictions(mrfX))
     unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
@@ -139,92 +193,73 @@ for(j in 1:length(t.vars)){
       mgbX <- readRDS.gz(paste0("mgb.",t.vars[j],".rds"))
     }
     importance_matrix <- xgb.importance(mgbX$coefnames, model = mgbX$finalModel)
-    cat("\n", file="SPROPS_resultsFit.txt", append=TRUE)
+    cat("\n", file=out.file, append=TRUE)
     print(mgbX)
-    cat("\n XGBoost variable importance:\n", file="SPROPS_resultsFit.txt", append=TRUE)
-    print(importance_matrix[1:15,])
-    cat("--------------------------------------\n", file="SPROPS_resultsFit.txt", append=TRUE)
+    cat("\n XGBoost variable importance:\n", file=out.file, append=TRUE)
+    print(importance_matrix[1:25,])
+    cat("--------------------------------------\n", file=out.file, append=TRUE)
     sink()
   }
 }
 rm(mrfX); rm(mgbX)
 stopCluster(cl); closeAllConnections()
-
-mrfX_lst <- list.files(pattern="^mrf.")
-mgbX_lst <- list.files(pattern="^mgb.")
-names(mrfX_lst) <- paste(sapply(mrfX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
-names(mgbX_lst) <- paste(sapply(mgbX_lst, function(x){strsplit(x, "\\.")[[1]][2]}))
 save.image()
 
 ## ------------- PREDICTIONS -----------
 
 ## Predict per tile:
-pr.dirs <- basename(dirname(list.files(path="/data/covs1t", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
+pr.dirs <- basename(dirname(list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
 str(pr.dirs)
+
 #save(pr.dirs, file="pr.dirs.rda")
 ## 16,561 dirs
-
-## Split RF models (otherwise memory limit problems):
-num_splits = 3
-for(j in t.vars){
-  mrfX = readRDS.gz(mrfX_lst[[j]])
-  mrfX_final <- split_rf(mrfX, num_splits)
-  for(k in 1:length(mrfX_final)){
-    gm = mrfX_final[[k]]
-    saveRDS.gz(gm, file=paste0("mrfX_", k, "_", j,".rds"))
-  }
-}
-rm(mrfX); rm(mrfX_final)
-gc(); gc()
-save.image()
-
-type.lst <- c("Int16","Byte","Byte","Byte","Byte","Byte","Byte","Int16","Int16")
+type.lst <- c("Int16","Byte","Byte","Byte","Byte","Byte","Byte","Int16","Int16","Int16")
 names(type.lst) = t.vars
-mvFlag.lst <- c(-32768, 255, 255, 255, 255, 255, 255, -32768, -32768)
+mvFlag.lst <- c(-32768, 255, 255, 255, 255, 255, 255, -32768, -32768, -32768)
 names(mvFlag.lst) = t.vars
 
 ## Run per property (TAKES ABOUT 20-30 HOURS OF COMPUTING PER PROPERTY)
-## To avoid memory problems with RF objects, we split into e.g. 3 parts
-for(j in t.vars[c(5,6,7,8)]){
-  if(j=="PHIHOX"|j=="PHIKCL"){ multiplier = 10 }
-  if(j %in% c("P", "S", "B", "Cu", "Zn")){ multiplier = 100 }
-  if(j %in% c("ORCDRC","CRFVOL","SNDPPT","SLTPPT","CLYPPT","BLD","CECSUM")){ multiplier = 1 }
-  ## Random forest predictions (splits):
-  gm = readRDS.gz(mrfX_lst[[j]])
+library(ranger)
+library(xgboost)
+library(tools)
+library(parallel)
+library(doParallel)
+library(rgdal)
+library(plyr)
+## Run per property (RF = 20 tiles per minute)
+for(j in t.vars){
+  try( detach("package:snowfall", unload=TRUE), silent=TRUE)
+  try( detach("package:snow", unload=TRUE), silent=TRUE)
+  if(j %in% c("PHIHOX","PHIKCL","OCDENS")){ multiplier = 10 }
+  if(j %in% c("ORCDRC","CRFVOL","SNDPPT","SLTPPT","CLYPPT","BLD.f","CECSUM")){ multiplier = 1 }
+  ## Random forest predictions:
+  gm = readRDS.gz(paste0("mrf.", j,".rds"))
   gm1.w = 1/gm$prediction.error
-  rm(gm)
-  for(k in 1:num_splits){
-    gm = readRDS.gz(paste0("mrfX_", k, "_", j,".rds"))
-    gc()
-    cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
-    sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
-    sfExport("gm", "pr.dirs", "split_predict_n", "j", "k", "multiplier")
-    sfLibrary(ranger)
-    x <- sfClusterApplyLB(pr.dirs, fun=function(x){ if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ try( split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", split_no=k, varn=j, method="ranger", multiplier=multiplier) ) } } )
-    sfStop()
-    closeAllConnections()
-    rm(gm)
-  }
+  ## Estimate amount of RAM needed per core
+  cpus = unclass(round((500-50)/(3.5*(object.size(gm)/1e9))))
+  cl <- makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
+  x = parLapply(cl, pr.dirs, fun=function(x){ if(any(!file.exists(paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", j, "_M_sl", 1:7, "_", x, ".tif")))){ try( split_predict_n(x, gm, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", split_no=NULL, varn=j, method="ranger", DEPTH.col="DEPTH.f", multiplier=multiplier, rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } } )
+  stopCluster(cl)
+  gc(); gc()
   ## XGBoost:
   gm = readRDS.gz(paste0("mgb.", j,".rds"))
   gm2.w = 1/(min(gm$results$RMSE, na.rm=TRUE)^2)
-  cpus = unclass(round((256-30)/(3.5*(object.size(gm)/1e9))))
-  gc()
-  sfInit(parallel=TRUE, cpus=ifelse(cpus>46, 46, cpus))
-  sfExport("gm", "pr.dirs", "split_predict_n", "j", "multiplier")
-  sfLibrary(xgboost)
-  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ split_predict_n(x, gm, in.path="/data/covs1t", out.path="/data/predicted", varn=j, method="xgboost", multiplier=multiplier) } ) } )
-  sfStop()
-  rm(gm)
-  closeAllConnections()
+  cpus = unclass(round((500-30)/(3.5*(object.size(gm)/1e9))))
+  cl <- makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
+  x = parLapply(cl, pr.dirs, fun=function(x){ if(any(!file.exists(paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", j, "_M_sl", 1:7, "_", x, ".tif")))){ try( split_predict_n(x, gm, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", split_no=NULL, varn=j, method="xgboost", DEPTH.col="DEPTH.f", multiplier=multiplier, rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } } )
+  stopCluster(cl)
+  gc(); gc()
   ## sum up predictions:
-  sfInit(parallel=TRUE, cpus=45)
-  sfExport("pr.dirs", "sum_predict_ensemble", "num_splits", "j", "z.min", "z.max", "gm1.w", "gm2.w", "type.lst", "mvFlag.lst")
+  library(snowfall)
+  sfInit(parallel=TRUE, cpus=56)
+  sfExport("pr.dirs", "sum_predict_ensemble", "j", "z.min", "z.max", "gm1.w", "gm2.w", "type.lst", "mvFlag.lst")
   sfLibrary(rgdal)
   sfLibrary(plyr)
-  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( if(length(list.files(path = paste0("/data/predicted/", x, "/"), glob2rx(paste0("^",j,"*.tif$"))))==0){ sum_predict_ensemble(x, in.path="/data/covs1t", out.path="/data/predicted", varn=j, num_splits, zmin=z.min[[j]], zmax=z.max[[j]], gm1.w=gm1.w, gm2.w=gm2.w, type=type.lst[[j]], mvFlag=mvFlag.lst[[j]]) } )  } )
+  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( sum_predict_ensemble(x, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn=j, num_splits=NULL, zmin=z.min[[j]], zmax=z.max[[j]], gm1.w=gm1.w, gm2.w=gm2.w, type=type.lst[[j]], mvFlag=mvFlag.lst[[j]], rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } )
   sfStop()
+  gc(); gc()
 }
+
 
 ## corrupt or missing tiles:
 missing.tiles <- function(varn, pr.dirs){
@@ -242,11 +277,11 @@ names(missing.lst) = t.vars
 ## "NA_101_074" "NA_106_069"
 
 ## clean-up:
-# for(i in c("BLD", "ORCDRC", "PHIHOX", "PHIKCL", "SNDPPT", "SLTPPT", "CLYPPT")){ ## c("CECSUM","CRFVOL")  
+# for(i in c("ORCDRC", "OCSTHA")){ ##  c("BLD", "ORCDRC", "PHIHOX", "PHIKCL", "SNDPPT", "SLTPPT", "CLYPPT")  
 #   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
 # }
-# for(i in c("CECSUM", "CRFVOL")){ ## c("BLD", "ORCDRC", "PHIHOX") 
+# for(i in c("BLD", "ORCDRC")){ ## c("BLD", "ORCDRC", "PHIHOX") 
 #   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "_*_*_*_rf?.rds")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
 # }

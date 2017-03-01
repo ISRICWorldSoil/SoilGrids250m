@@ -1,0 +1,133 @@
+Results of model fitting 'randomForest / XGBoost':
+
+
+Variable: PHIKCL
+Ranger result
+
+Call:
+ ranger(formulaString.lst[[j]], data = dfs, importance = "impurity",      write.forest = TRUE, mtry = t.mrfX$bestTune$mtry, num.trees = 85) 
+
+Type:                             Regression 
+Number of trees:                  85 
+Sample size:                      135230 
+Number of independent variables:  199 
+Mtry:                             50 
+Target node size:                 5 
+Variable importance mode:         impurity 
+OOB prediction error:             0.2700984 
+R squared:                        0.8102976 
+
+ Variable importance:
+                 [,1]
+DEPTH.f     12583.484
+DEMENV5.tif  8217.162
+TREL10.tif   7042.773
+P02CHE3.tif  4907.118
+PRSCHE3.tif  4370.915
+TREGLA6.tif  3007.884
+P03CHE3.tif  2933.020
+VW2MOD1.tif  2553.294
+I09MOD4.tif  2437.511
+I03MOD4.tif  2124.942
+I11MOD4.tif  1910.377
+I08MOD4.tif  1899.801
+B13CHE3.tif  1887.713
+P07CHE3.tif  1844.395
+M09MOD4.tif  1842.293
+EX1MOD5.tif  1791.817
+I04MOD4.tif  1718.610
+C06MCF5.tif  1711.190
+P08CHE3.tif  1614.550
+TWIMRG5.tif  1598.106
+I10MOD4.tif  1553.845
+VW1MOD1.tif  1551.882
+C08MCF5.tif  1527.060
+B04CHE3.tif  1514.634
+C03MCF5.tif  1506.137
+VDPMRG5.tif  1471.403
+P01CHE3.tif  1447.086
+VW5MOD1.tif  1437.688
+C07MCF5.tif  1415.912
+VW4MOD1.tif  1407.516
+VBFMRG5.tif  1388.231
+M08MOD4.tif  1383.209
+P09CHE3.tif  1372.496
+C04MCF5.tif  1354.957
+C05MCF5.tif  1332.969
+
+eXtreme Gradient Boosting 
+
+135230 samples
+   199 predictor
+
+No pre-processing
+Resampling: Cross-Validated (3 fold, repeated 1 times) 
+Summary of sample sizes: 90154, 90153, 90153 
+Resampling results across tuning parameters:
+
+  eta  max_depth  nrounds  RMSE       Rsquared 
+  0.3  2           50      0.9335362  0.3905275
+  0.3  2          100      0.9045101  0.4272172
+  0.3  2          150      0.8864761  0.4499122
+  0.3  3           50      0.8926894  0.4426945
+  0.3  3          100      0.8561415  0.4871187
+  0.3  3          150      0.8323147  0.5155098
+  0.3  4           50      0.8509538  0.4939221
+  0.3  4          100      0.8083243  0.5433109
+  0.3  4          150      0.7781170  0.5770809
+  0.4  2           50      0.9229684  0.4028420
+  0.4  2          100      0.8945556  0.4389270
+  0.4  2          150      0.8762046  0.4619033
+  0.4  3           50      0.8801694  0.4571217
+  0.4  3          100      0.8436235  0.5014446
+  0.4  3          150      0.8200021  0.5290631
+  0.4  4           50      0.8367978  0.5096388
+  0.4  4          100      0.7918259  0.5610210
+  0.4  4          150      0.7611731  0.5943744
+  0.5  2           50      0.9167002  0.4103226
+  0.5  2          100      0.8884604  0.4461354
+  0.5  2          150      0.8709319  0.4677517
+  0.5  3           50      0.8750339  0.4626323
+  0.5  3          100      0.8361550  0.5094487
+  0.5  3          150      0.8108249  0.5388021
+  0.5  4           50      0.8312435  0.5153314
+  0.5  4          100      0.7828383  0.5702470
+  0.5  4          150      0.7520096  0.6033877
+
+Tuning parameter 'gamma' was held constant at a value of 0
+Tuning parameter 'colsample_bytree' was
+ held constant at a value of 0.8
+Tuning parameter 'min_child_weight' was held constant at a value of 1
+RMSE was used to select the optimal model using  the smallest value.
+The final values used for the model were nrounds = 150, max_depth = 4, eta = 0.5, gamma =
+ 0, colsample_bytree = 0.8 and min_child_weight = 1. 
+
+ XGBoost variable importance:
+        Feature        Gain       Cover   Frequence
+ 1:  TREL10.tif 0.108737585 0.009080020 0.004160888
+ 2: DEMENV5.tif 0.062922139 0.023562003 0.019417476
+ 3: VW5MOD1.tif 0.050994816 0.013466766 0.009246417
+ 4: P02CHE3.tif 0.046048738 0.004028587 0.004623209
+ 5:     DEPTH.f 0.030995387 0.031583559 0.050392973
+ 6: M09MOD4.tif 0.028964763 0.010479511 0.005085529
+ 7: I08MOD4.tif 0.028866191 0.004434085 0.006010171
+ 8: PRSCHE3.tif 0.027637478 0.008548551 0.009246417
+ 9: I04MOD4.tif 0.027478751 0.007359321 0.006934813
+10: P03CHE3.tif 0.020700011 0.002927369 0.003236246
+11: P09CHE3.tif 0.020364660 0.006826940 0.005547850
+12: EX1MOD5.tif 0.017778894 0.012064367 0.007859454
+13: T07MOD3.tif 0.016969172 0.004882990 0.005085529
+14: P07CHE3.tif 0.014274925 0.004177668 0.005547850
+15: VBFMRG5.tif 0.012821703 0.013397254 0.017568192
+16: MANMCF5.tif 0.011368283 0.011785642 0.007859454
+17: C03MCF5.tif 0.010527809 0.014109059 0.011095700
+18: C04MCF5.tif 0.009630393 0.010133986 0.013407305
+19: I01MOD4.tif 0.009507774 0.006377333 0.006472492
+20: C09MCF5.tif 0.009309402 0.009735390 0.007397134
+21: P12CHE3.tif 0.009243210 0.008128708 0.004160888
+22: TWIMRG5.tif 0.008834887 0.005620332 0.007397134
+23: M03MOD4.tif 0.008626512 0.008872681 0.007859454
+24: VDPMRG5.tif 0.008611211 0.003918367 0.010171059
+25: T01MOD3.tif 0.008486686 0.004420404 0.002773925
+        Feature        Gain       Cover   Frequence
+--------------------------------------
