@@ -15,7 +15,7 @@ write.csv(as.data.frame(edaf), "profile_brazil.csv")
 SITE <- data.frame(edaf[!duplicated(edaf$SOURCEID),c("SOURCEID","PubYear","SoilClass0")])
 s <- summary(SITE$SoilClass0, maxsum=210)
 soiltype <- data.frame(SoilClass0=attr(s, "names"), count=s)
-write.csv(soiltype, "soiltype_count.csv")
+#write.csv(soiltype, "soiltype_count.csv")
 SITE$SOURCEDB = "RadamBrasil"
 legFAO_90 <- read.csv("cleanup_RadamBrasil.csv", fileEncoding="UTF-8")
 SITE$TAXNWRB <- join(SITE, legFAO_90, type="left")$FAO_1990_subgroup
@@ -50,7 +50,8 @@ save(TAXOUSDA.SolosBR, file="TAXOUSDA.SolosBR.rda")
 # All soil properties
 # ------------------------------------------------------------
 
-horizons <- as.data.frame(edaf)[,c("SOURCEID","HzSimb","HzDeIn","HzDeFn","Sand","Silt","Clay","CG","pH_H2O","C","CEC_pH7","coords.x1","coords.x2")]
+edaf$TIMESTRR <- as.Date(paste(edaf$PubYear), format="%Y")
+horizons <- as.data.frame(edaf)[,c("SOURCEID","HzSimb","HzDeIn","HzDeFn","Sand","Silt","Clay","CG","pH_H2O","C","CEC_pH7","coords.x1","coords.x2","TIMESTRR")]
 horizons$SAMPLEID <- make.unique(paste(horizons$SOURCEID, horizons$HzSimb, sep="_"))
 horizons <- rename(horizons, c("HzDeIn"="UHDICM","HzDeFn"="LHDICM","Sand"="SNDPPT","Silt"="SLTPPT","Clay"="CLYPPT","CG"="CRFVOL","pH_H2O"="PHIHOX","C"="ORCDRC","CEC_pH7"="CECSUM","coords.x1"="LONWGS84","coords.x2"="LATWGS84"))
 horizons$ORCDRC <- horizons$ORCDRC*10
@@ -65,7 +66,7 @@ horizons$SOURCEDB = "RadamBrasil"
 nrow(horizons)
 ## 11232
 
-SPROPS.SolosBR <- horizons[!is.na(horizons$DEPTH),c("SOURCEID","SAMPLEID","SOURCEDB","UHDICM","LHDICM","DEPTH","CLYPPT","CRFVOL","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","LONWGS84","LATWGS84")]
+SPROPS.SolosBR <- horizons[!is.na(horizons$DEPTH),c("SOURCEID","SAMPLEID","SOURCEDB","TIMESTRR","UHDICM","LHDICM","DEPTH","CLYPPT","CRFVOL","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","LONWGS84","LATWGS84")]
 str(SPROPS.SolosBR)
 ## 11,232
 save(SPROPS.SolosBR, file="SPROPS.SolosBR.rda")

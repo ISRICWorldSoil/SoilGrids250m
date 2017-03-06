@@ -6,6 +6,7 @@ new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"
 if(length(new.packages)) install.packages(new.packages)
 
 setwd("/data/models/TAXNWRB")
+load(".RData")
 library(aqp)
 library(plyr)
 library(stringr)
@@ -34,7 +35,6 @@ system("gdal-config --version")
 source("/data/models/wrapper.predict_cs.R")
 source("/data/models/saveRDS_functions.R")
 source('/data/models/mosaick_functions_ll.R')
-
 source('/data/models/extract_tiled.R')
 ## metadata:
 metasd <- read.csv('/data/GEOG/META_GEOTIFF_1B.csv', stringsAsFactors = FALSE)
@@ -65,7 +65,7 @@ soil.fix <- soil.fix[sapply(soil.fix, function(i){length(i)>0})]
 ## subset to existing classes:
 soil.fix <- soil.fix[names(soil.fix) %in% gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\.\\.",levels(TAXNWRB.pnts$TAXNWRB.f))))]
 str(soil.fix)
-## 24 classes need fixing
+## 23 classes need fixing
 
 ## spatial overlay (takes ca 20+ mins):
 tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
@@ -95,7 +95,7 @@ Nsub <- 8e3
 library(doParallel)
 cl <- makeCluster(detectCores())
 registerDoParallel(cl)
-ctrl <- trainControl("boot",number=5)
+ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
 max.Mtry = round((length(all.vars(formulaString.WRB)[-1]))/3)
 rf.tuneGrid <- expand.grid(mtry = seq(10,max.Mtry,by=5))
 #mnetX_TAXNWRB <- caret::train(formulaString.WRB, data=ov, method="multinom", trControl=ctrl, MaxNWts = 19000, na.action=na.omit)
@@ -147,7 +147,7 @@ str(pr.dirs)
 ## 18,653
 
 ## test prediction:
-#factor_predict_ranger(i="T38275", gm=mrfX_TAXNWRB, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXNWRB", col.legend=col.legend, soil.fix=soil.fix, check.names=TRUE)
+#factor_predict_ranger(i="T37677", gm=mrfX_TAXNWRB, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXNWRB", col.legend=col.legend, soil.fix=soil.fix, check.names=TRUE)
 #factor_predict_ranger(i="T40505", gm=mrfX_TAXNWRB, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXNWRB", col.legend=col.legend, soil.fix=soil.fix, check.names=TRUE)
 
 ## ranger model only:
@@ -169,7 +169,7 @@ t.vars = paste0("TAXNWRB_", gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\
 library(snowfall)
 sfInit(parallel=TRUE, cpus=ifelse(length(t.vars)>45, 45, length(t.vars)))
 sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd")
-out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i=NULL, in.path="/data/tt/SoilGrids250m/predicted250m", ot="Byte", dstnodata=255, metadata=metasd[grep(t.vars[x], metasd$FileName), sel.metasd]) )})
+out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i=NULL, in.path="/data/tt/SoilGrids250m/predicted250m", ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == t.vars[x]), sel.metasd]) )})
 sfStop()
 
 ## ------------- VISUALIZATION -----------

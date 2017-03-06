@@ -1,88 +1,95 @@
 "","TAXNWRB","count","WRB_2006_NAME"
+"Albic Luvisol / Gleyic Luvisol","Albic Luvisol / Gleyic Luvisol",1786,"Gleyic Luvisols"
 "Haplic Cryosols","Haplic Cryosols",1508,"Haplic Cryosols"
 "Haplic Ferralsol","Haplic Ferralsol",1421,"Haplic Ferralsols"
-"Haplic Luvisols","Haplic Luvisols",1305,"Haplic Luvisols"
-"Albic Luvisol / Gleyic Luvisol","Albic Luvisol / Gleyic Luvisol",1134,"Gleyic Luvisols"
+"Haplic Luvisols","Haplic Luvisols",1383,"Haplic Luvisols"
+"Dystric Cambisol","Dystric Cambisol",1361,NA
 "Haplic Kastanozems","Haplic Kastanozems",1130,"Haplic Kastanozems"
+"Orthic Podzol","Orthic Podzol",1079,"Haplic Podzols"
 "Haplic Calcisol","Haplic Calcisol",1060,"Haplic Calcisols"
 "Calcaric Regosol","Calcaric Regosol",1048,"Aric Regosols"
-"Orthic Podzol","Orthic Podzol",867,"Haplic Podzols"
-"Dystric Cambisol","Dystric Cambisol",846,NA
-"Haplic Chernozem","Haplic Chernozem",790,"Haplic Chernozems"
-"Eutric Cambisol / Calcic Cambisol","Eutric Cambisol / Calcic Cambisol",644,NA
+"Eutric Cambisol / Calcic Cambisol","Eutric Cambisol / Calcic Cambisol",829,NA
+"Haplic Chernozem","Haplic Chernozem",822,"Haplic Chernozems"
 "Chromic Acrisol","Chromic Acrisol",624,NA
 "Calcaric Cambisol","Calcaric Cambisol",615,NA
 "Haplic Cambisol","Haplic Cambisol",580,"Haplic Cambisols"
 "Haplic Acrisols","Haplic Acrisols",579,"Haplic Acrisols"
-"Haplic Luvisol","Haplic Luvisol",539,"Haplic Luvisols"
+"Haplic Luvisol","Haplic Luvisol",547,"Haplic Luvisols"
+"Haplic Gleysol","Haplic Gleysol",503,"Haplic Gleysols"
 "Haplic Chernozems","Haplic Chernozems",490,"Haplic Chernozems"
 "Calcaric Fluvisol","Calcaric Fluvisol",484,NA
+"Mollic Gleysol / Umbric Gleysol / Calcic Gleysol","Mollic Gleysol / Umbric Gleysol / Calcic Gleysol",478,"Umbric Gleysols"
 "Haplic Gypsisol","Haplic Gypsisol",471,"Haplic Gypsisols"
+"Haplic Acrisol","Haplic Acrisol",451,"Haplic Acrisols"
 "Ferralic Arenosol","Ferralic Arenosol",447,"Ferralic Arenosols"
-"Haplic Acrisol","Haplic Acrisol",442,"Haplic Acrisols"
-"Chromic Lixisol","Chromic Lixisol",418,NA
-"Haplic Gleysol","Haplic Gleysol",415,"Haplic Gleysols"
-"Mollic Gleysol / Umbric Gleysol / Calcic Gleysol","Mollic Gleysol / Umbric Gleysol / Calcic Gleysol",414,"Umbric Gleysols"
+"Chromic Lixisol","Chromic Lixisol",419,NA
+"Eutric Cambisol","Eutric Cambisol",415,NA
 "FERRALIC ARENOSOL","FERRALIC ARENOSOL",411,"Ferralic Arenosols"
 "Haplic Alisol","Haplic Alisol",411,"Haplic Alisols"
-"Eutric Cambisol","Eutric Cambisol",399,NA
-"Eutric Vertisol","Eutric Vertisol",380,NA
-"Gleyic Luvisols","Gleyic Luvisols",376,"Gleyic Luvisols"
-"Haplic Arenosol","Haplic Arenosol",363,"Haplic Arenosols"
-"Haplic Kastanozem","Haplic Kastanozem",356,"Haplic Kastanozems"
+"Eutric Vertisol","Eutric Vertisol",395,NA
+"Haplic Regosols","Haplic Regosols",392,"Haplic Regosols"
+"Gleyic Luvisols","Gleyic Luvisols",378,"Gleyic Luvisols"
+"Haplic Arenosol","Haplic Arenosol",364,"Haplic Arenosols"
+"Haplic Kastanozem","Haplic Kastanozem",360,"Haplic Kastanozems"
+"Haplic Alisols","Haplic Alisols",356,"Haplic Alisols"
 "PETRIC CALCISOL","PETRIC CALCISOL",352,"Petric Calcisols"
+"Haplic Cambisols (Eutric)","Haplic Cambisols (Eutric)",350,"Haplic Cambisols"
+"Greyzem","Greyzem",337,NA
 "Calcic Cambisols","Calcic Cambisols",336,NA
-"Chromic Luvisol","Chromic Luvisol",320,NA
-"Lithic Leptosol","Lithic Leptosol",319,"Lithic Leptosols"
-"Eutric Fluvisol","Eutric Fluvisol",311,NA
+"Chromic Luvisol","Chromic Luvisol",327,NA
+"Eutric Fluvisol","Eutric Fluvisol",324,NA
+"Lithic Leptosol","Lithic Leptosol",321,"Lithic Leptosols"
 "Rendzinas","Rendzinas",308,NA
-"Greyzem","Greyzem",305,NA
-"Haplic Regosols","Haplic Regosols",302,"Haplic Regosols"
 "Protic Arenosols","Protic Arenosols",302,"Protic Arenosols"
-"Haplic Cambisols (Eutric)","Haplic Cambisols (Eutric)",297,"Haplic Cambisols"
-"Haplic Alisols","Haplic Alisols",295,"Haplic Alisols"
+"Haplic Lixisol","Haplic Lixisol",294,"Haplic Lixisols"
+"Eutric Gleysol","Eutric Gleysol",292,NA
 "Luvic Phaeozem","Luvic Phaeozem",284,"Luvic Phaeozems"
 "Haplic Cambisols (Dystric)","Haplic Cambisols (Dystric)",276,"Haplic Cambisols"
-"Haplic Lixisol","Haplic Lixisol",275,"Haplic Lixisols"
+"Leptosols","Leptosols",274,NA
 "Escalic LEPTOSOL","Escalic LEPTOSOL",273,NA
-"Luvic Phaeozems","Luvic Phaeozems",260,"Luvic Phaeozems"
-"Eutric Gleysol","Eutric Gleysol",251,NA
-"Ferralic Cambisol","Ferralic Cambisol",248,"Ferralic Cambisols"
+"Luvic Phaeozems","Luvic Phaeozems",263,"Luvic Phaeozems"
+"Ferric Acrisol","Ferric Acrisol",260,NA
+"Haplic Nitisols (Rhodic)","Haplic Nitisols (Rhodic)",253,"Haplic Nitisols"
+"Haplic Cambisols","Haplic Cambisols",250,"Haplic Cambisols"
+"Ferralic Cambisol","Ferralic Cambisol",249,"Ferralic Cambisols"
 "Fibric Histosols","Fibric Histosols",245,"Fibric Histosols"
-"Haplic Cambisols","Haplic Cambisols",244,"Haplic Cambisols"
+"Haplic Vertisols (Eutric)","Haplic Vertisols (Eutric)",241,"Haplic Vertisols"
 "Haplic Phaeozem","Haplic Phaeozem",235,"Haplic Phaeozems"
+"Vertic Cambisol","Vertic Cambisol",224,"Vertic Cambisols"
+"Albic Luvisol / Haplic Luvisol","Albic Luvisol / Haplic Luvisol",222,"Haplic Luvisols"
+"Eutric Leptosol","Eutric Leptosol",222,NA
 "Cumulic Anthrosol","Cumulic Anthrosol",221,NA
-"Eutric Leptosol","Eutric Leptosol",221,NA
 "Cryic Histosols","Cryic Histosols",220,"Cryic Histosols"
 "Haplic Solonetz","Haplic Solonetz",220,"Haplic Solonetz"
 "Hemic Histosol","Hemic Histosol",219,"Hemic Histosols"
 "Haplic Podzols","Haplic Podzols",218,"Haplic Podzols"
-"Vertic Cambisol","Vertic Cambisol",218,"Vertic Cambisols"
-"Ferric Acrisol","Ferric Acrisol",215,NA
-"Albic Luvisol / Haplic Luvisol","Albic Luvisol / Haplic Luvisol",208,"Haplic Luvisols"
-"Calcic Vertisol","Calcic Vertisol",203,"Calcic Vertisols"
-"Leptosols","Leptosols",200,NA
-"Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz","Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz",196,"Mollic Solonetz"
-"Rhodic Nitisol","Rhodic Nitisol",196,NA
+"Calcic Vertisol","Calcic Vertisol",208,"Calcic Vertisols"
+"Lithic Leptosols","Lithic Leptosols",207,"Lithic Leptosols"
+"Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz","Mollic Solonetz / Haplic Solonetz / Gleyic Solonetz",202,"Mollic Solonetz"
+"Rhodic Nitisol","Rhodic Nitisol",200,NA
+"Turbic Cryosol","Turbic Cryosol",192,"Turbic Cryosols"
 "Acric Ferralsol","Acric Ferralsol",184,"Acric Ferralsols"
 "Epileptic REGOSOL","Epileptic REGOSOL",181,"Leptic Regosols"
 "Epipetric CALCISOL","Epipetric CALCISOL",181,"Petric Calcisols"
+"Vertic Luvisols","Vertic Luvisols",181,"Vertic Luvisols"
 "Calcic Chernozem","Calcic Chernozem",180,"Calcic Chernozems"
 "Calcic Luvisol","Calcic Luvisol",177,"Calcic Luvisols"
 "Haplic Calcisols","Haplic Calcisols",174,"Haplic Calcisols"
-"Turbic Cryosol","Turbic Cryosol",172,"Turbic Cryosols"
+"Luvisols","Luvisols",173,NA
 "Acric Plinthosol","Acric Plinthosol",170,"Acric Plinthosols"
+"Haplic Phaeozems","Haplic Phaeozems",169,"Haplic Phaeozems"
 "Dystric Cambisols","Dystric Cambisols",168,NA
 "Haplic Cambisols (Calcaric)","Haplic Cambisols (Calcaric)",162,"Haplic Cambisols"
-"Haplic Phaeozems","Haplic Phaeozems",162,"Haplic Phaeozems"
-"Haplic Vertisols (Eutric)","Haplic Vertisols (Eutric)",160,"Haplic Vertisols"
+"Haplic Regosols (Eutric)","Haplic Regosols (Eutric)",162,"Haplic Regosols"
+"Gleyic Luvisol","Gleyic Luvisol",161,"Gleyic Luvisols"
+"Planosol","Planosol",159,NA
 "Lithic LEPTOSOL","Lithic LEPTOSOL",156,"Lithic Leptosols"
-"Gleyic Luvisol","Gleyic Luvisol",155,"Gleyic Luvisols"
 "Alumic Acrisol","Alumic Acrisol",153,NA
-"Luvic Arenosol","Luvic Arenosol",152,"Hypoluvic Arenosols"
+"Luvic Arenosol","Luvic Arenosol",153,"Hypoluvic Arenosols"
+"Solodic Planosol","Solodic Planosol",149,"Solodic Planosols"
+"Aridic Kastanozem","Aridic Kastanozem",148,NA
 "Endoleptic LUVISOL","Endoleptic LUVISOL",148,"Leptic Luvisols"
 "ARENIC FLUVISOL","ARENIC FLUVISOL",147,NA
-"Aridic Kastanozem","Aridic Kastanozem",147,NA
 "Eutric Regosol","Eutric Regosol",146,NA
 "Epileptic PHAEOZEM","Epileptic PHAEOZEM",145,"Leptic Phaeozems"
 "HAPLIC CALCISOL","HAPLIC CALCISOL",143,"Haplic Calcisols"
@@ -91,101 +98,102 @@
 "Rendzic Leptosol","Rendzic Leptosol",139,"Rendzic Leptosols"
 "Haplic Albeluvisols","Haplic Albeluvisols",137,"Haplic Albeluvisols"
 "Haplic Solonchak","Haplic Solonchak",137,"Haplic Solonchaks"
+"Ferric Lixisol","Ferric Lixisol",135,NA
 "Luvic Calcisols","Luvic Calcisols",135,"Luvic Calcisols"
 "Xanthic Ferralsol","Xanthic Ferralsol",133,NA
-"Solodic Planosol","Solodic Planosol",130,"Solodic Planosols"
+"Calcic Vertisols","Calcic Vertisols",131,"Calcic Vertisols"
 "Rendzic LEPTOSOL","Rendzic LEPTOSOL",128,"Rendzic Leptosols"
 "Humic Cambisol","Humic Cambisol",126,NA
 "Calcic Luvisols","Calcic Luvisols",124,"Calcic Luvisols"
+"Plinthic Acrisol","Plinthic Acrisol",123,"Plinhtic Acrisols"
 "Acrisol","Acrisol",121,NA
-"Plinthic Acrisol","Plinthic Acrisol",118,"Plinhtic Acrisols"
-"Gleyic Cambisol","Gleyic Cambisol",115,"Endogleyic Cambisols"
+"Nitisols","Nitisols",118,NA
+"Gleyic Cambisol","Gleyic Cambisol",117,"Endogleyic Cambisols"
 "Chromic Cambisols","Chromic Cambisols",114,NA
 "Fibric Histosol","Fibric Histosol",114,"Fibric Histosols"
-"Planosol","Planosol",114,NA
 "Calcic Solonetz","Calcic Solonetz",112,"Calcic Solonetz"
 "Eutric Planosol","Eutric Planosol",112,NA
 "Calcic Gypsisol","Calcic Gypsisol",111,"Calcic Gypsisols"
-"Ferric Lixisol","Ferric Lixisol",110,NA
+"Dystric Gleysol","Dystric Gleysol",110,NA
 "Haplic Podzol","Haplic Podzol",110,"Haplic Podzols"
 "Endoleptic PHAEOZEM","Endoleptic PHAEOZEM",108,"Leptic Phaeozems"
 "Umbric Andosol","Umbric Andosol",108,"Umbric Andosols"
-"Calcic Vertisols","Calcic Vertisols",107,"Calcic Vertisols"
-"Rhodic Ferralsol","Rhodic Ferralsol",106,NA
-"Lithic Leptosols","Lithic Leptosols",105,"Lithic Leptosols"
+"Dystric Fluvisol","Dystric Fluvisol",107,NA
+"Haplic Leptosols","Haplic Leptosols",107,"Haplic Leptosols"
+"Rhodic Ferralsol","Rhodic Ferralsol",107,NA
+"Haplic Fluvisols (Eutric)","Haplic Fluvisols (Eutric)",106,"Haplic Fluvisols"
 "Acric Ferralsol (Ferric, Xanthic)","Acric Ferralsol (Ferric, Xanthic)",104,"Acric Ferralsols"
 "Rendzic Leptosols","Rendzic Leptosols",104,"Rendzic Leptosols"
 "Calcic Kastanozem","Calcic Kastanozem",103,"Calcic Kastanozems"
+"Haplic Fluvisols (Calcaric)","Haplic Fluvisols (Calcaric)",103,"Haplic Fluvisols"
 "Mollic Gleysol","Mollic Gleysol",103,"Mollic Gleysols"
 "Gypsic Solonchak","Gypsic Solonchak",102,"Gypsic Solonchaks"
-"Haplic Fluvisols (Calcaric)","Haplic Fluvisols (Calcaric)",102,"Haplic Fluvisols"
+"Cryosol","Cryosol",101,NA
 "Endogleyic Cambisols","Endogleyic Cambisols",101,"Endogleyic Cambisols"
 "Luvic CALCISOL","Luvic CALCISOL",101,"Luvic Calcisols"
 "Haplic Arenosols","Haplic Arenosols",99,"Haplic Arenosols"
-"Haplic Regosols (Eutric)","Haplic Regosols (Eutric)",99,"Haplic Regosols"
+"Haplic Fluvisols","Haplic Fluvisols",99,"Haplic Fluvisols"
 "Gleyic Podzol","Gleyic Podzol",98,"Gleyic Podzols"
 "Mollic Vertisol","Mollic Vertisol",98,"Mollic Vertisols"
 "Aric Regosols","Aric Regosols",97,"Aric Regosols"
 "Calcaric Fluvisols","Calcaric Fluvisols",97,NA
 "Calcic Kastanozems","Calcic Kastanozems",97,"Calcic Kastanozems"
 "Ferric Acrisols","Ferric Acrisols",97,NA
-"Haplic Fluvisols","Haplic Fluvisols",97,"Haplic Fluvisols"
-"Haplic Fluvisols (Eutric)","Haplic Fluvisols (Eutric)",96,"Haplic Fluvisols"
-"Stagnic Luvisol","Stagnic Luvisol",96,"Stagnic Luvisols"
-"Humic Acrisol","Humic Acrisol",94,"Haplic Acrisols"
-"Dystric Gleysol","Dystric Gleysol",93,NA
-"Haplic Nitisols (Rhodic)","Haplic Nitisols (Rhodic)",93,"Haplic Nitisols"
+"Humic Acrisol","Humic Acrisol",97,"Haplic Acrisols"
+"Stagnic Luvisol","Stagnic Luvisol",97,"Stagnic Luvisols"
+"Haplic Regosols / Umbric Gleysols","Haplic Regosols / Umbric Gleysols",96,"Umbric Gleysols"
+"Ferric Luvisol","Ferric Luvisol",94,NA
+"Umbric Andosols","Umbric Andosols",94,"Umbric Andosols"
 "Vitric Andosol","Vitric Andosol",92,"Vitric Andosols"
 "Mollic Solonetz","Mollic Solonetz",91,"Mollic Solonetz"
 "Haplic Cambisols (Humic)","Haplic Cambisols (Humic)",90,"Haplic Cambisols"
-"Dystric Fluvisol","Dystric Fluvisol",89,NA
-"Cryosol","Cryosol",86,NA
-"Vertic Luvisol","Vertic Luvisol",86,"Vertic Luvisols"
+"Vertic Luvisol","Vertic Luvisol",87,"Vertic Luvisols"
+"Haplic Vertisols","Haplic Vertisols",85,"Haplic Vertisols"
+"Vertisols","Vertisols",85,NA
+"Chromic Cambisol","Chromic Cambisol",84,NA
 "Gleyic Podzols","Gleyic Podzols",84,"Gleyic Podzols"
 "Orthic Luvisols","Orthic Luvisols",84,"Haplic Luvisols"
 "Solodic Planosol / Haplic Solonetz","Solodic Planosol / Haplic Solonetz",84,"Solodic Planosols"
 "Umbric Ferralsol","Umbric Ferralsol",84,"Umbric Ferralsols"
-"Haplic Regosols / Umbric Gleysols","Haplic Regosols / Umbric Gleysols",83,"Umbric Gleysols"
 "Luvic Chernozem","Luvic Chernozem",83,"Luvic Chernozems"
 "Cambic Arenosol","Cambic Arenosol",81,"Brunic Arenosols"
-"Chromic Cambisol","Chromic Cambisol",81,NA
 "Endoleptic REGOSOL","Endoleptic REGOSOL",80,"Leptic Regosols"
 "Umbric Albeluvisols Abruptic","Umbric Albeluvisols Abruptic",80,"Umbric Albeluvisols"
 "SODIC CAMBISOL","SODIC CAMBISOL",77,NA
-"Umbric Andosols","Umbric Andosols",77,"Umbric Andosols"
 "Cryic Histosol","Cryic Histosol",76,"Cryic Histosols"
+"Dystric Regosol","Dystric Regosol",76,NA
 "Luvic Calcisol","Luvic Calcisol",76,"Luvic Calcisols"
-"Dystric Regosol","Dystric Regosol",75,NA
+"Gleyic Solonetz","Gleyic Solonetz",75,"Gleyic Solonetz"
 "Luvic PHAEOZEM","Luvic PHAEOZEM",74,"Luvic Phaeozems"
-"Gleyic Solonetz","Gleyic Solonetz",73,"Gleyic Solonetz"
+"Dystric Cambisol / Umbric Cambisol","Dystric Cambisol / Umbric Cambisol",72,NA
 "LEPTIC REGOSOL","LEPTIC REGOSOL",72,"Leptic Regosols"
 "Albic Luvisol","Albic Luvisol",71,"Albic Luvisols"
+"Haplic Nitisol","Haplic Nitisol",71,"Haplic Nitisols"
 "Acric Gleysol","Acric Gleysol",70,"Acric Gleysols"
 "Calcaric Arenosol","Calcaric Arenosol",70,NA
 "Eutric Podzoluvisol","Eutric Podzoluvisol",70,NA
 "Vitric Andosols","Vitric Andosols",70,"Vitric Andosols"
+"Dystric Leptosol","Dystric Leptosol",69,NA
 "Endoleptic CAMBISOL","Endoleptic CAMBISOL",68,"Leptic Cambisols"
+"Gleysols","Gleysols",68,NA
 "Greyic Phaeozems Albic","Greyic Phaeozems Albic",67,"Greyic Phaeozems"
 "Epileptic LUVISOL","Epileptic LUVISOL",66,"Leptic Luvisols"
 "HAPLIC FLUVISOL","HAPLIC FLUVISOL",66,"Haplic Fluvisols"
 "Haplic Regosol","Haplic Regosol",65,"Haplic Regosols"
 "Haplic Vertisol","Haplic Vertisol",65,"Haplic Vertisols"
-"Ferric Luvisol","Ferric Luvisol",64,NA
-"Gleysols","Gleysols",64,NA
 "Humic Ferralsol","Humic Ferralsol",64,NA
 "Umbric Gleysol","Umbric Gleysol",64,"Umbric Gleysols"
 "Calcaric Phaeozem","Calcaric Phaeozem",62,NA
-"Dystric Leptosol","Dystric Leptosol",62,NA
+"Dystric Nitisol","Dystric Nitisol",62,NA
 "Endopetric CALCISOL","Endopetric CALCISOL",62,"Petric Calcisols"
-"Haplic Nitisol","Haplic Nitisol",62,"Haplic Nitisols"
 "Hypersodic SOLONCHAK","Hypersodic SOLONCHAK",62,NA
 "Calcaric Gleysols","Calcaric Gleysols",61,NA
 "Luvic Kastanozem","Luvic Kastanozem",61,"Luvic Kastanozems"
 "Gleyic Phaeozem","Gleyic Phaeozem",59,"Gleyic Phaeozems"
+"Haplic Vertisols (Pellic)","Haplic Vertisols (Pellic)",59,"Haplic Vertisols"
 "Eutric Gleysols","Eutric Gleysols",58,NA
 "Mollic Leptosol","Mollic Leptosol",56,"Mollic Leptosols"
 "Alic Nitisol","Alic Nitisol",55,"Alic Nitisols"
-"Dystric Nitisol","Dystric Nitisol",55,NA
 "Haplic Planosol","Haplic Planosol",55,"Haplic Planosols"
 "HAPLIC REGOSOL","HAPLIC REGOSOL",55,"Haplic Regosols"
 "Voronic Chernozems Pachic","Voronic Chernozems Pachic",55,"Voronic Chernozems"
@@ -196,35 +204,39 @@
 "Hypercalcic CALCISOL","Hypercalcic CALCISOL",53,"Hypercalcic Calcisols"
 "Luvic Chernozem / Luvic Phaeozem","Luvic Chernozem / Luvic Phaeozem",53,"Luvic Phaeozems"
 "SODIC CALCISOL","SODIC CALCISOL",53,NA
+"Dystric Planosol","Dystric Planosol",52,NA
+"Gleyic Arenosol","Gleyic Arenosol",52,NA
+"Haplic Vertisols (Eutric, Pellic)","Haplic Vertisols (Eutric, Pellic)",52,"Haplic Vertisols"
 "Humic LUVISOL","Humic LUVISOL",52,NA
-"Dystric Planosol","Dystric Planosol",51,NA
 "Haplic Ferralsols","Haplic Ferralsols",51,"Haplic Ferralsols"
 "Terric Histosol","Terric Histosol",51,NA
 "Calcic Luvic Chernozem","Calcic Luvic Chernozem",50,"Luvic Chernozems"
+"Gleyic Solonchak","Gleyic Solonchak",50,"Gleyic Solonchaks"
 "Haplic Andosol","Haplic Andosol",50,"Haplic Andosols"
-"Haplic Vertisols","Haplic Vertisols",50,"Haplic Vertisols"
 "Gleyic VERTISOL","Gleyic VERTISOL",49,"Gleyic Vertisols"
-"Gleyic Solonchak","Gleyic Solonchak",48,"Gleyic Solonchaks"
+"Haplic Lixisols","Haplic Lixisols",48,"Haplic Lixisols"
 "Hyperescalic LEPTOSOL","Hyperescalic LEPTOSOL",48,NA
 "Chromic Luvisols","Chromic Luvisols",47,NA
 "Epileptic CAMBISOL","Epileptic CAMBISOL",47,"Leptic Cambisols"
-"Haplic Lixisols","Haplic Lixisols",47,"Haplic Lixisols"
+"Gleyic Acrisol","Gleyic Acrisol",47,"Gleyic Acrisols"
 "HAPLIC LUVISOL","HAPLIC LUVISOL",47,"Haplic Luvisols"
 "Lixic Plinthosol","Lixic Plinthosol",47,"Lixic Plinthosols"
 "Sapric Histosols","Sapric Histosols",47,"Sapric Histosols"
-"Dystric Cambisol / Umbric Cambisol","Dystric Cambisol / Umbric Cambisol",46,NA
 "Epipetrocalcic PHAEOZEM","Epipetrocalcic PHAEOZEM",46,"Petrocalcic Phaeozems"
-"Gleyic Acrisol","Gleyic Acrisol",46,"Gleyic Acrisols"
 "Humic Nitisol","Humic Nitisol",45,NA
 "Mollic Andosol","Mollic Andosol",45,"Mollic Andosols"
 "Thionic Fluvisol","Thionic Fluvisol",45,NA
 "Carbic Podzol","Carbic Podzol",44,"Carbic Podzols"
 "Rhodic Lixisols","Rhodic Lixisols",43,NA
 "Stagnic Luvisols","Stagnic Luvisols",43,"Stagnic Luvisols"
+"Dystric Plinthosol","Dystric Plinthosol",42,NA
 "Eutric Fluvisols","Eutric Fluvisols",42,NA
 "Petric Calcisol","Petric Calcisol",42,"Petric Calcisols"
-"Gleyic Arenosol","Gleyic Arenosol",41,NA
+"Cutanic Lixisol","Cutanic Lixisol",41,"Cutanic Lixisols"
 "Haplic Gypsisols","Haplic Gypsisols",41,"Haplic Gypsisols"
+"Haplic Nitisols","Haplic Nitisols",41,"Haplic Nitisols"
+"Haplic Planosols (Albic)","Haplic Planosols (Albic)",41,"Haplic Planosols"
+"Luvic Nitisols","Luvic Nitisols",41,"Luvic Nitisols"
 "Umbric Gleysols","Umbric Gleysols",41,"Umbric Gleysols"
 "Umbric Leptosol","Umbric Leptosol",41,"Umbric Leptosols"
 "Calcic CHERNOZEM","Calcic CHERNOZEM",40,"Calcic Chernozems"
@@ -232,22 +244,24 @@
 "Geric Ferralsol","Geric Ferralsol",40,"Geric Ferralsols"
 "Profondic Luvisol","Profondic Luvisol",40,NA
 "Abruptic LUVISOL","Abruptic LUVISOL",39,NA
-"Cutanic Lixisol","Cutanic Lixisol",39,"Cutanic Lixisols"
 "Hemic Histosols","Hemic Histosols",39,"Hemic Histosols"
-"Dystric Plinthosol","Dystric Plinthosol",38,NA
 "Sodic Solonchak","Sodic Solonchak",38,NA
+"Fluvisols","Fluvisols",37,NA
 "Cutanic Luvisol","Cutanic Luvisol",36,"Cutanic Luvisols"
 "Endoleptic VERTISOL","Endoleptic VERTISOL",36,"Endoleptic Vertisols"
 "Ferric Luvisols","Ferric Luvisols",36,NA
+"Gleyic Lixisol","Gleyic Lixisol",36,"Gleyic Lixisols"
 "Salic Fluvisol","Salic Fluvisol",36,"Salic Fluvisols"
 "Haplic Greyzem","Haplic Greyzem",35,"Haplic Phaeozems"
 "Rhodic Acrisols","Rhodic Acrisols",35,NA
 "Rhodic Cambisols","Rhodic Cambisols",35,NA
 "SKELETIC REGOSOL","SKELETIC REGOSOL",35,NA
+"Cambisols","Cambisols",34,NA
 "Cutanic Alisol","Cutanic Alisol",34,"Cutanic Alisols"
 "Eutric Vertisols","Eutric Vertisols",34,NA
 "Albic Arenosol","Albic Arenosol",33,"Albic Arenosols"
 "Calcaric CAMBISOL","Calcaric CAMBISOL",33,NA
+"Haplic Arenosols (Eutric)","Haplic Arenosols (Eutric)",33,"Haplic Arenosols"
 "Haplic Fluvisol","Haplic Fluvisol",33,"Haplic Fluvisols"
 "Rustic Podzols","Rustic Podzols",33,"Rustic Podzols"
 "Stagnic Cambisol","Stagnic Cambisol",33,"Stagnic Cambisols"
@@ -255,35 +269,40 @@
 "Chromic Acrisols","Chromic Acrisols",32,NA
 "CHROMIC CAMBISOL","CHROMIC CAMBISOL",32,NA
 "Luvic Stagnosol","Luvic Stagnosol",32,"Luvic Stagnosols"
+"Gleyic Vertisols","Gleyic Vertisols",31,"Gleyic Vertisols"
+"Haplic Leptosols (Eutric)","Haplic Leptosols (Eutric)",31,"Haplic Leptosols"
 "Humic PHAEOZEM","Humic PHAEOZEM",31,NA
 "Petric Calcisols","Petric Calcisols",31,"Petric Calcisols"
 "Sapric Histosol","Sapric Histosol",31,"Sapric Histosols"
 "Sodic CALCISOL","Sodic CALCISOL",31,NA
 "Sodic VERTISOL","Sodic VERTISOL",31,"Sodic Vertisols"
+"Vertic Cambisols","Vertic Cambisols",31,"Vertic Cambisols"
 "Aluandic Andosols Dystric","Aluandic Andosols Dystric",30,"Aluandic Andosols"
 "CALCARIC LEPTOSOL","CALCARIC LEPTOSOL",30,NA
 "Calcic Solonchak","Calcic Solonchak",30,"Calcic Solonchaks"
+"Calcic Vertisols (Eutric, Pellic)","Calcic Vertisols (Eutric, Pellic)",30,"Calcic Vertisols"
 "Cutanic Acrisol","Cutanic Acrisol",30,"Cutanic Acrisols"
 "Endoleptic CALCISOL","Endoleptic CALCISOL",30,"Leptic Calcisols"
 "Entic Podzols","Entic Podzols",30,"Entic Podzols"
 "Mollic Fluvisol","Mollic Fluvisol",30,"Mollic Fluvisols"
+"Gleyic Alisol","Gleyic Alisol",29,"Gleyic Alisols"
 "Lixic Ferralsol","Lixic Ferralsol",29,"Lixic Ferralsols"
 "Cutanic Vertic Alisol","Cutanic Vertic Alisol",28,"Vertic Alisols"
 "Dystric Podzoluvisol","Dystric Podzoluvisol",28,NA
 "Epileptic CALCISOL","Epileptic CALCISOL",28,"Leptic Calcisols"
 "Gelic Leptosol","Gelic Leptosol",28,NA
+"Gleyic Fluvisol","Gleyic Fluvisol",28,"Gleyic Fluvisols"
 "Mollic Calcic Vertisol","Mollic Calcic Vertisol",28,"Calcic Vertisols"
 "Sodic SOLONCHAK","Sodic SOLONCHAK",28,NA
 "Vertic LUVISOL","Vertic LUVISOL",28,"Vertic Luvisols"
 "Epileptic VERTISOL","Epileptic VERTISOL",27,NA
 "Epipetric DURISOL","Epipetric DURISOL",27,"Petric Durisols"
 "Vertic Calcic Chernozem","Vertic Calcic Chernozem",27,"Calcic Chernozems"
-"Gleyic Alisol","Gleyic Alisol",26,"Gleyic Alisols"
-"Gleyic Lixisol","Gleyic Lixisol",26,"Gleyic Lixisols"
 "Aridic CALCISOL","Aridic CALCISOL",25,NA
 "Calcic VERTISOL","Calcic VERTISOL",25,"Calcic Vertisols"
+"Ferric Alisol","Ferric Alisol",25,NA
 "FLUVIC CAMBISOL","FLUVIC CAMBISOL",25,"Fluvic Cambisols"
-"Gleyic Fluvisol","Gleyic Fluvisol",25,"Gleyic Fluvisols"
+"Haplic Regosols (Dystric)","Haplic Regosols (Dystric)",25,"Haplic Regosols"
 "Humic CAMBISOL","Humic CAMBISOL",25,NA
 "LITHIC LEPTOSOL","LITHIC LEPTOSOL",25,"Lithic Leptosols"
 "Mollic Gleysols","Mollic Gleysols",25,"Mollic Gleysols"
@@ -293,21 +312,20 @@
 "Cambic Podzol","Cambic Podzol",24,NA
 "Epipetrocalcic KASTAﾃ前ZEM","Epipetrocalcic KASTAﾃ前ZEM",24,NA
 "Eutric Leptosols","Eutric Leptosols",24,NA
-"Ferric Alisol","Ferric Alisol",24,NA
-"Haplic Regosols (Dystric)","Haplic Regosols (Dystric)",24,"Haplic Regosols"
 "Haplic Solonchaks","Haplic Solonchaks",24,"Haplic Solonchaks"
+"Humic Podzol","Humic Podzol",24,"Carbic Podzols"
 "Humic VERTISOL","Humic VERTISOL",24,NA
 "Rhodic Nitisols","Rhodic Nitisols",24,NA
 "Calcic KASTAﾃ前ZEM","Calcic KASTAﾃ前ZEM",23,NA
-"Ferralsol","Ferralsol",23,NA
+"Haplic Vertisols (Chromic)","Haplic Vertisols (Chromic)",23,"Haplic Vertisols"
 "MOLLIC LEPTOSOL","MOLLIC LEPTOSOL",23,"Mollic Leptosols"
 "Aridic LUVISOL","Aridic LUVISOL",22,NA
 "Calcaric REGOSOL","Calcaric REGOSOL",22,"Aric Regosols"
+"Eutric Plinthosol","Eutric Plinthosol",22,NA
 "FERRALIC / HAPLIC ARENOSOL","FERRALIC / HAPLIC ARENOSOL",22,"Haplic Arenosols"
-"Fluvisols","Fluvisols",22,NA
+"Ferralsol","Ferralsol",22,NA
 "Haplic Cambisols Dystric","Haplic Cambisols Dystric",22,"Haplic Cambisols"
 "HYPERCALCIC CALCISOL","HYPERCALCIC CALCISOL",22,"Hypercalcic Calcisols"
-"Luvisols","Luvisols",22,NA
 "Orthic Podzols","Orthic Podzols",22,"Haplic Podzols"
 "Rubic Arenosols","Rubic Arenosols",22,"Rubic Arenosols"
 "Sodic CAMBISOL","Sodic CAMBISOL",22,NA
@@ -316,20 +334,22 @@
 "Gleyic Acrisols","Gleyic Acrisols",21,"Gleyic Acrisols"
 "Haplic Acrisols (Humic)","Haplic Acrisols (Humic)",21,"Haplic Acrisols"
 "Haplic Cambisols Eutric","Haplic Cambisols Eutric",21,"Haplic Cambisols"
-"Humic Podzol","Humic Podzol",21,"Carbic Podzols"
+"Haplic Fluvisols (Dystric)","Haplic Fluvisols (Dystric)",21,"Haplic Fluvisols"
 "Mollic Gleysol / Umbric Gleysol","Mollic Gleysol / Umbric Gleysol",21,"Umbric Gleysols"
 "Aridic ARENOSOL","Aridic ARENOSOL",20,NA
 "Calcaric VERTISOL","Calcaric VERTISOL",20,NA
 "CALCIC SOLONETZ","CALCIC SOLONETZ",20,"Calcic Solonetz"
 "Endoleptic UMBRISOL","Endoleptic UMBRISOL",20,"Leptic Umbrisols"
-"Haplic Fluvisols (Dystric)","Haplic Fluvisols (Dystric)",20,"Haplic Fluvisols"
+"Gleyic Planosols","Gleyic Planosols",20,NA
 "Haplic Vertisol (Calcaric, Chromic)","Haplic Vertisol (Calcaric, Chromic)",20,"Haplic Vertisols"
+"Leptic Regosols","Leptic Regosols",20,"Leptic Regosols"
 "Vertic GLEYSOL","Vertic GLEYSOL",20,NA
+"Alic Nitisols (Dystric)","Alic Nitisols (Dystric)",19,"Alic Nitisols"
 "Eutric LEPTOSOL","Eutric LEPTOSOL",19,NA
 "Ferrali-Hypoluvic Arenosols","Ferrali-Hypoluvic Arenosols",19,"Hypoluvic Arenosols"
 "Gelic Gleysol","Gelic Gleysol",19,NA
-"Gleyic Planosols","Gleyic Planosols",19,NA
 "Humic Gleysols","Humic Gleysols",19,NA
+"Regosols","Regosols",19,NA
 "Rendzic Leptosols Eutric","Rendzic Leptosols Eutric",19,"Rendzic Leptosols"
 "Rhodic Ferralsols","Rhodic Ferralsols",19,NA
 "Sodic ARENOSOL","Sodic ARENOSOL",19,NA
@@ -338,8 +358,11 @@
 "Calcaric LEPTOSOL","Calcaric LEPTOSOL",18,NA
 "Eutric Regosols","Eutric Regosols",18,NA
 "LEPTIC-ARENIC REGOSOL","LEPTIC-ARENIC REGOSOL",18,NA
+"Mollic Nitisols","Mollic Nitisols",18,"Mollic Nitisols"
+"Plinthic Lixisol","Plinthic Lixisol",18,"Plinthic Lixisols"
 "Alic Planosol","Alic Planosol",17,"Alic Planosols"
 "Calcic Luvic Kastanozem","Calcic Luvic Kastanozem",17,"Luvic Kastanozems"
+"Cutanic Luvisols (Hyper-eutric)","Cutanic Luvisols (Hyper-eutric)",17,"Cutanic Luvisols"
 "Gleyic Albeluvisols Abruptic","Gleyic Albeluvisols Abruptic",17,"Gleyic Albeluvisols"
 "Gleyic Chernozem","Gleyic Chernozem",17,"Gleyic Chernozems"
 "Haplic Albeluvisols Abruptic","Haplic Albeluvisols Abruptic",17,"Haplic Albeluvisols"
@@ -368,10 +391,12 @@
 "Epipetric GIPSISOL","Epipetric GIPSISOL",15,NA
 "Ferralic Arenosols","Ferralic Arenosols",15,"Ferralic Arenosols"
 "Fimic Anthrosol","Fimic Anthrosol",15,NA
+"Haplic Luvisols (Chromic)","Haplic Luvisols (Chromic)",15,"Haplic Luvisols"
 "Humic UMBRISOL","Humic UMBRISOL",15,NA
 "Hypersodic CALCISOL","Hypersodic CALCISOL",15,NA
 "Hypersodic CAMBISOL","Hypersodic CAMBISOL",15,NA
 "Petric Gypsisol","Petric Gypsisol",15,"Petric Gypsisols"
+"Planosols","Planosols",15,NA
 "Stagnic Albeluvisol","Stagnic Albeluvisol",15,"Stagnic Albeluvisols"
 "Stagnic Phaeozem","Stagnic Phaeozem",15,"Stagnic Phaeozems"
 "Vertic PHAEOZEM","Vertic PHAEOZEM",15,"Vertic Phaeozems"
@@ -382,9 +407,11 @@
 "Endogleyic Cambisols Dystric","Endogleyic Cambisols Dystric",14,"Endogleyic Cambisols"
 "Epileptic UMBRISOL","Epileptic UMBRISOL",14,"Leptic Umbrisols"
 "FERRALIC-LAMELLIC ARENOSOL","FERRALIC-LAMELLIC ARENOSOL",14,"Lamellic Arenosols"
+"Humic Alisol","Humic Alisol",14,NA
 "HYPOSALIC ARENOSOL","HYPOSALIC ARENOSOL",14,NA
 "Mollic Andosols","Mollic Andosols",14,"Mollic Andosols"
 "Mollic Ferralsol","Mollic Ferralsol",14,"Mollic Ferralsols"
+"Pellic Vertisol","Pellic Vertisol",14,NA
 "Pellic VERTISOL","Pellic VERTISOL",14,NA
 "Umbrihumic LUVISOL","Umbrihumic LUVISOL",14,NA
 "Vertic Calcic Luvisol","Vertic Calcic Luvisol",14,"Calcic Luvisols"
@@ -393,29 +420,31 @@
 "Eutric Arenosols","Eutric Arenosols",13,NA
 "Grumic Vertisol","Grumic Vertisol",13,"Grumic Vertisols"
 "Haplic CALCISOL","Haplic CALCISOL",13,"Haplic Calcisols"
+"Haplic Luvisols (Manganiferric)","Haplic Luvisols (Manganiferric)",13,"Haplic Luvisols"
 "Histic Albeluvisols Abruptic","Histic Albeluvisols Abruptic",13,"Histic Albeluvisols"
-"Humic Alisol","Humic Alisol",13,NA
 "Hypersodic VERTISOL","Hypersodic VERTISOL",13,"Sodic Vertisols"
 "Hyposodic ARENOSOL","Hyposodic ARENOSOL",13,NA
 "LEPTIC-CALCARIC REGOSOL","LEPTIC-CALCARIC REGOSOL",13,"Aric Regosols"
+"Luvic Nitisols (Dystric, Rhodic)","Luvic Nitisols (Dystric, Rhodic)",13,"Luvic Nitisols"
+"Luvic Nitisols (Rhodic)","Luvic Nitisols (Rhodic)",13,"Luvic Nitisols"
 "NATRIC-CALCIC VERTISOL","NATRIC-CALCIC VERTISOL",13,"Calcic Vertisols"
-"Plinthic Lixisol","Plinthic Lixisol",13,"Plinthic Lixisols"
 "Sodic LUVISOL","Sodic LUVISOL",13,NA
 "Umbric Regosol","Umbric Regosol",13,"Umbric Regosols"
 "Vertic Alisol","Vertic Alisol",13,"Vertic Alisols"
+"Vertic Cambisols (Eutric)","Vertic Cambisols (Eutric)",13,"Vertic Cambisols"
 "Vertic CHERNOZEM","Vertic CHERNOZEM",13,"Vertic Chernozems"
 "Vitric Cryosols Dystric","Vitric Cryosols Dystric",13,"Vitric Cryosols"
+"Acrisols","Acrisols",12,NA
 "Albic Arenosols","Albic Arenosols",12,"Albic Arenosols"
+"Cutanic Luvisols (Chromic)","Cutanic Luvisols (Chromic)",12,"Cutanic Luvisols"
 "Dystric Regosols","Dystric Regosols",12,NA
 "Endopetric DURISOL","Endopetric DURISOL",12,"Petric Durisols"
 "Endopetric GIPSISOL","Endopetric GIPSISOL",12,NA
-"Eutric Plinthosol","Eutric Plinthosol",12,NA
 "Fibric Histosols Dystric","Fibric Histosols Dystric",12,"Fibric Histosols"
 "Haplic LUVISOL","Haplic LUVISOL",12,"Haplic Luvisols"
 "Haplic Stagnosol","Haplic Stagnosol",12,"Haplic Stagnosols"
 "LEPTIC CAMBISOL","LEPTIC CAMBISOL",12,"Leptic Cambisols"
 "Luvic Stagnosols Dystric","Luvic Stagnosols Dystric",12,"Luvic Stagnosols"
-"Pellic Vertisol","Pellic Vertisol",12,NA
 "Plinthic Alisol","Plinthic Alisol",12,"Plinthic Alisols"
 "Rubic Arenosols Eutric","Rubic Arenosols Eutric",12,"Rubic Arenosols"
 "SODIC GYPSISOL","SODIC GYPSISOL",12,NA
@@ -435,6 +464,7 @@
 "Gleyic Vertisols Eutric","Gleyic Vertisols Eutric",11,"Gleyic Vertisols"
 "HAPLIC CAMBISOL","HAPLIC CAMBISOL",11,"Haplic Cambisols"
 "Haplic Cryosols Reductaquic","Haplic Cryosols Reductaquic",11,"Haplic Cryosols"
+"Haplic Vertisols (Calcaric)","Haplic Vertisols (Calcaric)",11,"Haplic Vertisols"
 "Hypersodic GLEYSOL","Hypersodic GLEYSOL",11,NA
 "Hypersodic REGOSOL","Hypersodic REGOSOL",11,NA
 "Hyposodic VERTISOL","Hyposodic VERTISOL",11,"Sodic Vertisols"
@@ -444,11 +474,13 @@
 "Paraplinthic Acrisols","Paraplinthic Acrisols",11,"Plinhtic Acrisols"
 "Plinthic Ferralsol","Plinthic Ferralsol",11,"Plinthic Ferralsols"
 "Sodic PHAEOZEM","Sodic PHAEOZEM",11,NA
+"Typic Plinthustult","Typic Plinthustult",11,NA
 "Umbric Fluvisol","Umbric Fluvisol",11,"Umbric Fluvisols"
 "Umbric Fluvisols Oxyaquic","Umbric Fluvisols Oxyaquic",11,"Umbric Fluvisols"
 "Umbric LUVISOL","Umbric LUVISOL",11,NA
 "Vertic Calcic Luvic Chernozem","Vertic Calcic Luvic Chernozem",11,"Luvic Chernozems"
 "Veti-Acric Ferralsol","Veti-Acric Ferralsol",11,"Acric Ferralsols"
+"Calcic Fluvisols","Calcic Fluvisols",10,"Calcic Fluvisols"
 "Endopetroduric PHAEOZEM","Endopetroduric PHAEOZEM",10,"Petroduric Phaeozems"
 "Endoskeletic LUVISOL","Endoskeletic LUVISOL",10,NA
 "Endosodic CALCISOL","Endosodic CALCISOL",10,NA
@@ -459,8 +491,8 @@
 "Haplic Cryosols Dystric","Haplic Cryosols Dystric",10,"Haplic Cryosols"
 "Haplic Umbrisol","Haplic Umbrisol",10,"Haplic Umbrisols"
 "LEPTIC-CHROMIC CAMBISOL","LEPTIC-CHROMIC CAMBISOL",10,NA
-"Leptic Regosols","Leptic Regosols",10,"Leptic Regosols"
 "Luvic PLANOSOL","Luvic PLANOSOL",10,"Luvic Planosols"
+"Mollic Leptosols","Mollic Leptosols",10,"Mollic Leptosols"
 "Paraplinthic Lixisols","Paraplinthic Lixisols",10,"Plinthic Lixisols"
 "Rhodi-Acric Ferralsols","Rhodi-Acric Ferralsols",10,"Acric Ferralsols"
 "Sodic GLEYSOL","Sodic GLEYSOL",10,NA
@@ -475,6 +507,7 @@
 "Cutanic LUVISOL","Cutanic LUVISOL",9,"Cutanic Luvisols"
 "Cutanic Vertic Calcic Luvisol","Cutanic Vertic Calcic Luvisol",9,"Calcic Luvisols"
 "Dunes/Sand","Dunes/Sand",9,NA
+"Dystric Gleysols","Dystric Gleysols",9,NA
 "Dystric LUVISOL","Dystric LUVISOL",9,NA
 "Dystric Vertisol","Dystric Vertisol",9,NA
 "Endogleyic VERTISOL","Endogleyic VERTISOL",9,"Gleyic Vertisols"
@@ -487,21 +520,20 @@
 "Haplic Vertisol (Calcaric)","Haplic Vertisol (Calcaric)",9,"Haplic Vertisols"
 "Histic Cryosols Reductaquic","Histic Cryosols Reductaquic",9,"Histic Cryosols"
 "Hypoplinthic Ferralic Cambisol","Hypoplinthic Ferralic Cambisol",9,"Ferralic Cambisols"
-"Leptosol Hyperskeletic","Leptosol Hyperskeletic",9,NA
+"Leptosol Hyperskeleticﾃδｿ","Leptosol Hyperskeleticﾃδｿ",9,NA
 "Mollic GLEYSOL","Mollic GLEYSOL",9,"Mollic Gleysols"
 "Pachic PHAEOZEM","Pachic PHAEOZEM",9,NA
 "Paraplinthic Arenosols","Paraplinthic Arenosols",9,"Plinthic Arenosols"
+"Rhodic Lixisol","Rhodic Lixisol",9,NA
 "Rubi-Ferralic Arenosols","Rubi-Ferralic Arenosols",9,"Ferralic Arenosols"
 "Salic VERTISOL","Salic VERTISOL",9,"Salic Vertisols"
 "Vertic CALCISOL","Vertic CALCISOL",9,"Vertic Calcisols"
-"Vertic Luvisols","Vertic Luvisols",9,"Vertic Luvisols"
 "Xanthi-Acric Ferralsols","Xanthi-Acric Ferralsols",9,"Acric Ferralsols"
 "Arenic CALCISOL","Arenic CALCISOL",8,NA
 "CALCARIC-SKELETIC REGOSOL","CALCARIC-SKELETIC REGOSOL",8,NA
 "Chromi-Luvic Phaeozems","Chromi-Luvic Phaeozems",8,"Luvic Phaeozems"
 "Chromic VERTISOL","Chromic VERTISOL",8,NA
 "Cutanic Calcic Luvisol","Cutanic Calcic Luvisol",8,"Calcic Luvisols"
-"Dystric Gleysols","Dystric Gleysols",8,NA
 "Endogleyic Cambisol","Endogleyic Cambisol",8,"Endogleyic Cambisols"
 "Endogleyic Planosols Albic","Endogleyic Planosols Albic",8,"Endogleyic Planosols"
 "Epipetrocalcic CHERNOZEM","Epipetrocalcic CHERNOZEM",8,"Petrocalcic Chernozems"
@@ -517,10 +549,7 @@
 "Luvic Planosols Eutric","Luvic Planosols Eutric",8,"Luvic Planosols"
 "Molihumic LEPTOSOL","Molihumic LEPTOSOL",8,NA
 "Mollic FLUVISOL","Mollic FLUVISOL",8,"Mollic Fluvisols"
-"Mollic Nitisols","Mollic Nitisols",8,"Mollic Nitisols"
 "Protic ARENOSOL","Protic ARENOSOL",8,"Protic Arenosols"
-"Regosols","Regosols",8,NA
-"Rhodic Lixisol","Rhodic Lixisol",8,NA
 "SKELETIC-CHROMIC CAMBISOL","SKELETIC-CHROMIC CAMBISOL",8,NA
 "Spodic Cryosols Dystric","Spodic Cryosols Dystric",8,"Spodic Cryosols"
 "Stagnic Alisol","Stagnic Alisol",8,"Stagnic Alisols"
@@ -532,6 +561,7 @@
 "CALCARIC CAMBISOL","CALCARIC CAMBISOL",7,NA
 "Calcaric Regosols","Calcaric Regosols",7,"Aric Regosols"
 "Calci-Sodic Solonchaks","Calci-Sodic Solonchaks",7,NA
+"Calcic Vertisols (Eutric)","Calcic Vertisols (Eutric)",7,"Calcic Vertisols"
 "Cambic Umbrisol","Cambic Umbrisol",7,"Cambic Umbrisols"
 "Chromi-Ferric Lixisols","Chromi-Ferric Lixisols",7,NA
 "Chromic CAMBISOL","Chromic CAMBISOL",7,NA
@@ -543,17 +573,22 @@
 "Eutric Arenosol","Eutric Arenosol",7,NA
 "Ferric Podzol","Ferric Podzol",7,"Rustic Podzols"
 "Fluvic Cambisol (Calcaric, Chromic)","Fluvic Cambisol (Calcaric, Chromic)",7,"Fluvic Cambisols"
+"Gleyic Calcic Fluvisols (Eutric)","Gleyic Calcic Fluvisols (Eutric)",7,"Calcic Fluvisols"
 "Gleyic Calcic Luvic Chernozem","Gleyic Calcic Luvic Chernozem",7,"Luvic Chernozems"
 "Gypsic Solonetz","Gypsic Solonetz",7,"Gypsic Solonetz"
+"Haplic Cambisols (Calcaric, Thapto-Vertisolic)","Haplic Cambisols (Calcaric, Thapto-Vertisolic)",7,"Haplic Cambisols"
 "Haplic Cambisols Humic","Haplic Cambisols Humic",7,"Haplic Cambisols"
 "Haplic Chernozems Pachic","Haplic Chernozems Pachic",7,"Haplic Chernozems"
 "Haplic Cryosols Calcaric","Haplic Cryosols Calcaric",7,"Haplic Cryosols"
 "Haplic Ferralsol (Dystric, Xanthic)","Haplic Ferralsol (Dystric, Xanthic)",7,"Haplic Ferralsols"
 "Haplic Fluvisol (Calcaric, Clayic)","Haplic Fluvisol (Calcaric, Clayic)",7,"Haplic Fluvisols"
+"Haplic Leptosols (Eutric, Skeletic)","Haplic Leptosols (Eutric, Skeletic)",7,"Haplic Leptosols"
+"Haplic Nitisols (Eutric)","Haplic Nitisols (Eutric)",7,"Haplic Nitisols"
 "Histic Gryosols Dystric","Histic Gryosols Dystric",7,NA
 "Humic ACRISOL","Humic ACRISOL",7,"Haplic Acrisols"
 "Humic CALCISOL","Humic CALCISOL",7,NA
 "Humic REGOSOL","Humic REGOSOL",7,NA
+"Hyper-skeletic Leptosols","Hyper-skeletic Leptosols",7,NA
 "Hypercalcic CHERNOZEM","Hypercalcic CHERNOZEM",7,"Calcic Chernozems"
 "Hypersodic LUVISOL","Hypersodic LUVISOL",7,NA
 "Hyposodic CAMBISOL","Hyposodic CAMBISOL",7,NA
@@ -561,6 +596,7 @@
 "Lithosols","Lithosols",7,NA
 "Mazic VERTISOL","Mazic VERTISOL",7,"Mazic Vertisols"
 "NATRIC-GYPSIC VERTISOL","NATRIC-GYPSIC VERTISOL",7,"Gypsic Vertisols"
+"Orthi-Ferric Acrisol","Orthi-Ferric Acrisol",7,NA
 "Petric Plinthosol","Petric Plinthosol",7,"Petric Plinthosols"
 "Pisoplinthic-Acric Plinthosol","Pisoplinthic-Acric Plinthosol",7,"Acric Plinthosols"
 "Rhodic Luvisol","Rhodic Luvisol",7,NA
@@ -568,8 +604,7 @@
 "Sodic CHERNOZEM","Sodic CHERNOZEM",7,NA
 "Stagnic Calcic Chernozem","Stagnic Calcic Chernozem",7,"Calcic Chernozems"
 "Umbric ANDOSOL","Umbric ANDOSOL",7,"Umbric Andosols"
-"Vertic Cambisols","Vertic Cambisols",7,"Vertic Cambisols"
-"Vertisols","Vertisols",7,NA
+"Vertisol","Vertisol",7,NA
 "Arenic LUVISOL","Arenic LUVISOL",6,NA
 "Calcic Cryosols Eutric","Calcic Cryosols Eutric",6,"Calcic Cryosols"
 "Carbic Podzols","Carbic Podzols",6,"Carbic Podzols"
@@ -582,7 +617,6 @@
 "Endopetrocalcic CHERNOZEM","Endopetrocalcic CHERNOZEM",6,"Petrocalcic Chernozems"
 "Endopetrocalcic KASTAﾃ前ZEM","Endopetrocalcic KASTAﾃ前ZEM",6,NA
 "Endoskeletic REGOSOL","Endoskeletic REGOSOL",6,NA
-"Epipetric Plinthosol","Epipetric Plinthosol",6,"Petric Plinthosols"
 "Eutric REGOSOL","Eutric REGOSOL",6,NA
 "Ferralic Cambisols","Ferralic Cambisols",6,"Ferralic Cambisols"
 "Ferralic Paraleptic Cambisol","Ferralic Paraleptic Cambisol",6,"Leptic Cambisols"
@@ -598,24 +632,25 @@
 "Hypocalcic LUVISOL","Hypocalcic LUVISOL",6,"Calcic Luvisols"
 "Hypoluvic ARENOSOL","Hypoluvic ARENOSOL",6,"Hypoluvic Arenosols"
 "Hypoluvic Arenosols","Hypoluvic Arenosols",6,"Hypoluvic Arenosols"
-"LEPTIC-CALCARIC CAMBISOL","LEPTIC-CALCARIC CAMBISOL",6,NA
 "Leptic Phaeozem","Leptic Phaeozem",6,"Leptic Phaeozems"
 "Leptic Regosol","Leptic Regosol",6,"Leptic Regosols"
+"LEPTIC-CALCARIC CAMBISOL","LEPTIC-CALCARIC CAMBISOL",6,NA
 "Luvic ANDOSOL","Luvic ANDOSOL",6,NA
-"Mollic Leptosols","Mollic Leptosols",6,"Mollic Leptosols"
 "Mollic Nitisol","Mollic Nitisol",6,"Mollic Nitisols"
 "Mollic Vertisols Eutric","Mollic Vertisols Eutric",6,"Mollic Vertisols"
+"Orthic Luvisol","Orthic Luvisol",6,"Haplic Luvisols"
+"Pellic Vertisols","Pellic Vertisols",6,NA
 "PETRIC-SKELETIC CALCISOL","PETRIC-SKELETIC CALCISOL",6,NA
 "Rubi-Hypoluvic Arenosols","Rubi-Hypoluvic Arenosols",6,"Hypoluvic Arenosols"
 "Sodic KASTAﾃ前ZEM","Sodic KASTAﾃ前ZEM",6,NA
 "Stagnic Podzoluvisol","Stagnic Podzoluvisol",6,"Stagnic Podzols"
 "Stagnic Vertisol","Stagnic Vertisol",6,"Stagnic Vertisols"
 "Turbic Cryosols Dystric","Turbic Cryosols Dystric",6,"Turbic Cryosols"
+"Umbric Alisol","Umbric Alisol",6,"Umbric Alisols"
 "Umbric Leptosols Brunic","Umbric Leptosols Brunic",6,"Umbric Leptosols"
 "Umbric Podzol","Umbric Podzol",6,"Umbric Podzols"
 "Vertic Calcisol","Vertic Calcisol",6,"Vertic Calcisols"
 "Vertic CAMBISOL","Vertic CAMBISOL",6,"Vertic Cambisols"
-"Vertisol","Vertisol",6,NA
 "Abruptic PHAEOZEM","Abruptic PHAEOZEM",5,NA
 "Acric Ferralsols","Acric Ferralsols",5,"Acric Ferralsols"
 "Albi-Hyposodic Planosols","Albi-Hyposodic Planosols",5,NA
@@ -624,6 +659,8 @@
 "Arenic CAMBISOL","Arenic CAMBISOL",5,NA
 "Calcaric Arenosols","Calcaric Arenosols",5,NA
 "Calcic Stagnic Vertisol (Calcaric)","Calcic Stagnic Vertisol (Calcaric)",5,"Stagnic Vertisols"
+"Calcic Vertisols (Calcaric)","Calcic Vertisols (Calcaric)",5,"Calcic Vertisols"
+"Calcic Vertisols (Eutric, Pellic) ","Calcic Vertisols (Eutric, Pellic) ",5,"Calcic Vertisols"
 "Chromi-Ferralic Cambisols","Chromi-Ferralic Cambisols",5,"Ferralic Cambisols"
 "Dystri-Hypoferralic Arenosol","Dystri-Hypoferralic Arenosol",5,"Ferralic Arenosols"
 "Dystric Luvisols","Dystric Luvisols",5,NA
@@ -640,11 +677,15 @@
 "Ferralic-Acric Nitisol","Ferralic-Acric Nitisol",5,"Acric Nitisols"
 "Gleyic Phaeozems Clayic","Gleyic Phaeozems Clayic",5,"Gleyic Phaeozems"
 "Gleyic Solonetz Albic","Gleyic Solonetz Albic",5,"Gleyic Solonetz"
+"Gleyic Vertisols (Eutric)","Gleyic Vertisols (Eutric)",5,"Gleyic Vertisols"
 "Haplic Cryosols Oxyaquic","Haplic Cryosols Oxyaquic",5,"Haplic Cryosols"
 "Haplic Cryosols reductaquic","Haplic Cryosols reductaquic",5,"Haplic Cryosols"
-"Haplic Luvisols (Chromic)","Haplic Luvisols (Chromic)",5,"Haplic Luvisols"
+"Haplic Gleysols (Dystric)","Haplic Gleysols (Dystric)",5,"Haplic Gleysols"
+"Haplic Gleysols (Eutric)","Haplic Gleysols (Eutric)",5,"Haplic Gleysols"
+"Haplic Luvisols (Rhodic)","Haplic Luvisols (Rhodic)",5,"Haplic Luvisols"
 "Haplic Solonchaks Aridic","Haplic Solonchaks Aridic",5,"Haplic Solonchaks"
 "Haplic Vertisol (Calcaric, Eutric)","Haplic Vertisol (Calcaric, Eutric)",5,"Haplic Vertisols"
+"Haplic Vertisols (Eutric, Pellic) ","Haplic Vertisols (Eutric, Pellic) ",5,"Haplic Vertisols"
 "Histic Gleysols Dystric","Histic Gleysols Dystric",5,"Histic Gleysols"
 "Histosol","Histosol",5,NA
 "Humi-Umbric Acrisols","Humi-Umbric Acrisols",5,"Umbric Acrisols"
@@ -656,11 +697,11 @@
 "Hyposodi-Calcic Luvisols","Hyposodi-Calcic Luvisols",5,"Calcic Luvisols"
 "Hyposodic PHAEOZEM","Hyposodic PHAEOZEM",5,NA
 "Hyposodic REGOSOL","Hyposodic REGOSOL",5,NA
-"Leptosol Lithic","Leptosol Lithic",5,NA
+"Leptosol Lithicﾃδｿ","Leptosol Lithicﾃδｿ",5,NA
 "LITHIC-YERMIC LEPTOSOL","LITHIC-YERMIC LEPTOSOL",5,NA
 "Mollic NITISOL","Mollic NITISOL",5,"Mollic Nitisols"
-"Nitisols","Nitisols",5,NA
-"Pellic Vertisols","Pellic Vertisols",5,NA
+"Mollic Nitisols (Rhodic, Humic)","Mollic Nitisols (Rhodic, Humic)",5,"Mollic Nitisols"
+"Orthic Acrisol","Orthic Acrisol",5,NA
 "Pisoplinthic Acrisol","Pisoplinthic Acrisol",5,"Plinhtic Acrisols"
 "Pisoplinthic Plinthosol","Pisoplinthic Plinthosol",5,NA
 "Podzols","Podzols",5,NA
@@ -671,7 +712,6 @@
 "Stagnic Vertisol (Bathygypsic, Calcaric)","Stagnic Vertisol (Bathygypsic, Calcaric)",5,"Stagnic Vertisols"
 "Stagnic Vertisol (Calcaric, Chromic)","Stagnic Vertisol (Calcaric, Chromic)",5,"Stagnic Vertisols"
 "Turbic Cryosols Eutric","Turbic Cryosols Eutric",5,"Turbic Cryosols"
-"Umbric Alisol","Umbric Alisol",5,"Umbric Alisols"
 "Umbrihumic ACRISOL","Umbrihumic ACRISOL",5,"Haplic Acrisols"
 "Vertic Mollic Solonetz","Vertic Mollic Solonetz",5,"Mollic Solonetz"
 "Xanthic Ferralsols","Xanthic Ferralsols",5,NA
@@ -683,20 +723,24 @@
 "Areni-Calcic Luvisols","Areni-Calcic Luvisols",4,"Calcic Luvisols"
 "Aridic FLUVISOL","Aridic FLUVISOL",4,NA
 "Brunic Arenosol","Brunic Arenosol",4,"Brunic Arenosols"
+"Calcaric LUVISOL","Calcaric LUVISOL",4,NA
 "CALCARIC-CHROMIC CAMBISOL","CALCARIC-CHROMIC CAMBISOL",4,NA
 "CALCARIC-SKELETIC FLUVISOL","CALCARIC-SKELETIC FLUVISOL",4,NA
-"Calcaric LUVISOL","Calcaric LUVISOL",4,NA
 "Calcic GIPSISOL","Calcic GIPSISOL",4,NA
 "Calcic Grumic Vertisol (Hyposodic, Chromic)","Calcic Grumic Vertisol (Hyposodic, Chromic)",4,"Grumic Vertisols"
 "Chromi-Ferric Acrisols","Chromi-Ferric Acrisols",4,NA
 "Chromi-Luvic Planosols","Chromi-Luvic Planosols",4,"Luvic Planosols"
 "Chromic Paraleptic Lixisol","Chromic Paraleptic Lixisol",4,"Leptic Lixisols"
+"Chromic Vertisols","Chromic Vertisols",4,NA
 "Cutanic Albeluvisol","Cutanic Albeluvisol",4,"Cutanic Albeluvisols"
 "Cutanic Gleyic Alisol","Cutanic Gleyic Alisol",4,"Gleyic Alisols"
 "Cutanic Gleyic Vertic Alisol","Cutanic Gleyic Vertic Alisol",4,"Vertic Alisols"
+"Cutanic Luvisols (Clayic)","Cutanic Luvisols (Clayic)",4,"Cutanic Luvisols"
+"Cutanic Luvisols (Epi-dystric)","Cutanic Luvisols (Epi-dystric)",4,"Cutanic Luvisols"
 "Cutanic Stagnic Albeluvisol","Cutanic Stagnic Albeluvisol",4,"Stagnic Albeluvisols"
 "Dystri-Albic Arenosol","Dystri-Albic Arenosol",4,"Albic Arenosols"
 "Dystric ANDOSOL","Dystric ANDOSOL",4,NA
+"Endogleyi-Ferric Planosol","Endogleyi-Ferric Planosol",4,NA
 "Endogleyic Arenosol","Endogleyic Arenosol",4,"Endogleyic Arenosols"
 "Endogleyic PHAEOZEM","Endogleyic PHAEOZEM",4,"Gleyic Phaeozems"
 "Endopetroduric VERTISOL","Endopetroduric VERTISOL",4,"Duric Vertisols"
@@ -713,10 +757,13 @@
 "Eutric Chromic Cambisol","Eutric Chromic Cambisol",4,NA
 "Eutric Gleyic Fluvisol","Eutric Gleyic Fluvisol",4,"Gleyic Fluvisols"
 "Eutric NITISOL","Eutric NITISOL",4,NA
+"Eutric Planosols","Eutric Planosols",4,NA
 "Ferralic-Cambic Umbrisol","Ferralic-Cambic Umbrisol",4,"Cambic Umbrisols"
 "FERRALIC-CHROMIC CAMBISOL","FERRALIC-CHROMIC CAMBISOL",4,NA
 "Ferralic-Lixic Nitisol","Ferralic-Lixic Nitisol",4,"Lixic Nitisols"
+"Ferralsols","Ferralsols",4,NA
 "Fluvic Cambisol","Fluvic Cambisol",4,"Fluvic Cambisols"
+"Fluvisol","Fluvisol",4,NA
 "Folic Gleysol","Folic Gleysol",4,"Folic Gleysols"
 "Gleyi-Eutric Vertisol","Gleyi-Eutric Vertisol",4,NA
 "Gleyic Arenosols","Gleyic Arenosols",4,NA
@@ -724,9 +771,10 @@
 "Grumi-Pellic Vertisols","Grumi-Pellic Vertisols",4,NA
 "Gypsic Vertisol","Gypsic Vertisol",4,"Gypsic Vertisols"
 "Haplic Albeluvisols Hypereutric","Haplic Albeluvisols Hypereutric",4,"Haplic Albeluvisols"
-"Haplic Gleysols (Eutric)","Haplic Gleysols (Eutric)",4,"Haplic Gleysols"
 "Haplic Gleysols Humic","Haplic Gleysols Humic",4,"Haplic Gleysols"
 "Haplic Histosol","Haplic Histosol",4,NA
+"Haplic Luvisols (Hyper-eutric)","Haplic Luvisols (Hyper-eutric)",4,"Haplic Luvisols"
+"Haplic Luvisols (Skeletic)","Haplic Luvisols (Skeletic)",4,"Haplic Luvisols"
 "Haplic Solonetz Albic","Haplic Solonetz Albic",4,"Haplic Solonetz"
 "Haplic Vertisol (Gypsiric, Calcaric, Hyposalic)","Haplic Vertisol (Gypsiric, Calcaric, Hyposalic)",4,"Haplic Vertisols"
 "Histic Gleysols Novic","Histic Gleysols Novic",4,"Histic Gleysols"
@@ -738,6 +786,7 @@
 "Hyperdystric ANDOSOL","Hyperdystric ANDOSOL",4,NA
 "Hyperdystric LUVISOL","Hyperdystric LUVISOL",4,NA
 "Hyposalic VERTISOL","Hyposalic VERTISOL",4,"Salic Vertisols"
+"Leptic Cambisols","Leptic Cambisols",4,"Leptic Cambisols"
 "LEPTOSOL","LEPTOSOL",4,NA
 "Leptosol Hyperskeletic","Leptosol Hyperskeletic",4,NA
 "LITHIC-YERMIC-CALCARIC LEPTOSOL","LITHIC-YERMIC-CALCARIC LEPTOSOL",4,NA
@@ -747,15 +796,15 @@
 "Luvic Solodic Planosol","Luvic Solodic Planosol",4,"Solodic Planosols"
 "Mazic Vertisol (Calcaric, Eutric)","Mazic Vertisol (Calcaric, Eutric)",4,"Mazic Vertisols"
 "Mollic Lithic Leptosol","Mollic Lithic Leptosol",4,"Lithic Leptosols"
-"Pisoplinthic Petric Plinthosol","Pisoplinthic Petric Plinthosol",4,"Petric Plinthosols"
+"Plinthic Gleyic Lixisol","Plinthic Gleyic Lixisol",4,"Gleyic Lixisols"
 "Profondi-Alumic Acrisol","Profondi-Alumic Acrisol",4,NA
 "Profondic Luvisols","Profondic Luvisols",4,NA
 "Rhodic Ferralic Cambisol","Rhodic Ferralic Cambisol",4,"Ferralic Cambisols"
-"Rubic-Ferralic Arenosol","Rubic-Ferralic Arenosol",4,"Ferralic Arenosols"
 "Rubic Arenosol","Rubic Arenosol",4,"Rubic Arenosols"
+"Rubic-Ferralic Arenosol","Rubic-Ferralic Arenosol",4,"Ferralic Arenosols"
 "SKELETIC CALCISOL","SKELETIC CALCISOL",4,NA
-"Sodic-Calcic Vertisol","Sodic-Calcic Vertisol",4,"Calcic Vertisols"
 "Sodic Vertisol","Sodic Vertisol",4,"Sodic Vertisols"
+"Sodic-Calcic Vertisol","Sodic-Calcic Vertisol",4,"Calcic Vertisols"
 "Stagnic Gleyic Lixisol","Stagnic Gleyic Lixisol",4,"Gleyic Lixisols"
 "Stagnic Regosol","Stagnic Regosol",4,"Stagnic Regosols"
 "Stagnic Vertisol (Calcaric)","Stagnic Vertisol (Calcaric)",4,"Stagnic Vertisols"
@@ -765,12 +814,13 @@
 "Umbrihumic Acrisols","Umbrihumic Acrisols",4,"Haplic Acrisols"
 "Umbrihumic LEPTOSOL","Umbrihumic LEPTOSOL",4,NA
 "Vertic Calcisol (Clayic, Aridic)","Vertic Calcisol (Clayic, Aridic)",4,"Vertic Calcisols"
+"Vertic Epi-leptic Cambisols (Eutric)","Vertic Epi-leptic Cambisols (Eutric)",4,"Leptic Cambisols"
 "Vertic Luvic Calcisol","Vertic Luvic Calcisol",4,"Luvic Calcisols"
 "Vertic Mollic Calcic Solonetz","Vertic Mollic Calcic Solonetz",4,"Calcic Solonetz"
 "Vertic SOLONETZ","Vertic SOLONETZ",4,"Vertic Solonetz"
 "Vertic Stagnic Alisol","Vertic Stagnic Alisol",4,"Stagnic Alisols"
-"Vetic-Acric Ferralsol","Vetic-Acric Ferralsol",4,"Acric Ferralsols"
 "Vetic Ferralsol","Vetic Ferralsol",4,"Vetic Ferralsols"
+"Vetic-Acric Ferralsol","Vetic-Acric Ferralsol",4,"Acric Ferralsols"
 "YERMIC LEPTOSOL","YERMIC LEPTOSOL",4,NA
 "Acri-plinthic Ferralsol","Acri-plinthic Ferralsol",3,"Plinthic Ferralsols"
 "Albic Lixisol","Albic Lixisol",3,NA
@@ -784,6 +834,8 @@
 "Calcic Gleysols","Calcic Gleysols",3,"Calcic Gleysols"
 "Calcic Sodic Vertisol","Calcic Sodic Vertisol",3,"Sodic Vertisols"
 "Calcic SOLONCHAK","Calcic SOLONCHAK",3,"Calcic Solonchaks"
+"Calcic Vertic Luvisols","Calcic Vertic Luvisols",3,"Vertic Luvisols"
+"Calcic Vertic Luvisols (Hyper-eutric, Clayic, Chromic)","Calcic Vertic Luvisols (Hyper-eutric, Clayic, Chromic)",3,"Vertic Luvisols"
 "Calcic Vertisol (Calcaric, Hyposodic)","Calcic Vertisol (Calcaric, Hyposodic)",3,"Calcic Vertisols"
 "Calcic Vertisol (Chromic)","Calcic Vertisol (Chromic)",3,"Calcic Vertisols"
 "Chromi-Arenic Acrisols","Chromi-Arenic Acrisols",3,NA
@@ -820,8 +872,8 @@
 "Escalic PHAEOZEM","Escalic PHAEOZEM",3,NA
 "Eutric  Cambisol","Eutric  Cambisol",3,NA
 "Ferral-Chromic Luvisol","Ferral-Chromic Luvisol",3,NA
-"Ferralic-Luvic Phaeozem","Ferralic-Luvic Phaeozem",3,"Luvic Phaeozems"
 "Ferralic Arenosol (Dystric, Xanthic)","Ferralic Arenosol (Dystric, Xanthic)",3,"Ferralic Arenosols"
+"Ferralic-Luvic Phaeozem","Ferralic-Luvic Phaeozem",3,"Luvic Phaeozems"
 "Ferric Lixisols","Ferric Lixisols",3,NA
 "Fibric HISTOSOL","Fibric HISTOSOL",3,"Fibric Histosols"
 "Fluvic Cambisol (Gypsiric, Calcaric, Chromic)","Fluvic Cambisol (Gypsiric, Calcaric, Chromic)",3,"Fluvic Cambisols"
@@ -830,15 +882,20 @@
 "Gleyic Cambisols","Gleyic Cambisols",3,"Endogleyic Cambisols"
 "Gleyic FLUVISOL","Gleyic FLUVISOL",3,"Gleyic Fluvisols"
 "Gleyic Kastanozems Chromic","Gleyic Kastanozems Chromic",3,"Gleyic Kastanozems"
+"Gleyic Vertisols (Mesotropic)","Gleyic Vertisols (Mesotropic)",3,"Gleyic Vertisols"
+"Gleyic Vertisols (Pellic, Eutric)","Gleyic Vertisols (Pellic, Eutric)",3,"Gleyic Vertisols"
 "Glossic Phaeozems","Glossic Phaeozems",3,NA
 "Grumic Vertisol (Calcaric)","Grumic Vertisol (Calcaric)",3,"Grumic Vertisols"
 "Hapli-Dystric Arenosol","Hapli-Dystric Arenosol",3,NA
-"Haplic Fluvisol (Calcaric)","Haplic Fluvisol (Calcaric)",3,"Haplic Fluvisols"
+"Haplic Cambisols (Dystric, Clayic)","Haplic Cambisols (Dystric, Clayic)",3,"Haplic Cambisols"
 "Haplic Fluvisol (Calcaric, Siltic)","Haplic Fluvisol (Calcaric, Siltic)",3,"Haplic Fluvisols"
+"Haplic Fluvisol (Calcaric)","Haplic Fluvisol (Calcaric)",3,"Haplic Fluvisols"
 "Haplic Gleysols","Haplic Gleysols",3,"Haplic Gleysols"
 "Haplic Leptosol","Haplic Leptosol",3,"Haplic Leptosols"
 "Haplic Leptosols Albic","Haplic Leptosols Albic",3,"Haplic Leptosols"
-"Haplic Nitisols","Haplic Nitisols",3,"Haplic Nitisols"
+"Haplic Luvisols (Clayic)","Haplic Luvisols (Clayic)",3,"Haplic Luvisols"
+"Haplic Nitisols (Skeletic)","Haplic Nitisols (Skeletic)",3,"Haplic Nitisols"
+"Haplic Regosols (Clayic)","Haplic Regosols (Clayic)",3,"Haplic Regosols"
 "Humi-Ferralic Umbrisol","Humi-Ferralic Umbrisol",3,"Ferralic Umbrisols"
 "Humic ANDOSOL","Humic ANDOSOL",3,NA
 "Humic CHERNOZEM","Humic CHERNOZEM",3,NA
@@ -852,26 +909,33 @@
 "Hypoluvic Arenosol","Hypoluvic Arenosol",3,"Hypoluvic Arenosols"
 "Hyposodi-Pellic Vertisols","Hyposodi-Pellic Vertisols",3,NA
 "Hyposodic SOLONCHAK","Hyposodic SOLONCHAK",3,NA
-"LEPTIC-YERMIC-CALCARIC REGOSOL","LEPTIC-YERMIC-CALCARIC REGOSOL",3,"Aric Regosols"
 "Leptic Luvisol","Leptic Luvisol",3,"Leptic Luvisols"
 "Leptic Phaeozems","Leptic Phaeozems",3,"Leptic Phaeozems"
+"Leptic Regosols (Eutric)","Leptic Regosols (Eutric)",3,"Leptic Regosols"
+"LEPTIC-YERMIC-CALCARIC REGOSOL","LEPTIC-YERMIC-CALCARIC REGOSOL",3,"Aric Regosols"
 "Leptosol Lithic","Leptosol Lithic",3,NA
 "Lithic Leptosols Brunic","Lithic Leptosols Brunic",3,"Lithic Leptosols"
 "Lithic Leptosols Humic","Lithic Leptosols Humic",3,"Lithic Leptosols"
 "Luvic KASTAﾃ前ZEM","Luvic KASTAﾃ前ZEM",3,NA
 "Luvic Kastanozems","Luvic Kastanozems",3,"Luvic Kastanozems"
+"Luvic Nitisols (Eutric)","Luvic Nitisols (Eutric)",3,"Luvic Nitisols"
 "Luvic Planosol","Luvic Planosol",3,"Luvic Planosols"
 "Luvic Planosols","Luvic Planosols",3,"Luvic Planosols"
+"Luvisols (Rhodic)","Luvisols (Rhodic)",3,NA
 "Molli-Gleyic Fluvisols","Molli-Gleyic Fluvisols",3,"Gleyic Fluvisols"
 "MOLLIC FLUVISOL","MOLLIC FLUVISOL",3,"Mollic Fluvisols"
+"Mollic Fluvisols","Mollic Fluvisols",3,"Mollic Fluvisols"
+"Nitic Luvisols (Epi-dystric)","Nitic Luvisols (Epi-dystric)",3,"Nitic Luvisols"
+"Nitic Luvisols (Rhodic)","Nitic Luvisols (Rhodic)",3,"Nitic Luvisols"
 "Paraplinthic Cambisols","Paraplinthic Cambisols",3,"Plinthic Cambisols"
+"Petroplinthic Lixisol","Petroplinthic Lixisol",3,"Plinthic Lixisols"
 "Placic LUVISOL","Placic LUVISOL",3,NA
 "Plinthic Acrisols","Plinthic Acrisols",3,"Plinhtic Acrisols"
 "Plinthic Ferralsols","Plinthic Ferralsols",3,"Plinthic Ferralsols"
 "Profondic ACRISOL","Profondic ACRISOL",3,NA
 "Profondic LIXISOL","Profondic LIXISOL",3,NA
-"Regosol Haplic","Regosol Haplic",3,NA
-"Regosol Skeletic","Regosol Skeletic",3,NA
+"Regosol Haplicﾃδｿ","Regosol Haplicﾃδｿ",3,NA
+"Regosol Skeleticﾃδｿ","Regosol Skeleticﾃδｿ",3,NA
 "Rhodi-Ferric Lixisols","Rhodi-Ferric Lixisols",3,NA
 "Rhodi-Humic Nitisols","Rhodi-Humic Nitisols",3,NA
 "Rhodi-Profondic Lixisols","Rhodi-Profondic Lixisols",3,NA
@@ -884,12 +948,15 @@
 "Stagnic FLUVISOL","Stagnic FLUVISOL",3,"Stagnic Fluvisols"
 "Stagnic LUVISOL","Stagnic LUVISOL",3,"Stagnic Luvisols"
 "Stagnic Umbrisol","Stagnic Umbrisol",3,"Stagnic Umbrisols"
+"Thapto-Plinthic Luvisol","Thapto-Plinthic Luvisol",3,NA
 "Umbri-Humic Acrisols","Umbri-Humic Acrisols",3,"Haplic Acrisols"
 "Umbric Geysols Dystric","Umbric Geysols Dystric",3,NA
 "Umbric LEPTOSOL","Umbric LEPTOSOL",3,"Umbric Leptosols"
 "Umbric Leptosols Dystric","Umbric Leptosols Dystric",3,"Umbric Leptosols"
+"Vertic Cambisols (Calcaric)","Vertic Cambisols (Calcaric)",3,"Vertic Cambisols"
 "Vertic Gleyic Calcic Chernozem","Vertic Gleyic Calcic Chernozem",3,"Calcic Chernozems"
 "Vertic KASTAﾃ前ZEM","Vertic KASTAﾃ前ZEM",3,NA
+"Vertic Luvisols (Rhodic)","Vertic Luvisols (Rhodic)",3,"Vertic Luvisols"
 "Vertic PLANOSOL","Vertic PLANOSOL",3,"Vertic Planosols"
 "Vetic-Cutanic Acrisol","Vetic-Cutanic Acrisol",3,"Cutanic Acrisols"
 "Vetic-Pisoplinthic Acrisol","Vetic-Pisoplinthic Acrisol",3,"Plinhtic Acrisols"
@@ -911,10 +978,10 @@
 "Areni-Endoleptic Regosols","Areni-Endoleptic Regosols",2,"Leptic Regosols"
 "Areni-Gleyic Fluvisols","Areni-Gleyic Fluvisols",2,"Gleyic Fluvisols"
 "Areni-Hyposodic Planosols","Areni-Hyposodic Planosols",2,NA
-"ARENIC-CALCARIC REGOSOL","ARENIC-CALCARIC REGOSOL",2,"Aric Regosols"
 "Arenic PHAEOZEM","Arenic PHAEOZEM",2,NA
 "ARENIC REGOSOL","ARENIC REGOSOL",2,NA
 "Arenic Regosols","Arenic Regosols",2,NA
+"ARENIC-CALCARIC REGOSOL","ARENIC-CALCARIC REGOSOL",2,"Aric Regosols"
 "Aridic LEPTOSOL","Aridic LEPTOSOL",2,NA
 "Brunic-Ferralic Arenosol","Brunic-Ferralic Arenosol",2,"Ferralic Arenosols"
 "Calcari-Leptic Regosols","Calcari-Leptic Regosols",2,"Leptic Regosols"
@@ -926,76 +993,9 @@
 "Calcic Chernozems Sodic","Calcic Chernozems Sodic",2,"Calcic Chernozems"
 "Calcic Fluvisol (Calcaric)","Calcic Fluvisol (Calcaric)",2,"Calcic Fluvisols"
 "Calcic Fluvisols Oxyaquic","Calcic Fluvisols Oxyaquic",2,"Calcic Fluvisols"
+"Calcic Gleyic Vertisols","Calcic Gleyic Vertisols",2,"Gleyic Vertisols"
 "Calcic Luvic Phaeozem","Calcic Luvic Phaeozem",2,"Luvic Phaeozems"
 "Calcic LUVISOL","Calcic LUVISOL",2,"Calcic Luvisols"
 "Calcic Mollic Vertisol","Calcic Mollic Vertisol",2,"Mollic Vertisols"
-"Calcic SOLONETZ","Calcic SOLONETZ",2,"Calcic Solonetz"
-"Calcic Vertic Chernozem","Calcic Vertic Chernozem",2,"Vertic Chernozems"
-"Calcic Vertisol (Calcaric)","Calcic Vertisol (Calcaric)",2,"Calcic Vertisols"
-"Chromi-Abruptic Lixisols","Chromi-Abruptic Lixisols",2,NA
-"Chromi-Arenic Luvisols","Chromi-Arenic Luvisols",2,NA
-"Chromi-Leptic Cambisols","Chromi-Leptic Cambisols",2,"Leptic Cambisols"
-"Chromi-Profondic Acrisols","Chromi-Profondic Acrisols",2,NA
-"Chromi-Profondic Luvisols","Chromi-Profondic Luvisols",2,NA
-"Chromic CALCISOL","Chromic CALCISOL",2,NA
-"Chromic LEPTOSOL","Chromic LEPTOSOL",2,NA
-"Chromic LIXISOL","Chromic LIXISOL",2,NA
-"Chromic Paraleptic Luvisol","Chromic Paraleptic Luvisol",2,"Leptic Luvisols"
-"Cutani-Chromic Luvisols","Cutani-Chromic Luvisols",2,NA
-"Cutanic-Gleyic Luvisol","Cutanic-Gleyic Luvisol",2,"Gleyic Luvisols"
-"Cutanic Umbric Alisol","Cutanic Umbric Alisol",2,"Umbric Alisols"
-"Dystri-Ferralic Arenosol","Dystri-Ferralic Arenosol",2,"Ferralic Arenosols"
-"Dystri-Gleyic Arenosols","Dystri-Gleyic Arenosols",2,NA
-"Dystri-Luvic Arenosol","Dystri-Luvic Arenosol",2,"Hypoluvic Arenosols"
-"Dystri-Skeletic Regosol","Dystri-Skeletic Regosol",2,NA
-"Dystric Arenosol","Dystric Arenosol",2,NA
-"Dystric CAMBISOL","Dystric CAMBISOL",2,NA
-"Dystric REGOSOL","Dystric REGOSOL",2,NA
-"Endogleyic Planosol","Endogleyic Planosol",2,"Endogleyic Planosols"
-"Endogleyic REGOSOL","Endogleyic REGOSOL",2,"Endogleyic Regosols"
-"Endoleptic Cambisol","Endoleptic Cambisol",2,"Leptic Cambisols"
-"Endoleptic Mollic Vertisol","Endoleptic Mollic Vertisol",2,"Mollic Vertisols"
-"Endoleptic Umbrisol","Endoleptic Umbrisol",2,"Leptic Umbrisols"
-"Endopetrocalcic VERTISOL","Endopetrocalcic VERTISOL",2,"Calcic Vertisols"
-"Endosalic Gleysol","Endosalic Gleysol",2,"Endosalic Gleysols"
-"Endoskeletic PLANOSOL","Endoskeletic PLANOSOL",2,NA
-"Endosodic GLEYSOL","Endosodic GLEYSOL",2,NA
-"Epidystric LUVISOL","Epidystric LUVISOL",2,NA
-"Epigleyi-Salic Fluvisols","Epigleyi-Salic Fluvisols",2,"Salic Fluvisols"
-"Epileptic LIXISOL","Epileptic LIXISOL",2,"Leptic Lixisols"
-"Epipetrocalcic CALCISOL","Epipetrocalcic CALCISOL",2,NA
-"Episkeletic PHAEOZEM","Episkeletic PHAEOZEM",2,NA
-"Escalic PLANOSOL","Escalic PLANOSOL",2,"Alic Planosols"
-"Eutri-Arenic Fluvisols","Eutri-Arenic Fluvisols",2,NA
-"Eutri-Arenic Regosols","Eutri-Arenic Regosols",2,NA
-"Eutri-Epileptic Regosols","Eutri-Epileptic Regosols",2,"Leptic Regosols"
-"Eutri-Gleyic Arenosols","Eutri-Gleyic Arenosols",2,NA
-"Eutri-Gleyic Fluvisols","Eutri-Gleyic Fluvisols",2,"Gleyic Fluvisols"
-"Eutri-Rubic Arenosols","Eutri-Rubic Arenosols",2,"Rubic Arenosols"
-"Eutri-Skeletic Regosols","Eutri-Skeletic Regosols",2,NA
-"Eutric Leptic Regosol","Eutric Leptic Regosol",2,"Leptic Regosols"
-"Eutric Planosols","Eutric Planosols",2,NA
-"Ferrali-Gleyic Arenosols","Ferrali-Gleyic Arenosols",2,NA
-"Ferrali-Luvic Arenosol","Ferrali-Luvic Arenosol",2,"Hypoluvic Arenosols"
-"Ferralic-Hypoluvic-Brunic Arenosol","Ferralic-Hypoluvic-Brunic Arenosol",2,"Brunic Arenosols"
-"Ferralic-Hypoluvic-Rubic Arenosol","Ferralic-Hypoluvic-Rubic Arenosol",2,"Rubic Arenosols"
-"Ferralic-Rubic-Protic Arenosol","Ferralic-Rubic-Protic Arenosol",2,"Protic Arenosols"
-"Ferralic Nitisol","Ferralic Nitisol",2,"Ferralic Nitisols"
-"Ferralic Skeletic Cambisol","Ferralic Skeletic Cambisol",2,NA
-"Ferri-Profondic Luvisols","Ferri-Profondic Luvisols",2,NA
-"FLUVIC-CHROMIC CAMBISOL","FLUVIC-CHROMIC CAMBISOL",2,NA
-"Fluvic Vertic Cambisol (Calcaric)","Fluvic Vertic Cambisol (Calcaric)",2,"Vertic Cambisols"
-"Folic HISTOSOL","Folic HISTOSOL",2,"Folic Histosols"
-"Gleyic Calcic Vertisol","Gleyic Calcic Vertisol",2,"Calcic Vertisols"
-"Gleyic Luvic Phaeozem","Gleyic Luvic Phaeozem",2,"Luvic Phaeozems"
-"Gleyic Stagnic Calcic Chernozem","Gleyic Stagnic Calcic Chernozem",2,"Calcic Chernozems"
-"Gleyic Stagnic Phaeozem","Gleyic Stagnic Phaeozem",2,"Stagnic Phaeozems"
-"Gleyic Vertisol","Gleyic Vertisol",2,"Gleyic Vertisols"
-"Gleysol","Gleysol",2,NA
-"Hapli-Acric Ferralsol","Hapli-Acric Ferralsol",2,"Acric Ferralsols"
-"Hapli-Humic Umbrisol","Hapli-Humic Umbrisol",2,NA
-"HAPLIC / ARENIC REGOSOL","HAPLIC / ARENIC REGOSOL",2,NA
-"Haplic Andosols","Haplic Andosols",2,"Haplic Andosols"
-"Haplic Cambisols Calcaric","Haplic Cambisols Calcaric",2,"Haplic Cambisols"
-"(Other)","(Other)",1342,NA
+"(Other)","(Other)",1648,NA
 "NA's","NA's",1,NA

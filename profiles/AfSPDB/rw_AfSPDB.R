@@ -1,15 +1,16 @@
 # Reading and writing of the African SPDB (ca 18,000 profiles);
-# Download data from [http://www.isric.org/data/africa-soil-profiles-database-version-01-2]
-# by Tom.Hengl@isric.org
+# Download data from [http://www.isric.org/data/africa-soil-profiles-database]
+# Tom.Hengl@isric.org
 
 library(aqp)
 library(plyr)
 library(sp)
 library(zoo)
 library(plotKML)
+library(tools)
 
-Layers <- read.csv("AfSP012_2Qry_Layers.csv")
-Profiles <- read.csv("AfSP012_2Qry_Profiles.csv")
+Layers <- read.csv("AfSP01301Qry_Layers.csv", stringsAsFactors=FALSE, fileEncoding="latin1")
+Profiles <- read.csv("AfSP01301Qry_Profiles.csv", stringsAsFactors=FALSE, fileEncoding="latin1")
 ## select columns of interest:
 s.lst <- c("ProfileID", "Reliab", "X_LonDD", "Y_LatDD", "XYAccur", "T_Year", "WRB06", "WRB06rg", "FAO88", "USDA", "LocalCls", "Location", "Drain", "RockDpth")
 h.lst <- c("ProfileID", "LayerID", "LayerNr", "UpDpth", "LowDpth", "HorDes", "ColorM", "ColorD", "FldTxtr", "CfPc", "Sand", "Silt", "Clay", "BlkDens", "PHH2O", "PHKCl", "EC", "OrgC", "TotalN", "Ecec", "Bsat", "CecSoil", "LabTxtr", "VolAWC", "ExCa", "ExNa", "ExMg", "ExK", "ExBases", "ExAl", "ExAcid")
@@ -34,7 +35,9 @@ for(j in c("CfPc", "Sand", "Silt", "Clay", "BlkDens", "PHH2O", "PHKCl", "EC", "O
 }
 horizons <- rename(Layers[,c("ProfileID","LayerID","UpDpth","LowDpth","CfPc","Sand","Silt","Clay","BlkDens","PHH2O","PHKCl","OrgC","CecSoil")], c("ProfileID"="SOURCEID", "LayerID"="SAMPLEID", "UpDpth"="UHDICM", "LowDpth"="LHDICM", "CfPc"="CRFVOL", "Sand"="SNDPPT", "Silt"="SLTPPT", "Clay"="CLYPPT", "BlkDens"="BLD", "PHH2O"="PHIHOX", "PHKCl"="PHIKCL", "OrgC"="ORCDRC", "CecSoil"="CECSUM"))
 horizons$SAMPLEID <- make.unique(as.character(horizons$SAMPLEID))
-## 74,961 layer
+horizons$LHDICM <- as.numeric(horizons$LHDICM)
+horizons$CRFVOL <- as.numeric(horizons$CRFVOL)
+## 79,531 layer
 
 ## hits on visual check:
 ## 39 negative UHDICM values (likely 'mulch' layer records as LHDICM = 0)
@@ -51,7 +54,7 @@ TexSum <- rowSums(horizons[,c("CLYPPT","SNDPPT","SLTPPT")], na.rm=TRUE)
 hist(TexSum)
 selTex <- TexSum > 110 | TexSum < 90
 str(horizons[which(TexSum>0&TexSum<90),])
-##61 obs above pH 10.5 - rare potential for EXTREME sodic soils (but above 10.5 is questionable calibration?? Or an arid mineral spring ;P) check spatial location for clustering.
+## 61 obs above pH 10.5 - rare potential for EXTREME sodic soils (but above 10.5 is questionable calibration?? Or an arid mineral spring ;P) check spatial location for clustering.
 str(horizons[which(horizons$PHIHOX>=10.5),])
 ## as above but 46 obs. Check spatial location and with soil chemist.
 str(horizons[which(horizons$PHIKCL>=9.5),])
@@ -60,25 +63,7 @@ str(horizons[which(horizons$ORCDRC<=0),])
 View(horizons[which(horizons$ORCDRC<=0),])
 ##3 obs of CEC = 0
 str(horizons[which(horizons$CECSUM<=0),])
-
 ## issues with BLD in gm per cm3 rather than kg per m3? - check
-
-
-##No hits 
-str(horizons[which(horizons$CRFVOL>100),])
-str(horizons[which(horizons$SNDPPT>100),])
-str(horizons[which(horizons$SNDPPT<0),])
-str(horizons[which(horizons$SLTPPT>100),])
-str(horizons[which(horizons$SLTPPT<0),])
-str(horizons[which(horizons$CLYPPT>100),])
-str(horizons[which(horizons$CLYPPT<0),])
-str(horizons[which(horizons$BLD==0),])
-str(horizons[which(horizons$BLD<0),])
-str(horizons[which(horizons$BLD>2300),])
-str(horizons[which(horizons$PHIHOX<2),])
-str(horizons[which(horizons$ORCDRC>=600),])
-str(horizons[which(horizons$CECSUM>=300),]) 
-
 
 ## clean up sites:
 sites <- Profiles[!duplicated(Profiles$ProfileID),]
@@ -116,7 +101,6 @@ summary(BDR.AfSPDB$BDRICM<250)
 str(BDR.AfSPDB)
 save(BDR.AfSPDB, file="BDR.AfSPDB.rda")
 
-
 # ------------------------------------------------------------
 # export TAXONOMY DATA
 # ------------------------------------------------------------
@@ -140,9 +124,9 @@ proj4string(TAXNWRB.AfSPDB) <- "+proj=longlat +datum=WGS84"
 plotKML(TAXNWRB.AfSPDB["TAXNWRB"])
 save(TAXNWRB.AfSPDB, file="TAXNWRB.AfSPDB.rda")
 
-##visual check 
+## visual check 
 View(TAXNWRB.AfSPDB$TAXNWRB)
-##22 obs with potential non-ascii characters
+## 22 obs with potential non-ascii characters
 print(showNonASCII(TAXNWRB.AfSPDB$TAXNWRB))
 ## no other detected issues 
 View(TAXOUSDA.AfSPDB$TAXNUSDA)
@@ -162,8 +146,21 @@ PEAT.AfSPDB <- join(horizons[c(sel.hist,sel.OC),], as.data.frame(TAXNWRB.AfSPDB)
 
 SPROPS.AfSPDB <- plyr::join(horizons, sites[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84")], type="left")
 SPROPS.AfSPDB$DEPTH <- SPROPS.AfSPDB$UHDICM + (SPROPS.AfSPDB$LHDICM - SPROPS.AfSPDB$UHDICM)/2
-SPROPS.AfSPDB <- SPROPS.AfSPDB[!is.na(SPROPS.AfSPDB$LONWGS84) & !is.na(SPROPS.AfSPDB$LATWGS84) & !is.na(SPROPS.AfSPDB$DEPTH),]
+SPROPS.AfSPDB <- SPROPS.AfSPDB[!is.na(SPROPS.AfSPDB$LONWGS84) & !is.na(SPROPS.AfSPDB$LATWGS84) & !SPROPS.AfSPDB$LONWGS84==0 & !is.na(SPROPS.AfSPDB$DEPTH),]
 SPROPS.AfSPDB$BLD = SPROPS.AfSPDB$BLD * 1000
 str(SPROPS.AfSPDB)
-## 74,961
+## 73,332
 save(SPROPS.AfSPDB, file="SPROPS.AfSPDB.rda")
+
+## v1.3
+profsv13 = SPROPS.AfSPDB[which(SPROPS.AfSPDB$SOURCEID %in% Profiles$ProfileID[Profiles$DbVersion==1.3]),]
+saveRDS(profsv13, "AfPDB_profsv13.rds")
+plot(profsv13[,c("LONWGS84","LATWGS84")])
+pnts.xy = profsv13
+#pnts.xy = pnts.xy[!duplicated(pnts.xy$SOURCEID),]
+pnts.xy = pnts.xy[!is.na(pnts.xy$ORCDRC),]
+coordinates(pnts.xy) = ~ LONWGS84 + LATWGS84
+proj4string(pnts.xy) = "+proj=longlat +datum=WGS84"
+unlink("AfPDB_profsv13.shp")
+writeOGR(pnts.xy, "AfPDB_profsv13.shp", "AfPDB_profsv13", "ESRI Shapefile")
+plotKML(pnts.xy)

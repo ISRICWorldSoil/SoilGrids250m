@@ -22,6 +22,7 @@ library(plotKML)
 #SITE <- sqlFetch(cGSPD, "Profile", stringsAsFactors=FALSE, as.is=TRUE)
 SITE <- read.csv("CHINA_SOTERv1_Profile.csv")
 str(SITE)
+#SITE$TIMESTRR = as.Date(SITE$SAYR, format="%Y")
 #HORIZON <- sqlFetch(cGSPD, "RepresentativeHorizonValues", stringsAsFactors=FALSE, as.is=TRUE)  
 HORIZON <- read.csv("CHINA_SOTERv1_Horizon.csv")
 horizons <- read.csv("china_wosis_horizon.csv")
@@ -35,6 +36,7 @@ horizons$ORCDRC <- horizons$ORCDRC*10
 
 sites <- read.csv("china_wosis_sites.csv")
 #sites$TIMESTRR <- as.Date(paste(sites$TIMESTR), format="%m-%d-%Y")
+summary(sites$TIMESTRR)
 sites$SOURCEID <- paste("CN", sites$SOURCEID, sep="_")
 
 # ------------------------------------------------------------
@@ -89,7 +91,7 @@ save(TAXNWRB.CHINA_SOTERv1, file="TAXNWRB.CHINA_SOTERv1.rda")
 # All soil properties
 # ------------------------------------------------------------
 
-SPROPS.CSPBNU <- plyr::join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","BLD","ORCDRC","CECSUM")], sites[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
+SPROPS.CSPBNU <- plyr::join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","BLD","ORCDRC","CECSUM")], sites[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","TIMESTRR")], type="left")
 SPROPS.CSPBNU <- SPROPS.CSPBNU[!is.na(SPROPS.CSPBNU$LONWGS84) & !is.na(SPROPS.CSPBNU$LATWGS84) & !is.na(SPROPS.CSPBNU$DEPTH),]
 #View(SPROPS.CSPBNU)
 str(SPROPS.CSPBNU)

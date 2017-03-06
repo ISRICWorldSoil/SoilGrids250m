@@ -7,28 +7,36 @@
 # outputs       : R data frames for SoilProfileCollection;
 # remarks 1     : horrible DB!
 
-library(RODBC)
+#library(RODBC)
 library(aqp)
 library(plyr)
 library(sp)
 library(rgdal)
 library(reshape)
 
-cGSPD <- odbcConnect(dsn="ISIS")
-# odbcGetInfo(cGSPD)
-sqlTables(cGSPD)$TABLE_NAME  # 245 tables
-ClassificationResults <- sqlFetch(cGSPD, "ClassificationResults", as.is=TRUE)  ## classifications, we need ValueID=209  WRB Soil Group
-ClassificationSamples <- sqlFetch(cGSPD, "ClassificationSamples", as.is=TRUE)
-SitedescriptionResults <- sqlFetch(cGSPD, "SitedescriptionResults", as.is=TRUE)
+#cGSPD <- odbcConnect(dsn="ISIS")
+## odbcGetInfo(cGSPD)
+#sqlTables(cGSPD)$TABLE_NAME  # 245 tables
+#ClassificationResults <- sqlFetch(cGSPD, "ClassificationResults", as.is=TRUE)  ## classifications, we need ValueID=209  WRB Soil Group
+#ClassificationSamples <- sqlFetch(cGSPD, "ClassificationSamples", as.is=TRUE)
+ClassificationResults <- read.csv("ClassificationResults.csv", stringsAsFactors = FALSE)
+ClassificationSamples <- read.csv("ClassificationSamples.csv", stringsAsFactors = FALSE)
+#SitedescriptionResults <- sqlFetch(cGSPD, "SitedescriptionResults", as.is=TRUE)
+SitedescriptionResults <- read.csv("SitedescriptionResults.csv", stringsAsFactors = FALSE)
 str(SitedescriptionResults)
-SitedescriptionSamples <- sqlFetch(cGSPD, "SitedescriptionSamples", as.is=TRUE)
-AnalyticalSamples <- sqlFetch(cGSPD, "AnalyticalSamples", as.is=TRUE)
-AnalyticalResults <- sqlFetch(cGSPD, "AnalyticalResults", as.is=TRUE)
-str(AnalyticalResults)
-Valuedescriptors <- sqlFetch(cGSPD, "Valuedescriptors", as.is=TRUE)
+#SitedescriptionSamples <- sqlFetch(cGSPD, "SitedescriptionSamples", as.is=TRUE)
+SitedescriptionSamples <- read.csv("SitedescriptionSamples.csv", stringsAsFactors = FALSE)
+#AnalyticalSamples <- sqlFetch(cGSPD, "AnalyticalSamples", as.is=TRUE)
+AnalyticalSamples <- read.csv("AnalyticalSamples.csv", stringsAsFactors = FALSE)
+#AnalyticalResults <- sqlFetch(cGSPD, "AnalyticalResults", as.is=TRUE)
+AnalyticalResults <- read.csv("AnalyticalResults.csv", stringsAsFactors = FALSE)
+#str(AnalyticalResults)
+#Valuedescriptors <- sqlFetch(cGSPD, "Valuedescriptors", as.is=TRUE)
+Valuedescriptors <- read.csv("Valuedescriptors.csv", stringsAsFactors = FALSE)
 str(Valuedescriptors)
-Sites <- sqlFetch(cGSPD, "Sites", as.is=TRUE)
-
+#Sites <- sqlFetch(cGSPD, "Sites", as.is=TRUE)
+Sites <- read.csv("Sites.csv", stringsAsFactors = FALSE)
+  
 ## create sites table:
 sites <- data.frame(SiteId=Sites$Id, SOURCEID=paste(Sites$CountryISO, Sites$SiteNumber, sep=""))
 tax.wrb <- subset(ClassificationResults, ValueId==209)[,c("SampleId","Value")] # 262 completed only;
@@ -91,7 +99,7 @@ save(TAXNWRB.ISIS, file="TAXNWRB.ISIS.rda")
 # prepare horizons table:
 hs <- data.frame(SampleId=AnalyticalSamples$Id, UHDICM=AnalyticalSamples$Top, LHDICM=AnalyticalSamples$Bottom, SiteId=AnalyticalSamples$SiteId)
 hs$LHDICM <- as.numeric(gsub(">", "", hs$LHDICM))
-hs <- join(hs, sites.f[,c("SiteId","SOURCEDB","SOURCEID","LONWGS84","LATWGS84")], type="left")
+hs <- join(hs, sites.f[,c("SiteId","SOURCEDB","SOURCEID","LONWGS84","LATWGS84","TIMESTRR")], type="left")
 pHHO5.tbl <- subset(AnalyticalResults, ValueId==1)[,c("SampleId","Value")]
 names(pHHO5.tbl)[2] <- "PHIHOX"
 pHKCL.tbl <- subset(AnalyticalResults, ValueId==2)[,c("SampleId","Value")]
@@ -129,7 +137,8 @@ horizons$CLYPPT <- ifelse(horizons$CLYPPT<0, NA, horizons$CLYPPT)
 horizons$SLTPPT <- ifelse(horizons$SLTPPT<0, NA, horizons$SLTPPT)
 horizons$SNDPPT <- ifelse(horizons$SNDPPT<0, NA, horizons$SNDPPT)
 
-SPROPS.ISIS <- horizons[,c("SOURCEID","SAMPLEID","SOURCEDB","LONWGS84","LATWGS84","UHDICM","LHDICM","DEPTH","SNDPPT","CLYPPT","SLTPPT","PHIHOX","ORCDRC","BLD","CECSUM","CRFVOL")]
+SPROPS.ISIS <- horizons[,c("SOURCEID","SAMPLEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","UHDICM","LHDICM","DEPTH","SNDPPT","CLYPPT","SLTPPT","PHIHOX","ORCDRC","BLD","CECSUM","CRFVOL")]
+str(SPROPS.ISIS)
 SPROPS.ISIS <- SPROPS.ISIS[!is.na(SPROPS.ISIS$LONWGS84) & !is.na(SPROPS.ISIS$LATWGS84) & !is.na(SPROPS.ISIS$DEPTH),]
 str(SPROPS.ISIS)
 ## 5616

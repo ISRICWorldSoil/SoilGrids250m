@@ -12,11 +12,12 @@ library(plotKML)
 library(dplyr)
 
 ## list of input data sets:
-tax.lst <- list.files(path="G:\\soilstorage\\SoilData", pattern=glob2rx("SPROPS.*.rda"), full.names=TRUE, recursive=TRUE)
+tax.lst <- list.files(path="/data/soilstorage/SoilData", pattern=glob2rx("SPROPS.*.rda"), full.names=TRUE, recursive=TRUE)
 tax.lst
 in.lst <- lapply(tax.lst, load, .GlobalEnv)
 in.lst <- lapply(in.lst, function(x){as.data.frame(get(x))})
-## 24 data sets
+## 29 data sets
+names(in.lst) = basename(tax.lst)
 
 ## Simulated sand dunes points:
 load("../TAXOUSDA/deserts.pnt.rda")
@@ -42,12 +43,14 @@ str(SPROPS.sim)
 ## add to the list:
 in.lst[[length(tax.lst)+1]] <- SPROPS.sim
 ## Bind everything together:
-all.pnts <- dplyr::rbind_all(in.lst)
+all.pnts <- dplyr::bind_rows(in.lst)
 str(all.pnts)
-## 782,945
+## Warning message:
+## In bind_rows_(x, .id) : Unequal factor levels: coercing to character
+## 809818 obs. of  20 variables
 all.pnts$LOC_ID <- as.factor(paste("ID", all.pnts$LONWGS84, all.pnts$LATWGS84, sep="_"))
 summary(!duplicated(all.pnts$LOC_ID))
-## 149,840 unique locations!
+## 154,412 unique locations!
 ## Filter out remaining values outside of physical range:
 all.pnts$SNDPPT <- ifelse(all.pnts$SNDPPT<0|all.pnts$SNDPPT>100, NA, all.pnts$SNDPPT)
 hist(all.pnts$SNDPPT, col="blue", xlab="Sand in %", breaks=40, main=sum(!is.na(all.pnts$SNDPPT)))
@@ -61,8 +64,10 @@ all.pnts$PHIKCL <- ifelse(all.pnts$PHIKCL<2|all.pnts$PHIKCL>12, NA, all.pnts$PHI
 hist(all.pnts$PHIKCL, col="blue", xlab="pH in KCl", breaks=40, main=sum(!is.na(all.pnts$PHIKCL)))
 all.pnts$ORCDRC <- ifelse(all.pnts$ORCDRC>800, NA, all.pnts$ORCDRC)
 hist(log1p(all.pnts$ORCDRC), col="blue", xlab="log-Organic carbon", breaks=40, main=sum(!is.na(all.pnts$ORCDRC)))
-## some groupings around very high values?
-all.pnts$BLD <- ifelse(all.pnts$BLD<50|all.pnts$BLD>3000, NA, all.pnts$BLD)
+all.pnts$CRFVOL <- ifelse(all.pnts$CRFVOL<0|all.pnts$CRFVOL>100, NA, all.pnts$CRFVOL)
+## some groupings around very high values for BLD - an error?
+all.pnts$BLD <- ifelse(all.pnts$BLD<50|all.pnts$BLD>2500, NA, all.pnts$BLD)
+## BLD -> 630,372 missing values!
 hist(all.pnts$BLD, col="blue", xlab="Bulk density", breaks=40, main=sum(!is.na(all.pnts$BLD)))
 all.pnts$CECSUM <- ifelse(all.pnts$CECSUM<0, 0, ifelse(all.pnts$CECSUM>600, NA, all.pnts$CECSUM))
 hist(log1p(all.pnts$CECSUM), col="blue", xlab="log-CEC", breaks=40, main=sum(!is.na(all.pnts$CECSUM)))
@@ -71,11 +76,11 @@ summary(as.factor(all.pnts$SOURCEDB))
 ## Scale the depths so they all start at 0 cm (soil surface) -> otherwise we might miss some important "O", "H" or similar topsoil / organic horizons;
 ## See also: https://groups.google.com/forum/#!topic/soilgrids-dev/zT0dy_XTuHQ
 hist(all.pnts$UHDICM, breaks=30)
+## There are some profiles that indicate depths beyond 10 m - probably not a good idea to include into modelling?
 #View(all.pnts[which(all.pnts$UHDICM>1000),])
-hist(log1p(all.pnts$LHDICM+100), breaks=30)
-## mask out points deeper than 10 m?
-#all.pnts <- all.pnts[all.pnts$UHDICM<1000,]
-## Takes >15 mins:
+all.pnts <- all.pnts[all.pnts$UHDICM<600,]
+hist(log1p(all.pnts$LHDICM), breaks=30)
+## the following takes >15 mins:
 z.min <- ddply(all.pnts, .(SOURCEID), summarize, aggregated = min(UHDICM, na.rm=TRUE))
 z.shift <- join(all.pnts[,c("SOURCEID","SOURCEDB")], z.min, type="left")$aggregated
 z.shift <- ifelse(z.shift>0, 0, z.shift)
@@ -89,7 +94,7 @@ summary(all.pnts$UHDICM.f, breaks=30)
 ## check distributions:
 par(mar=c(11,5,3,1))
 boxplot(log1p(ORCDRC)~SOURCEDB, all.pnts[all.pnts$LHDICM<30,], main="log1p(ORCDRC)", las=2)
-boxplot(PHIHOX~SOURCEDB, all.pnts, main="PHIHOX")
+boxplot(PHIHOX~SOURCEDB, all.pnts, main="PHIHOX", las=2)
 ## Organic carbon as function of depth:
 OC.m <- lm(log1p(ORCDRC)~log1p(DEPTH.f), all.pnts)
 summary(OC.m)
@@ -108,6 +113,7 @@ SPROPS.pnts <- SPROPS.pnts[!is.na(SPROPS.pnts$LONWGS84),]
 coordinates(SPROPS.pnts) <- ~ LONWGS84+LATWGS84
 proj4string(SPROPS.pnts) <- "+proj=longlat +datum=WGS84"
 length(SPROPS.pnts)
+#154,408
 summary(as.factor(SPROPS.pnts$SOURCEDB))
 save(SPROPS.pnts, file="SPROPS.pnts.rda")
 save.image()

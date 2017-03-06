@@ -108,7 +108,7 @@ Nsub <- 8e3
 library(doParallel)
 cl <- makeCluster(detectCores())
 registerDoParallel(cl)
-ctrl <- trainControl("boot",number=5)
+ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
 max.Mtry = round((length(all.vars(formulaString.USDA)[-1]))/3)
 rf.tuneGrid <- expand.grid(mtry = seq(10,max.Mtry,by=5))
 #mnetX_TAXOUSDA <- caret::train(formulaString.USDA, data=ov, method="multinom", trControl=ctrl, MaxNWts = 19000, na.action=na.omit) ## ?? minutes
@@ -149,9 +149,7 @@ lev <- mrfX_TAXOUSDA$forest$levels
 
 
 ## clean-up:
-#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^TAXOUSDA*.tif"), full.names=TRUE, recursive=TRUE)
-#unlink(del.lst)
-#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m1km", pattern=glob2rx("^TAXOUSDA*.tif"), full.names=TRUE, recursive=TRUE)
+#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^TAXOUSDA_*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 
 ## run all predictions in parallel
@@ -182,7 +180,7 @@ t.vars = paste0("TAXOUSDA_", lev)
 library(snowfall)
 sfInit(parallel=TRUE, cpus=ifelse(length(t.vars)>45, 45, length(t.vars)))
 sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd")
-out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i=NULL, in.path="/data/tt/SoilGrids250m/predicted250m", ot="Byte", dstnodata=255, metadata=metasd[grep(t.vars[x], metasd$FileName), sel.metasd]) )})
+out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i=NULL, in.path="/data/tt/SoilGrids250m/predicted250m", ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == t.vars[x]), sel.metasd]) )})
 sfStop()
 
 

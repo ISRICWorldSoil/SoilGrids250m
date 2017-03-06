@@ -14,7 +14,7 @@ library(rgdal)
 #library(e1071)
 #library(randomForest)
 library(devtools)
-#devtools::install_github('dmlc/xgboost')
+#install.packages("xgboost", repos=c("http://dmlc.ml/drat/", getOption("repos")), type="source")
 library(xgboost)
 #devtools::install_github("imbs-hl/ranger/ranger-r-package/ranger", ref="forest_memory") ## version to deal with Memory problems
 library(ranger)
@@ -56,7 +56,7 @@ tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
 ov <- extract.tiled(x=SPROPS.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=56)
 #str(ov)
 ovA <- join(all.pnts, ov, type="left", by="LOC_ID")
-## 803,864 rows
+## 807,962 rows
 
 ## Data inspection (final checks)
 hist(log1p(ovA$CECSUM))
@@ -73,32 +73,53 @@ ovA[which(ovA$DEPTH.f>600)[1],1:20]
 ## mask out "Artic" data?
 #ovA <- ovA[!ovA$SOURCEDB %in% c("Artic"),]
 summary(ovA$ORCDRC > 80) ## 5% of profiles >8% ORC
+
+## Fill in all missing CRFVOL values (we assume that if it is missing it is most likely "0"):
+ovA$CRFVOL.f = ifelse(is.na(ovA$CRFVOL), 0, ovA$CRFVOL)
+summary(ovA$CRFVOL.f)
+
+## relationship between ORC and BLD
+library(scales)
+library(hexbin)
+pfun <- function(x,y, ...){
+  panel.hexbinplot(x,y, ...)
+  panel.loess(x, y, ..., col = "black",lty=1,lw=2,span=1/18)
+}
+pal = R_pal[["bpy_colors"]][1:18]
+hexbinplot(ovA$BLD~ovA$ORCDRC, colramp=colorRampPalette(pal), xlab="Organic carbon (permille)", ylab="Bulk density (kg/cubic-m)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, asp=1, xbins=30, ybins=30, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1))
 ## Fill in gaps in soil BLD - we can make a PedoTransfer function:
-ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
 fm.BLD = as.formula("BLD ~ ORCDRC + CLYPPT + SNDPPT + PHIHOX + DEPTH.f")
 dfs = ovA[complete.cases(ovA[,all.vars(fm.BLD)]),all.vars(fm.BLD)]
 ## 116,940 points
 m.BLD_PTF <- ranger(fm.BLD, dfs, mtry = 2, num.trees = 85, importance='impurity')
+#ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
 #m.BLD_PTF <- caret::train(BLD~log1p(ORCDRC)+log1p(DEPTH.f)+PHIHOX+SNDPPT+CLYPPT, method="lm", ovA, na.action=na.omit, trControl=ctrl)
 m.BLD_PTF
 saveRDS.gz(m.BLD_PTF, "m_BLD_PTF.rds")
-predict(m.BLD_PTF, data.frame(ORCDRC=220, CLYPPT=15, PHIHOX=4.5, CLYPPT=15, SNDPPT=35, DEPTH.f=5))$predictions
+predict(m.BLD_PTF, data.frame(ORCDRC=11, CLYPPT=15, PHIHOX=6.5, CLYPPT=18, SNDPPT=35, DEPTH.f=5))$predictions
+predict(m.BLD_PTF, data.frame(ORCDRC=220, CLYPPT=15, PHIHOX=5.5, CLYPPT=15, SNDPPT=35, DEPTH.f=5))$predictions
 ## Simple correction from Kochy et al (2015):
-round((-0.31 * log1p(220/10) + 1.38)*1000)
+#round((-0.31 * log1p(220/10) + 1.38)*1000)
+m.BLD_ls = loess(BLD ~ ORCDRC, ovA, span=1/18)
+predict(m.BLD_ls, data.frame(ORCDRC=220))
 sel.BLD = complete.cases(ovA[,all.vars(fm.BLD)[-1]])
-## Take weighted average because the PTF over-estimates BLD for high ORC
-BLD.f = (predict(m.BLD_PTF, ovA[sel.BLD,])$predictions + round((-0.31 * log1p(ovA[sel.BLD,"ORCDRC"]/10) + 1.38)*1000))/2
+## Take weighted average because the RF-based PTF over-estimates BLD for high ORC
+BLD.f = (predict(m.BLD_PTF, ovA[sel.BLD,])$predictions + predict(m.BLD_ls, ovA[sel.BLD,]))/2
 BLD.f = ifelse(is.nan(BLD.f), NA, BLD.f)
-library(scales)
-xyplot(ovA$BLD~ovA$ORCDRC, par.settings=list(plot.symbol=list(col=alpha("black", 0.6), fill=alpha("red", 0.6), pch=21, cex=0.6)), ylim=c(0,2500))
-xyplot(BLD.f~ovA[sel.BLD,"ORCDRC"], par.settings=list(plot.symbol=list(col=alpha("black", 0.6), fill=alpha("red", 0.6), pch=21, cex=0.6)), ylim=c(0,2500))
 ## replace values where missing:
 ovA[sel.BLD,"BLD.f"] = BLD.f 
 ovA$BLD.f = round(ifelse(is.na(ovA$BLD), ovA$BLD.f, ovA$BLD))
 ## Soil organic carbon density:
-ovA$OCDENS = round(ovA$ORCDRC/1000 * ovA$BLD.f)
-hist(ovA$OCDENS)
-  
+ovA$OCDENS = round(ovA$ORCDRC/1000 * ovA$BLD.f * (100-ovA$CRFVOL.f)/100)
+hist(log1p(ovA$OCDENS))
+ovA[1920,c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")]
+ovA[81051,c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")]
+str(ovA[which(ovA$OCDENS>600),c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")])
+## Organic carbon density as function of ORC:
+hexbinplot(log1p(ovA$OCDENS)~log1p(ovA$ORCDRC), colramp=colorRampPalette(pal), xlab="log - Organic carbon (permille)", ylab="log - Organic carbon density (kg/cubic-m)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, xbins=30, ybins=30, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1))
+## treshold at ca 12%
+expm1(4.8)
+
 write.csv(ovA, file="ov.SPROPS_SoilGrids250m.csv")
 unlink("ov.SPROPS_SoilGrids250m.csv.gz")
 gzip("ov.SPROPS_SoilGrids250m.csv")
@@ -151,54 +172,56 @@ doParallel::registerDoParallel(cl)
 ## Takes 1 hour to fit all models:
 for(j in 1:length(t.vars)){
   out.file = paste0(t.vars[j],"_resultsFit.txt")
-  cat("Results of model fitting 'randomForest / XGBoost':\n\n", file=out.file)
-  cat("\n", file=out.file, append=TRUE)
-  cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file=out.file, append=TRUE)
-  cat("\n", file=out.file, append=TRUE)
-  LOC_ID <- ovA$LOC_ID
-  out.rf <- paste0("mrf.",t.vars[j],".rds")
-  if(!file.exists(out.rf)){
-    dfs <- ovA[,all.vars(formulaString.lst[[j]])]
-    sel <- complete.cases(dfs)
-    dfs <- dfs[sel,]
-    ## optimize mtry parameter:
-    if(!file.exists(gsub("mrf","t.mrf",out.rf))){
-      t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="ranger", trControl=ctrl, tuneGrid=rf.tuneGrid)
-      saveRDS.gz(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
-    } else {
-      t.mrfX <- readRDS.gz(gsub("mrf","t.mrf",out.rf))
-    }
-    ## fit RF model using 'ranger' (fully parallelized)
-    ## reduce number of trees so the output objects do not get TOO LARGE i.e. >5GB
-    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=85)  
-    saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
-    ## Top 15 covariates:
-    sink(file=out.file, append=TRUE, type="output")
-    print(mrfX)
-    cat("\n Variable importance:\n", file=out.file, append=TRUE)
-    xl <- as.list(ranger::importance(mrfX))
-    print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:35]])))
-    ## save fitting success vectors:
-    fit.df <- data.frame(LOC_ID=LOC_ID[sel], observed=dfs[,1], predicted=predictions(mrfX))
-    unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
-    write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
-    gzip(paste0("RF_fit_", t.vars[j], ".csv"))
-    if(!file.exists(paste0("mgb.",t.vars[j],".rds"))){
-      ## fit XGBoost model (uses all points):
-      mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
-      saveRDS.gz(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
-      ## save also binary model for prediction purposes:
-      xgb.save(mgbX$finalModel, paste0("Xgb.",t.vars[j]))
-    } else {
-      mgbX <- readRDS.gz(paste0("mgb.",t.vars[j],".rds"))
-    }
-    importance_matrix <- xgb.importance(mgbX$coefnames, model = mgbX$finalModel)
+  if(!file.exists(out.file)){
+    cat("Results of model fitting 'randomForest / XGBoost':\n\n", file=out.file)
     cat("\n", file=out.file, append=TRUE)
-    print(mgbX)
-    cat("\n XGBoost variable importance:\n", file=out.file, append=TRUE)
-    print(importance_matrix[1:25,])
-    cat("--------------------------------------\n", file=out.file, append=TRUE)
-    sink()
+    cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file=out.file, append=TRUE)
+    cat("\n", file=out.file, append=TRUE)
+    out.rf <- paste0("mrf.",t.vars[j],".rds")
+    if(!file.exists(out.rf)){
+      LOC_ID <- ovA$LOC_ID
+      dfs <- ovA[,all.vars(formulaString.lst[[j]])]
+      sel <- complete.cases(dfs)
+      dfs <- dfs[sel,]
+      ## optimize mtry parameter:
+      if(!file.exists(gsub("mrf","t.mrf",out.rf))){
+        t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="ranger", trControl=ctrl, tuneGrid=rf.tuneGrid)
+        saveRDS.gz(t.mrfX, file=gsub("mrf","t.mrf",out.rf))
+      } else {
+        t.mrfX <- readRDS.gz(gsub("mrf","t.mrf",out.rf))
+      }
+      ## fit RF model using 'ranger' (fully parallelized)
+      ## reduce number of trees so the output objects do not get TOO LARGE i.e. >5GB
+      mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=85)  
+      saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
+      ## Top 15 covariates:
+      sink(file=out.file, append=TRUE, type="output")
+      print(mrfX)
+      cat("\n Variable importance:\n", file=out.file, append=TRUE)
+      xl <- as.list(ranger::importance(mrfX))
+      print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:35]])))
+      ## save fitting success vectors:
+      fit.df <- data.frame(LOC_ID=LOC_ID[sel], observed=dfs[,1], predicted=predictions(mrfX))
+      unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
+      write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
+      gzip(paste0("RF_fit_", t.vars[j], ".csv"))
+      if(!file.exists(paste0("mgb.",t.vars[j],".rds"))){
+        ## fit XGBoost model (uses all points):
+        mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
+        saveRDS.gz(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
+        ## save also binary model for prediction purposes:
+        xgb.save(mgbX$finalModel, paste0("Xgb.",t.vars[j]))
+      } else {
+        mgbX <- readRDS.gz(paste0("mgb.",t.vars[j],".rds"))
+      }
+      importance_matrix <- xgb.importance(mgbX$coefnames, model = mgbX$finalModel)
+      cat("\n", file=out.file, append=TRUE)
+      print(mgbX)
+      cat("\n XGBoost variable importance:\n", file=out.file, append=TRUE)
+      print(importance_matrix[1:25,])
+      cat("--------------------------------------\n", file=out.file, append=TRUE)
+      sink()
+    }    
   }
 }
 rm(mrfX); rm(mgbX)
@@ -290,6 +313,8 @@ names(missing.lst) = t.vars
 #  del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #  unlink(del.lst)
 # }
+
+make_mosaick_ll(varn=t.vars[1], i="M_sl2", in.path="/data/tt/SoilGrids250m/predicted250m", ot="Int16", dstnodata=-32768, metadata=metasd[grep(paste0(t.vars[1], "_M_sl2"), metasd$FileName), sel.metasd])
 
 ## ------------- VISUALIZATIONS -----------
 

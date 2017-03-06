@@ -69,7 +69,7 @@ sum_predictions <- function(i, in.path, out.path, varn, gm1.w, gm2.w, col.legend
       if(any(unique(unlist(soil.fix)) %in% lfix)){
         ## correct probabilities using soil-climate matrix:
         for(k in lfix){
-          sel = sapply(soil.fix, function(i){i[grep(k, i)]})
+          sel = sapply(soil.fix, function(i){i[which(i==k)]})
           sel <- sel[sapply(sel, function(i){length(i)>0})]
           if(length(sel)>0){ probs[mfix==k,names(sel)] <- 0 }
         }
@@ -114,13 +114,13 @@ factor_predict_ranger <- function(i, gm, in.path, out.path, varn, col.legend, so
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
     #if(any(names(m) %in% "OCCGSW7.tif")){ m$OCCGSW7.tif = ifelse(m$OCCGSW7.tif>100, 0, m$OCCGSW7.tif) }
     if(nrow(m@data)>1){
-      mfix <- m$BICUSG5.tif
-      lfix <- levels(as.factor(paste(mfix)))
+      mfix <- paste(m$BICUSG5.tif)
+      lfix <- levels(as.factor(mfix))
       probs = data.frame(round(predict(gm, m@data, probability=TRUE, na.action = na.pass)$predictions*100))
       if(any(unique(unlist(soil.fix)) %in% lfix)){
         ## correct probabilities using soil-climate matrix:
         for(k in lfix){
-          sel = sapply(soil.fix, function(i){i[grep(k, i)]})
+          sel = sapply(soil.fix, function(i){i[which(i==k)]})
           sel <- sel[sapply(sel, function(i){length(i)>0})]
           if(length(sel)>0){ probs[mfix==k,names(sel)] <- 0 }
         }

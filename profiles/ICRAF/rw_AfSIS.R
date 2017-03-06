@@ -13,6 +13,7 @@ afsp.spc$DEPTH <- afsp.spc$UHDICM + (afsp.spc$LHDICM - afsp.spc$UHDICM)/2
 SPROPS.AfSIS <- afsp.spc[afsp.spc$SOURCEDB=="Af_soilspec"|afsp.spc$SOURCEDB=="Af_LDSF",c("SOURCEID","UHDICM","LHDICM","DEPTH","BLD","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","ORCDRC","LONWGS84","LATWGS84", "SAMPLEID")]
 SPROPS.AfSIS$SOURCEDB <- "AfSIS_Sentinel_Sites"
 SPROPS.AfSIS <- SPROPS.AfSIS[!is.na(SPROPS.AfSIS$LONWGS84) & !is.na(SPROPS.AfSIS$LATWGS84),]
+SPROPS.AfSIS$TIMESTRR = as.Date("2009", format="%Y")
 str(SPROPS.AfSIS)
 ## 18,055
 save(SPROPS.AfSIS, file="SPROPS.AfSIS.rda")

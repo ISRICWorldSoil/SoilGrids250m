@@ -1,11 +1,12 @@
-# purpose       : Reading and writing of OFRA legacy data
-# reference     : OFRA data available for download [http://ec2-54-93-187-255.eu-central-1.compute.amazonaws.com/]
-# producer      : by Tom.Hengl@isric.org
+## OFRA legacy data [http://ec2-54-93-187-255.eu-central-1.compute.amazonaws.com/]
+## Tom.Hengl@isric.org
 
 library(aqp)
 library(plyr)
 library(sp)
 library(plotKML)
+library(utils)
+load(".RData")
 
 SITE <- read.csv("OFRA_legacy_data.csv")
 str(SITE)
@@ -14,13 +15,14 @@ s <- summary(SITE$soiltype)
 soiltype <- data.frame(soil_name=attr(s, "names"), count=s)
 write.csv(soiltype, "soiltype_count.csv")
 SITE$SOURCEID = paste(SITE$country, SITE$distric, SITE$center, SITE$cyear, SITE$longitudes, SITE$latitudes, sep="_")
+#SITE$ENTRY = as.Date(SITE$dateentry, format="%d-%b-%y")
 SITE$SOURCEDB = "OFRA"
 SITE.s <- SITE[!duplicated(SITE$SOURCEID),c("SOURCEID","SOURCEDB","longitudes","latitudes","soiltype","cyear")]
 legFAO_90 <- read.csv("cleanup_OFRA.csv")
 SITE.s$TAXNWRB <- join(SITE.s, legFAO_90, type="left")$Name
 SITE.s$TIMESTRR <- as.Date(paste(SITE.s$cyear), format="%Y")
 SITE.s <- rename(SITE.s, c("longitudes"="LONWGS84", "latitudes"="LATWGS84"))
-View(SITE.s)
+#View(SITE.s)
 
 # ------------------------------------------------------------
 # export TAXONOMY DATA
@@ -53,11 +55,25 @@ horizons$UHDICM <- 0
 horizons$LHDICM <- 30
 horizons$DEPTH <- horizons$UHDICM + (horizons$LHDICM - horizons$UHDICM)/2
 
-SPROPS.OFRA <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","BLD")], SITE.s[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
+SPROPS.OFRA <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","PHIHOX","ORCDRC","CECSUM","BLD")], SITE.s[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","TIMESTRR")], type="left")
 SPROPS.OFRA <- SPROPS.OFRA[!is.na(SPROPS.OFRA$LONWGS84) & !is.na(SPROPS.OFRA$LATWGS84) & !is.na(SPROPS.OFRA$DEPTH),]
 str(SPROPS.OFRA)
 summary(SPROPS.OFRA$BLD)
 summary(SPROPS.OFRA$ORCDRC) ## mean = 1.7%
 ## 7954
+summary(SPROPS.OFRA$TIMESTRR)
 save(SPROPS.OFRA, file="SPROPS.OFRA.rda")
 plot(SPROPS.OFRA$LONWGS84, SPROPS.OFRA$LATWGS84, pch="+")
+
+## OFRA yield estimates:
+AF.yield = SITE[,c("SOURCEID","longitudes","latitudes","cyear","crop1","variety1","grainyield","applimethod","addcomments")]
+#AF.yield = AF.yield[!duplicated(AF.yield$SOURCEID),]
+AF.yield <- rename(AF.yield, c("longitudes"="LONWGS84", "latitudes"="LATWGS84"))
+summary(AF.yield$grainyield)
+AF.yield = AF.yield[!is.na(AF.yield$grainyield),]
+hist(log1p(AF.yield$grainyield), breaks=45, col="gray")
+coordinates(AF.yield) <- ~ LONWGS84+LATWGS84
+proj4string(AF.yield) <- "+proj=longlat +datum=WGS84"
+plot(AF.yield)
+## 7947 points
+saveRDS(AF.yield, file="GrainYield.OFRA.rds")

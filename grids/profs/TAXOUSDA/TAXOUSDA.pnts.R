@@ -17,8 +17,8 @@ require(maptools)
 country <- as(map2SpatialPolygons(country.m, IDs=IDs), "SpatialLines")
 
 ## list of input data sets:
-tax.lst <- list.files(path="G:\\soilstorage\\SoilData", pattern=glob2rx("TAXOUSDA.*.rda"), full.names=TRUE, recursive=TRUE)
-tax.lst ## 14
+tax.lst <- list.files(path="/data/soilstorage/SoilData", pattern=glob2rx("TAXOUSDA.*.rda"), full.names=TRUE, recursive=TRUE)
+tax.lst ## 17
 in.lst <- lapply(tax.lst, load, .GlobalEnv)
 in.lst <- lapply(in.lst, function(x){as.data.frame(get(x))})
 
@@ -115,17 +115,17 @@ in.lst[[length(tax.lst)+1]] <- TAXOUSDA.sim
 ## Bind together and clean up names
 ###################################
 
-all.pnts <- dplyr::rbind_all(in.lst)
+all.pnts <- dplyr::bind_rows(in.lst)
 str(all.pnts)
-## 58,942
+## 373,743
 all.pnts <- as.data.frame(all.pnts)
 coordinates(all.pnts) <- ~ LONWGS84+LATWGS84
 proj4string(all.pnts) <- "+proj=longlat +datum=WGS84"
 ## Remove spatial duplicates (except for the NCSS data):
 all.pnts$LOC_ID <- as.factor(paste(all.pnts@coords[,1], all.pnts@coords[,2], sep="_"))
 summary(!duplicated(all.pnts$LOC_ID))
-## >10,000 duplicate points
-selP <- all.pnts$SOURCEDB=="NCSS"
+## many duplicate points
+selP <- all.pnts$SOURCEDB=="NCSS"&!is.na(all.pnts$SOURCEDB)
 summary(selP)
 #selP.pnts <- all.pnts[selP,]
 sel.pnts <- all.pnts[!selP,]
@@ -134,7 +134,7 @@ sel.pnts <- all.pnts[!selP,]
 sel.pnts <- sel.pnts[!duplicated(sel.pnts$LOC_ID),]
 all.pnts <- rbind(all.pnts[selP,], sel.pnts)
 length(all.pnts)
-## 54926
+## 343,131
 levels(as.factor(all.pnts$SOURCEDB))
 
 ## Targeted classes:

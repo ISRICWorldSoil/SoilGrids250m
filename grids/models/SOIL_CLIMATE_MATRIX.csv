@@ -13,15 +13,15 @@ TAXNWRB,Haplic Alisols,836,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Aluandic Andosols,346,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Andosols,69,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Vitric Andosols,172,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-TAXNWRB,Ferralic Arenosols,924,,,,x,,x,,,x,x,,x,,,x,x,,,,,x,,,x,,,x,x,,,,,,,,,,,x,x
-TAXNWRB,Haplic Arenosols,950,,,,x,,x,,,x,x,,x,,,x,x,,,,,x,,,x,,,x,x,,,,,,,,,,,x,x
-TAXNWRB,Haplic Arenosols (Calcaric),99,,,,x,,x,,,x,x,,x,,,x,x,,,,,x,,,x,,,x,x,,,,,,,,,,,x,x
-TAXNWRB,Hypoluvic Arenosols,205,,,,x,,,,,x,x,,,,,x,x,,,,,x,,,x,,,x,x,,,,,,,,,,,x,x
-TAXNWRB,Protic Arenosols,323,,,,x,,,,,x,x,,,,,x,x,,,,,x,,,x,,,x,x,,,,,,,,,,,x,x
-TAXNWRB,Haplic Calcisols,1749,,,,x,,x,,,x,x,,,,,x,x,,,,,x,x,,x,,,x,x,,,,,x,x,,,,,x,x
-TAXNWRB,Haplic Calcisols (Sodic),117,,,,x,,x,,,x,x,,,,,x,x,,,,,x,x,,x,,,x,x,,,,,x,x,,,,,x,x
-TAXNWRB,Luvic Calcisols,324,,,,x,,x,,,x,x,,,,,x,x,,,,,x,x,,x,,,x,x,,,,,x,x,,,,,x,x
-TAXNWRB,Petric Calcisols,682,,,,x,,x,,,x,x,,,,,x,x,,,,,x,x,,x,,,x,x,,,,,x,x,,,,,x,x
+TAXNWRB,Ferralic Arenosols,924,,,,x,,,,,,,,,,,,,,,,,x,,,x,,,x,x,,,,,,,,,,,x,
+TAXNWRB,Haplic Arenosols,950,,,,x,,,,,,,,,,,,,,,,,x,,,x,,,x,x,,,,,,,,,,,x,
+TAXNWRB,Haplic Arenosols (Calcaric),99,,,,x,,,,,,,,,,,,,,,,,x,,,x,,,x,x,,,,,,,,,,,x,
+TAXNWRB,Hypoluvic Arenosols,205,,,,x,,,,,,,,,,,,,,,,,x,,,x,,,x,x,,,,,,,,,,,x,
+TAXNWRB,Protic Arenosols,323,,,,x,,,,,,,,,,,,,,,,,x,,,x,,,x,x,,,,,,,,,,,x,
+TAXNWRB,Haplic Calcisols,1749,,,,x,,,,,,,,,,,,,,,,,x,,,x,,,x,x,,,,,x,,,,,,x,
+TAXNWRB,Haplic Calcisols (Sodic),117,,,,x,,,,,,,,,,,,,,,,,x,,,x,,,x,x,,,,,x,,,,,,x,
+TAXNWRB,Luvic Calcisols,324,,,,x,,,,,,,,,,,,,,,,,x,,,x,,,x,x,,,,,x,,,,,,x,
+TAXNWRB,Petric Calcisols,682,,,,x,,,,,,,,,,,,,,,,,x,,,x,,,x,x,,,,,x,,,,,,x,
 TAXNWRB,Endogleyic Cambisols,250,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Ferralic Cambisols,311,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Cambisols,5720,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -36,9 +36,9 @@ TAXNWRB,Vertic Cambisols,246,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Calcic Chernozems,358,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Chernozems,1396,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Luvic Chernozems,377,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-TAXNWRB,Haplic Cryosols,1657,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,x,x,x,x,x,x,x,x,x,x,x,x
-TAXNWRB,Turbic Cryosols,183,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,x,x,x,x,x,x,x,x,x,x,x,x
-TAXNWRB,Vitric Cryosols,13,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,x,x,x,x,x,x,x,x,x,x,x,x
+TAXNWRB,Haplic Cryosols,1657,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,x,x,x,x,x,x,,,,,,
+TAXNWRB,Turbic Cryosols,183,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,x,x,x,x,x,x,,,,,,
+TAXNWRB,Vitric Cryosols,13,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,x,x,x,x,x,x,,,,,,
 TAXNWRB,Petric Durisols,39,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Acric Ferralsols,376,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Acric Ferralsols,376,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -56,8 +56,8 @@ TAXNWRB,Haplic Gleysols,1096,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Gleysols (Dystric),103,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Gleysols (Eutric),313,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Mollic Gleysols,588,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-TAXNWRB,Calcic Gypsisols,125,,,,x,x,x,,,x,x,,x,,,x,x,,x,,,x,x,x,x,,,x,x,,x,,,x,x,,,,,x,x
-TAXNWRB,Haplic Gypsisols,568,,,,x,x,x,,,x,x,,x,,,x,x,,x,,,x,x,x,x,,,x,x,,x,,,x,x,,,,,x,x
+TAXNWRB,Calcic Gypsisols,125,,,,x,,,,,,,,,,,,,,,,,x,x,x,x,,,x,x,,x,,,x,x,,,,,x,
+TAXNWRB,Haplic Gypsisols,568,,,,x,,,,,,,,,,,,,,,,,x,x,x,x,,,x,x,,x,,,x,x,,,,,x,
 TAXNWRB,Calcic Histosols,22,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Cryic Histosols,306,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Fibric Histosols,379,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -92,8 +92,8 @@ TAXNWRB,Endogleyic Planosols,34,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Planosols (Dystric),62,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Planosols (Eutric),315,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Luvic Planosols,32,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-TAXNWRB,Solodic Planosols,226,,,,x,x,,x,x,,,,,,,,,,,,,,,x,,x,x,,,,,,x,,,,,,,,
-TAXNWRB,Lixic Plinthosols,49,,,,x,x,,x,x,,,,,,,,,,,,,,,x,,x,x,,,,,,x,,,,,,,,
+TAXNWRB,Solodic Planosols,226,,,,x,,,,,,,,,,,,,,,,,,,x,,x,x,,,,,,x,,,,,,,,
+TAXNWRB,Lixic Plinthosols,49,,,,x,,,,,,,,,,,,,,,,,,,x,,x,x,,,,,,x,,,,,,,,
 TAXNWRB,Gleyic Podzols,182,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Gleyic Podzols,182,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Podzols,1401,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -102,14 +102,14 @@ TAXNWRB,Calcaric Regosols,1384,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Regosols (Dystric),270,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Regosols (Eutric),691,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Regosols (Sodic),35,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-TAXNWRB,Leptic Regosols,404,,,,x,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-TAXNWRB,Gypsic Solonchaks,104,,,,x,,,,,x,,,,,,,,,,,,,,,,,,x,x,,,,,,,,,,,,
-TAXNWRB,Haplic Solonchaks,400,,,,x,,,,,x,,,,,,,,,,,,,,,,,,x,x,,,,,,,,,,,,
-TAXNWRB,Haplic Solonchaks (Sodic),135,,,,x,,,,,x,,,,,,,,,,,,,,,,,,x,x,,,,,,,,,,,,
-TAXNWRB,Calcic Solonetz,150,,,,x,x,x,x,x,x,x,,,,,x,x,,,,,,,x,x,x,x,x,x,,,,,x,x,,,,,x,x
-TAXNWRB,Gleyic Solonetz,283,,,,x,x,x,x,x,x,x,,,,,x,x,,,,,,,x,x,x,x,x,x,,,,,x,x,,,,,x,x
-TAXNWRB,Haplic Solonetz,546,,,,x,x,x,x,x,x,x,,,,,x,,,,,,,,x,x,x,x,x,x,,,,,x,x,,,,,x,x
-TAXNWRB,Mollic Solonetz,317,,,,x,x,x,x,x,x,x,,,,,x,,,,,,,,x,x,x,x,x,x,,,,,x,x,,,,,x,x
+TAXNWRB,Leptic Regosols,404,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+TAXNWRB,Gypsic Solonchaks,104,,,,x,,,,,,,,,,,,,,,,,,,,,,,x,x,,,,,,,,,,,,
+TAXNWRB,Haplic Solonchaks,400,,,,x,,,,,,,,,,,,,,,,,,,,,,,x,x,,,,,,,,,,,,
+TAXNWRB,Haplic Solonchaks (Sodic),135,,,,x,,,,,,,,,,,,,,,,,,,,,,,x,x,,,,,,,,,,,,
+TAXNWRB,Calcic Solonetz,150,,,,x,,,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,x,x,,,,,x,x
+TAXNWRB,Gleyic Solonetz,283,,,,x,,,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,x,x,,,,,x,x
+TAXNWRB,Haplic Solonetz,546,,,,x,,,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,x,x,,,,,x,x
+TAXNWRB,Mollic Solonetz,317,,,,x,,,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,x,x,,,,,x,x
 TAXNWRB,Luvic Stagnosols,62,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Haplic Umbrisols,59,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXNWRB,Leptic Umbrisols,40,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -158,9 +158,9 @@ TAXOUSDA,Psamments,1545,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXOUSDA,Rendolls,42,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXOUSDA,Salids,28,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXOUSDA,Saprists,334,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-TAXOUSDA,Torrands,60,,,,,,x,,,x,x,,,,,x,x,,,,,x,x,,,,,x,,,,,,,,,,,,,
-TAXOUSDA,Torrerts,106,,,,,,x,,,x,x,,,,,x,x,,,,,x,x,,,,,x,,,,,,,,,,,,,
-TAXOUSDA,Torrox,338,,,,,,x,,,x,x,,,,,x,x,,,,,x,x,,,,,x,,,,,,,,,,,,,
+TAXOUSDA,Torrands,60,,,,,,,,,,,,,,,,,,,,,x,x,,,,,x,,,,,,,,,,,,,
+TAXOUSDA,Torrerts,106,,,,,,,,,,,,,,,,,,,,,x,x,,,,,x,,,,,,,,,,,,,
+TAXOUSDA,Torrox,338,,,,,,,,,,,,,,,,,,,,,x,x,,,,,x,,,,,,,,,,,,,
 TAXOUSDA,Turbels,327,,,,,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,x,x,x,x,x,x,x,x,x,x,x,x
 TAXOUSDA,Udalfs,6352,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXOUSDA,Udands,247,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -177,8 +177,8 @@ TAXOUSDA,Ustolls,2207,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXOUSDA,Ustox,2106,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXOUSDA,Ustults,298,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 TAXOUSDA,Vitrands,432,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-TAXOUSDA,Xeralfs,631,,,,x,,x,,,x,x,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,,,,,,
-TAXOUSDA,Xerepts,595,,,,x,,x,,,x,x,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,,,,,,
-TAXOUSDA,Xererts,192,,,,x,,x,,,x,x,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,,,,,,
-TAXOUSDA,Xerolls,1502,,,,x,,x,,,x,x,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,,,,,,
-TAXOUSDA,Xerults,53,,,,x,,x,,,x,x,,,,,,,,,,,,,x,x,x,x,x,x,,,,,,,,,,,,
+TAXOUSDA,Xeralfs,631,,,,x,,,,,,,,,,,,,,,,,,,,x,,,x,x,,,,,,,,,,,,
+TAXOUSDA,Xerepts,595,,,,x,,,,,,,,,,,,,,,,,,,,x,,,x,x,,,,,,,,,,,,
+TAXOUSDA,Xererts,192,,,,x,,,,,,,,,,,,,,,,,,,,x,,,x,x,,,,,,,,,,,,
+TAXOUSDA,Xerolls,1502,,,,x,,,,,,,,,,,,,,,,,,,,x,,,x,x,,,,,,,,,,,,
+TAXOUSDA,Xerults,53,,,,x,,,,,,,,,,,,,,,,,,,,x,,,x,x,,,,,,,,,,,,

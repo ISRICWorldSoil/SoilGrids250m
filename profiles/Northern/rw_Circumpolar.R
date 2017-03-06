@@ -9,11 +9,17 @@ library(sp)
 library(plotKML)
 
 artic <- read.csv("Harden_etal_2012_Hugelius_etal_2013_cleaned_data_for_ISRIC.csv", stringsAsFactors=FALSE)
-str(artic)
+#str(artic)
 artic <- rename(artic, c("Suborder"="TAXOUSDA", "Long"="LONWGS84", "Lat"="LATWGS84", "Basal.Depth.cm"="UHDICM", "bulk.density.g.cm.3"="BLD", "X.C"="ORCDRC"))
 artic$LHDICM <- artic$UHDICM + artic$Layer.thickness.cm
 artic$SOURCEID <- paste("ART", artic$Profile.ID, sep="_")
 artic$SAMPLEID <- make.unique(paste("ART", artic$Profile.ID, artic$Horizon.type, sep="_"))
+summary(!is.na(artic$Sample.date))
+artic$TIMESTRR = as.Date(ifelse(is.na(artic$Sample.date), as.Date(artic$Sample.date, format="%Y"), artic$Sample.date), format="%d-%m-%Y")
+summary(artic$TIMESTRR)
+#View(artic)
+summary(is.na(artic$TIMESTRR))
+## 4684 with dates!
 
 # ------------------------------------------------------------
 # export TAXONOMY DATA
@@ -44,7 +50,7 @@ artic$SOURCEDB = "Artic"
 artic$DEPTH <- artic$UHDICM + (artic$LHDICM - artic$UHDICM)/2
 artic$SOURCEDB <- "Artic"
 
-SPROPS.artic <- artic[,c("SOURCEID","SAMPLEID","SOURCEDB","LONWGS84","LATWGS84","UHDICM","LHDICM","DEPTH","ORCDRC","BLD")]
+SPROPS.artic <- artic[,c("SOURCEID","SAMPLEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","UHDICM","LHDICM","DEPTH","ORCDRC","BLD")]
 SPROPS.artic <- SPROPS.artic[!is.na(SPROPS.artic$LONWGS84) & !is.na(SPROPS.artic$LATWGS84) & !is.na(SPROPS.artic$DEPTH),]
 str(SPROPS.artic)
 ## 7457

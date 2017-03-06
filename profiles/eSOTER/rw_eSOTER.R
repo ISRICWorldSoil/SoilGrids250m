@@ -13,11 +13,12 @@ library(plotKML)
 # ------------------------------------------------------------
 
 # import to R:
-cGSPD <- odbcConnect(dsn="eSOTER")
-odbcGetInfo(cGSPD)
-sqlTables(cGSPD)$TABLE_NAME
+#cGSPD <- odbcConnect(dsn="eSOTER")
+#odbcGetInfo(cGSPD)
+#sqlTables(cGSPD)$TABLE_NAME
 # get horizon table:
 #SITE <- sqlFetch(cGSPD, "Profile", stringsAsFactors=FALSE, as.is=TRUE)
+SITE <- read.csv("eSOTER_Profile.csv")
 str(SITE)
 #HORIZON <- sqlFetch(cGSPD, "RepresentativeHorizonValues", stringsAsFactors=FALSE, as.is=TRUE)  
 HORIZON <- read.csv("eSOTER_RepresentativeHorizonValues.csv") 
@@ -93,8 +94,9 @@ save(eSOTER_tax, file="eSOTER_tax.rda")
 # All soil properties
 # ------------------------------------------------------------
 
-SPROPS.eSOTER <- join(HOR.s[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","ORCDRC")], SITE.s[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
+SPROPS.eSOTER <- join(HOR.s[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CLYPPT","SNDPPT","SLTPPT","CRFVOL","PHIHOX","ORCDRC")], SITE.s[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","TIMESTRR")], type="left")
 SPROPS.eSOTER <- SPROPS.eSOTER[!is.na(SPROPS.eSOTER$LONWGS84) & !is.na(SPROPS.eSOTER$LATWGS84),]
 View(SPROPS.eSOTER)
 ## 5899
+summary(SPROPS.eSOTER$TIMESTRR)
 save(SPROPS.eSOTER, file="SPROPS.eSOTER.rda")

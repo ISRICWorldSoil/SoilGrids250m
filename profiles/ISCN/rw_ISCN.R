@@ -1,6 +1,7 @@
 ## ISCN soil data (http://iscn.fluxdata.org/Data/Pages/DatabaseReports.aspx)
 ## by: Tom.Hengl@isric.org
 
+load(".RData")
 library(aqp)
 library(plyr)
 library(stringr)
@@ -10,7 +11,8 @@ library(plotKML)
 ISCN <- read.csv("ISCNProfileData_LATEST.csv")
 str(ISCN)
 ISCN$SOURCEID <- paste(ISCN$profile_name)
-ISCN$TIMESTRR <- as.Date(ISCN$observation_date, format="%d-%m-%Y")
+ISCN$TIMESTRR <- as.Date(ISCN$observation_date, format="%m/%d/%Y")
+summary(ISCN$TIMESTRR)
 summary(ISCN$contributorOrganization)
 ## soil taxonomy unstandardized:
 ISCN$TAXNUSDA <- ifelse(is.na(ISCN$soil_taxon), paste(ISCN$soil_series), paste(ISCN$soil_taxon))
@@ -25,6 +27,7 @@ TAXOUSDA.ISCN$LONWGS84 <- TAXOUSDA.ISCN$long..dec..deg.
 TAXOUSDA.ISCN$LATWGS84 <- TAXOUSDA.ISCN$lat..dec..deg. 
 TAXOUSDA.ISCN <- TAXOUSDA.ISCN[TAXOUSDA.ISCN$LONWGS84>-180&TAXOUSDA.ISCN$LONWGS84<180&TAXOUSDA.ISCN$LATWGS84>-90&TAXOUSDA.ISCN$LATWGS84<90,]
 str(TAXOUSDA.ISCN)
+## 3401 profiles
 
 for(j in c("NAD 83","NAD83","NAD83?","NAD27")){
   sel <- which(TAXOUSDA.ISCN$datum==j)
@@ -71,7 +74,7 @@ HORIZON$PHIHOX <- ifelse(HORIZON$PHIHOX>11, HORIZON$PHIHOX/10, HORIZON$PHIHOX)
 HORIZON$PHIHOX <- ifelse(HORIZON$PHIHOX<2.5, NA, HORIZON$PHIHOX)
 summary(HORIZON$PHIHOX)
 
-SPROPS.ISCN <- join(as.data.frame(TAXOUSDA.ISCN)[,c("SOURCEID","LONWGS84","LATWGS84","SOURCEDB")], HORIZON[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CRFVOL","SNDPPT","CLYPPT","BLD","SLTPPT","PHIHOX","ORCDRC")], type="left")
+SPROPS.ISCN <- join(as.data.frame(TAXOUSDA.ISCN)[,c("SOURCEID","LONWGS84","LATWGS84","SOURCEDB","TIMESTRR")], HORIZON[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","CRFVOL","SNDPPT","CLYPPT","BLD","SLTPPT","PHIHOX","ORCDRC")], type="left")
 SPROPS.ISCN <- SPROPS.ISCN[!is.na(SPROPS.ISCN$DEPTH),]
 str(SPROPS.ISCN)
 summary(SPROPS.ISCN$ORCDRC) ## mean=6.9% !!
@@ -102,3 +105,50 @@ str(BDR.ISCN)
 summary(BDR.ISCN$BDRICM<250)
 ## only 7 points!
 save(BDR.ISCN, file="BDR.ISCN.rda") 
+
+# ------------------------------------------------------------
+# Soil organic carbon stock (kg / m2)
+# ------------------------------------------------------------
+
+SOCS.ISCN = read.csv("ISCNData_12_Dec_2016_Profile.csv")
+SOCS.ISCN$SOURCEID <- paste(SOCS.ISCN$X.profile_name.)
+SOCS.ISCN$TIMESTRR <- as.Date(paste(SOCS.ISCN$X.observation_date..YYYY.MM.DD..), format="%Y-%m-%d")
+summary(SOCS.ISCN$TIMESTRR)
+SOCS.ISCN$SOURCEDB = as.factor(SOCS.ISCN$X.dataset_name_sub.)
+summary(SOCS.ISCN$SOURCEDB)
+## Mask out NRCS data because the original source is more reliable
+selP2 <- !SOCS.ISCN$SOURCEDB=="NRCS Sept/2014"
+SOCS.ISCN <- SOCS.ISCN[selP2,c("SOURCEID","X.lat..dec..deg..","X.long..dec..deg..","X.datum..datum..","TIMESTRR","SOURCEDB","X.soc..g.cm.2..","X.soc_method.","X.soc_depth..cm..")]
+SOCS.ISCN = SOCS.ISCN[!is.na(SOCS.ISCN$X.lat..dec..deg..),]
+SOCS.ISCN$YEAR = as.numeric(format(SOCS.ISCN$TIMESTRR,'%Y'))
+## 19,016 points
+summary(SOCS.ISCN$X.datum..datum..)
+SOCS.ISCN$LONWGS84 = SOCS.ISCN$X.long..dec..deg..
+SOCS.ISCN$LATWGS84 = SOCS.ISCN$X.lat..dec..deg..
+for(j in c("NAD83","NAD27")){
+  sel <- which(SOCS.ISCN$X.datum..datum..==j)
+  xy <- SOCS.ISCN[sel,c("X.long..dec..deg..","X.lat..dec..deg..")]
+  coordinates(xy) <- ~ X.long..dec..deg.. + X.lat..dec..deg..
+  if(j=="NAD 83"|j=="NAD83"|j=="NAD83?"){
+    proj4string(xy) <- CRS("+proj=longlat +datum=NAD83")
+  }
+  if(j=="NAD27"){
+    proj4string(xy) <- CRS("+proj=longlat +datum=NAD27")
+  }
+  xy <- spTransform(xy, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84"))
+  SOCS.ISCN[sel,"LONWGS84"] = xy@coords[,1]
+  SOCS.ISCN[sel,"LATWGS84"] = xy@coords[,2]
+}
+
+SOCS.ISCN$dSOCS_100cm = NA
+SOCS.ISCN$dSOCS_200cm = NA
+SOCS.ISCN[SOCS.ISCN$X.soc_depth..cm..==100,"dSOCS_100cm"] = SOCS.ISCN[SOCS.ISCN$X.soc_depth..cm..==100,"X.soc..g.cm.2.."]*10
+SOCS.ISCN[SOCS.ISCN$X.soc_depth..cm..==200,"dSOCS_200cm"] = SOCS.ISCN[SOCS.ISCN$X.soc_depth..cm..==200,"X.soc..g.cm.2.."]*10
+SOCS.ISCN = SOCS.ISCN[,c("SOURCEID","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","dSOCS_100cm","dSOCS_200cm","YEAR")]
+summary(SOCS.ISCN$dSOCS_100cm)
+summary(SOCS.ISCN$dSOCS_200cm)
+coordinates(SOCS.ISCN) <- ~ LONWGS84 + LATWGS84
+proj4string(SOCS.ISCN) = CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
+plot(SOCS.ISCN)
+save(SOCS.ISCN, file="SOCS.ISCN.rda")
+

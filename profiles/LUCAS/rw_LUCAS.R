@@ -1,14 +1,14 @@
 ## Reading and writing of the LUCAS soil profile data;
 ## The LUCAS_SOIL data (19,969) are the property of the European Union, represented by the European Commission, represented by the Directorate General-Joint Research Centre [http://eusoils.jrc.ec.europa.eu/projects/Lucas/Data.html];
-## Tóth, G., Jones, A., Montanarella, L. (eds.) 2013. LUCAS Topsoil Survey. Methodology, data and results. JRC Technical Reports. Luxembourg. Publications Office of the European Union, EUR 26102 – Scientific and Technical Research series – ISSN 1831-9424 (online); ISBN 978-92-79-32542-7; doi: 10.2788/97922
+## T?th, G., Jones, A., Montanarella, L. (eds.) 2013. LUCAS Topsoil Survey. Methodology, data and results. JRC Technical Reports. Luxembourg. Publications Office of the European Union, EUR 26102 ? Scientific and Technical Research series ? ISSN 1831-9424 (online); ISBN 978-92-79-32542-7; doi: 10.2788/97922
 
+load(".RData")
 library(aqp)
 library(GSIF)
 library(maptools)
 library(gdata)
 library(plyr)
-# perl <- gdata:::findPerl("perl")
-perl = "C:/Perl64/bin/perl.exe"
+perl <- gdata:::findPerl("perl")
 installXLSXsupport(perl=perl)
 tmp <- read.xls("LUCAS_TOPSOIL_v1.xlsx", perl=perl, sheet=1)
 ## takes 2-3 mins to read!
@@ -21,7 +21,7 @@ length(levels(profs$SOURCEID))
 plyr:::nunique(profs$SOURCEID)
 
 ## rename columns:
-profs <- rename(profs, c("coarse"="CRFVOL", "clay"="CLYPPT", "silt"="SLTPPT", "sand"="SNDPPT", "pH_in_H2O"="PHIHOX", "pH_in_CaCl"="PHIKCL", "OC"="ORCDRC", "GPS_LAT"="LATWGS84",	"GPS_LONG"="LONWGS84", "CEC"="CECSUM"))
+profs <- plyr::rename(profs, c("coarse"="CRFVOL", "clay"="CLYPPT", "silt"="SLTPPT", "sand"="SNDPPT", "pH_in_H2O"="PHIHOX", "pH_in_CaCl"="PHICAL", "OC"="ORCDRC", "GPS_LAT"="LATWGS84",	"GPS_LONG"="LONWGS84", "CEC"="CECSUM"))
 str(profs)
 
 ## check / convert values where necessary
@@ -45,7 +45,7 @@ profs.f <- profs[sel.c,]
 profs.f$SAMPLEID <- make.unique(paste(profs.f$sample_ID))
 profs.f$SOURCEDB = "LUCAS"
 profs.f$DEPTH <- profs.f$UHDICM + (profs.f$LHDICM - profs.f$UHDICM)/2
-SPROPS.LUCAS <- profs.f[,c("SOURCEID","SAMPLEID","SOURCEDB","LONWGS84","LATWGS84","UHDICM","LHDICM","DEPTH","SNDPPT","CRFVOL","CLYPPT","SLTPPT","PHIHOX","PHIKCL","ORCDRC","CECSUM")]
+SPROPS.LUCAS <- profs.f[,c("SOURCEID","SAMPLEID","SOURCEDB","LONWGS84","LATWGS84","TIMESTRR","UHDICM","LHDICM","DEPTH","SNDPPT","CRFVOL","CLYPPT","SLTPPT","PHIHOX","PHICAL","ORCDRC","CECSUM")]
 str(SPROPS.LUCAS)
 ## 19,899
 save(SPROPS.LUCAS, file="SPROPS.LUCAS.rda")

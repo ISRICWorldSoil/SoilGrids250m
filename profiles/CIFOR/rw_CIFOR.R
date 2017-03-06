@@ -1,6 +1,7 @@
 ## SoilGrids.org project / selection of organic soil profiles from Tropics (prapred by Nadine Herold <c9scna@gmail.com>)
 ## Tom.Hengl@isric.org
 
+load(".RData")
 library(plyr)
 library(stringr)
 library(rgdal)
@@ -14,6 +15,7 @@ CIFOR$SOURCEID <- iconv(make.unique(gsub(" ", "_", str_trim(paste(CIFOR$author, 
 CIFOR <- rename(CIFOR, replace=c("modelling.x"="LONWGS84", "modelling.y"="LATWGS84"))
 CIFOR$SOURCEDB <- "CIFOR"
 CIFOR$TIMESTRR <- as.Date(CIFOR$year, format="%Y")
+summary(CIFOR$TIMESTRR)
 #write.csv(CIFOR, file="CIFOR_filtered.csv")
 horizons <- read.csv("CIFOR_filtered.csv")
 horizons <- getHorizons(horizons, idcol="SOURCEID", sel=c("Upper", "Lower", "SOC", "BD", "Peat"))
@@ -59,8 +61,23 @@ save(TAXNWRB.CIFOR, file="TAXNWRB.CIFOR.rda")
 # All soil properties
 # ------------------------------------------------------------
 
-SPROPS.CIFOR <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","BLD","ORCDRC")], CIFOR[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84")], type="left")
+SPROPS.CIFOR <- join(horizons[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","DEPTH","BLD","ORCDRC")], CIFOR[,c("SOURCEID","SOURCEDB","LONWGS84","LATWGS84","TIMESTRR")], type="left")
 SPROPS.CIFOR <- SPROPS.CIFOR[!is.na(SPROPS.CIFOR$LONWGS84) & !is.na(SPROPS.CIFOR$LATWGS84) & !is.na(SPROPS.CIFOR$DEPTH),]
 View(SPROPS.CIFOR)
 ## only 840 left, but all very high values!
 save(SPROPS.CIFOR, file="SPROPS.CIFOR.rda")
+
+# ------------------------------------------------------------
+# Soil organic carbon stock (kg / m2)
+# ------------------------------------------------------------
+
+SOCS.CIFOR <- CIFOR[,c("SOURCEID","LONWGS84","LATWGS84","SOURCEDB","TIMESTRR")]
+SOCS.CIFOR$YEAR = CIFOR$year
+SOCS.CIFOR$dSOCS_100cm = CIFOR$C.stock..MgC.ha..0.1.m/10
+SOCS.CIFOR$dSOCS_200cm = CIFOR$C.stock..MgC.ha..0.2.m/10
+summary(SOCS.CIFOR$dSOCS_100cm)
+summary(SOCS.CIFOR$dSOCS_200cm)
+coordinates(SOCS.CIFOR) <- ~ LONWGS84 + LATWGS84
+proj4string(SOCS.CIFOR) = CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+plot(SOCS.CIFOR)
+save(SOCS.CIFOR, file="SOCS.CIFOR.rda")
