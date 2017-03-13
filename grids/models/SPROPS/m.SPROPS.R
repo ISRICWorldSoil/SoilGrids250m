@@ -135,7 +135,7 @@ t.vars <- c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT"
 
 z.min <- as.list(c(0,20,20,0,0,0,0,50,0,0))
 names(z.min) = t.vars
-z.max <- as.list(c(800,110,110,100,100,100,100,3500,2200,1000))
+z.max <- as.list(c(800,110,110,100,100,100,100,3500,2200,10000))
 names(z.max) = t.vars
 ## FIT MODELS:
 pr.lst <- basename(list.files(path="/data/stacked250m", ".tif"))
@@ -260,16 +260,16 @@ for(j in t.vars){
   gm1.w = 1/gm$prediction.error
   ## Estimate amount of RAM needed per core
   cpus = unclass(round((500-50)/(3.5*(object.size(gm)/1e9))))
-  cl <- makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
-  x = parLapply(cl, pr.dirs, fun=function(x){ if(any(!file.exists(paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", j, "_M_sl", 1:7, "_", x, ".tif")))){ try( split_predict_n(x, gm, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", split_no=NULL, varn=j, method="ranger", DEPTH.col="DEPTH.f", multiplier=multiplier, rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } } )
+  cl <- parallel::makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
+  x = parallel::parLapply(cl, pr.dirs, fun=function(x){ if(any(!file.exists(paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", j, "_M_sl", 1:7, "_", x, ".tif")))){ try( split_predict_n(x, gm, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", split_no=NULL, varn=j, method="ranger", DEPTH.col="DEPTH.f", multiplier=multiplier, rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } } )
   stopCluster(cl)
   gc(); gc()
   ## XGBoost:
   gm = readRDS.gz(paste0("mgb.", j,".rds"))
   gm2.w = 1/(min(gm$results$RMSE, na.rm=TRUE)^2)
   cpus = unclass(round((500-30)/(3.5*(object.size(gm)/1e9))))
-  cl <- makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
-  x = parLapply(cl, pr.dirs, fun=function(x){ if(any(!file.exists(paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", j, "_M_sl", 1:7, "_", x, ".tif")))){ try( split_predict_n(x, gm, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", split_no=NULL, varn=j, method="xgboost", DEPTH.col="DEPTH.f", multiplier=multiplier, rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } } )
+  cl <- parallel::makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
+  x = parallel::parLapply(cl, pr.dirs, fun=function(x){ if(any(!file.exists(paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", j, "_M_sl", 1:7, "_", x, ".tif")))){ try( split_predict_n(x, gm, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", split_no=NULL, varn=j, method="xgboost", DEPTH.col="DEPTH.f", multiplier=multiplier, rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } } )
   stopCluster(cl)
   gc(); gc()
   ## sum up predictions:
@@ -283,6 +283,39 @@ for(j in t.vars){
   gc(); gc()
 }
 
+## some geotifs got corrupt for unknown reason:
+tif.lst <- list.files("/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("OCDENS*.tif"), recursive = TRUE, full.names = TRUE)
+
+corrupt.tif <- function(i, x=NULL, try.raster=TRUE){
+  if(try.raster==TRUE){
+    try( x <- raster::raster(i) , silent=TRUE)
+    if(!class(x)[1]=="RasterLayer"){ 
+      return(i)
+    }
+  } else {
+    try( x <- rgdal::GDALinfo(i, silent=TRUE) , silent=TRUE)    
+    if(!class(x)[1]=="GDALobj"){ 
+      return(i)
+    }
+  }
+}
+## takes 30 mins to inspect all tifs
+library(snowfall)
+sfInit(parallel=TRUE, cpus=56)
+sfLibrary(rgdal)
+sfLibrary(raster)
+sfExport("corrupt.tif", "tif.lst")
+del.tif <- unlist(sfLapply(tif.lst, corrupt.tif))
+sfStop()
+write.csv(del.tif, "corrupt_tif.csv")
+unlink(del.tif)
+
+c.lst = c("T34019", "T42047", "T46814", "T49422", "T50013", "T43226", "T42006", "T44895", "T40611", "T41350", "T43862", "T31518", "T35157", "T50493", "T44895", "T45324", "T43862", "T42006", "T41350", "T35157")
+i = "/data/tt/SoilGrids250m/predicted250m/T46814/OCDENS_M_sl2_T46814.tif"
+GDALinfo(i)
+plot(raster(i))
+del.tif = tif.lst[sapply(c.lst, function(x){grep(x, tif.lst)})]
+unlink(del.tif)
 
 ## corrupt or missing tiles:
 missing.tiles <- function(varn, pr.dirs){
@@ -314,7 +347,16 @@ names(missing.lst) = t.vars
 #  unlink(del.lst)
 # }
 
-make_mosaick_ll(varn=t.vars[1], i="M_sl2", in.path="/data/tt/SoilGrids250m/predicted250m", ot="Int16", dstnodata=-32768, metadata=metasd[grep(paste0(t.vars[1], "_M_sl2"), metasd$FileName), sel.metasd])
+#make_mosaick_ll(varn=t.vars[10], i="M_sl2", in.path="/data/tt/SoilGrids250m/predicted250m", ot="Int16", dstnodata=-32768, metadata=metasd[grep(paste0(t.vars[1], "_M_sl2"), metasd$FileName), sel.metasd])
+## Mosaick:
+l.vars = as.vector(sapply(c("PHIKCL","OCDENS","CRFVOL"), rep, 7))
+d.lst = rep(paste0("M_sl", 1:7), 3)
+library(snowfall)
+sfInit(parallel=TRUE, cpus=ifelse(length(l.vars)>45, 45, length(l.vars)))
+sfExport("l.vars", "d.lst", "make_mosaick_ll", "metasd", "sel.metasd")
+out <- sfClusterApplyLB(1:length(l.vars), function(x){ try( make_mosaick_ll(varn=l.vars[x], i=d.lst[x], in.path="/data/tt/SoilGrids250m/predicted250m", ot=metasd[which(metasd$FileName == paste0(l.vars[x], "_", d.lst[x], "_250m_ll.tif")), "DATA_FORMAT"], dstnodata=metasd[which(metasd$FileName == paste0(l.vars[x], "_" ,d.lst[x], "_250m_ll.tif")), "NO_DATA"], metadata=metasd[which(metasd$FileName == paste0(l.vars[x], "_" ,d.lst[x], "_250m_ll.tif")), sel.metasd]) )})
+sfStop()
+
 
 ## ------------- VISUALIZATIONS -----------
 

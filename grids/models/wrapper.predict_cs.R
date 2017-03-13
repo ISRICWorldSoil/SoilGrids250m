@@ -281,7 +281,7 @@ sum_predict_ensemble <- function(i, in.path, out.path, varn, num_splits, zmin, z
     out.tif = paste0(out.path, "/", i, "/", varn, "_M_", i, ".tif")
     test = !file.exists(out.tif)
   } else {
-    test = length(list.files(path = paste0(out.path, "/", i, "/"), glob2rx(paste0("^",varn,"_M_sl*_*.tif$"))))==0
+    test = !length(list.files(path = paste0(out.path, "/", i, "/"), glob2rx(paste0("^",varn,"_M_sl*_*.tif$"))))==7
   }
   if(test){
     if(missing(rds.file)){ rds.file = paste0(in.path, "/", i, "/", i, ".rds") }
