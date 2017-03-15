@@ -114,7 +114,7 @@ ovA$OCDENS = round(ovA$ORCDRC/1000 * ovA$BLD.f * (100-ovA$CRFVOL.f)/100)
 hist(log1p(ovA$OCDENS))
 ovA[1920,c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")]
 ovA[81051,c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")]
-str(ovA[which(ovA$OCDENS>600),c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")])
+View(ovA[which(ovA$OCDENS>200),c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")])
 ## Organic carbon density as function of ORC:
 hexbinplot(log1p(ovA$OCDENS)~log1p(ovA$ORCDRC), colramp=colorRampPalette(pal), xlab="log - Organic carbon (permille)", ylab="log - Organic carbon density (kg/cubic-m)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, xbins=30, ybins=30, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1))
 ## treshold at ca 12%
@@ -127,6 +127,11 @@ save(ovA, file="ovA.rda")
 #load("ovA.rda")
 ## 1.3GB
 #load(".RData")
+pnts.ll = ovA[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","CRFVOL","SNDPPT","SLTPPT","CLYPPT","BLD","PHIHOX","PHIKCL","ORCDRC","CECSUM","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","DEPTH","HZDTXT","PHICAL","LOC_ID","UHDICM.f","LHDICM.f","DEPTH.f","CRFVOL.f","BLD.f","OCDENS")]
+pnts.ll <- pnts.ll[!is.na(pnts.ll$LONWGS84),]
+coordinates(pnts.ll) = ~ LONWGS84+LATWGS84
+proj4string(pnts.ll) = CRS("+proj=longlat +datum=WGS84")
+writeOGR(pnts.ll, "global_soil_points.gpkg", "global_soil_points", "GPKG")
 
 ## ------------- MODEL FITTING -----------
 
@@ -140,7 +145,7 @@ names(z.max) = t.vars
 ## FIT MODELS:
 pr.lst <- basename(list.files(path="/data/stacked250m", ".tif"))
 ## remove some predictors that might lead to artifacts (buffer maps and land cover):
-pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10"), function(x){grep(x, pr.lst)}))]
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10","N11MSD3","B08CHE3","B09CHE3","CSCMCF5","S01ESA4","S02ESA4","S11ESA4","S12ESA4"), function(x){grep(x, pr.lst)}))]
 formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ DEPTH.f +', paste(pr.lst, collapse="+")))})
 #all.vars(formulaString.lst[[1]])
 save.image()
@@ -310,12 +315,12 @@ sfStop()
 write.csv(del.tif, "corrupt_tif.csv")
 unlink(del.tif)
 
-c.lst = c("T34019", "T42047", "T46814", "T49422", "T50013", "T43226", "T42006", "T44895", "T40611", "T41350", "T43862", "T31518", "T35157", "T50493", "T44895", "T45324", "T43862", "T42006", "T41350", "T35157")
-i = "/data/tt/SoilGrids250m/predicted250m/T46814/OCDENS_M_sl2_T46814.tif"
-GDALinfo(i)
-plot(raster(i))
-del.tif = tif.lst[sapply(c.lst, function(x){grep(x, tif.lst)})]
-unlink(del.tif)
+#c.lst = c("T34019", "T42047", "T46814", "T49422", "T50013", "T43226", "T42006", "T44895", "T40611", "T41350", "T43862", "T31518", "T35157", "T50493", "T44895", "T45324", "T43862", "T42006", "T41350", "T35157")
+#i = "/data/tt/SoilGrids250m/predicted250m/T46814/OCDENS_M_sl2_T46814.tif"
+#GDALinfo(i)
+#plot(raster(i))
+#del.tif = tif.lst[sapply(c.lst, function(x){grep(x, tif.lst)})]
+#unlink(del.tif)
 
 ## corrupt or missing tiles:
 missing.tiles <- function(varn, pr.dirs){
@@ -349,8 +354,8 @@ names(missing.lst) = t.vars
 
 #make_mosaick_ll(varn=t.vars[10], i="M_sl2", in.path="/data/tt/SoilGrids250m/predicted250m", ot="Int16", dstnodata=-32768, metadata=metasd[grep(paste0(t.vars[1], "_M_sl2"), metasd$FileName), sel.metasd])
 ## Mosaick:
-l.vars = as.vector(sapply(c("PHIKCL","OCDENS","CRFVOL"), rep, 7))
-d.lst = rep(paste0("M_sl", 1:7), 3)
+l.vars = as.vector(sapply(c("SNDPPT","OCDENS"), rep, 7))
+d.lst = rep(paste0("M_sl", 1:7), 2)
 library(snowfall)
 sfInit(parallel=TRUE, cpus=ifelse(length(l.vars)>45, 45, length(l.vars)))
 sfExport("l.vars", "d.lst", "make_mosaick_ll", "metasd", "sel.metasd")

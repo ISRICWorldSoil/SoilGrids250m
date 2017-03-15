@@ -20,7 +20,7 @@ histosol.prob <- function(i, in.path, fao.lst, usda.lst){
   }
 }
 
-#histosol.prob(i="SA_051_069", in.path="/data/predicted1km", fao.lst, usda.lst)
+#histosol.prob(i="SA_051_069", in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, usda.lst)
 
 ## Organic carbon stock (six standard layers) corrected for depth to bedrock:
 wrapper.OCSTHA <- function(i, in.path, n.lst=c("ORCDRC","BLD","CRFVOL"), ORCDRC.sd=20, BLD.sd=100, CRFVOL.sd=5, BDR.lst=c("BDRICM","BDRLOG","BDTICM"), sdepth = c(0, 5, 15, 30, 60, 100, 200)){
@@ -51,16 +51,16 @@ wrapper.OCSTHA <- function(i, in.path, n.lst=c("ORCDRC","BLD","CRFVOL"), ORCDRC.
   }
 }
 
-#wrapper.OCSTHA(i="NA_060_036", in.path="/data/predicted1km")
+#wrapper.OCSTHA(i="NA_060_036", in.path="/data/tt/SoilGrids250m/predicted250m")
 
 ## Run in parallel:
-pr.dirs <- basename(list.dirs("/data/predicted")[-1])
+pr.dirs <- basename(list.dirs("/data/tt/SoilGrids250m/predicted250m")[-1])
 
 sfInit(parallel=TRUE, cpus=48)
 sfExport("histosol.prob", "fao.lst", "usda.lst")
 sfLibrary(raster)
 sfLibrary(rgdal)
-out <- sfClusterApplyLB(pr.dirs, function(i){try( histosol.prob(i, in.path="/data/predicted", fao.lst, usda.lst) )})
+out <- sfClusterApplyLB(pr.dirs, function(i){try( histosol.prob(i, in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, usda.lst) )})
 sfStop()
 
 sfInit(parallel=TRUE, cpus=48)
@@ -68,13 +68,12 @@ sfExport("wrapper.OCSTHA")
 sfLibrary(raster)
 sfLibrary(rgdal)
 sfLibrary(GSIF)
-out <- sfClusterApplyLB(pr.dirs, function(i){try( wrapper.OCSTHA(i, in.path="/data/predicted") )})
+out <- sfClusterApplyLB(pr.dirs, function(i){try( wrapper.OCSTHA(i, in.path="/data/tt/SoilGrids250m/predicted250m") )})
 sfStop()
 
 ## clean-up:
 # for(i in c("OCSTHA", "HISTPR")){  
-#   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+#   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
 # }
-
 

@@ -1,16 +1,21 @@
 ## Distribution of acid and saline/sodic soils based on SoilGrids250m
 ## Requested by the International Fertilizer Association (IFA)
 ## Code by Tom.Hengl@isric.org, decision rules by Niels Batjes (niels.batjes@isric.org) and Tom Hengl
+## Compare with previous global assessments by: Wicke et al. "The global technical and economic potential of bioenergy from salt-affected soils" DOI: 10.1039/C1EE01029H (Analysis) Energy Environ. Sci., 2011, 4, 2669-2681
 
 library(rgdal)
 library(raster)
 library(GSIF)
+library(snowfall)
 
 fao.lst <- c("Gleyic.Solonetz", "Mollic.Solonetz", "Solodic.Planosols", "Calcic.Solonetz", "Haplic.Solonchaks..Sodic.", "Calcic.Gypsisols", "Haplic.Cambisols..Sodic.", "Haplic.Calcisols..Sodic.", "Gypsic.Solonchaks", "Haplic.Regosols..Sodic.")
 fao.grades = c(4, 3, 2, 4, 4, 4, 1, 3, 4, 2)
-## combine grades with pH? if pH>8.5 than it is definitively saline
+## if pH>8.5 than it is definitively sodic
+## https://www.blogs.nrcs.usda.gov/wps/PA_NRCSConsumption/download?cid=nrcseprd589210&ext=pdf
+## Sodic Soils have maybe low levels of neutral soluble salts (ECe > 4.0 dS/m), they have relatively high levels of sodium on the exchange complex (ESP and SAR values are above 15 and 13, respectively). 
+## The pH values of sodic soils exceed 8.5, rising to 10 or higher in some cases.
 
-saline_sodic.prob <- function(i, in.path, fao.lst, fao.grades, ph_t1=85, ph_t2=81){
+sodic_grade <- function(i, in.path, fao.lst, fao.grades, ph_t1=85, ph_t2=81){
   out.p <- paste0(in.path, "/", i, "/SLGWRB_", i, ".tif")
   if(!file.exists(out.p)){
     tif.lst <- c(paste0(in.path, "/", i, "/TAXNWRB_", fao.lst, "_", i, ".tif"), paste0(in.path, "/", i, "/PHIHOX_M_sl",1:5,"_", i, ".tif"))
@@ -20,12 +25,12 @@ saline_sodic.prob <- function(i, in.path, fao.lst, fao.grades, ph_t1=85, ph_t2=8
     gc()
     s$SLGWRB <- round(rowSums( data.frame(mapply('*', s@data[,fao.lst], fao.grades, SIMPLIFY=FALSE)) )/100)
     ph = rowMeans(s@data[,paste0("PHIHOX_M_sl",1:5)])
-    s$SLGWRB <- ifelse(ph>ph_t1, 4, ifelse(ph>ph_t1, 3, s$SLGWRB))
+    s$SLGWRB <- ifelse(ph>ph_t1, 4, ifelse(ph>ph_t2, 3, s$SLGWRB))
     writeGDAL(s["SLGWRB"], out.p, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
   }
 }
 
-#saline_sodic.prob(i="T33349", in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, fao.grades)
+#sodic_grade(i="T33349", in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, fao.grades)
 
 ## Acidic subsoils:
 PHIHOX_U = c(20, 45, 50, 55, 66, 73, 110)
@@ -58,10 +63,10 @@ wrapper.ACID <- function(i, in.path, fao.acid, fao.acid.grades, PHIHOX_U){
 pr.dirs <- basename(list.dirs("/data/tt/SoilGrids250m/predicted250m")[-1])
 
 sfInit(parallel=TRUE, cpus=56)
-sfExport("saline_sodic.prob", "fao.lst", "fao.grades")
+sfExport("sodic_grade", "fao.lst", "fao.grades")
 sfLibrary(raster)
 sfLibrary(rgdal)
-out <- sfClusterApplyLB(pr.dirs, function(i){try( saline_sodic.prob(i, in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, fao.grades) )})
+out <- sfClusterApplyLB(pr.dirs, function(i){try( sodic_grade(i, in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, fao.grades) )})
 sfStop()
 
 sfInit(parallel=TRUE, cpus=48)
@@ -83,10 +88,14 @@ metasd <- read.csv('/data/GEOG/META_GEOTIFF_1B.csv', stringsAsFactors = FALSE)
 sel.metasd = names(metasd)[-sapply(c("FileName","VARIABLE_NAME"), function(x){grep(x, names(metasd))})]
 source("mosaick_functions_ll.R")
 
-## Make mosaics:
+## Make mosaics -----
 t.vars = c("SLGWRB", "ACDWRB_M_ss")
 library(snowfall)
 sfInit(parallel=TRUE, cpus=ifelse(length(t.vars)>45, 45, length(t.vars)))
 sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd")
 out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i=NULL, in.path="/data/tt/SoilGrids250m/predicted250m", ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == paste0(t.vars[x], "_250m_ll.tif")), sel.metasd]) )})
 sfStop()
+
+## clean-up ----
+#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^SLGWRB_*.tif")), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
