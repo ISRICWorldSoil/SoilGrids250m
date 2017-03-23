@@ -4,7 +4,7 @@ Global spatial predictions of soil properties and classes at 250 m resolution
 ![SoilGrids.org banner](http://gsif.isric.org/KML/SoilGrids_banner_650pix.png)
 
 Citation:
-* Hengl, T., Mendes de Jesus, J., Heuvelink, G. B.M., Ruiperez Gonzalez, M., Kilibarda, M. et al. (2016?) [SoilGrids250m: global gridded soil information based on Machine Learning](http://gsif.isric.org/lib/exe/fetch.php?media=wiki:soilgrids250m_global_gridded_preprint.pdf). PLOS One, accepted for publication.
+* Hengl T, Mendes de Jesus J, Heuvelink GBM, Ruiperez Gonzalez M, Kilibarda M, Blagotić A, et al. (2017) [SoilGrids250m: Global gridded soil information based on machine learning](http://dx.doi.org/10.1371/journal.pone.0169748). PLoS ONE 12(2): e0169748. doi:10.1371/journal.pone.0169748
 
 What can you find on this github repository:
 * [R scripts documenting processing steps](https://github.com/ISRICWorldSoil/SoilGrids250m/wiki/SoilGrids-overview),
