@@ -4,6 +4,7 @@
 library(soiltexture)
 library(plyr)
 library(raster)
+library(snowfall)
 
 tex.c <- data.frame(class.n=TT.classes.tbl(class.sys="USDA.TT", collapse=", ")[,"abbr"], class.i=1:12)
 trim <- function (x){ gsub("^\\s+|\\s+$", "", x) }
@@ -58,16 +59,16 @@ predictTEXclass <- function(i, in.path, depths=1:7){
 }
 
 ## test it:
-predictTEXclass(i="NA_060_036", in.path="/data/predicted", depths=1:7)
+#predictTEXclass(i="NA_060_036", in.path="/data/tt/SoilGrids250m/predicted250m", depths=1:7)
 
 ## Run in parallel:
-pr.dirs <- basename(list.dirs("/data/predicted")[-1])
+pr.dirs <- basename(list.dirs("/data/tt/SoilGrids250m/predicted250m")[-1])
 
-sfInit(parallel=TRUE, cpus=48)
+sfInit(parallel=TRUE, cpus=56)
 sfExport("predictTEXclass", "frac2TEX", "trim", "pr.dirs", "tex.c")
 sfLibrary(raster)
 sfLibrary(rgdal)
 sfLibrary(soiltexture)
 sfLibrary(plyr)
-out <- sfClusterApplyLB(pr.dirs, function(i){try( predictTEXclass(i, in.path="/data/predicted") )})
+out <- sfClusterApplyLB(pr.dirs, function(i){try( predictTEXclass(i, in.path="/data/tt/SoilGrids250m/predicted250m") )})
 sfStop()

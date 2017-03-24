@@ -25,7 +25,7 @@ wrapper.fix.textures <- function(i, n.lst=c("SNDPPT","SLTPPT","CLYPPT"), SND.lst
   }
 }
 
-SND.lst <- list.files(path="/data/predicted", pattern="SNDPPT", recursive = TRUE, full.names = TRUE)
+SND.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern="SNDPPT", recursive = TRUE, full.names = TRUE)
 str(SND.lst)
 
 sfInit(parallel=TRUE, cpus=48)
