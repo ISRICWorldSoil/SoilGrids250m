@@ -138,7 +138,7 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, metho
     pred <- rowSums(cbind(v1*gm1.w, v2*gm2.w))/(gm1.w+gm2.w)
   }
   if(method=="ranger"){
-    gm <- ranger(formulaString, data=s.train, write.forest=TRUE)
+    gm <- ranger(formulaString, data=s.train, write.forest=TRUE, num.trees=85)
     pred <- predict(gm, s.test, na.action = na.pass)$predictions 
   }
   obs.pred <- as.data.frame(list(s.test[,varn], pred))
@@ -148,10 +148,14 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, metho
   return(obs.pred)
 }
 
-cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus, method="ranger", Log=FALSE){ 
-  varn = all.vars(formulaString)[1]
-  sel <- dismo::kfold(rmatrix, k=nfold)  
+cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus, method="ranger", Log=FALSE){     varn = all.vars(formulaString)[1]
   message(paste("Running ", nfold, "-fold cross validation with model re-fitting method ", method," ...", sep=""))
+  if(sum(duplicated(rmatrix[,idcol]))>0.5*nrow(rmatrix)){
+    sel <- dismo::kfold(rmatrix, k=nfold, by=rmatrix[,idcol])
+    message(paste("Subsetting observations by '", idcol, "'"))
+  } else {
+    sel <- dismo::kfold(rmatrix, k=nfold)
+  }
   if(nfold > nrow(rmatrix)){ 
     stop("'nfold' argument must not exceed total number of points") 
   }
@@ -175,11 +179,11 @@ cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus, method="range
     }
   }
   if(method=="ranger"){
-    snowfall::sfInit(parallel=TRUE, cpus=cpus)
+    snowfall::sfInit(parallel=TRUE, cpus=ifelse(nfold>cpus, cpus, nfold))
     snowfall::sfExport("predict_parallelP","idcol","formulaString","rmatrix","sel","varn","method")
     snowfall::sfLibrary(package="plyr", character.only=TRUE)
     snowfall::sfLibrary(package="ranger", character.only=TRUE)
-    out <- snowfall::sfLapply(1:nfold, function(j){predict_parallelP(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, method=method, cpus=1)})
+    out <- snowfall::sfLapply(1:nfold, function(j){predict_parallelP(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, method=method)})
     snowfall::sfStop()
   }
   ## calculate mean accuracy:
@@ -201,6 +205,7 @@ cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus, method="range
   }
   names(cv.r) <- c("CV_residuals", "Summary")
   return(cv.r)
+  closeAllConnections()
 }
 
 ## correlation plot:
