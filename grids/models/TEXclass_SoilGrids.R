@@ -4,7 +4,6 @@
 library(soiltexture)
 library(plyr)
 library(raster)
-library(snowfall)
 
 tex.c <- data.frame(class.n=TT.classes.tbl(class.sys="USDA.TT", collapse=", ")[,"abbr"], class.i=1:12)
 trim <- function (x){ gsub("^\\s+|\\s+$", "", x) }
@@ -33,7 +32,7 @@ predictTEXclass <- function(i, in.path, depths=1:7){
         if(!class(.Last.value)[1]=="try-error"){
           if(sum(!is.na(x$band1))>4){
             x$band2 <- rgdal::readGDAL(tex.tif.lst[2])$band1
-            x$band3 <- rgdal::readGDAL(tex.tif.lst[3])$band1          
+            x$band3 <- rgdal::readGDAL(tex.tif.lst[3])$band1
             try( x0 <- as(x, "SpatialPixelsDataFrame"), silent=TRUE )
             if(!class(.Last.value)[1]=="try-error"&exists("x0")){
               names(x0@data) <- c("CLAY", "SAND", "SILT")
@@ -59,12 +58,17 @@ predictTEXclass <- function(i, in.path, depths=1:7){
 }
 
 ## test it:
-#predictTEXclass(i="NA_060_036", in.path="/data/tt/SoilGrids250m/predicted250m", depths=1:7)
+predictTEXclass(i="NA_060_036", in.path="/data/tt/SoilGrids250m/predicted250m", depths=1:7)
 
 ## Run in parallel:
 pr.dirs <- basename(list.dirs("/data/tt/SoilGrids250m/predicted250m")[-1])
 
-sfInit(parallel=TRUE, cpus=56)
+library(snowfall)
+library(raster)
+library(rgdal)
+library(soiltexture)
+library(plyr)
+sfInit(parallel=TRUE, cpus=48)
 sfExport("predictTEXclass", "frac2TEX", "trim", "pr.dirs", "tex.c")
 sfLibrary(raster)
 sfLibrary(rgdal)

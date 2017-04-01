@@ -223,9 +223,7 @@ most_probable_fix <- function(i, in.path, out.path, varn, col.legend, check.name
 }
 
 
-## -------------------------------
-## Numeric variables
-## -------------------------------
+## Numeric variables ------------
 
 ## 7 standard dephts
 split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5, 15, 30, 60, 100, 200), method, multiplier=1, depths=TRUE, DEPTH.col="DEPTH.f", rds.file, SG.col=NULL, SG.col.name){

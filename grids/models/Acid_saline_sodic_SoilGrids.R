@@ -77,11 +77,11 @@ sfLibrary(GSIF)
 out <- sfClusterApplyLB(pr.dirs, function(i){try( wrapper.ACID(i, in.path="/data/tt/SoilGrids250m/predicted250m", fao.acid, fao.acid.grades, PHIHOX_U) )})
 sfStop()
 
-## clean-up:
-# for(i in c("ACDWRB_M_sb", "SLGWRB")){  
-#   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
-#   unlink(del.lst)
-# }
+# clean-up:
+ # for(i in c("ACDWRB_M_sb", "SLGWRB")){  
+ #   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+ #   unlink(del.lst)
+ # }
 
 ## metadata:
 metasd <- read.csv('/data/GEOG/META_GEOTIFF_1B.csv', stringsAsFactors = FALSE)

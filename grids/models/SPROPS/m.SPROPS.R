@@ -15,9 +15,9 @@ library(rgdal)
 #library(randomForest)
 library(devtools)
 #install.packages("xgboost", repos=c("http://dmlc.ml/drat/", getOption("repos")), type="source")
-library(xgboost)
+library(xgboost) ## xgboost_0.6-4
 #devtools::install_github("imbs-hl/ranger/ranger-r-package/ranger", ref="forest_memory") ## version to deal with Memory problems
-library(ranger)
+library(ranger) ## ranger_0.6.7
 library(caret)
 library(hexbin)
 library(gridExtra)
@@ -29,7 +29,7 @@ library(plotKML)
 library(R.utils)
 library(GSIF)
 library(parallel)
-#library(doParallel)
+library(doParallel)
 
 plotKML.env(convert="convert", show.env=FALSE)
 gdalwarp = "gdalwarp"
@@ -53,7 +53,7 @@ load("/data/profs/SPROPS/all.pnts.rda")
 
 ## spatia overlay (20 mins):
 tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
-ov <- extract.tiled(x=SPROPS.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=56)
+ov <- extract.tiled(x=SPROPS.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=48)
 #str(ov)
 ovA <- join(all.pnts, ov, type="left", by="LOC_ID")
 ## 807,962 rows
@@ -163,16 +163,17 @@ write.csv(col.m, "covs_quantiles.csv")
 #unlink(list.files(pattern=glob2rx("^mrf.*.rds")))
 #unlink(list.files(pattern=glob2rx("^mrfX_*_*.rds")))
 #unlink(list.files(pattern=glob2rx("^RF_fit_*.csv.gz")))
+#unlink(list.files(pattern=glob2rx("*_resultsFit.txt")))
 
 ## sub-sample to speed up model fitting:
 ## TAKES >2 hrs to fit all models
 Nsub <- 1.2e4 
 ## Caret training settings (reduce number of combinations to speed up):
 ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
-gb.tuneGrid <- expand.grid(eta = c(0.3,0.4,0.5), nrounds = c(50,100,150), max_depth = 2:4, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
+gb.tuneGrid <- expand.grid(eta = c(0.3,0.4,0.5), nrounds = c(50,100,150), max_depth = 2:4, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1, subsample=1)
 rf.tuneGrid <- expand.grid(mtry = seq(5,50,by=5))
 ## Initiate cluster
-cl <- makeCluster(56)
+cl <- makeCluster(48)
 doParallel::registerDoParallel(cl)
 ## Takes 1 hour to fit all models:
 for(j in 1:length(t.vars)){
@@ -183,7 +184,7 @@ for(j in 1:length(t.vars)){
     cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file=out.file, append=TRUE)
     cat("\n", file=out.file, append=TRUE)
     out.rf <- paste0("mrf.",t.vars[j],".rds")
-    if(!file.exists(out.rf)){
+    if(!file.exists(out.rf)|!file.exists(paste0("mgb.",t.vars[j],".rds"))){
       LOC_ID <- ovA$LOC_ID
       dfs <- ovA[,all.vars(formulaString.lst[[j]])]
       sel <- complete.cases(dfs)
@@ -197,8 +198,12 @@ for(j in 1:length(t.vars)){
       }
       ## fit RF model using 'ranger' (fully parallelized)
       ## reduce number of trees so the output objects do not get TOO LARGE i.e. >5GB
-      mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=85)  
-      saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
+      if(!file.exists(paste0("mrf.",t.vars[j],".rds"))){
+        mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=85)  
+        saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
+      } else {
+        mrfX <- readRDS.gz(paste0("mrf.",t.vars[j],".rds"))
+      }
       ## Top 15 covariates:
       sink(file=out.file, append=TRUE, type="output")
       print(mrfX)
@@ -246,7 +251,7 @@ names(type.lst) = t.vars
 mvFlag.lst <- c(-32768, 255, 255, 255, 255, 255, 255, -32768, -32768, -32768)
 names(mvFlag.lst) = t.vars
 
-## Run per property (TAKES ABOUT 20-30 HOURS OF COMPUTING PER PROPERTY)
+## Run per property (TAKES ABOUT 26 HOURS OF COMPUTING PER PROPERTY)
 library(ranger)
 library(xgboost)
 library(tools)
@@ -255,7 +260,8 @@ library(doParallel)
 library(rgdal)
 library(plyr)
 ## Run per property (RF = 20 tiles per minute)
-for(j in t.vars){
+for(j in t.vars[7:9]){
+#for(j in t.vars){
   try( detach("package:snowfall", unload=TRUE), silent=TRUE)
   try( detach("package:snow", unload=TRUE), silent=TRUE)
   if(j %in% c("PHIHOX","PHIKCL","OCDENS")){ multiplier = 10 }
@@ -279,7 +285,7 @@ for(j in t.vars){
   gc(); gc()
   ## sum up predictions:
   library(snowfall)
-  sfInit(parallel=TRUE, cpus=56)
+  sfInit(parallel=TRUE, cpus=48)
   sfExport("pr.dirs", "sum_predict_ensemble", "j", "z.min", "z.max", "gm1.w", "gm2.w", "type.lst", "mvFlag.lst")
   sfLibrary(rgdal)
   sfLibrary(plyr)
@@ -306,7 +312,7 @@ corrupt.tif <- function(i, x=NULL, try.raster=TRUE){
 }
 ## takes 30 mins to inspect all tifs
 library(snowfall)
-sfInit(parallel=TRUE, cpus=56)
+sfInit(parallel=TRUE, cpus=48)
 sfLibrary(rgdal)
 sfLibrary(raster)
 sfExport("corrupt.tif", "tif.lst")
@@ -324,7 +330,7 @@ unlink(del.tif)
 
 ## corrupt or missing tiles:
 missing.tiles <- function(varn, pr.dirs){
-  dir.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", varn, "*.tif")), full.names=TRUE, recursive=TRUE)
+  dir.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", varn, "*.tif")), full.names=TRUE, recursive=TRUE)
   out.lst <- pr.dirs[which(!pr.dirs %in% basename(dirname(dir.lst)))]
   return(out.lst)
 }
@@ -338,30 +344,37 @@ names(missing.lst) = t.vars
 ## "NA_101_074" "NA_106_069"
 
 ## clean-up:
-# for(i in c("ORCDRC", "OCSTHA")){ ##  c("BLD", "ORCDRC", "PHIHOX", "PHIKCL", "SNDPPT", "SLTPPT", "CLYPPT")  
-#   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+for(i in c("BLD.f", "CECSUM")){ ##  c("BLD", "ORCDRC", "PHIHOX", "PHIKCL", "SNDPPT", "SLTPPT", "CLYPPT")  
+ del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+ unlink(del.lst)
+}
+# for(i in c("BLD.f", "ORCDRC")){ ## c("BLD", "ORCDRC", "PHIHOX") 
+#   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "_*_*_*_rf?.rds")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
 # }
-# for(i in c("BLD", "ORCDRC")){ ## c("BLD", "ORCDRC", "PHIHOX") 
-#   del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "_*_*_*_rf?.rds")), full.names=TRUE, recursive=TRUE)
-#   unlink(del.lst)
-# }
+#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^CECSUM"), full.names=TRUE, recursive=TRUE)
 
 # for(i in t.vars){
-#  del.lst <- list.files(path="/data/predicted", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+#  del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #  unlink(del.lst)
 # }
 
 #make_mosaick_ll(varn=t.vars[10], i="M_sl2", in.path="/data/tt/SoilGrids250m/predicted250m", ot="Int16", dstnodata=-32768, metadata=metasd[grep(paste0(t.vars[1], "_M_sl2"), metasd$FileName), sel.metasd])
-## Mosaick:
-l.vars = as.vector(sapply(c("SNDPPT","OCDENS"), rep, 7))
-d.lst = rep(paste0("M_sl", 1:7), 2)
+
+## Mosaick ----
+l.vars = c(as.vector(sapply(c("ORCDRC","PHIHOX","PHIKCL","CRFVOL","SNDPPT","SLTPPT","CLYPPT","BLD.f","CECSUM","OCDENS","TEXMHT"), rep, 7)), rep("OCSTHA", 9), "HISTPR", "TAXNWRB", "TAXOUSDA")
+l.vars.f <- ifelse(l.vars=="BLD.f", "BLDFIE", ifelse(l.vars=="CECSUM", "CECSOL", l.vars))
+d.lst = c(rep(paste0("M_sl", 1:7), 11), paste0("M_sd", 1:6), paste0("M_", c(30,100,200), "cm"), "NULL", "NULL", "NULL")
+filename = paste0(l.vars.f, "_", d.lst, "_250m_ll.tif")
+filename = gsub("_NULL", "", filename)
+source('/data/models/mosaick_functions_ll.R')
+#View(data.frame(l.vars,l.vars.f,d.lst))
 library(snowfall)
 sfInit(parallel=TRUE, cpus=ifelse(length(l.vars)>45, 45, length(l.vars)))
-sfExport("l.vars", "d.lst", "make_mosaick_ll", "metasd", "sel.metasd")
-out <- sfClusterApplyLB(1:length(l.vars), function(x){ try( make_mosaick_ll(varn=l.vars[x], i=d.lst[x], in.path="/data/tt/SoilGrids250m/predicted250m", ot=metasd[which(metasd$FileName == paste0(l.vars[x], "_", d.lst[x], "_250m_ll.tif")), "DATA_FORMAT"], dstnodata=metasd[which(metasd$FileName == paste0(l.vars[x], "_" ,d.lst[x], "_250m_ll.tif")), "NO_DATA"], metadata=metasd[which(metasd$FileName == paste0(l.vars[x], "_" ,d.lst[x], "_250m_ll.tif")), sel.metasd]) )})
+sfExport("l.vars", "l.vars.f", "d.lst", "make_mosaick_ll", "metasd", "sel.metasd", "filename")
+out <- sfClusterApplyLB(1:length(l.vars), function(x){ try( make_mosaick_ll(varn=l.vars[x], i=d.lst[x], in.path="/data/tt/SoilGrids250m/predicted250m", ot=metasd[which(metasd$FileName == filename[x]), "DATA_FORMAT"], dstnodata=metasd[which(metasd$FileName == filename[x]), "NO_DATA"], metadata=metasd[which(metasd$FileName == filename[x]), sel.metasd]) )})
 sfStop()
-
+save.image()
 
 ## ------------- VISUALIZATIONS -----------
 
@@ -386,7 +399,7 @@ dev.off()
 
 ## Cross-validation 10-fold (TH: this does not takes into account high spatial clustering):
 
-source("../../cv/cv_functions.R")
+source("/data/cv/cv_functions.R")
 cat("Results of Cross-validation:\n\n", file="resultsCV.txt")
 cv_lst <- rep(list(NULL), length(t.vars))
 for(j in 1:length(t.vars)){

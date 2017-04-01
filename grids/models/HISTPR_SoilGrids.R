@@ -61,9 +61,11 @@ wrapper.ocd2OCSTHA <- function(i, in.path, BDR.lst=c("BDRICM","BDRLOG","BDTICM")
     ## depth to bedrock maps:
     sD <- raster::stack(paste0(in.path, "/", i, "/", BDR.lst, "_M_", i, ".tif"))
     sD <- as(sD, "SpatialGridDataFrame")
-    sD$BDRLOG <- ifelse(sD@data[,grep("BDRLOG_M", names(sD))]>50, 100, 200)
-    ## parallel minimum (use minimum because lower depths are typically over-estimated):
-    sD$BDRICM <- pmin(sD@data[,grep("BDRICM_M", names(sD))], sD@data[,grep("BDTICM_M", names(sD))], sD$BDRLOG, na.rm = TRUE)
+    ## Estimate depth to bedrock using prob map:
+    sD$BDRLOG <- ifelse(sD@data[,grep("BDRLOG_M", names(sD))]>60, 100, 200)
+    ## parallel minimum:
+    #sD$BDRICM <- pmin(sD@data[,grep("BDRICM_M", names(sD))], sD@data[,grep("BDTICM_M", names(sD))], sD$BDRLOG, na.rm = TRUE)
+    sD$BDRICM <- rowMeans(sD@data[,c(paste0("BDRICM_M_",i),paste0("BDTICM_M_",i), "BDRLOG")], na.rm = TRUE)
     ## Organic carbon density maps:
     s = stack(paste0(in.path, "/", i, "/OCDENS_M_sl", 1:7, "_", i,".tif"))
     s = as(as(s, "SpatialGridDataFrame"), "SpatialPixelsDataFrame")
@@ -108,6 +110,7 @@ wrapper.ocd2OCSTHA <- function(i, in.path, BDR.lst=c("BDRICM","BDRLOG","BDTICM")
 ## Run in parallel:
 pr.dirs <- basename(list.dirs("/data/tt/SoilGrids250m/predicted250m")[-1])
 
+library(snowfall)
 sfInit(parallel=TRUE, cpus=56)
 sfExport("histosol.prob", "fao.lst", "usda.lst")
 sfLibrary(raster)
@@ -129,3 +132,5 @@ sfStop()
 #   unlink(del.lst)
 # }
 
+#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^OCSTHA*.tif")), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
