@@ -1,0 +1,20 @@
+﻿This repository contains a collection of updatable soil property and class maps of the world at a relatively coarse resolution (1 km, 250 m etc) produced using automated soil mapping based on Machine Learning. SoilGrids is a global soil data product generated at ISRIC ━ World Soil Information as a result of international collaboration (see list of contributing agencies) and as a proposed contribution to the Global Soil Partnership (http://www.fao.org/globalsoilpartnership/en/) initiative.
+
+Important notice: the SoilGrids layers are of limited thematic (wide confidence limits) and spatial accuracy and still contain artefacts and missing pixels. Help us improve these maps by submitting a validation report or by contributing georeferenced soil profiles (points) and covariate data (rasters with global coverage at resolutions of 250 m or better). As soon as we receive a sufficient number of validation reports and/or new ground observations, we can re-run the predictions to produce an updated version of SoilGrids.
+
+This version of SoilGrids is licenced to you by ISRIC — World Soil Information strictly in accordance with the terms and conditions of the Open Data Commons Open Database License (ODbL) (http://opendatacommons.org/licenses/odbl/). By using the ISRIC website and web services the user accepts the ISRIC data policy (http://www.isric.org/data/data-policy) in full.
+
+Last update: 2017-March-10.
+Next scheduled update: September 2017.
+URL: www.soilgrids.org 
+
+Citation:
+
+Hengl T, Mendes de Jesus J, Heuvelink GBM, Ruiperez Gonzalez M, Kilibarda M, Blagotić A, et al. (2017) SoilGrids250m: Global gridded soil information based on machine learning. PLoS ONE 12(2): e0169748. doi:10.1371/journal.pone.0169748
+
+GeoTiffs of SoilGrids can be obtained either via the web-mapping interface at www.soilgrids.org or via FTP: ftp://ftp.soilgrids.org/data/recent/
+
+Layer description: ftp://ftp.soilgrids.org/data/recent/META_GEOTIFF_1B.csv
+
+To submit a bug or development request please use: https://github.com/ISRICWorldSoil/SoilGrids250m/issues
+To request support or ask technical / methodological question please use: https://groups.google.com/forum/#!forum/global-soil-information
