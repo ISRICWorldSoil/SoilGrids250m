@@ -1,0 +1,1302 @@
+<VRTDataset rasterXSize="172800" rasterYSize="67200">
+  <SRS>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433],AUTHORITY["EPSG","4326"]]</SRS>
+  <GeoTransform> -1.8000000000000000e+02,  2.0833330000009070e-03,  0.0000000000000000e+00,  8.3999167206000010e+01,  0.0000000000000000e+00, -2.0833330000009070e-03</GeoTransform>
+  <VRTRasterBand dataType="Byte" band="1">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Acric.Ferralsols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="2">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Acric.Plinthosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="3">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Albic.Arenosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="4">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Albic.Luvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="5">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Alic.Nitisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="6">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Aluandic.Andosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="7">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Aric.Regosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="8">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Calcaric.Regosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="9">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Calcic.Chernozems_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="10">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Calcic.Gleysols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="11">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Calcic.Gypsisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="12">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Calcic.Histosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="13">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Calcic.Kastanozems_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="14">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Calcic.Luvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="15">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Calcic.Solonetz_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="16">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Calcic.Vertisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="17">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Cryic.Histosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="18">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Cutanic.Alisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="19">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Endogleyic.Cambisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="20">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Endogleyic.Planosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="21">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Ferralic.Arenosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="22">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Ferralic.Cambisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="23">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Fibric.Histosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="24">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Gleyic.Luvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="25">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Gleyic.Podzols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="26">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Gleyic.Solonetz_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="27">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Gypsic.Solonchaks_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="28">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Acrisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="29">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Acrisols..Alumic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="30">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Acrisols..Ferric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="31">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Acrisols..Humic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="32">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Albeluvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="33">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Alisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="34">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Andosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="35">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Arenosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="36">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Arenosols..Calcaric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="37">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Calcisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="38">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Calcisols..Sodic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="39">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Cambisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="40">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Cambisols..Calcaric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="41">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Cambisols..Chromic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="42">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Cambisols..Dystric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="43">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Cambisols..Eutric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="44">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Cambisols..Humic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="45">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Cambisols..Sodic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="46">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Chernozems_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="47">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Cryosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="48">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Ferralsols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="49">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Ferralsols..Rhodic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="50">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Ferralsols..Xanthic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="51">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Fluvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="52">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Fluvisols..Arenic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="53">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Fluvisols..Calcaric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="54">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Fluvisols..Dystric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="55">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Fluvisols..Eutric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="56">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Gleysols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="57">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Gleysols..Dystric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="58">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Gleysols..Eutric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="59">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Gypsisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="60">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Kastanozems_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="61">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Leptosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="62">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Leptosols..Eutric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="63">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Lixisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="64">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Lixisols..Chromic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="65">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Lixisols..Ferric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="66">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Luvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="67">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Luvisols..Chromic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="68">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Luvisols..Ferric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="69">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Nitisols..Rhodic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="70">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Phaeozems_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="71">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Planosols..Dystric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="72">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Planosols..Eutric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="73">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Podzols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="74">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Regosols..Dystric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="75">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Regosols..Eutric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="76">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Regosols..Sodic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="77">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Solonchaks_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="78">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Solonchaks..Sodic._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="79">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Solonetz_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="80">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Umbrisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="81">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Vertisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="82">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Haplic.Vertisols..Eutric._250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="83">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Hemic.Histosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="84">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Histic.Albeluvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="85">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Hypoluvic.Arenosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="86">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Leptic.Cambisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="87">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Leptic.Luvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="88">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Leptic.Phaeozems_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="89">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Leptic.Regosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="90">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Leptic.Umbrisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="91">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Lithic.Leptosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="92">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Lixic.Plinthosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="93">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Luvic.Calcisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="94">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Luvic.Chernozems_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="95">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Luvic.Phaeozems_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="96">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Luvic.Planosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="97">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Luvic.Stagnosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="98">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Mollic.Gleysols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="99">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Mollic.Leptosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="100">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Mollic.Solonetz_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="101">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Mollic.Vertisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="102">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Petric.Calcisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="103">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Petric.Durisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="104">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Plinthic.Acrisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="105">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Protic.Arenosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="106">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Rendzic.Leptosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="107">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Sapric.Histosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="108">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Solodic.Planosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="109">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Stagnic.Luvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="110">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Turbic.Cryosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="111">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Umbric.Albeluvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="112">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Umbric.Ferralsols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="113">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Umbric.Gleysols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="114">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Vertic.Cambisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="115">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Vertic.Luvisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="116">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Vetic.Acrisols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="117">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Vitric.Andosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="118">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXNWRB_Vitric.Cryosols_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999998" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+</VRTDataset>

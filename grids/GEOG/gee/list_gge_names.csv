@@ -1,0 +1,24 @@
+Number,Asset_name,SoilGrids_code,Description,Bands,Type
+1,Depth_to_bedrock_up_to_200cm,BDRICM_M,Depth to bedrock (R horizon) up to / within 0–200 cm,1,Numeric
+2,Occurrence_R_horizon,BDRLOG_M,Probability of occurrence of R horizon,1,Numeric
+3,Absolute_depth_to_bedrock,BDTICM_M,Absolute depth to bedrock (in cm),1,Numeric
+4,Soil_bulk_density,BLDFIE_M_sl,Bulk density (fine earth) in kg / cubic-meter at 7 standard depths,7,Numeric
+5,Soil_CEC,CECSOL_M_sl,Cation exchange capacity of soil in cmolc/kg at 7 standard depths,7,Numeric
+6,Clay_content,CLYPPT_M_sl,Clay content (0-2 micro meter) mass fraction in % at 7 standard depths,7,Numeric
+7,Coarse_fragments,CRFVOL_M_sl,Coarse fragments volumetric in % at 7 standard depths,7,Numeric
+8,Soil_organic_carbon_stock,OCSTHA_M_sd,Soil organic carbon stock in tons per ha for 6 standard depth intervals and for the standard IPCC depths,9,Numeric
+9,Soil_organic_carbon_density,OCDENS_M_sl,Soil organic carbon density in kg per cubic-m at 7 standard depths,7,Numeric
+10,Soil_organic_carbon_content,ORCDRC_M_sl,Soil organic carbon content (fine earth fraction) in g per kg at 7 standard depths,7,Numeric
+11,Soil_pH_H2O,PHIHOX_M_sl,Soil pH x 10 in H2O at 7 standard depths,7,Numeric
+12,Soil_pH_KCl,PHIKCL_M_sl,Soil pH x 10 in KCl at 7 standard depths,7,Numeric
+13,Sand_content,SLTPPT_M_sl,Silt content (2-50 micro meter) mass fraction in % at 7 standard depths,7,Numeric
+14,Silt_content,SNDPPT_M_sl,Sand content (50-2000 micro meter) mass fraction in % at 7 standard depths,7,Numeric
+15,Soil_texture_class,TEXMHT_M_sl,Texture class (USDA system) at 7 standard depths,7,Factor
+16,WRB_soil_type_most_probable,TAXNWRB_*_,Predicted WRB 2006 subgroup classes (as integers),1,Factor
+17,WRB_soil_type_probabilities,TAXNWRB_*_*_,Predicted probability in percent per class,118,Numeric
+18,USDA_soil_type_most_probable,TAXOUSDA_*_,Predicted USDA 2014 suborder classes (as integers),1,Factor
+19,USDA_soil_type_probabilities,TAXOUSDA_*_*_,Predicted probability in percent per class,67,Numeric
+20,Available_soil_water_capacity,?W,"Derived available soil water capacity (volumetric fraction) with FC = pF 2.0, 2.3 and 2.5, until wilting point and saturated water content at 7 standard depths",35,Numeric
+21,Organic_soil_type_probability,HISTPR,Cumulative probability of organic soil based on the TAXOUSDA and TAXNWRB,1,Numeric
+22,Soil_sodic_grade,SLGWRB_M,Sodic soil grade based on WRB soil types and soil pH,1,Numeric
+23,Soil_subsoil_acidity_grade,ACDWRB_M_ss,Grade of a sub-soil being acid e.g. having a pH < 5 and low BS,1,Numeric

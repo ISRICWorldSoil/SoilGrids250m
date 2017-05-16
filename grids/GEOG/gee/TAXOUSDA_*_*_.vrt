@@ -1,0 +1,730 @@
+<VRTDataset rasterXSize="172800" rasterYSize="67200">
+  <SRS>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433],AUTHORITY["EPSG","4326"]]</SRS>
+  <GeoTransform> -1.8000000000000000e+02,  2.0833330000009052e-03,  0.0000000000000000e+00,  8.3999167206000010e+01,  0.0000000000000000e+00, -2.0833330000009052e-03</GeoTransform>
+  <VRTRasterBand dataType="Byte" band="1">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Albolls_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="2">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Aqualfs_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="3">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Aquands_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="4">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Aquents_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="5">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Aquepts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="6">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Aquerts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="7">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Aquods_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="8">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Aquolls_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="9">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Aquox_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="10">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Aquults_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="11">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Arents_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="12">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Argids_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="13">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Borolls_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="14">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Calcids_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="15">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Cambids_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="16">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Cryalfs_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="17">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Cryands_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="18">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Cryepts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="19">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Cryids_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="20">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Cryods_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="21">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Cryolls_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="22">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Durids_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="23">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Fibrists_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="24">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Fluvents_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="25">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Folists_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="26">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Gelands_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="27">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Gelods_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="28">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Gypsids_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="29">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Hemists_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="30">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Histels_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="31">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Humods_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="32">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Humults_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="33">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Ochrepts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="34">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Orthels_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="35">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Orthents_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="36">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Orthods_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="37">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Perox_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="38">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Psamments_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="39">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Rendolls_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="40">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Salids_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="41">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Saprists_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="42">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Torrands_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="43">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Torrerts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="44">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Torrox_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="45">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Turbels_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="46">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Udalfs_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="47">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Udands_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="48">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Udepts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="49">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Uderts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="50">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Udolls_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="51">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Udox_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="52">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Udults_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="53">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Ustalfs_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="54">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Ustands_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="55">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Ustepts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="56">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Usterts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="57">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Ustolls_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="58">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Ustox_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="59">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Ustults_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="60">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Vitrands_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="61">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Xeralfs_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="62">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Xerands_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="63">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Xerepts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="64">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Xererts_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="65">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Xerolls_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="66">
+    <NoDataValue>255</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/data/GEOG/TAXOUSDA_Xerults_250m_ll.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="172800" RasterYSize="67200" DataType="Byte" BlockXSize="172800" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="172800" ySize="67200" />
+      <DstRect xOff="0" yOff="0" xSize="172800" ySize="67199.9999999999" />
+      <NODATA>255</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+</VRTDataset>
