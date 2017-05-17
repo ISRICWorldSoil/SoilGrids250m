@@ -9,9 +9,12 @@ make_mosaick_ll <- function(varn, i, in.path="/data/tt/SoilGrids250m/predicted25
   }
   if(!file.exists(out.tif)){
     if(is.null(i)|i=="NULL"){
-      tmp.lst <- list.files(path=in.path, pattern=glob2rx(paste0(varn, "_*.tif$")), full.names=TRUE, recursive=TRUE)
+      tmp.lst <- list.files(path=in.path, pattern=glob2rx(paste0(varn, "_T*.tif$")), full.names=TRUE, recursive=TRUE)
+      if(!varn=="ACDWRB_M_ss"){
+        tmp.lst <- tmp.lst[sapply(tmp.lst, function(i){length(strsplit(basename(i), "_")[[1]])})<3]
+      }
     } else {
-      tmp.lst <- list.files(path=in.path, pattern=glob2rx(paste0(varn, "_", i, "_*.tif$")), full.names=TRUE, recursive=TRUE)
+      tmp.lst <- list.files(path=in.path, pattern=glob2rx(paste0(varn, "_", i, "_T*.tif$")), full.names=TRUE, recursive=TRUE)
     }
     out.tmp <- tempfile(fileext = ".txt")
     vrt.tmp <- tempfile(fileext = ".vrt")

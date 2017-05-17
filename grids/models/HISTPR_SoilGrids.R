@@ -1,6 +1,7 @@
 ## Distribution of organic soils (probability of histosols) based on SoilGrids250m
 ## Tom.Hengl@isric.org
 
+setwd("/data/models")
 library(rgdal)
 library(raster)
 library(GSIF)
@@ -19,8 +20,6 @@ histosol.prob <- function(i, in.path, fao.lst, usda.lst){
     writeGDAL(s["HISTPR"], out.p, type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")
   }
 }
-
-#histosol.prob(i="SA_051_069", in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, usda.lst)
 
 ## Organic carbon stock (six standard layers) corrected for depth to bedrock:
 wrapper.OCSTHA <- function(i, in.path, n.lst=c("ORCDRC","BLD","CRFVOL"), ORCDRC.sd=20, BLD.sd=100, CRFVOL.sd=5, BDR.lst=c("BDRICM","BDRLOG","BDTICM"), sdepth = c(0, 5, 15, 30, 60, 100, 200)){
@@ -51,7 +50,39 @@ wrapper.OCSTHA <- function(i, in.path, n.lst=c("ORCDRC","BLD","CRFVOL"), ORCDRC.
   }
 }
 
-#wrapper.OCSTHA(i="NA_060_036", in.path="/data/tt/SoilGrids250m/predicted250m")
+## Fix organic carbon content and density maps based on precipitation / sand content / land cover ----
+fix.ORC_OCD <- function(i, in.path, ORC.t = 6, OCD.t = 70, BAR.t = 55, PRE.t = 180, SAND.t=90){ 
+  ## Correction filter:
+  selP <- readRDS(paste0(in.path, "/", i, "/", i,".rds"))
+  rowI = selP@grid.index
+  ## select deserts / semi-deserts:
+  SAND <- readGDAL(paste0(in.path, "/", i, "/SNDPPT_M_sl", 3, "_", i, ".tif"))$band1[rowI]
+  ## select deserts / semi-deserts:
+  selP <- selP$BARL10.tif > BAR.t & ( rowSums(selP@data[,c(paste0("P0",1:9,"CHE3.tif"),paste0("P",10:12,"CHE3.tif"))], na.rm=TRUE) < PRE.t | SAND > SAND.t )
+  ## Correct organic carbon content / density maps:
+  if(sum(selP)>0){
+    for(d in 1:7){
+      tif.lst <- paste0(in.path, "/", i, "/", c("ORCDRC","OCDENS","SNDPPT"), "_M_sl", d, "_", i, ".tif")
+      s0 <- raster::stack(tif.lst)
+      s0 <- as(s0, "SpatialGridDataFrame")
+      sel.pix1 = s0@data[rowI,paste0("ORCDRC_M_sl", d, "_", i)] > ORC.t & (selP | s0@data[rowI,paste0("SNDPPT_M_sl", d, "_", i)] > SAND.t)
+      if(sum(sel.pix1)>0){ 
+        s0@data[rowI,paste0("ORCDRC_M_sl", d, "_", i)] <- ifelse(sel.pix1, ORC.t, s0@data[rowI,paste0("ORCDRC_M_sl", d, "_", i)])
+        writeGDAL(s0[paste0("ORCDRC_M_sl", d, "_", i)], paste0(in.path, "/", i, "/ORCDRC_M_sl", d, "_", i, ".tif"), type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")
+      }
+      ## Organic carbon density
+      sel.pix2 = s0@data[rowI,paste0("OCDENS_M_sl", d, "_", i)] > OCD.t & (selP | s0@data[rowI,paste0("SNDPPT_M_sl", d, "_", i)] > SAND.t)
+      if(sum(sel.pix2)>0){ 
+        s0@data[rowI,paste0("OCDENS_M_sl", d, "_", i)] <- ifelse(sel.pix2, OCD.t, s0@data[rowI,paste0("OCDENS_M_sl", d, "_", i)])
+        writeGDAL(s0[paste0("OCDENS_M_sl", d, "_", i)], paste0(in.path, "/", i, "/OCDENS_M_sl", d, "_", i, ".tif"), type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")
+      }
+    }
+  }
+}
+#fix.ORC_OCD(i="T36601", in.path="/data/tt/SoilGrids250m/predicted250m")
+#fix.ORC_OCD(i="T27558", in.path="/data/tt/SoilGrids250m/predicted250m")
+#fix.ORC_OCD(i="T36263", in.path="/data/tt/SoilGrids250m/predicted250m")
+#fix.ORC_OCD(i="T35903", in.path="/data/tt/SoilGrids250m/predicted250m")
 
 ## derive OCS from organic carbon density (and depth to bedrock) -----
 ## this formula (average between two estimates) gives more or less best results although one should be very careful with using the predicted BLD
@@ -86,7 +117,7 @@ wrapper.ocd2OCSTHA <- function(i, in.path, BDR.lst=c("BDRICM","BDRLOG","BDTICM")
       s@data[,paste0("OCSTHA_",d)] <- ifelse(sD@data[s@grid.index,"BDRICM"] > sdepth[d+1], v, ifelse(sD@data[s@grid.index,"BDRICM"] > sdepth[d], v*(sD@data[s@grid.index,"BDRICM"]-sdepth[d])/(sdepth[d+1]-sdepth[d]), 0))
       writeGDAL(s[paste0("OCSTHA_",d)], out.all[d], type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")
     }
-    ## cumulative OCS for standard depths 0-30, 0-100 and 0-200 cm:
+    ## cumulative OCS for standard depths 0--30, 0--100 and 0--200 cm:
     for(k in 1:length(st)){
       if(st[k]==200){
         s$SOCS = rowSums(s@data[,paste0("OCSTHA_",1:6)], na.rm=TRUE)
@@ -111,14 +142,15 @@ wrapper.ocd2OCSTHA <- function(i, in.path, BDR.lst=c("BDRICM","BDRLOG","BDTICM")
 pr.dirs <- basename(list.dirs("/data/tt/SoilGrids250m/predicted250m")[-1])
 
 library(snowfall)
-sfInit(parallel=TRUE, cpus=56)
-sfExport("histosol.prob", "fao.lst", "usda.lst")
+sfInit(parallel=TRUE, cpus=48)
+sfExport("fix.ORC_OCD")
 sfLibrary(raster)
 sfLibrary(rgdal)
-out <- sfClusterApplyLB(pr.dirs, function(i){try( histosol.prob(i, in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, usda.lst) )})
+sfLibrary(GSIF)
+out <- sfClusterApplyLB(pr.dirs, function(i){try( fix.ORC_OCD(i, in.path="/data/tt/SoilGrids250m/predicted250m") )})
 sfStop()
 
-sfInit(parallel=TRUE, cpus=56)
+sfInit(parallel=TRUE, cpus=48)
 sfExport("wrapper.ocd2OCSTHA")
 sfLibrary(raster)
 sfLibrary(rgdal)
@@ -126,8 +158,16 @@ sfLibrary(GSIF)
 out <- sfClusterApplyLB(pr.dirs, function(i){try( wrapper.ocd2OCSTHA(i, in.path="/data/tt/SoilGrids250m/predicted250m") )})
 sfStop()
 
+library(snowfall)
+sfInit(parallel=TRUE, cpus=56)
+sfExport("histosol.prob", "fao.lst", "usda.lst")
+sfLibrary(raster)
+sfLibrary(rgdal)
+out <- sfClusterApplyLB(pr.dirs, function(i){try( histosol.prob(i, in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, usda.lst) )})
+sfStop()
+
 ## clean-up:
-# for(i in c("OCSTHA", "HISTPR")){  
+# for(i in c("OCSTHA", "OCDENS")){  ## "HISTPR"
 #   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
 # }
