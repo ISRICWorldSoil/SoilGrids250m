@@ -1,4 +1,3 @@
-<?xml version="1.0" ?>
 <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" version="1.0.0">
     <UserLayer>
         <LayerFeatureConstraints>
@@ -9,6 +8,9 @@
             <FeatureTypeStyle>
                 <Rule>
                     <RasterSymbolizer>
+            <Geometry>
+              <ogc:PropertyName>Texture class (USDA system)</ogc:PropertyName>
+            </Geometry>
                         <ColorMap>
                             <ColorMapEntry color="#d5c36b" label="Cl" opacity="1.0" quantity="1"/>
                             <ColorMapEntry color="#b96947" label="SiCl" opacity="1.0" quantity="2"/>
