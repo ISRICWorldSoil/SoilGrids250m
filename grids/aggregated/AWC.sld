@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sld="http://www.opengis.net/sld">
+<StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" version="1.0.0">
     <UserLayer>
         <LayerFeatureConstraints>
             <FeatureTypeConstraint/>
@@ -14,7 +14,6 @@
                         <Geometry>
                             <ogc:PropertyName>grid</ogc:PropertyName>
                         </Geometry>
-                        <Opacity>1</Opacity>
                         <ColorMap>
                           <ColorMapEntry color="#FFFF00" quantity="0" label="0" opacity="1.0"/>
                           <ColorMapEntry color="#F1F10D" quantity="5.2" label="5.2" opacity="1.0"/>
@@ -37,7 +36,7 @@
                           <ColorMapEntry color="#0D0DF1" quantity="43.5" label="43.5" opacity="1.0"/>
                           <ColorMapEntry color="#0000FF" quantity="65.0" label="65.0" opacity="1.0"/>
                         <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
-                                            </ColorMap>
+                    </ColorMap>
                     </RasterSymbolizer>
                 </Rule>
             </FeatureTypeStyle>
