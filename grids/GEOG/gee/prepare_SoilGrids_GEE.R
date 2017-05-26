@@ -44,7 +44,7 @@ system("earthengine upload image --asset_id=users/tomhengl/SoilGrids250m/Depth_t
 system("earthengine upload image --asset_id=users/tomhengl/SoilGrids250m/Occurrence_R_horizon --nodata_value=255 --pyramiding_policy=mean gs://0soilgrids250m/Occurrence_R_horizon.tif --property '(string)name=SoilGrids250m' --time_start 1970-01-01T12:00:00 --time_end 2014-01-01T12:00:00")
 
 # 3.
-system("earthengine upload image --asset_id=users/tomhengl/SoilGrids250m/Absolute_depth_to_bedrock --nodata_value=-99999 --pyramiding_policy=mean gs://0soilgrids250m/Absolute_depth_to_bedrock.tif --property '(string)name=SoilGrids250m' --time_start 1970-01-01T12:00:00 --time_end 2014-01-01T12:00:00")
+system("earthengine upload image --asset_id=users/tomhengl/SoilGrids250m/Absolute_depth_to_bedrock --nodata_value=-32768 --pyramiding_policy=mean gs://0soilgrids250m/Absolute_depth_to_bedrock.tif --property '(string)name=SoilGrids250m' --time_start 1970-01-01T12:00:00 --time_end 2014-01-01T12:00:00")
 
 # 4.
 system("earthengine upload image --asset_id=users/tomhengl/SoilGrids250m/Soil_bulk_density --nodata_value=-32768 --pyramiding_policy=mean gs://0soilgrids250m/Soil_bulk_density.tif --property '(string)name=SoilGrids250m' --time_start 1970-01-01T12:00:00 --time_end 2014-01-01T12:00:00 --bands sl_000,sl_005,sl_015,sl_030,sl_060,sl_100,sl_200")
