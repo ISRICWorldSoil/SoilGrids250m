@@ -6,6 +6,9 @@
       <FeatureTypeStyle>
         <Rule>
           <RasterSymbolizer>
+                    <Geometry>
+                      <ogc:PropertyName>Cation exchange capacity of soil in cmolc/kg</ogc:PropertyName>
+                    </Geometry>
             <ColorMap type="intervals">
               <ColorMapEntry color="#FFFFFF" quantity="-32768" label="NODATA" opacity="0.0"/>
               <ColorMapEntry color="#001998" quantity="5.0" label="0 - 5" opacity="1.0"/>

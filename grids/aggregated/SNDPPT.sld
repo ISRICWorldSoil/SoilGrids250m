@@ -7,7 +7,7 @@
         <Rule>
           <RasterSymbolizer>
           <Geometry>
-              <ogc:PropertyName>Sand content (50-2000 micro meter) mass fraction in %</ogc:PropertyName>
+              <ogc:PropertyName>Sand content (50-2000 micro meter) mass fraction in percent</ogc:PropertyName>
             </Geometry>
             <ColorMap type="intervals">
               <ColorMapEntry color="#FFFF00" quantity="1" label="0 - 1" opacity="1.0"/>

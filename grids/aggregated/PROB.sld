@@ -5,14 +5,14 @@
             <FeatureTypeConstraint/>
         </LayerFeatureConstraints>
         <UserStyle>
-            <Name>Probability</             Name>
+            <Name>Probability</Name>
             <Title/>
             <FeatureTypeStyle>
                 <Name/>
                 <Rule>
                     <RasterSymbolizer>
                         <Geometry>
-                            <ogc:PropertyName>grid</ogc:PropertyName>
+                            <ogc:PropertyName>Predicted probability in percent</ogc:PropertyName>
                         </Geometry>
                         <ColorMap>
                             <ColorMapEntry color="#0000ff" label="0.0" opacity="1.0" quantity="0"/>

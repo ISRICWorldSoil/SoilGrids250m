@@ -7,7 +7,7 @@
         <Rule>
           <RasterSymbolizer>
             <Geometry>
-              <ogc:PropertyName>Clay content (0-2 micro meter) mass fraction in %</ogc:PropertyName>
+              <ogc:PropertyName>Clay content (0-2 micro meter) mass fraction in percent</ogc:PropertyName>
             </Geometry>
             <ColorMap type="intervals">
               <ColorMapEntry color="#FFFF00" quantity="2" label="0 - 2" opacity="1.0"/>

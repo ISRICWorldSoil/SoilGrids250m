@@ -7,7 +7,7 @@
         <Rule>
           <RasterSymbolizer>
             <Geometry>
-              <ogc:PropertyName>Coarse fragments volumetric in %</ogc:PropertyName>
+              <ogc:PropertyName>Coarse fragments volumetric in percent</ogc:PropertyName>
             </Geometry>
             <ColorMap type="intervals">
               <ColorMapEntry color="#FFFF00" quantity="0.1" label="0 - 0.1" opacity="1.0"/>
