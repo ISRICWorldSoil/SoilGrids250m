@@ -4,12 +4,12 @@
 ## { 'date': date, 'username': username, 'ip': ip, 'path': path, 'size':
 ##  size, 'speed': speed }
 
+load(".RData")
 library(RCurl)
 library(rgdal)
-library(rjson)
+#library(rjson)
 library(plyr)
 
-load(".RData")
 system("7za e vsftpd.zip")
 lst.gz = list.files(pattern=".gz")
 sapply(lst.gz, function(i){system(paste("7za e", i))})
@@ -20,7 +20,7 @@ lst.log = list.files(pattern=".log")
 logs = lapply(lst.log, function(i){scan(i, what = "character", sep = "\n")})
 logs = unlist(logs)
 str(logs)
-## about 833,014 hits - TAKES FEW MINS TO PROCESS
+## 15,003,109 hits - TAKES FEW MINS TO PROCESS
 sg.logs = data.frame(Time=rep(NA, length(logs)), IP=NA, COMMENT=NA)
 sg.logs$Time = as.POSIXct(paste(sapply(logs, function(x){strsplit(x, " \\[")[[1]][1]})), format="%a %b %d %H:%M:%S %Y")
 sg.logs$IP = sapply(logs, function(x){strsplit(strsplit(x, "::ffff:")[[1]][2], "\\\", ")[[1]][1]})
@@ -28,33 +28,61 @@ sg.logs$IP = sapply(sg.logs$IP, function(x){strsplit(x, " ")[[1]][1]})
 sg.logs$IP = gsub("\"", "", sg.logs$IP)
 sg.logs$COMMENT = sapply(logs, function(x){strsplit(strsplit(x, "::ffff:")[[1]][2], "\\\", ")[[1]][2]})
 str(sg.logs)
-## Many very frequent IPs (webcrawlers):
+## Many very frequent IPs (webcrawlers?):
 sum.ip = summary(as.factor(sg.logs$IP), maxsum = length(unique(sg.logs$IP)))
 sum.ip = data.frame(IP=attr(sum.ip, "names"), Count=as.integer(sum.ip))
+str(sum.ip)
 
 ## geocode IPs:
 sg.ips = data.frame(IP=unique(sg.logs$IP))
 str(sg.ips)
-## 2387 IPs (takes few minutes)
-q = lapply(sg.ips$IP, function(x){ rjson::fromJSON(getURI(paste0("freegeoip.net/json/", x))) })
+## 12,273 IPs (takes few minutes)
+write(sg.ips, "soilgrids_ips.rds")
+#q = lapply(sg.ips$IP, function(x){ rjson::fromJSON(getURI(paste0("freegeoip.net/json/", x))) })
+q = lapply(sg.ips$IP, function(x){ try( data.frame(t(strsplit(getURI(paste0("freegeoip.net/csv/", x)), ",")[[1]]), stringsAsFactors = FALSE) ) })
+#{"ip":"192.30.253.112","country_code":"US","country_name":"United States","region_code":"CA","region_name":"California","city":"San Francisco","zip_code":"94107","time_zone":"America/Los_Angeles","latitude":37.7697,"longitude":-122.3933,"metro_code":807}
 length(q)
-sg.ips = cbind(sg.ips, plyr::rbind.fill(lapply(q, as.data.frame)))
+na.lst = sapply(q, function(i){is.data.frame(i)}) 
+## Second round:
+for(i in which(!na.lst)){
+  q[[i]] = try( data.frame(t(strsplit(getURI(paste0("freegeoip.net/csv/", sg.ips$IP[i])), ",")[[1]]), stringsAsFactors = FALSE) )
+}
+na.lst = sapply(q, function(i){is.data.frame(i)}) 
+summary(na.lst)
+sg.ips = plyr::rbind.fill(q)
+names(sg.ips) = c("IP","country_code","country_name","region_code","region_name","city","zip_code","time_zone","latitude","longitude","metro_code","X1","X2")
+#sg.ips = cbind(sg.ips, plyr::rbind.fill(lapply(q, as.data.frame)))
 str(sg.ips)
 sg.ips$Count = join(sg.ips, sum.ip)$Count
-saveRDS(sg.ips, paste0("soilgrids_ftp_Geolocations_", gsub("-","_", Sys.Date()), ".rds"))
 summary(as.factor(sg.ips$country_name))
-# China     United States             India 
-# 854               363                95 
-# Germany       Netherlands    United Kingdom 
-# 94                68                66 
-# Tunisia            Brazil            France 
-# 62                51                44 
-# Belgium      South Africa         Australia 
-# 39                37                32
+# China               United States                     Germany 
+# 8449                         939                         303 
+# India                 Netherlands              United Kingdom 
+# 216                         168                         147 
+# Brazil                      Canada                      France 
+# 110                         104                          97 
+# Australia                     Nigeria                    Ethiopia 
+# 67                          62                          58 
+# Italy                       Japan                    Pakistan 
+# 56                          54                          53
+save.image()
+## Look up domain names per IP (VERY SLOW!):
+sg.ips$DNS = paste(sapply(sg.ips$IP, function(i){strsplit(system(paste('nslookup', i), intern = TRUE)[5], "\tname = ")[[1]][2]}))
+
 ## World plot:
+summary(as.numeric(sg.ips$latitude))
+sg.ips$latitude = as.numeric(sg.ips$latitude)
+sg.ips$longitude = as.numeric(sg.ips$longitude)
+#plot(sg.ips$longitude, sg.ips$latitude)
+summary(sg.ips$Count)
+saveRDS(sg.ips, paste0("soilgrids_ftp_Geolocations_", gsub("-","_", Sys.Date()), ".rds"))
+write.csv(sg.ips, paste0("soilgrids_ftp_Geolocations_", gsub("-","_", Sys.Date()), ".csv"))
+system(paste0("7za a soilgrids_ftp_Geolocations_", gsub("-","_", Sys.Date()), ".zip soilgrids_ftp_Geolocations_", gsub("-","_", Sys.Date()), ".csv"))
+
 library(leaflet)
 library(htmlwidgets)
-m = leaflet(sg.ips) %>% addTiles() %>% addCircleMarkers(~longitude, ~latitude, radius = ~log1p(Count), color = c('blue'))
+unlink("SoilGrids_ftp_downloads_worldmap.html")
+m = leaflet(sg.ips[!is.na(sg.ips$longitude),c("longitude","latitude","Count","DNS")]) %>% addTiles() %>% addCircleMarkers(lng =~longitude, lat=~latitude, radius=~log1p(Count), popup = ~DNS, color = c('red'))
 saveWidget(m, file="SoilGrids_ftp_downloads_worldmap.html")
 
 ## Merge coords back:
@@ -76,3 +104,4 @@ shape = "http://maps.google.com/mapfiles/kml/pal2/icon18.png"
 kml(fmd_ST, dtime = 24*3600, colour = IP, shape = shape, labels = "", file.name="ftp_logs_soilgrids.kml", folder.name="FTP logs")
 system("zip -m ftp_logs_soilgrids.kmz ftp_logs_soilgrids.kml")
 system("gnome-open ftp_logs_soilgrids.kmz")
+
