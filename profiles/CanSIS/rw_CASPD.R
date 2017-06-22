@@ -319,6 +319,75 @@ plotKML(TAXOUSDA.CUFCDB["TAXOUSDA"],balloon=TRUE)
 save(TAXOUSDA.CUFCDB, file="TAXOUSDA.CUFCDB.rda")
 
 # ------------------------------------------------------------
+# NPDB_V2
+# The National Pedon database (NPDB) hosted by Agriculture and Agri-food Canada from agriculture regions in Canada
+# ------------------------------------------------------------
+
+## locations:
+NPDB_loc <- read.csv("NPDB_V2_sum_source_info.csv")
+NPDB_loc$SOURCEID <- paste("NPDB_V2", NPDB_loc$PEDON_ID, sep="_")
+## physical and chemical props:
+NPDB_chem <- read.csv("NPDB_V2_sum_chemical.csv")
+NPDB_chem$SOURCEID <- paste("NPDB_V2", NPDB_chem$PEDON_ID, sep="_")
+NPDB_chem$SAMPLEID <- make.unique(paste(NPDB_chem$SOURCEID, NPDB_chem$LAYER_ID, sep="_"))
+NPDB_psych <- read.csv("NPDB_V2_sum_physical.csv")
+NPDB_psych$SOURCEID <- paste("NPDB_V2", NPDB_psych$PEDON_ID, sep="_")
+NPDB_psych$SAMPLEID <- make.unique(paste(NPDB_psych$SOURCEID, NPDB_psych$LAYER_ID, sep="_"))
+NPDB_raw <- read.csv("NPDB_V2_sum_horizons_raw.csv")
+NPDB_raw$SOURCEID <- paste("NPDB_V2", NPDB_raw$PEDON_ID, sep="_")
+NPDB_raw$SAMPLEID <- make.unique(paste(NPDB_raw$SOURCEID, NPDB_raw$LAYER_ID, sep="_"))
+NPDB_hor = plyr::join_all(list(NPDB_raw, NPDB_chem, NPDB_psych), by = c("SAMPLEID"), type = "full")
+str(NPDB_hor)
+
+NPDB_loc <- plyr::rename(NPDB_loc, replace=c("DD_LONG"="LONWGS84", "DD_LAT"="LATWGS84"))
+NPDB_loc$SOURCEDB = "NPDB_V2"
+NPDB_loc$TIMESTRR = as.Date(paste(NPDB_loc$CAL_YEAR), format="%Y")
+
+## rename columns:
+NPDB_hor <- plyr::rename(NPDB_hor, replace=c("U_DEPTH"="UHDICM", "L_DEPTH"="LHDICM", "PH_H2O"="PHIHOX", "PHCACL2"="PHICAL", "CEC"="CECSUM", "T_CLAY"="CLYPPT", "T_SILT"="SLTPPT", "T_SAND"="SNDPPT"))
+NPDB_hor$ORCDRC <- round(ifelse(NPDB_hor$CARB_ORG==9, NA, NPDB_hor$CARB_ORG)*10)
+NPDB_hor$CRFVOL <- NPDB_hor$C_SAND+NPDB_hor$VC_SAND ## TH: needs to be checked!
+summary(NPDB_hor$ORCDRC)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#0.00    5.00   14.00   98.71   52.00  701.00    9319 
+NPDB_hor$BLD = NPDB_hor$BULK_DEN * 1000
+summary(NPDB_hor$BLD)
+NPDB_hor$HZDTXT = paste(NPDB_hor$HZN_MAS, NPDB_hor$HZN_SUF, sep="_")
+
+SPROPS.NPDB_V2 <- plyr::join(NPDB_hor[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","BLD","ORCDRC","PHIHOX","CRFVOL","HZDTXT")], NPDB_loc[,c("SOURCEID","LONWGS84","LATWGS84","SOURCEDB","TIMESTRR")]) ## 
+SPROPS.NPDB_V2$PHIHOX <- ifelse(SPROPS.NPDB_V2$PHIHOX>11.5|SPROPS.NPDB_V2$PHIHOX<2.5, NA, SPROPS.NPDB_V2$PHIHOX)
+SPROPS.NPDB_V2$BLD <- ifelse(SPROPS.NPDB_V2$BLD<50 | SPROPS.NPDB_V2$BLD>2400, NA, SPROPS.NPDB_V2$BLD)
+hist(SPROPS.NPDB_V2$ORCDRC)
+hist(SPROPS.NPDB_V2$PHIHOX, breaks=30)
+hist(SPROPS.NPDB_V2$BLD, breaks=30)
+str(SPROPS.NPDB_V2)
+## 21,416 horizons
+save(SPROPS.NPDB_V2, file="SPROPS.NPDB_V2.rda")
+
+# ------------------------------------------------------------
+# SPD from the Canadian Forest Service (CFS) for the non-agricultural areas in Canada
+# ------------------------------------------------------------
+
+## already joined:
+fecd <- read.csv("fecd_join_all.csv")
+fecd$SOURCEID <- paste("FECD", fecd$fecd_id, sep="_")
+fecd <- plyr::rename(fecd, replace=c("long"="LONWGS84", "lat"="LATWGS84", "upper"="UHDICM", "lower"="LHDICM", "ph_h2o"="PHIHOX", "ph_cacl2"="PHICAL", "cec"="CECSUM", "clay"="CLYPPT", "silt"="SLTPPT", "sand"="SNDPPT", "horizon"="HZDTXT"))
+levels(fecd[,"cf_class"])
+fecd$CRFVOL <- join(fecd["cf_class"], data.frame(CRFVOL=c(3,70,20,23,46), cf_class=c("<10%",">65%","10-30%","23","31-65%")))$CRFVOL ## TH: needs to be checked!
+fecd$ORCDRC <- round(ifelse(fecd$org_c_tot<0, NA, fecd$org_c_tot)*10)
+summary(fecd$ORCDRC)
+fecd$BLD = ifelse(fecd$bd < 50/1000 | fecd$bd > 2400/1000, NA, fecd$bd) * 1000
+summary(fecd$BLD)
+fecd$SOURCEDB = "FECD"
+fecd$SAMPLEID = paste("FECD", fecd$profile_id, fecd$horizon_id, sep="_")
+fecd$TIMESTRR = as.Date(paste(fecd$date), format="%Y")
+SPROPS.FECD <- fecd[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","BLD","ORCDRC","PHIHOX","CRFVOL","HZDTXT","LONWGS84","LATWGS84","SOURCEDB","TIMESTRR")] 
+str(SPROPS.FECD)
+## 3547
+#save(SPROPS.FECD, file="SPROPS.FECD.rda")
+
+
+# ------------------------------------------------------------
 # Depth to bedrock CUFCDB
 # ------------------------------------------------------------
 

@@ -78,7 +78,7 @@ summary(ovA$ORCDRC > 80) ## 5% of profiles >8% ORC
 ovA$CRFVOL.f = ifelse(is.na(ovA$CRFVOL), 0, ovA$CRFVOL)
 summary(ovA$CRFVOL.f)
 
-## relationship between ORC and BLD
+## relationship between ORC and BLD ----
 library(scales)
 library(hexbin)
 pfun <- function(x,y, ...){
@@ -87,21 +87,61 @@ pfun <- function(x,y, ...){
 }
 pal = R_pal[["bpy_colors"]][1:18]
 hexbinplot(ovA$BLD~ovA$ORCDRC, colramp=colorRampPalette(pal), xlab="Organic carbon (permille)", ylab="Bulk density (kg/cubic-m)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, asp=1, xbins=30, ybins=30, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1))
-## Fill in gaps in soil BLD - we can make a PedoTransfer function:
-fm.BLD = as.formula("BLD ~ ORCDRC + CLYPPT + SNDPPT + PHIHOX + DEPTH.f")
-dfs = ovA[complete.cases(ovA[,all.vars(fm.BLD)]),all.vars(fm.BLD)]
-## 116,940 points
-m.BLD_PTF <- ranger(fm.BLD, dfs, mtry = 2, num.trees = 85, importance='impurity')
+## Fill in gaps in soil BLD - we can make a PedoTransfer function (which includes soil type predictions)
+ov.tax = raster::extract(raster("/data/GEOG/TAXOUSDA_250m_ll.tif"), SPROPS.pnts)
+dfs = plyr::join(ovA[,c("SOURCEID", "BLD", "ORCDRC", "CLYPPT", "SNDPPT", "PHIHOX", "DEPTH.f")], data.frame(SOURCEID=SPROPS.pnts$SOURCEID, TAXOUSDA=as.factor(ov.tax)))
+dfs = dfs[complete.cases(dfs[,c("ORCDRC", "BLD", "CLYPPT", "SNDPPT", "PHIHOX", "DEPTH.f", "TAXOUSDA")]),]
+## 98,650 horizons
+ind.tax = data.frame(model.matrix(~TAXOUSDA-1, dfs))
+dfs_tbl = cbind(dfs, ind.tax)
+saveRDS(dfs_tbl, "wosis_tbl.rds")
+saveRDS(ind.tax, "ov_taxousda.rds")
+#ind.tax = readRDS("ov_taxousda.rds")
+#dfs_tbl = readRDS("wosis_tbl.rds")
+
+fm.BLD = as.formula(paste("BLD ~ ORCDRC + CLYPPT + SNDPPT + PHIHOX + DEPTH.f +", paste(names(ind.tax), collapse="+")))
+m.BLD_PTF <- ranger(fm.BLD, dfs_tbl, num.trees = 85, importance='impurity')
 #ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
 #m.BLD_PTF <- caret::train(BLD~log1p(ORCDRC)+log1p(DEPTH.f)+PHIHOX+SNDPPT+CLYPPT, method="lm", ovA, na.action=na.omit, trControl=ctrl)
 m.BLD_PTF
+## RMSE = 181 kg/m3
+## R-square = 54%
 saveRDS.gz(m.BLD_PTF, "m_BLD_PTF.rds")
-predict(m.BLD_PTF, data.frame(ORCDRC=11, CLYPPT=15, PHIHOX=6.5, CLYPPT=18, SNDPPT=35, DEPTH.f=5))$predictions
-predict(m.BLD_PTF, data.frame(ORCDRC=220, CLYPPT=15, PHIHOX=5.5, CLYPPT=15, SNDPPT=35, DEPTH.f=5))$predictions
+hist(m.BLD_PTF$predictions)
+xl <- as.list(ranger::importance(m.BLD_PTF))
+print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:10]])))
+# ORCDRC     1348034076
+# DEPTH.f     503196074
+# CLYPPT      326637083
+# SNDPPT      289527403
+# TAXOUSDA53  254542988
+# PHIHOX      252207245
+# TAXOUSDA84  122500205
+# TAXOUSDA26  104138623
+# TAXOUSDA21   89730868
+# TAXOUSDA80   68314069
+
+## https://github.com/ISRICWorldSoil/SoilGrids250m/blob/master/grids/aggregated/TAXOUSDA.sld
+## Udalfs
+ind.tax.new = ind.tax[which(ind.tax$TAXOUSDA84==1)[1],]
+predict(m.BLD_PTF, cbind(data.frame(ORCDRC=11, CLYPPT=22, PHIHOX=6.5, SNDPPT=35, DEPTH.f=5), ind.tax.new))$predictions
+## 1522 kg/m3
+predict(m.BLD_PTF, cbind(data.frame(ORCDRC=5, CLYPPT=24, PHIHOX=6.8, SNDPPT=28, DEPTH.f=125), ind.tax.new))$predictions
+## 1658 kg/m3
+
+## organic soil:
+ind.tax.new = ind.tax[which(ind.tax$TAXOUSDA13==1)[1],]
+predict(m.BLD_PTF, cbind(data.frame(ORCDRC=220, CLYPPT=12, PHIHOX=5.5, SNDPPT=35, DEPTH.f=5), ind.tax.new))$predictions
+## 803 kg/m3
+ind.tax.new = ind.tax[which(ind.tax$TAXOUSDA13==1)[1],]
+predict(m.BLD_PTF, cbind(data.frame(ORCDRC=320, CLYPPT=8, PHIHOX=5.5, SNDPPT=45, DEPTH.f=10), ind.tax.new))$predictions
+## 778 kg/m3
+
 ## Simple correction from Kochy et al (2015):
 #round((-0.31 * log1p(220/10) + 1.38)*1000)
 m.BLD_ls = loess(BLD ~ ORCDRC, ovA, span=1/18)
 predict(m.BLD_ls, data.frame(ORCDRC=220))
+## 329.2059
 sel.BLD = complete.cases(ovA[,all.vars(fm.BLD)[-1]])
 ## Take weighted average because the RF-based PTF over-estimates BLD for high ORC
 BLD.f = (predict(m.BLD_PTF, ovA[sel.BLD,])$predictions + predict(m.BLD_ls, ovA[sel.BLD,]))/2
@@ -260,7 +300,7 @@ library(doParallel)
 library(rgdal)
 library(plyr)
 ## Run per property (RF = 20 tiles per minute)
-for(j in t.vars[7:9]){
+for(j in c("PHIHOX","ORCDRC","OCDENS")){ ## t.vars
 #for(j in t.vars){
   try( detach("package:snowfall", unload=TRUE), silent=TRUE)
   try( detach("package:snow", unload=TRUE), silent=TRUE)
@@ -284,6 +324,8 @@ for(j in t.vars[7:9]){
   stopCluster(cl)
   gc(); gc()
   ## sum up predictions:
+  if(is.nan(gm1.w)|is.nan(gm2.w)){ gm1.w = 0.55; gm2.w = 0.45 } 
+  ## TH: in some extreme situations it can happen that ranger results in NaN
   library(snowfall)
   sfInit(parallel=TRUE, cpus=48)
   sfExport("pr.dirs", "sum_predict_ensemble", "j", "z.min", "z.max", "gm1.w", "gm2.w", "type.lst", "mvFlag.lst")
@@ -321,7 +363,6 @@ sfStop()
 write.csv(del.tif, "corrupt_tif.csv")
 unlink(del.tif)
 
-#c.lst = c("T34019", "T42047", "T46814", "T49422", "T50013", "T43226", "T42006", "T44895", "T40611", "T41350", "T43862", "T31518", "T35157", "T50493", "T44895", "T45324", "T43862", "T42006", "T41350", "T35157")
 #i = "/data/tt/SoilGrids250m/predicted250m/T46814/OCDENS_M_sl2_T46814.tif"
 #GDALinfo(i)
 #plot(raster(i))
@@ -343,38 +384,60 @@ sfStop()
 names(missing.lst) = t.vars
 ## "NA_101_074" "NA_106_069"
 
+## ORCDRC map can lead to artifacts e.g. 8% ORC for "Shurblands" class in Turmenistan (obvious overprediction)
+## this happens mainly because there are not enough training points in drylands hence the model extrapolates;
+## to avoid this, we run a post-processing filter that uses precipitation and EVI images to cut out all values that are obvious artifacts (should be 0--5 ORC);
+#source("HISTPR_SoilGrids.R")
+
 ## clean-up:
-for(i in c("BLD.f", "CECSUM")){ ##  c("BLD", "ORCDRC", "PHIHOX", "PHIKCL", "SNDPPT", "SLTPPT", "CLYPPT")  
- del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
- unlink(del.lst)
-}
+#for(i in t.vars){ ## c("ORCDRC", "OCSTHA")){ ##  c("BLD", "ORCDRC", "PHIHOX", "PHIKCL", "SNDPPT", "SLTPPT", "CLYPPT")  
+# del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+# unlink(del.lst)
+#}
 # for(i in c("BLD.f", "ORCDRC")){ ## c("BLD", "ORCDRC", "PHIHOX") 
 #   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "_*_*_*_rf?.rds")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
 # }
 #del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^CECSUM"), full.names=TRUE, recursive=TRUE)
 
-# for(i in t.vars){
-#  del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
-#  unlink(del.lst)
+## delete using date:
+orc.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern="ORCDRC", full.names=TRUE, recursive=TRUE)
+d.lst <- sapply(orc.lst, function(x){file.mtime(x)})
+# #hist(d.lst, breaks=45)
+# unlink(orc.lst[d.lst>unclass(as.POSIXct("2017-04-11", format="%Y-%m-%d"))])
+# ocd.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern="OCDENS", full.names=TRUE, recursive=TRUE)
+# d.lst <- sapply(ocd.lst, function(x){file.mtime(x)})
+# unlink(ocd.lst[d.lst>unclass(as.POSIXct("2017-04-11", format="%Y-%m-%d"))])
+#ocs.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern="OCSTHA", full.names=TRUE, recursive=TRUE)
+#d.lst <- sapply(ocs.lst, function(x){file.mtime(x)})
+# unlink(ocs.lst[d.lst>unclass(as.POSIXct("2017-04-11", format="%Y-%m-%d"))])
+#del.lst <- unique(dirname((ocs.lst[d.lst>unclass(as.POSIXct("2017-04-17 00:00:00 CEST"))])))
+#str(del.lst)
+# for(i in c("OCSTHA", "AWCh1", "AWCh2", "AWCh3", "WWP", "AWCtS")){
+#   if(i == "OCSTHA"){ 
+#     unlink(as.vector(sapply(paste0("sd", 1:6), function(x){ paste0(del.lst, "/", i, "_M_", x, "_", sapply(del.lst, function(k){strsplit(k, "/")[[1]][6]}), ".tif") } )))
+#   } else {
+#     unlink(as.vector(sapply(1:7, function(x){ paste0(del.lst, "/", i, "_M_sl", x, "_", sapply(del.lst, function(k){strsplit(k, "/")[[1]][6]}), ".tif") } )))
+#   }
 # }
 
-#make_mosaick_ll(varn=t.vars[10], i="M_sl2", in.path="/data/tt/SoilGrids250m/predicted250m", ot="Int16", dstnodata=-32768, metadata=metasd[grep(paste0(t.vars[1], "_M_sl2"), metasd$FileName), sel.metasd])
-
 ## Mosaick ----
-l.vars = c(as.vector(sapply(c("ORCDRC","PHIHOX","PHIKCL","CRFVOL","SNDPPT","SLTPPT","CLYPPT","BLD.f","CECSUM","OCDENS","TEXMHT"), rep, 7)), rep("OCSTHA", 9), "HISTPR", "TAXNWRB", "TAXOUSDA")
+l.vars = c(as.vector(sapply(c("ORCDRC","PHIHOX","PHIKCL","CRFVOL","SNDPPT","SLTPPT","CLYPPT","BLD.f","CECSUM","OCDENS","TEXMHT","AWCh1", "AWCh2", "AWCh3", "WWP", "AWCtS"), rep, 7)), rep("OCSTHA", 9), "HISTPR", "TAXNWRB", "TAXOUSDA")
+#l.vars = c(as.vector(sapply(c("ORCDRC","PHIHOX","PHIKCL","CRFVOL","SNDPPT","SLTPPT","CLYPPT","BLD.f","CECSUM","OCDENS","TEXMHT"), rep, 7)), "HISTPR", "TAXNWRB", "TAXOUSDA")
 l.vars.f <- ifelse(l.vars=="BLD.f", "BLDFIE", ifelse(l.vars=="CECSUM", "CECSOL", l.vars))
-d.lst = c(rep(paste0("M_sl", 1:7), 11), paste0("M_sd", 1:6), paste0("M_", c(30,100,200), "cm"), "NULL", "NULL", "NULL")
+d.lst = c(rep(paste0("M_sl", 1:7), 16), paste0("M_sd", 1:6), paste0("M_", c(30,100,200), "cm"), "NULL", "NULL", "NULL")
+#d.lst = c(rep(paste0("M_sl", 1:7), 11), "NULL", "NULL", "NULL")
 filename = paste0(l.vars.f, "_", d.lst, "_250m_ll.tif")
 filename = gsub("_NULL", "", filename)
 source('/data/models/mosaick_functions_ll.R')
-#View(data.frame(l.vars,l.vars.f,d.lst))
+#View(data.frame(l.vars,l.vars.f,d.lst,filename))
 library(snowfall)
-sfInit(parallel=TRUE, cpus=ifelse(length(l.vars)>45, 45, length(l.vars)))
+sfInit(parallel=TRUE, cpus=ifelse(length(l.vars)>28, 28, length(l.vars)))
 sfExport("l.vars", "l.vars.f", "d.lst", "make_mosaick_ll", "metasd", "sel.metasd", "filename")
 out <- sfClusterApplyLB(1:length(l.vars), function(x){ try( make_mosaick_ll(varn=l.vars[x], i=d.lst[x], in.path="/data/tt/SoilGrids250m/predicted250m", ot=metasd[which(metasd$FileName == filename[x]), "DATA_FORMAT"], dstnodata=metasd[which(metasd$FileName == filename[x]), "NO_DATA"], metadata=metasd[which(metasd$FileName == filename[x]), sel.metasd]) )})
 sfStop()
 save.image()
+
 
 ## ------------- VISUALIZATIONS -----------
 
@@ -399,7 +462,7 @@ dev.off()
 
 ## Cross-validation 10-fold (TH: this does not takes into account high spatial clustering):
 
-source("/data/cv/cv_functions.R")
+source("../../cv/cv_functions.R")
 cat("Results of Cross-validation:\n\n", file="resultsCV.txt")
 cv_lst <- rep(list(NULL), length(t.vars))
 for(j in 1:length(t.vars)){
@@ -428,3 +491,30 @@ names(plt.log) = t.vars
 for(j in 1:length(t.vars)){
   plot_hexbin(j, breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"), log.plot=plt.log[t.vars[j]])
 }
+
+## Comparison with indepdent point data not used for model building:
+load("/data/profs/SPROPS/tmp/SPROPS.NPDB_V2.rda")
+SPROPS.NPDB_V2$LOC_ID = as.factor(paste("ID", SPROPS.NPDB_V2$LONWGS84, SPROPS.NPDB_V2$LATWGS84, sep="_"))
+## Correct depth (Canadian data can have negative depths):
+z.min.NPDB_V2 <- ddply(SPROPS.NPDB_V2, .(SOURCEID), summarize, aggregated = min(UHDICM, na.rm=TRUE))
+z.shift.NPDB_V2 <- join(SPROPS.NPDB_V2[,c("SOURCEID","SOURCEDB")], z.min.NPDB_V2, type="left")$aggregated
+z.shift.NPDB_V2 <- ifelse(z.shift.NPDB_V2>0, 0, z.shift.NPDB_V2)
+SPROPS.NPDB_V2$UHDICM.f <- SPROPS.NPDB_V2$UHDICM - z.shift.NPDB_V2
+SPROPS.NPDB_V2$LHDICM.f <- SPROPS.NPDB_V2$LHDICM - z.shift.NPDB_V2
+SPROPS.NPDB_V2$DEPTH.f <- SPROPS.NPDB_V2$UHDICM.f + (SPROPS.NPDB_V2$LHDICM.f - SPROPS.NPDB_V2$UHDICM.f)/2
+
+## overlay points and predict:
+xy.NPDB_V2 = SPROPS.NPDB_V2[!duplicated(SPROPS.NPDB_V2$LOC_ID),c("SOURCEID","LOC_ID","SOURCEDB","LONWGS84","LATWGS84")]
+coordinates(xy.NPDB_V2) = ~ LONWGS84 + LATWGS84
+proj4string(xy.NPDB_V2) = proj4string(tile.pol)
+NPDB_V2.ov <- extract.tiled(x=xy.NPDB_V2, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=54)
+NPDB_V2.ovA <- join(SPROPS.NPDB_V2, NPDB_V2.ov, type="left", by="LOC_ID")
+gm = readRDS.gz(paste0("mrf.ORCDRC.rds"))
+sel.AV = complete.cases(NPDB_V2.ovA[,gm$forest$independent.variable.names])
+NPDB_V2.ovA$SG.ORCDRC = NA
+NPDB_V2.ovA$SG.ORCDRC[sel.AV] = predict(gm, NPDB_V2.ovA[sel.AV,])$predictions
+CV_NPDB_V2_ORCDRC = list(list(Observed=NPDB_V2.ovA$ORCDRC, Predicted=NPDB_V2.ovA$SG.ORCDRC))
+save(CV_NPDB_V2_ORCDRC, file="/data/profs/SPROPS/tmp/CV_NPDB_V2_ORCDRC.rda")
+## Plot errors:
+plot_hexbin("NPDB_V2_ORCDRC", c(0,800), main="NPDB_V2_ORCDRC", in.file="/data/profs/SPROPS/tmp/CV_NPDB_V2_ORCDRC.rda", log.plot=TRUE, out.file = "plot_CV_NPDB_V2_ORCDRC.png")
+

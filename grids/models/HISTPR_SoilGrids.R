@@ -70,7 +70,7 @@ fix.ORC_OCD <- function(i, in.path, ORC.t = 6, OCD.t = 70, BAR.t = 55, PRE.t = 1
         s0@data[rowI,paste0("ORCDRC_M_sl", d, "_", i)] <- ifelse(sel.pix1, ORC.t, s0@data[rowI,paste0("ORCDRC_M_sl", d, "_", i)])
         writeGDAL(s0[paste0("ORCDRC_M_sl", d, "_", i)], paste0(in.path, "/", i, "/ORCDRC_M_sl", d, "_", i, ".tif"), type="Int16", mvFlag=-32768, options="COMPRESS=DEFLATE")
       }
-      ## Organic carbon density
+      ## Organic carbon density:
       sel.pix2 = s0@data[rowI,paste0("OCDENS_M_sl", d, "_", i)] > OCD.t & (selP | s0@data[rowI,paste0("SNDPPT_M_sl", d, "_", i)] > SAND.t)
       if(sum(sel.pix2)>0){ 
         s0@data[rowI,paste0("OCDENS_M_sl", d, "_", i)] <- ifelse(sel.pix2, OCD.t, s0@data[rowI,paste0("OCDENS_M_sl", d, "_", i)])
