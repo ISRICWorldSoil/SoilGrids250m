@@ -32,8 +32,8 @@
                             <ColorMapEntry color="#ffa100" label="31.6" opacity="1.0" quantity="31.5789"/>
                             <ColorMapEntry color="#ff7900" label="33.7" opacity="1.0" quantity="33.6842"/>
                             <ColorMapEntry color="#ff5000" label="35.8" opacity="1.0" quantity="35.7895"/>
-                            <ColorMapEntry color="#ff2800" label="37.9" opacity="1.0" quantity="37.8947"/>
-                            <ColorMapEntry color="#ff0000" label="40.0" opacity="1.0" quantity="40"/>
+                            <ColorMapEntry color="#ff2800" label="37.9" opacity="1.0" quantity="37.9"/>
+                            <ColorMapEntry color="#ff0000" label="100.0" opacity="1.0" quantity="100"/>
                             <ColorMapEntry color="#FFFFFF" quantity="255" label="NODATA" opacity="0.0"/>
                         </ColorMap>
                     </RasterSymbolizer>
