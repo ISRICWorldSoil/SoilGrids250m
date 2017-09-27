@@ -1,7 +1,7 @@
 ## Fit models for soil properties and generate predictions - SoilGrids250m
 ## Tom.Hengl@isric.org
 
-list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps", "stringr", "R.utils", "grDevices")
+list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "xgboost", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps", "stringr", "R.utils", "grDevices")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -49,6 +49,7 @@ names(mask_value) = des$WORLDGRIDS_CODE
 
 ## points:
 load("/data/profs/SPROPS/SPROPS.pnts.rda") ## spatial locations only
+## 173,806 points
 load("/data/profs/SPROPS/all.pnts.rda")
 
 ## spatia overlay (20 mins):
@@ -56,7 +57,7 @@ tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
 ov <- extract.tiled(x=SPROPS.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=48)
 #str(ov)
 ovA <- join(all.pnts, ov, type="left", by="LOC_ID")
-## 807,962 rows
+## 839,362 rows
 
 ## Data inspection (final checks)
 hist(log1p(ovA$CECSUM))
@@ -72,10 +73,10 @@ summary(ovA$DEPTH.f>600)
 ovA[which(ovA$DEPTH.f>600)[1],1:20]
 ## mask out "Artic" data?
 #ovA <- ovA[!ovA$SOURCEDB %in% c("Artic"),]
-summary(ovA$ORCDRC > 80) ## 5% of profiles >8% ORC
+summary(ovA$ORCDRC > 80) ## 33,129 or 5% of profiles >8% ORC
 
-## Fill in all missing CRFVOL values (we assume that if it is missing it is most likely "0"):
-ovA$CRFVOL.f = ifelse(is.na(ovA$CRFVOL), 0, ovA$CRFVOL)
+## Fill in all missing CRFVOL values (we need to assume that if it is missing it is most likely "0"):
+ovA$CRFVOL.f = ifelse(is.na(ovA$CRFVOL), 0, ifelse(ovA$CRFVOL>99, NA, ovA$CRFVOL))
 summary(ovA$CRFVOL.f)
 
 ## relationship between ORC and BLD ----
@@ -89,11 +90,13 @@ pal = R_pal[["bpy_colors"]][1:18]
 hexbinplot(ovA$BLD~ovA$ORCDRC, colramp=colorRampPalette(pal), xlab="Organic carbon (permille)", ylab="Bulk density (kg/cubic-m)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, asp=1, xbins=30, ybins=30, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1))
 ## Fill in gaps in soil BLD - we can make a PedoTransfer function (which includes soil type predictions)
 ov.tax = raster::extract(raster("/data/GEOG/TAXOUSDA_250m_ll.tif"), SPROPS.pnts)
-dfs = plyr::join(ovA[,c("SOURCEID", "BLD", "ORCDRC", "CLYPPT", "SNDPPT", "PHIHOX", "DEPTH.f")], data.frame(SOURCEID=SPROPS.pnts$SOURCEID, TAXOUSDA=as.factor(ov.tax)))
-dfs = dfs[complete.cases(dfs[,c("ORCDRC", "BLD", "CLYPPT", "SNDPPT", "PHIHOX", "DEPTH.f", "TAXOUSDA")]),]
-## 98,650 horizons
-ind.tax = data.frame(model.matrix(~TAXOUSDA-1, dfs))
-dfs_tbl = cbind(dfs, ind.tax)
+dfsB = plyr::join(ovA[,c("SOURCEID", "BLD", "ORCDRC", "CLYPPT", "SNDPPT", "PHIHOX", "DEPTH.f")], data.frame(SOURCEID=SPROPS.pnts$SOURCEID, TAXOUSDA=as.factor(ov.tax)))
+sel.ovA = complete.cases(dfsB[,c("ORCDRC", "BLD", "CLYPPT", "SNDPPT", "PHIHOX", "DEPTH.f", "TAXOUSDA")])
+summary(sel.ovA)
+dfsB = dfsB[sel.ovA,]
+## 98,850 horizons
+ind.tax = data.frame(model.matrix(~TAXOUSDA-1, dfsB))
+dfs_tbl = cbind(dfsB, ind.tax)
 saveRDS(dfs_tbl, "wosis_tbl.rds")
 saveRDS(ind.tax, "ov_taxousda.rds")
 #ind.tax = readRDS("ov_taxousda.rds")
@@ -101,11 +104,9 @@ saveRDS(ind.tax, "ov_taxousda.rds")
 
 fm.BLD = as.formula(paste("BLD ~ ORCDRC + CLYPPT + SNDPPT + PHIHOX + DEPTH.f +", paste(names(ind.tax), collapse="+")))
 m.BLD_PTF <- ranger(fm.BLD, dfs_tbl, num.trees = 85, importance='impurity')
-#ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
-#m.BLD_PTF <- caret::train(BLD~log1p(ORCDRC)+log1p(DEPTH.f)+PHIHOX+SNDPPT+CLYPPT, method="lm", ovA, na.action=na.omit, trControl=ctrl)
 m.BLD_PTF
 ## RMSE = 181 kg/m3
-## R-square = 54%
+## R-square = 55%
 saveRDS.gz(m.BLD_PTF, "m_BLD_PTF.rds")
 hist(m.BLD_PTF$predictions)
 xl <- as.list(ranger::importance(m.BLD_PTF))
@@ -125,35 +126,50 @@ print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:10]])))
 ## Udalfs
 ind.tax.new = ind.tax[which(ind.tax$TAXOUSDA84==1)[1],]
 predict(m.BLD_PTF, cbind(data.frame(ORCDRC=11, CLYPPT=22, PHIHOX=6.5, SNDPPT=35, DEPTH.f=5), ind.tax.new))$predictions
-## 1522 kg/m3
+## 1496 kg/m3
 predict(m.BLD_PTF, cbind(data.frame(ORCDRC=5, CLYPPT=24, PHIHOX=6.8, SNDPPT=28, DEPTH.f=125), ind.tax.new))$predictions
-## 1658 kg/m3
+## 1677 kg/m3
 
 ## organic soil:
 ind.tax.new = ind.tax[which(ind.tax$TAXOUSDA13==1)[1],]
 predict(m.BLD_PTF, cbind(data.frame(ORCDRC=220, CLYPPT=12, PHIHOX=5.5, SNDPPT=35, DEPTH.f=5), ind.tax.new))$predictions
-## 803 kg/m3
+## 842 kg/m3
 ind.tax.new = ind.tax[which(ind.tax$TAXOUSDA13==1)[1],]
 predict(m.BLD_PTF, cbind(data.frame(ORCDRC=320, CLYPPT=8, PHIHOX=5.5, SNDPPT=45, DEPTH.f=10), ind.tax.new))$predictions
-## 778 kg/m3
+## 826 kg/m3
+## TH: This number seems to be a bit too high?
 
 ## Simple correction from Kochy et al (2015):
 #round((-0.31 * log1p(220/10) + 1.38)*1000)
 m.BLD_ls = loess(BLD ~ ORCDRC, ovA, span=1/18)
 predict(m.BLD_ls, data.frame(ORCDRC=220))
-## 329.2059
+## 345 kg/m3
+
+## Predict BLD using soil profile data and PTFs:
 sel.BLD = complete.cases(ovA[,all.vars(fm.BLD)[-1]])
-## Take weighted average because the RF-based PTF over-estimates BLD for high ORC
-BLD.f = (predict(m.BLD_PTF, ovA[sel.BLD,])$predictions + predict(m.BLD_ls, ovA[sel.BLD,]))/2
-BLD.f = ifelse(is.nan(BLD.f), NA, BLD.f)
-## replace values where missing:
-ovA[sel.BLD,"BLD.f"] = BLD.f 
+## Take weighted average because the RF-based PTF over-estimates BLD for high ORC?
+BLD.f1 = predict(m.BLD_PTF, dfs_tbl)$predictions
+summary(BLD.f1)
+BLD.f2 = predict(m.BLD_ls, ovA)
+summary(BLD.f2)
+ovA$BLD.f = NA
+## Organic soils:
+ovA[which(ovA$ORCDRC>120),"BLD.f"] = BLD.f2[which(ovA$ORCDRC>120)]
+## Other soils with enough soil data:
+ovA[which(sel.ovA),"BLD.f"] <- rowMeans(data.frame(BLD.f1, BLD.f2[sel.ovA]), na.rm = TRUE)
+## add actual measured values:
 ovA$BLD.f = round(ifelse(is.na(ovA$BLD), ovA$BLD.f, ovA$BLD))
+summary(ovA$BLD.f)
 ## Soil organic carbon density:
 ovA$OCDENS = round(ovA$ORCDRC/1000 * ovA$BLD.f * (100-ovA$CRFVOL.f)/100)
+summary(ovA$ORCDRC == 0)
+##    Mode   FALSE    TRUE    NA's 
+## logical  662384   16942  161655
+ovA$OCDENS = ifelse(ovA$ORCDRC == 0, 0, ovA$OCDENS)
 hist(log1p(ovA$OCDENS))
 ovA[1920,c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")]
-ovA[81051,c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")]
+ovA[123114,c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")]
+## Some very high values from northern latitudes
 View(ovA[which(ovA$OCDENS>200),c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")])
 ## Organic carbon density as function of ORC:
 hexbinplot(log1p(ovA$OCDENS)~log1p(ovA$ORCDRC), colramp=colorRampPalette(pal), xlab="log - Organic carbon (permille)", ylab="log - Organic carbon density (kg/cubic-m)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, xbins=30, ybins=30, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1))
@@ -171,6 +187,7 @@ pnts.ll = ovA[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","CRFVOL","SNDPPT","SLTP
 pnts.ll <- pnts.ll[!is.na(pnts.ll$LONWGS84),]
 coordinates(pnts.ll) = ~ LONWGS84+LATWGS84
 proj4string(pnts.ll) = CRS("+proj=longlat +datum=WGS84")
+unlink("global_soil_points.gpkg")
 writeOGR(pnts.ll, "global_soil_points.gpkg", "global_soil_points", "GPKG")
 
 ## ------------- MODEL FITTING -----------
@@ -183,9 +200,9 @@ names(z.min) = t.vars
 z.max <- as.list(c(800,110,110,100,100,100,100,3500,2200,10000))
 names(z.max) = t.vars
 ## FIT MODELS:
-pr.lst <- basename(list.files(path="/data/stacked250m", ".tif"))
+pr.lst <- basename(list.files(path="/data/stacked250m", pattern=glob2rx("*.tif$")))
 ## remove some predictors that might lead to artifacts (buffer maps and land cover):
-pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10","N11MSD3","B08CHE3","B09CHE3","CSCMCF5","S01ESA4","S02ESA4","S11ESA4","S12ESA4"), function(x){grep(x, pr.lst)}))]
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10","N11MSD3","CSCMCF5","B02CHE3","B08CHE3","B09CHE3","S01ESA4","S02ESA4","S11ESA4","S12ESA4","BICUSG"), function(x){grep(x, pr.lst)}))]
 formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ DEPTH.f +', paste(pr.lst, collapse="+")))})
 #all.vars(formulaString.lst[[1]])
 save.image()
@@ -196,14 +213,14 @@ col.m <- as.data.frame(cov.m)
 write.csv(col.m, "covs_quantiles.csv")
 
 ## cleanup:
-#unlink(list.files(pattern=glob2rx("^mrf.*.rds")))
-#unlink(list.files(pattern=glob2rx("^t.mrf.*.rds")))
-#unlink(list.files(pattern=glob2rx("^Xgb.*")))
-#unlink(list.files(pattern=glob2rx("^mgb.*.rds")))
-#unlink(list.files(pattern=glob2rx("^mrf.*.rds")))
-#unlink(list.files(pattern=glob2rx("^mrfX_*_*.rds")))
-#unlink(list.files(pattern=glob2rx("^RF_fit_*.csv.gz")))
-#unlink(list.files(pattern=glob2rx("*_resultsFit.txt")))
+# unlink(list.files(pattern=glob2rx("^mrf.*.rds")))
+# unlink(list.files(pattern=glob2rx("^t.mrf.*.rds")))
+# unlink(list.files(pattern=glob2rx("^Xgb.*")))
+# unlink(list.files(pattern=glob2rx("^mgb.*.rds")))
+# unlink(list.files(pattern=glob2rx("^mrf.*.rds")))
+# unlink(list.files(pattern=glob2rx("^mrfX_*_*.rds")))
+# unlink(list.files(pattern=glob2rx("^RF_fit_*.csv.gz")))
+# unlink(list.files(pattern=glob2rx("*_resultsFit.txt")))
 
 ## sub-sample to speed up model fitting:
 ## TAKES >2 hrs to fit all models
@@ -212,6 +229,7 @@ Nsub <- 1.2e4
 ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
 gb.tuneGrid <- expand.grid(eta = c(0.3,0.4,0.5), nrounds = c(50,100,150), max_depth = 2:4, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1, subsample=1)
 rf.tuneGrid <- expand.grid(mtry = seq(5,50,by=5))
+LOC_ID <- ovA$LOC_ID
 ## Initiate cluster
 cl <- makeCluster(48)
 doParallel::registerDoParallel(cl)
@@ -225,10 +243,11 @@ for(j in 1:length(t.vars)){
     cat("\n", file=out.file, append=TRUE)
     out.rf <- paste0("mrf.",t.vars[j],".rds")
     if(!file.exists(out.rf)|!file.exists(paste0("mgb.",t.vars[j],".rds"))){
-      LOC_ID <- ovA$LOC_ID
-      dfs <- ovA[,all.vars(formulaString.lst[[j]])]
+      dfs <- ovA[,c(all.vars(formulaString.lst[[j]]),"UHDICM","LHDICM")]
       sel <- complete.cases(dfs)
       dfs <- dfs[sel,]
+      ## copy values upper and lower horizons (http://gsif.isric.org/doku.php/wiki:soilmapping_using_mla#spatial_prediction_of_3d_numeric_variables):
+      dfs = hor2xyd(dfs)
       ## optimize mtry parameter:
       if(!file.exists(gsub("mrf","t.mrf",out.rf))){
         t.mrfX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), Nsub),], method="ranger", trControl=ctrl, tuneGrid=rf.tuneGrid)
@@ -251,10 +270,10 @@ for(j in 1:length(t.vars)){
       xl <- as.list(ranger::importance(mrfX))
       print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:35]])))
       ## save fitting success vectors:
-      fit.df <- data.frame(LOC_ID=LOC_ID[sel], observed=dfs[,1], predicted=predictions(mrfX))
-      unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
-      write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
-      gzip(paste0("RF_fit_", t.vars[j], ".csv"))
+      #fit.df <- data.frame(observed=dfs[,1], predicted=predictions(mrfX)) ## LOC_ID=LOC_ID[sel]
+      #unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
+      #write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
+      #gzip(paste0("RF_fit_", t.vars[j], ".csv"))
       if(!file.exists(paste0("mgb.",t.vars[j],".rds"))){
         ## fit XGBoost model (uses all points):
         mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
@@ -285,7 +304,7 @@ pr.dirs <- basename(dirname(list.files(path="/data/tt/SoilGrids250m/predicted250
 str(pr.dirs)
 
 #save(pr.dirs, file="pr.dirs.rda")
-## 16,561 dirs
+## 18,653 dirs
 type.lst <- c("Int16","Byte","Byte","Byte","Byte","Byte","Byte","Int16","Int16","Int16")
 names(type.lst) = t.vars
 mvFlag.lst <- c(-32768, 255, 255, 255, 255, 255, 255, -32768, -32768, -32768)
@@ -296,12 +315,12 @@ library(ranger)
 library(xgboost)
 library(tools)
 library(parallel)
-library(doParallel)
+#library(doParallel)
 library(rgdal)
 library(plyr)
 ## Run per property (RF = 20 tiles per minute)
-for(j in c("PHIHOX","ORCDRC","OCDENS")){ ## t.vars
-#for(j in t.vars){
+#for(j in c("PHIHOX","ORCDRC","OCDENS")){ 
+for(j in t.vars){
   try( detach("package:snowfall", unload=TRUE), silent=TRUE)
   try( detach("package:snow", unload=TRUE), silent=TRUE)
   if(j %in% c("PHIHOX","PHIKCL","OCDENS")){ multiplier = 10 }
@@ -311,59 +330,80 @@ for(j in c("PHIHOX","ORCDRC","OCDENS")){ ## t.vars
   gm1.w = 1/gm$prediction.error
   ## Estimate amount of RAM needed per core
   cpus = unclass(round((500-50)/(3.5*(object.size(gm)/1e9))))
-  cl <- parallel::makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
+  cl <- parallel::makeCluster(ifelse(cpus>47, 47, cpus), type="FORK")
   x = parallel::parLapply(cl, pr.dirs, fun=function(x){ if(any(!file.exists(paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", j, "_M_sl", 1:7, "_", x, ".tif")))){ try( split_predict_n(x, gm, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", split_no=NULL, varn=j, method="ranger", DEPTH.col="DEPTH.f", multiplier=multiplier, rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } } )
-  stopCluster(cl)
+  parallel::stopCluster(cl)
   gc(); gc()
   ## XGBoost:
   gm = readRDS.gz(paste0("mgb.", j,".rds"))
   gm2.w = 1/(min(gm$results$RMSE, na.rm=TRUE)^2)
   cpus = unclass(round((500-30)/(3.5*(object.size(gm)/1e9))))
-  cl <- parallel::makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
+  cl <- parallel::makeCluster(ifelse(cpus>47, 47, cpus), type="FORK")
   x = parallel::parLapply(cl, pr.dirs, fun=function(x){ if(any(!file.exists(paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", j, "_M_sl", 1:7, "_", x, ".tif")))){ try( split_predict_n(x, gm, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", split_no=NULL, varn=j, method="xgboost", DEPTH.col="DEPTH.f", multiplier=multiplier, rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } } )
-  stopCluster(cl)
+  parallel::stopCluster(cl)
   gc(); gc()
   ## sum up predictions:
-  if(is.nan(gm1.w)|is.nan(gm2.w)){ gm1.w = 0.55; gm2.w = 0.45 } 
-  ## TH: in some extreme situations it can happen that ranger results in NaN
+  if(is.nan(gm1.w)|is.nan(gm2.w)){ gm1.w = 0.5; gm2.w = 0.5 } 
+  ## TH: it can happen that ranger results in error = NaN
   library(snowfall)
-  sfInit(parallel=TRUE, cpus=48)
+  sfInit(parallel=TRUE, cpus=47)
   sfExport("pr.dirs", "sum_predict_ensemble", "j", "z.min", "z.max", "gm1.w", "gm2.w", "type.lst", "mvFlag.lst")
   sfLibrary(rgdal)
   sfLibrary(plyr)
-  x <- sfClusterApplyLB(pr.dirs, fun=function(x){ try( sum_predict_ensemble(x, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn=j, num_splits=NULL, zmin=z.min[[j]], zmax=z.max[[j]], gm1.w=gm1.w, gm2.w=gm2.w, type=type.lst[[j]], mvFlag=mvFlag.lst[[j]], rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } )
-  sfStop()
+  x <- snowfall::sfClusterApplyLB(pr.dirs, fun=function(x){ try( sum_predict_ensemble(x, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn=j, num_splits=NULL, zmin=z.min[[j]], zmax=z.max[[j]], gm1.w=gm1.w, gm2.w=gm2.w, type=type.lst[[j]], mvFlag=mvFlag.lst[[j]], rds.file=paste0("/data/tt/SoilGrids250m/predicted250m/", x, "/", x,".rds")) ) } )
+  snowfall::sfStop()
   gc(); gc()
 }
 
-## some geotifs got corrupt for unknown reason:
-tif.lst <- list.files("/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("OCDENS*.tif"), recursive = TRUE, full.names = TRUE)
+## some geotifs get corrupt for some reason
+tif.lst <- list.files("/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("*_M_*_*.tif"), recursive = TRUE, full.names = TRUE)
 
-corrupt.tif <- function(i, x=NULL, try.raster=TRUE){
-  if(try.raster==TRUE){
-    try( x <- raster::raster(i) , silent=TRUE)
-    if(!class(x)[1]=="RasterLayer"){ 
-      return(i)
-    }
+check_readGDAL = function(x){
+  res <- try( xx <- readGDAL(x, silent = TRUE) , silent = TRUE)
+  if(class(res) == "try-error"){
+    out = TRUE
   } else {
-    try( x <- rgdal::GDALinfo(i, silent=TRUE) , silent=TRUE)    
-    if(!class(x)[1]=="GDALobj"){ 
-      return(i)
-    }
+    out = FALSE
   }
+  return(out)
 }
-## takes 30 mins to inspect all tifs
+## takes 120 mins to inspect all tifs
 library(snowfall)
 sfInit(parallel=TRUE, cpus=48)
 sfLibrary(rgdal)
-sfLibrary(raster)
-sfExport("corrupt.tif", "tif.lst")
-del.tif <- unlist(sfLapply(tif.lst, corrupt.tif))
+sfExport("check_readGDAL", "tif.lst")
+del2.tif <- unlist(sfLapply(tif.lst, check_readGDAL))
 sfStop()
-write.csv(del.tif, "corrupt_tif.csv")
-unlink(del.tif)
+names(del2.tif) = tif.lst
+str(attr(del2.tif[del2.tif==TRUE], "names"))
+unlink(attr(del2.tif[del2.tif==TRUE], "names"))
 
-#i = "/data/tt/SoilGrids250m/predicted250m/T46814/OCDENS_M_sl2_T46814.tif"
+# corrupt.tif <- function(i, x=NULL, try.raster=TRUE){
+#   if(try.raster==TRUE){
+#     try( x <- raster::raster(i) , silent=TRUE)
+#     if(!class(x)[1]=="RasterLayer"){
+#       return(i)
+#     }
+#   } else {
+#     try( x <- rgdal::GDALinfo(i, silent=TRUE) , silent=TRUE)
+#     if(!class(x)[1]=="GDALobj"){
+#       return(i)
+#     }
+#   }
+# }
+# 
+# library(snowfall)
+# sfInit(parallel=TRUE, cpus=48)
+# sfLibrary(rgdal)
+# sfLibrary(raster)
+# sfExport("corrupt.tif", "tif.lst")
+# del.tif <- unlist(sfLapply(tif.lst, corrupt.tif))
+# sfStop()
+# write.csv(del.tif, "corrupt_tif.csv")
+# unlink(del.tif)
+save.image()
+
+#i = "/data/tt/SoilGrids250m/predicted250m/T20102/ORCDRC_M_sl1_T20102.tif"
 #GDALinfo(i)
 #plot(raster(i))
 #del.tif = tif.lst[sapply(c.lst, function(x){grep(x, tif.lst)})]
@@ -386,8 +426,6 @@ names(missing.lst) = t.vars
 
 ## ORCDRC map can lead to artifacts e.g. 8% ORC for "Shurblands" class in Turmenistan (obvious overprediction)
 ## this happens mainly because there are not enough training points in drylands hence the model extrapolates;
-## to avoid this, we run a post-processing filter that uses precipitation and EVI images to cut out all values that are obvious artifacts (should be 0--5 ORC);
-#source("HISTPR_SoilGrids.R")
 
 ## clean-up:
 #for(i in t.vars){ ## c("ORCDRC", "OCSTHA")){ ##  c("BLD", "ORCDRC", "PHIHOX", "PHIKCL", "SNDPPT", "SLTPPT", "CLYPPT")  
@@ -401,8 +439,8 @@ names(missing.lst) = t.vars
 #del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^CECSUM"), full.names=TRUE, recursive=TRUE)
 
 ## delete using date:
-orc.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern="ORCDRC", full.names=TRUE, recursive=TRUE)
-d.lst <- sapply(orc.lst, function(x){file.mtime(x)})
+# orc.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern="ORCDRC", full.names=TRUE, recursive=TRUE)
+# d.lst <- sapply(orc.lst, function(x){file.mtime(x)})
 # #hist(d.lst, breaks=45)
 # unlink(orc.lst[d.lst>unclass(as.POSIXct("2017-04-11", format="%Y-%m-%d"))])
 # ocd.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern="OCDENS", full.names=TRUE, recursive=TRUE)
@@ -431,13 +469,18 @@ filename = paste0(l.vars.f, "_", d.lst, "_250m_ll.tif")
 filename = gsub("_NULL", "", filename)
 source('/data/models/mosaick_functions_ll.R')
 #View(data.frame(l.vars,l.vars.f,d.lst,filename))
+r <- raster("/data/stacked250m/LCEE10.tif")
+cellsize = res(r)[1]
+te = paste(as.vector(extent(r))[c(1,3,2,4)], collapse=" ")
+
 library(snowfall)
-sfInit(parallel=TRUE, cpus=ifelse(length(l.vars)>28, 28, length(l.vars)))
-sfExport("l.vars", "l.vars.f", "d.lst", "make_mosaick_ll", "metasd", "sel.metasd", "filename")
-out <- sfClusterApplyLB(1:length(l.vars), function(x){ try( make_mosaick_ll(varn=l.vars[x], i=d.lst[x], in.path="/data/tt/SoilGrids250m/predicted250m", ot=metasd[which(metasd$FileName == filename[x]), "DATA_FORMAT"], dstnodata=metasd[which(metasd$FileName == filename[x]), "NO_DATA"], metadata=metasd[which(metasd$FileName == filename[x]), sel.metasd]) )})
+sfInit(parallel=TRUE, cpus=ifelse(length(l.vars)>20, 20, length(l.vars)))
+sfExport("l.vars", "l.vars.f", "d.lst", "make_mosaick_ll", "metasd", "sel.metasd", "filename", "te", "cellsize")
+out <- sfClusterApplyLB(1:length(l.vars), function(x){ try( make_mosaick_ll(varn=l.vars[x], i=d.lst[x], in.path="/data/tt/SoilGrids250m/predicted250m", tr=cellsize, te=te, ot=metasd[which(metasd$FileName == filename[x]), "DATA_FORMAT"], dstnodata=metasd[which(metasd$FileName == filename[x]), "NO_DATA"], metadata=metasd[which(metasd$FileName == filename[x]), sel.metasd]) )})
 sfStop()
 save.image()
 
+## ERROR 1: /data/tt/SoilGrids250m/predicted250m/T43440/ORCDRC_M_sl1_T43440.tif, band 1: IReadBlock failed at X offset 0, Y offset 0
 
 ## ------------- VISUALIZATIONS -----------
 
@@ -507,7 +550,7 @@ SPROPS.NPDB_V2$DEPTH.f <- SPROPS.NPDB_V2$UHDICM.f + (SPROPS.NPDB_V2$LHDICM.f - S
 xy.NPDB_V2 = SPROPS.NPDB_V2[!duplicated(SPROPS.NPDB_V2$LOC_ID),c("SOURCEID","LOC_ID","SOURCEDB","LONWGS84","LATWGS84")]
 coordinates(xy.NPDB_V2) = ~ LONWGS84 + LATWGS84
 proj4string(xy.NPDB_V2) = proj4string(tile.pol)
-NPDB_V2.ov <- extract.tiled(x=xy.NPDB_V2, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=54)
+NPDB_V2.ov <- extract.tiled(x=xy.NPDB_V2, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=48)
 NPDB_V2.ovA <- join(SPROPS.NPDB_V2, NPDB_V2.ov, type="left", by="LOC_ID")
 gm = readRDS.gz(paste0("mrf.ORCDRC.rds"))
 sel.AV = complete.cases(NPDB_V2.ovA[,gm$forest$independent.variable.names])

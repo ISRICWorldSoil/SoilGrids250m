@@ -1,7 +1,7 @@
 ## Fit models for TAXOUSDA and generate predictions - SoilGrids250m
 ## By Tom.Hengl@isric.org with help from Marvin N. Wright <wright at imbs.uni-luebeck.de>
 
-list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps")
+list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps", "ROCR")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -31,6 +31,7 @@ library(rgdal)
 library(utils)
 library(plotKML)
 library(GSIF)
+library(raster)
 
 plotKML.env(convert="convert", show.env=FALSE)
 gdalwarp = "gdalwarp"
@@ -59,7 +60,7 @@ makeSAGAlegend(x=as.factor(paste(col.legend$Group)), MINIMUM=col.legend$Number, 
 load("/data/profs/TAXOUSDA/TAXOUSDA.pnts.rda")
 str(TAXOUSDA.pnts@data)
 #summary(TAXOUSDA.pnts$TAXOUSDA.f)
-## 342,745 points!
+## 344,287 points!
 xs = summary(TAXOUSDA.pnts$TAXOUSDA.f, maxsum=length(levels(TAXOUSDA.pnts$TAXOUSDA.f)))
 sel.levs = attr(xs, "names")[xs > 10]
 TAXOUSDA.pnts$soiltype <- TAXOUSDA.pnts$TAXOUSDA.f
@@ -81,7 +82,7 @@ soil.fix <- soil.fix[names(soil.fix) %in% levels(TAXOUSDA.pnts$soiltype)]
 ## OVERLAY AND FIT MODELS:
 tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
 #tile.pol = readRDS("/data/models/stacked250m_tiles_pol.rds")
-ov <- extract.tiled(x=TAXOUSDA.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=56)
+ov <- extract.tiled(x=TAXOUSDA.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=48)
 
 ## TAKES ca 10 MINS FOR 300k points
 #str(ov)
@@ -97,7 +98,7 @@ save.image()
 
 pr.lst <- basename(list.files(path="/data/stacked250m", ".tif"))
 ## remove some predictors that might lead to artifacts (buffer maps and land cover):
-pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10"), function(x){grep(x, pr.lst)}))]
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10","N11MSD3","CSCMCF5","B02CHE3","B08CHE3","B09CHE3","S01ESA4","S02ESA4","S11ESA4","S12ESA4"), function(x){grep(x, pr.lst)}))]
 formulaString.USDA = as.formula(paste('soiltype ~ ', paste(pr.lst, collapse="+")))
 #formulaString.USDA
 
@@ -121,6 +122,15 @@ t.mrfX <- caret::train(formulaString.USDA, data=dsf, method="ranger", trControl=
 mrfX_TAXOUSDA <- ranger::ranger(formulaString.USDA, ov[complete.cases(ov[,all.vars(formulaString.USDA)]),], importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, probability=TRUE, num.trees=85) ## TAKES 10 minutes
 ## 'num.trees' - to reduce the size of output objects 
 stopCluster(cl)
+#mrfX_TAXOUSDA
+#Type:                             Probability estimation 
+#Number of trees:                  85 
+#Sample size:                      340558 
+#Number of independent variables:  206 
+#Mtry:                             35 
+#Target node size:                 10 
+#Variable importance mode:         impurity 
+#OOB prediction error:             0.3432677 
 
 cat("Results of model fitting 'nnet / randomForest':\n", file="TAXOUSDA_resultsFit.txt")
 cat("\n", file="TAXOUSDA_resultsFit.txt", append=TRUE)
@@ -139,6 +149,7 @@ sink()
 #saveRDS.gz(mnetX_TAXOUSDA, file="mnetX_TAXOUSDA.rds")
 saveRDS.gz(mrfX_TAXOUSDA, file="mrfX_TAXOUSDA.rds")
 save.image()
+#mrfX_TAXOUSDA = readRDS.gz("mrfX_TAXOUSDA.rds")
 
 ## ------------- PREDICTIONS -----------
 
@@ -151,6 +162,8 @@ lev <- mrfX_TAXOUSDA$forest$levels
 ## clean-up:
 #del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^TAXOUSDA_*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
+#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^TAXOUSDA_*.tif.aux.xml"), full.names=TRUE, recursive=TRUE)
+#unlink(del.lst)
 
 ## run all predictions in parallel
 pr.dirs <- basename(dirname(list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
@@ -160,29 +173,50 @@ str(pr.dirs)
 ## test prediction:
 #factor_predict_ranger(i="T38275", gm=mrfX_TAXOUSDA, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXOUSDA", col.legend=col.legend, soil.fix=soil.fix)
 #factor_predict_ranger(i="T40502", gm=mrfX_TAXOUSDA, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXOUSDA", col.legend=col.legend, soil.fix=soil.fix)
+#factor_predict_ranger(i="T19944", gm=mrfX_TAXOUSDA, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXOUSDA", col.legend=col.legend, soil.fix=soil.fix)
+## Spain:
+#factor_predict_ranger(i="T36174", gm=mrfX_TAXOUSDA, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXOUSDA", col.legend=col.legend, soil.fix=soil.fix)
+#most_probable_fix(i="T36174", in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXOUSDA", col.legend=col.legend, check.names=FALSE, lev=lev)
 
-## ranger model only:
-## ca 14 hrs of computing
+## ranger model only (ca 14 hrs of computing)
 try( detach("package:snowfall", unload=TRUE), silent=TRUE)
 try( detach("package:snow", unload=TRUE), silent=TRUE)
 library(parallel)
 library(ranger)
+library(raster)
 library(rgdal)
 library(plyr)
 cpus = unclass(round((500-35)/(3.5*(object.size(mrfX_TAXOUSDA)/1e9))))
-cl <- parallel::makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
+cl <- parallel::makeCluster(ifelse(cpus>46, 46, cpus), type="FORK")
 x = parLapply(cl, pr.dirs, fun=function(x){ try( factor_predict_ranger(i=x, gm=mrfX_TAXOUSDA, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXOUSDA", col.legend=col.legend, soil.fix=soil.fix)  ) } )
 stopCluster(cl)
 gc(); gc()
 
-## Mosaick:
-t.vars = paste0("TAXOUSDA_", lev)
+## Fix missing values:
+# library(snowfall)
+# sfInit(parallel=TRUE, cpus=46)
+# snowfall::sfLibrary(rgdal)
+# snowfall::sfLibrary(plyr)
+# snowfall::sfLibrary(raster)
+# sfExport("col.legend", "most_probable_fix", "lev")
+# out <- sfClusterApplyLB(pr.dirs, function(x){ try( most_probable_fix(i=x, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXOUSDA", col.legend=col.legend, check.names=FALSE, lev=lev) )})
+# sfStop()
+
+## Mosaick ----
+t.vars = c("TAXOUSDA", paste0("TAXOUSDA_", lev))
+## 66 classes in total
+r <- raster("/data/stacked250m/LCEE10.tif")
+cellsize = res(r)[1]
+te = paste(as.vector(extent(r))[c(1,3,2,4)], collapse=" ")
+
 library(snowfall)
 sfInit(parallel=TRUE, cpus=ifelse(length(t.vars)>45, 45, length(t.vars)))
-sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd")
-out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i=NULL, in.path="/data/tt/SoilGrids250m/predicted250m", ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == t.vars[x]), sel.metasd]) )})
+sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd", "te", "cellsize")
+out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], in.path="/data/tt/SoilGrids250m/predicted250m", tr=cellsize, te=te, ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == paste0(t.vars[x], "_250m_ll.tif")), sel.metasd]) )})
 sfStop()
 
+## most probable class:
+#make_mosaick_ll(varn="TAXOUSDA", in.path="/data/tt/SoilGrids250m/predicted250m", tr=cellsize, te=te, ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == "TAXOUSDA_250m_ll.tif"), sel.metasd])
 
 ## ------------- VISUALIZATION -----------
 

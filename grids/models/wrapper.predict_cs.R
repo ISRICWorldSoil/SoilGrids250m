@@ -100,7 +100,6 @@ sum_predictions <- function(i, in.path, out.path, varn, gm1.w, gm2.w, col.legend
       }
       unlink(rf.ls)
       unlink(paste0(out.path, "/", i, "/", varn,"_", i, "_nnet.rds"))
-      gc()
     }  
   }
 }
@@ -112,8 +111,7 @@ factor_predict_ranger <- function(i, gm, in.path, out.path, varn, col.legend, so
   if(!file.exists(out.c)){
     ## load all objects:
     m <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))
-    #if(any(names(m) %in% "OCCGSW7.tif")){ m$OCCGSW7.tif = ifelse(m$OCCGSW7.tif>100, 0, m$OCCGSW7.tif) }
-    if(nrow(m@data)>1){
+    if(nrow(m@data)>1 & !is.null(m$BICUSG5.tif)){
       mfix <- paste(m$BICUSG5.tif)
       lfix <- levels(as.factor(mfix))
       probs = data.frame(round(predict(gm, m@data, probability=TRUE, na.action = na.pass)$predictions*100))
@@ -125,7 +123,7 @@ factor_predict_ranger <- function(i, gm, in.path, out.path, varn, col.legend, so
           if(length(sel)>0){ probs[mfix==k,names(sel)] <- 0 }
         }
       }
-      ## Standardize ('rescale') values so they sums up to 100:
+      ## Standardize ('rescale') values so they sum up to 100:
       rs <- rowSums(probs, na.rm=TRUE)
       m@data <- data.frame(lapply(probs, function(i){i/rs}))
       ## Write GeoTiffs:
@@ -138,6 +136,7 @@ factor_predict_ranger <- function(i, gm, in.path, out.path, varn, col.legend, so
             writeGDAL(m["v"], out, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
           }
         }
+        m$v = NULL
         ## most probable class:
         if(check.names==TRUE){ 
           Group = gsub("\\.", " ", gsub("\\.$", "\\)", gsub("\\.\\.", " \\(", tax))) 
@@ -146,11 +145,10 @@ factor_predict_ranger <- function(i, gm, in.path, out.path, varn, col.legend, so
         }
         col.tbl <- plyr::join(data.frame(Group=Group, int=1:length(tax)), col.legend, type="left")
         ## match most probable class
-        m$cl <- col.tbl[match(apply(m@data,1,which.max), col.tbl$int),"Number"]  
-        writeGDAL(m["cl"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(col.tbl$Group))) 
+        m$cl <- col.tbl[match(apply(m@data, 1, base::which.max), col.tbl$int),"Number"]
+        writeGDAL(m["cl"], fname=out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE")
       }
-      gc(); gc()
-    }  
+    }
   }
 }
 
@@ -199,9 +197,9 @@ most_probable_fix <- function(i, in.path, out.path, varn, col.legend, check.name
   out.c <- paste0(out.path, "/", i, "/", varn, "_", i, ".tif")
   if(file.exists(out.c)){
     ## find tiles with missing pixels
-    lm <- readGDAL(paste0(in.path, "/", i, "/LMK_", i, ".tif"))
-    lm$cl <- readGDAL(out.c)$band1
-    if(sum(!is.na(lm$band1)-!is.na(lm$cl))>0){
+    lm <- readRDS(paste0(in.path, "/", i, "/", i, ".rds"))["LCEE10.tif"]
+    lm$cl <- readGDAL(out.c)$band1[lm@grid.index]
+    if((sum(!is.na(lm$LCEE10.tif))-sum(!is.na(lm$cl)))>0){
       ## load all probs:
       m <- raster::stack(list.files(path=paste0(out.path, "/", i), pattern = glob2rx(paste0(varn,  "_*_", i,".tif")), full.names = TRUE))
       names(m) <- sapply(names(m), function(x){strsplit(x, "_")[[1]][2]})
@@ -214,10 +212,9 @@ most_probable_fix <- function(i, in.path, out.path, varn, col.legend, check.name
       }
       col.tbl <- plyr::join(data.frame(Group=Group, int=1:length(lev)), col.legend, type="left")
       ## match most probable class
-      m$cl <- col.tbl[match(apply(m@data,1,which.max), col.tbl$int),"Number"]
+      m$cl <- col.tbl[match(apply(m@data, 1, base::which.max), col.tbl$int),"Number"]
       unlink(out.c)
-      writeGDAL(m["cl"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(col.tbl$Group)))
-      gc(); gc()
+      writeGDAL(m["cl"], out.c, type="Byte", mvFlag=255, options="COMPRESS=DEFLATE") ## , catNames=list(paste(col.tbl$Group))
     }
   }
 }
@@ -268,7 +265,6 @@ split_predict_n <- function(i, gm, in.path, out.path, split_no, varn, sd=c(0, 5,
         }
       }
       saveRDS(x, file=rds.out)
-      gc(); gc()
     }
   }
 }
@@ -318,9 +314,20 @@ sum_predict_ensemble <- function(i, in.path, out.path, varn, num_splits, zmin, z
           ## cleanup:
           unlink(rf.ls) 
           unlink(gb)
-          gc(); gc()
+          #gc(); gc()
         }
       }
     }
   }
+}
+
+hor2xyd = function(x, U="UHDICM", L="LHDICM", treshold.T=15){
+  x$DEPTH <- x[,U] + (x[,L] - x[,U])/2
+  x$THICK <- x[,L] - x[,U]
+  sel = x$THICK < treshold.T
+  ## begin and end of the horizon:
+  x1 = x[!sel,]; x1$DEPTH = x1[,L]
+  x2 = x[!sel,]; x2$DEPTH = x1[,U]
+  y = do.call(rbind, list(x, x1, x2))
+  return(y)
 }

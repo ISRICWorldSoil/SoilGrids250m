@@ -1,7 +1,7 @@
 ## Fit models for TAXNWRB and generate predictions - SoilGrids250m
 ## Tom.Hengl@isric.org
 
-list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps")
+list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps", "ROCR")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -69,7 +69,7 @@ str(soil.fix)
 
 ## spatial overlay (takes ca 20+ mins):
 tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
-ov <- extract.tiled(x=TAXNWRB.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=56)
+ov <- extract.tiled(x=TAXNWRB.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=48)
 str(ov)
 ## 70,560 obs. of  198 variables
 write.csv(ov, file="ov.TAXNWRB_SoilGrids250m.csv")
@@ -84,7 +84,7 @@ summary(ov$TAXNWRB.f)
 
 pr.lst <- basename(list.files(path="/data/stacked250m", ".tif"))
 ## remove some predictors that might lead to artifacts (buffer maps and land cover):
-pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10"), function(x){grep(x, pr.lst)}))]
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10","N11MSD3","CSCMCF5","B02CHE3","B08CHE3","B09CHE3","S01ESA4","S02ESA4","S11ESA4","S12ESA4","BICUSG"), function(x){grep(x, pr.lst)}))]
 formulaString.WRB = as.formula(paste('TAXNWRB.f ~ ', paste(pr.lst, collapse="+")))
 #formulaString.WRB
 
@@ -108,6 +108,15 @@ t.mrfX <- caret::train(formulaString.WRB, data=dsf, method="ranger", trControl=c
 mrfX_TAXNWRB <- ranger::ranger(formulaString.WRB, ov[complete.cases(ov[,all.vars(formulaString.WRB)]),], importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, probability=TRUE, num.trees=85) ## TAKES 10 minutes
 ## 'num.trees' - to reduce the size of output objects 
 stopCluster(cl)
+# mrfX_TAXNWRB
+# Type:                             Probability estimation 
+# Number of trees:                  85 
+# Sample size:                      67615 
+# Number of independent variables:  206 
+# Mtry:                             30 
+# Target node size:                 10 
+# Variable importance mode:         impurity 
+# OOB prediction error:             0.6992368
 
 cat("Results of model fitting 'nnet / randomForest':\n", file="TAXNWRB_resultsFit.txt")
 cat("\n", file="TAXNWRB_resultsFit.txt", append=TRUE)
@@ -138,8 +147,10 @@ gm2.w <- 1-mrfX_TAXNWRB$prediction.error
 lev <- mrfX_TAXNWRB$forest$levels
 
 ## clean-up:
-#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^TAXNWRB_*.tif"), full.names=TRUE, recursive=TRUE)
-#unlink(del.lst)
+# del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^TAXNWRB_*.tif"), full.names=TRUE, recursive=TRUE)
+# unlink(del.lst)
+# del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^TAXNWRB_*.tif.aux.xml"), full.names=TRUE, recursive=TRUE)
+# unlink(del.lst)
 
 ## run all predictions in parallel
 pr.dirs <- basename(dirname(list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("*.rds$"), recursive = TRUE, full.names = TRUE)))
@@ -159,18 +170,35 @@ library(ranger)
 library(rgdal)
 library(plyr)
 cpus = unclass(round((500-35)/(3.5*(object.size(mrfX_TAXNWRB)/1e9))))
-cl <- parallel::makeCluster(ifelse(cpus>54, 54, cpus), type="FORK")
+cl <- parallel::makeCluster(ifelse(cpus>48, 48, cpus), type="FORK")
 x = parLapply(cl, pr.dirs, fun=function(x){ try( factor_predict_ranger(i=x, gm=mrfX_TAXNWRB, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXNWRB", col.legend=col.legend, soil.fix=soil.fix, check.names=TRUE)  ) } )
 stopCluster(cl)
 gc(); gc()
 
-## Mosaick:
-t.vars = paste0("TAXNWRB_", gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\.\\.", lev))))
+## Fix missing values:
+# library(snowfall)
+# sfInit(parallel=TRUE, cpus=46)
+# snowfall::sfLibrary(rgdal)
+# snowfall::sfLibrary(plyr)
+# snowfall::sfLibrary(raster)
+# sfExport("col.legend", "most_probable_fix", "lev")
+# out <- sfClusterApplyLB(pr.dirs, function(x){ try( most_probable_fix(i=x, in.path="/data/tt/SoilGrids250m/predicted250m", out.path="/data/tt/SoilGrids250m/predicted250m", varn="TAXNWRB", col.legend=col.legend, check.names=TRUE, lev=lev) )})
+# sfStop()
+
+## Mosaick ----
+t.vars = c("TAXNWRB", paste0("TAXNWRB_", gsub(" ", "\\.", gsub("\\)", "\\.", gsub(" \\(", "\\.\\.", lev)))))
+r <- raster("/data/stacked250m/LCEE10.tif")
+cellsize = res(r)[1]
+te = paste(as.vector(extent(r))[c(1,3,2,4)], collapse=" ")
+
 library(snowfall)
 sfInit(parallel=TRUE, cpus=ifelse(length(t.vars)>45, 45, length(t.vars)))
-sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd")
-out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i=NULL, in.path="/data/tt/SoilGrids250m/predicted250m", ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == t.vars[x]), sel.metasd]) )})
+sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd", "te", "cellsize")
+out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], in.path="/data/tt/SoilGrids250m/predicted250m", tr=cellsize, te=te, ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == paste0(t.vars[x], "_250m_ll.tif")), sel.metasd]) )})
 sfStop()
+
+## most probable class:
+#make_mosaick_ll(varn="TAXNWRB", in.path="/data/tt/SoilGrids250m/predicted250m", tr=cellsize, te=te, ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == "TAXOUSDA_250m_ll.tif"), sel.metasd])
 
 ## ------------- VISUALIZATION -----------
 

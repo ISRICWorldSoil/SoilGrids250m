@@ -5,6 +5,7 @@ setwd("/data/models")
 list.of.packages = c("entropy", "plyr", "rgdal")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
+
 library(entropy)
 library(plyr)
 library(rgdal)
@@ -37,10 +38,10 @@ entropy_tile <- function(i, in.path, varn, levs){
 }
 
 ## Run in parallel (VERY COMPUTATIONALY INTENSIVE):
-pr.dirs <- basename(list.dirs("/data/predicted")[-1])
+pr.dirs <- basename(list.dirs("/data/tt/SoilGrids250m/predicted250m")[-1])
 
 varn = "TAXNWRB"
-levs = list.files(path="/data/predicted/AF_006_070", pattern=glob2rx(paste0(varn, "_*_AF_*_*.tif$")))
+levs = list.files(path="/data/tt/SoilGrids250m/predicted250m/AF_006_070", pattern=glob2rx(paste0(varn, "_*_AF_*_*.tif$")))
 levs = sapply(levs, function(x){strsplit(x, "_")[[1]][2]})
 sfInit(parallel=TRUE, cpus=48)
 sfExport("entropy_tile", "levs", "varn")
@@ -48,11 +49,11 @@ sfLibrary(raster)
 sfLibrary(rgdal)
 sfLibrary(plyr)
 sfLibrary(entropy)
-out <- sfClusterApplyLB(pr.dirs, function(i){try( entropy_tile(i, in.path="/data/predicted", varn, levs) )})
+out <- sfClusterApplyLB(pr.dirs, function(i){try( entropy_tile(i, in.path="/data/tt/SoilGrids250m/predicted250m", varn, levs) )})
 sfStop()
 
 varn = "TAXOUSDA"
-levs = list.files(path="/data/predicted/AF_006_070", pattern=glob2rx(paste0(varn, "_*_AF_*_*.tif$")))
+levs = list.files(path="/data/tt/SoilGrids250m/predicted250m/AF_006_070", pattern=glob2rx(paste0(varn, "_*_AF_*_*.tif$")))
 levs = sapply(levs, function(x){strsplit(x, "_")[[1]][2]})
 sfInit(parallel=TRUE, cpus=48)
 sfExport("entropy_tile", "levs", "varn")
@@ -60,11 +61,11 @@ sfLibrary(raster)
 sfLibrary(rgdal)
 sfLibrary(plyr)
 sfLibrary(entropy)
-out <- sfClusterApplyLB(pr.dirs, function(i){try( entropy_tile(i, in.path="/data/predicted", varn, levs) )})
+out <- sfClusterApplyLB(pr.dirs, function(i){try( entropy_tile(i, in.path="/data/tt/SoilGrids250m/predicted250m", varn, levs) )})
 sfStop()
 
 ## clean up:
-#del.lst = list.files(path="/data/predicted", pattern=glob2rx("SSI*.tif"), full.names=TRUE, recursive=TRUE)
+#del.lst = list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("SSI*.tif"), full.names=TRUE, recursive=TRUE)
 #unlink(del.lst)
 
 ## 1 km resolution
@@ -99,7 +100,7 @@ entropy_block <- function(i, tile.tbl, tif.lst){
 
 ## TAKES CA 1 hr
 varn = "TAXOUSDA"
-levs = list.files(path="/data/predicted/AF_006_070", pattern=glob2rx(paste0(varn, "_*_AF_*_*.tif$")))
+levs = list.files(path="/data/tt/SoilGrids250m/predicted250m/AF_006_070", pattern=glob2rx(paste0(varn, "_*_AF_*_*.tif$")))
 levs = sapply(levs, function(x){strsplit(x, "_")[[1]][2]})
 tif.lst <- paste0("/data/GEOG/", varn, "_", levs, "_1km_ll.tif")
 any(!file.exists(tif.lst))
@@ -114,7 +115,7 @@ sfStop()
 
 ## TAKES CA 2-3 hrs because number of classes is much larger!
 varn2 = "TAXNWRB"
-levs2 = list.files(path="/data/predicted/AF_006_070", pattern=glob2rx(paste0(varn2, "_*_AF_*_*.tif$")))
+levs2 = list.files(path="/data/tt/SoilGrids250m/predicted250m/AF_006_070", pattern=glob2rx(paste0(varn2, "_*_AF_*_*.tif$")))
 levs2 = sapply(levs2, function(x){strsplit(x, "_")[[1]][2]})
 tif.lst2 <- paste0("/data/GEOG/", varn2, "_", levs2, "_1km_ll.tif")
 any(!file.exists(tif.lst2))

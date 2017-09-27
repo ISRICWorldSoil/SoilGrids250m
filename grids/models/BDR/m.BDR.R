@@ -21,11 +21,12 @@ library(ranger)
 library(caret)
 library(hexbin)
 library(gridExtra)
-#library(snowfall)
+library(snowfall)
 library(utils)
 library(plotKML)
 library(GSIF)
 library(R.utils)
+#library(doParallel)
 
 plotKML.env(convert="convert", show.env=FALSE)
 options(bitmapType='cairo')
@@ -50,7 +51,7 @@ str(BDR.pnts@data)
 ## OVERLAY (takes ca 1 hr):
 tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
 #tile.pol = readRDS("stacked250m_tiles_pol.rds")
-ov <- extract.tiled(x=BDR.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=56)
+ov <- extract.tiled(x=BDR.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=48)
 
 #sfStop()
 ov$LOC_ID = BDR.pnts$LOC_ID
@@ -76,8 +77,8 @@ ovA$BDTICM <- ifelse(ovA$BDTICM<0, NA, ovA$BDTICM)
 hist(log1p(ovA$BDTICM), breaks=40, col="grey", xlab="log-BDTICM", main="Histogram")
 ## mask out water bodies and permanent ice:
 #ovA$OCCGSW7.tif = ifelse(ovA$OCCGSW7.tif>100, 0, ovA$OCCGSW7.tif)
-ovA$LCEE10.tif = ifelse(ovA$LCEE10.tif==220, NA, ovA$LCEE10.tif)
-summary(is.na(ovA$LCEE10.tif))
+#ovA$LCEE10.tif = ifelse(ovA$LCEE10.tif==220, NA, ovA$LCEE10.tif)
+#summary(is.na(ovA$LCEE10.tif))
 ## 44,489 fall in permanent ice or water
 save.image()
 
@@ -92,25 +93,26 @@ names(z.max) = t.vars
 
 pr.lst <- basename(list.files(path="/data/stacked250m", ".tif"))
 ## remove some predictors that might lead to artifacts (buffer maps and land cover):
-pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10"), function(x){grep(x, pr.lst)}))]
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10","N11MSD3","CSCMCF5","B02CHE3","B08CHE3","B09CHE3","S01ESA4","S02ESA4","S11ESA4","S12ESA4","BICUSG"), function(x){grep(x, pr.lst)}))]
 formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ ', paste(pr.lst, collapse="+")))}) ## LATWGS84 +
 ## For BDTICM we can not use latitude, quakes and volcano density as predictor because points are somewhat clustered in LAT space --> predictions lead to artifacts 
 
 ## sub-sample to speed up model fitting:
-Nsub <- 2e4 
+Nsub <- 1.2e4 
 ## Caret training settings (reduce number of combinations to speed up):
-ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
-gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
-rf.tuneGrid <- expand.grid(mtry = seq(10,60,by=5))
+ctrl <- trainControl(method="repeatedcv", number=4, repeats=1)
+gb.tuneGrid <- expand.grid(eta = c(0.3,0.4,0.5), nrounds = c(50,100,150), max_depth = 2:4, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1, subsample=1)
+rf.tuneGrid <- expand.grid(mtry = seq(5,50,by=5))
+max.points = 8e5
 
 ## clean-up:
-unlink(list.files(pattern="^mrf."))
-unlink(list.files(pattern="^t.mrf."))
-unlink(list.files(pattern="^mgb."))
+#unlink(list.files(pattern="^mrf."))
+#unlink(list.files(pattern="^t.mrf."))
+#unlink(list.files(pattern="^mgb."))
 
 ## Initiate cluster
-cl <- parallel::makeCluster(56)
-registerDoParallel(cl)
+cl <- parallel::makeCluster(48)
+doParallel::registerDoParallel(cl)
 ## Write results of model fitting into a text file:
 cat("Results of model fitting 'randomForest / XGBoost':\n\n", file="BDR_resultsFit.txt")
 for(j in 1:length(t.vars)){
@@ -119,7 +121,7 @@ for(j in 1:length(t.vars)){
   cat("\n", file="BDR_resultsFit.txt", append=TRUE)
   LOC_ID <- ovA$LOC_ID
   out.rf <- paste0("mrf.",t.vars[j],".rds")
-  if(!file.exists(out.rf)){
+  if(!file.exists(out.rf) | !file.exists(paste0("mgb.",t.vars[j],".rds"))){
     dfs <- ovA[,all.vars(formulaString.lst[[j]])]
     sel <- complete.cases(dfs)
     dfs <- dfs[sel,]
@@ -130,24 +132,32 @@ for(j in 1:length(t.vars)){
     } else {
       t.mrfX <- readRDS.gz(gsub("mrf","t.mrf",out.rf))
     }
-    ## fit RF model using 'ranger' (fully parallelized)
-    mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=85)
-    saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
-    #mrfX <- readRDS.gz(file=paste0("mrf.",t.vars[j],".rds"))
-    ## Top 25 covariates:
+    if(!file.exists(out.rf)){
+      ## fit RF model using 'ranger' (fully parallelized)
+      mrfX <- ranger(formulaString.lst[[j]], data=dfs, importance="impurity", write.forest=TRUE, mtry=t.mrfX$bestTune$mtry, num.trees=85)
+      saveRDS.gz(mrfX, file=paste0("mrf.",t.vars[j],".rds"))
+      #mrfX <- readRDS.gz(file=paste0("mrf.",t.vars[j],".rds"))
+      ## Top 25 covariates:
+    } else {
+      mrfX = readRDS.gz(paste0("mrf.",t.vars[j],".rds"))
+    }
     sink(file="BDR_resultsFit.txt", append=TRUE, type="output")
     print(mrfX)
     cat("\n Variable importance:\n", file="BDR_resultsFit.txt", append=TRUE)
     xl <- as.list(ranger::importance(mrfX))
     print(t(data.frame(xl[order(unlist(xl), decreasing=TRUE)[1:25]])))
     ## save fitting success vectors:
-    fit.df <- data.frame(LOC_ID=LOC_ID[sel], observed=dfs[,1], predicted=predictions(mrfX))
-    unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
-    write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
-    gzip(paste0("RF_fit_", t.vars[j], ".csv"))
+    if(!file.exists(paste0("RF_fit_", t.vars[j], ".csv.gz"))){
+      fit.df <- data.frame(LOC_ID=LOC_ID[sel], observed=dfs[,1], predicted=predictions(mrfX))
+      unlink(paste0("RF_fit_", t.vars[j], ".csv.gz"))
+      write.csv(fit.df, paste0("RF_fit_", t.vars[j], ".csv"))
+      gzip(paste0("RF_fit_", t.vars[j], ".csv"))
+    }
+    gc(); gc()
     if(!file.exists(paste0("mgb.",t.vars[j],".rds"))){
       ## fit XGBoost model (uses all points):
-      mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid) 
+      #mgbX <- caret::train(formulaString.lst[[j]], data=dfs, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid)
+      mgbX <- caret::train(formulaString.lst[[j]], data=dfs[sample.int(nrow(dfs), size=max.points),], method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid)
       saveRDS.gz(mgbX, file=paste0("mgb.",t.vars[j],".rds"))
       ## save also binary model for prediction purposes:
       xgb.save(mgbX$finalModel, paste0("Xgb.",t.vars[j]))
@@ -163,6 +173,7 @@ for(j in 1:length(t.vars)){
     cat("--------------------------------------\n", file="BDR_resultsFit.txt", append=TRUE)
     sink()
   }
+  gc(); gc()
 }
 rm(mrfX); rm(mgbX)
 stopCluster(cl); closeAllConnections()
@@ -182,15 +193,21 @@ names(type.lst) = t.vars
 mvFlag.lst <- c(255, 255, -32768)
 names(mvFlag.lst) = t.vars
 source("predict.BDR.R")
+save.image()
 
 ## rename files:
 #lst.tif = list.files("/data/tt/SoilGrids250m/predicted250m/", "BDRICM_M_", full.names=TRUE, recursive = TRUE)
 #file.rename(lst.tif, gsub("_M_sl1_", "_M_", lst.tif))
 
 ## Mosaick:
+r <- raster("/data/stacked250m/LCEE10.tif")
+cellsize = res(r)[1]
+te = paste(as.vector(extent(r))[c(1,3,2,4)], collapse=" ")
+filename = paste0(t.vars, "_M_250m_ll.tif")
+
 sfInit(parallel=TRUE, cpus=ifelse(length(t.vars)>45, 45, length(t.vars)))
-sfExport("t.vars", "mvFlag.lst", "make_mosaick_ll", "type.lst", "metasd")
-out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i="M", in.path="/data/tt/SoilGrids250m/predicted250m", ot=type.lst[x], dstnodata=mvFlag.lst[x], metadata=metasd[grep(t.vars[x], metasd$FileName),sel.metasd]) )})
+sfExport("t.vars", "mvFlag.lst", "make_mosaick_ll", "type.lst", "metasd", "sel.metasd", "filename", "te", "cellsize")
+out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i="M", in.path="/data/tt/SoilGrids250m/predicted250m", tr=cellsize, te=te, ot=metasd[which(metasd$FileName == filename[x]), "DATA_FORMAT"], dstnodata=metasd[which(metasd$FileName == filename[x]), "NO_DATA"], metadata=metasd[which(metasd$FileName == filename[x]), sel.metasd]) )})
 sfStop()
 
 ## ------------- VISUALIZATIONS -----------
@@ -279,12 +296,8 @@ print(CV_Pell$Summary)
 cat("\n", file="resultsCV_BDR.txt", append=TRUE)
 sink()
 
-## clean-up:
-# for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
-#   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
-#   unlink(del.lst)
-# }
-# for(i in c("BDRICM", "BDRLOG", "BDTICM")){ 
+# ## clean-up:
+# for(i in c("BDRICM", "BDRLOG", "BDTICM")){
 #   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
 #   unlink(del.lst)
 # }

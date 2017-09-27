@@ -8,9 +8,10 @@ library(stringr)
 library(sp)
 library(plotKML)
 
+load(".RData")
 artic <- read.csv("Harden_etal_2012_Hugelius_etal_2013_cleaned_data_for_ISRIC.csv", stringsAsFactors=FALSE)
-#str(artic)
-artic <- rename(artic, c("Suborder"="TAXOUSDA", "Long"="LONWGS84", "Lat"="LATWGS84", "Basal.Depth.cm"="UHDICM", "bulk.density.g.cm.3"="BLD", "X.C"="ORCDRC"))
+str(artic)
+artic <- plyr::rename(artic, c("Suborder"="TAXOUSDA", "Long"="LONWGS84", "Lat"="LATWGS84", "Basal.Depth.cm"="UHDICM", "bulk.density.g.cm.3"="BLD", "X.C"="ORCDRC"))
 artic$LHDICM <- artic$UHDICM + artic$Layer.thickness.cm
 artic$SOURCEID <- paste("ART", artic$Profile.ID, sep="_")
 artic$SAMPLEID <- make.unique(paste("ART", artic$Profile.ID, artic$Horizon.type, sep="_"))
@@ -43,6 +44,8 @@ save(TAXOUSDA.artic, file="TAXOUSDA.artic.rda")
 
 artic$ORCDRC <- as.numeric(paste(artic$ORCDRC)) * 10
 summary(artic$ORCDRC)
+## soil organic carbon up to 70%?!
+hist(artic$ORCDRC)
 artic$BLD <- as.numeric(paste(artic$BLD)) * 1000
 summary(artic$BLD)
 artic$BLD <- ifelse(artic$BLD < 100 | artic$BLD > 3000, NA, artic$BLD)
@@ -58,3 +61,4 @@ str(SPROPS.artic)
 ## Most likely the authors have over-represented histosols / peatlands
 save(SPROPS.artic, file="SPROPS.artic.rda")
 plot(SPROPS.artic$LONWGS84, SPROPS.artic$LATWGS84, pch="+")
+save.image()

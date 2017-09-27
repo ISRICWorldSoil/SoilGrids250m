@@ -9,27 +9,27 @@ Call:
 
 Type:                             Probability estimation 
 Number of trees:                  85 
-Sample size:                      339016 
-Number of independent variables:  198 
-Mtry:                             55 
+Sample size:                      340558 
+Number of independent variables:  206 
+Mtry:                             35 
 Target node size:                 10 
 Variable importance mode:         impurity 
-OOB prediction error:             0.3461381 
+OOB prediction error:             0.3432677 
 
  Variable importance:
                 [,1]
-T07MOD3.tif 5049.289
-DEMENV5.tif 4552.474
-B04CHE3.tif 4499.189
-P07CHE3.tif 4422.512
-P04CHE3.tif 4329.513
-P06CHE3.tif 3693.717
-MANMCF5.tif 3447.505
-EX4MOD5.tif 3158.162
-VDPMRG5.tif 2859.714
-P01CHE3.tif 2755.068
-C05MCF5.tif 2723.562
-VW4MOD1.tif 2713.900
-C08MCF5.tif 2701.320
-C11MCF5.tif 2666.508
-C01MCF5.tif 2660.842
+P07CHE3.tif 3799.976
+DEMENV5.tif 3747.121
+B04CHE3.tif 3729.779
+T07MOD3.tif 3312.550
+T06MOD3.tif 3203.617
+MANMCF5.tif 3190.000
+EX4MOD5.tif 3181.874
+B07CHE3.tif 2735.701
+P04CHE3.tif 2651.084
+P06CHE3.tif 2598.481
+P01CHE3.tif 2560.976
+T08MOD3.tif 2434.045
+C06MCF5.tif 2407.183
+P02CHE3.tif 2370.768
+PRSCHE3.tif 2365.518

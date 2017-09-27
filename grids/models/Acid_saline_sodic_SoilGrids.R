@@ -3,6 +3,7 @@
 ## Code by Tom.Hengl@isric.org, decision rules by Niels Batjes (niels.batjes@isric.org) and Tom Hengl
 ## Compare with previous global assessments by: Wicke et al. "The global technical and economic potential of bioenergy from salt-affected soils" DOI: 10.1039/C1EE01029H (Analysis) Energy Environ. Sci., 2011, 4, 2669-2681
 
+setwd("/data/models")
 library(rgdal)
 library(raster)
 library(GSIF)
@@ -10,7 +11,6 @@ library(snowfall)
 
 fao.lst <- c("Gleyic.Solonetz", "Mollic.Solonetz", "Solodic.Planosols", "Calcic.Solonetz", "Haplic.Solonchaks..Sodic.", "Calcic.Gypsisols", "Haplic.Cambisols..Sodic.", "Haplic.Calcisols..Sodic.", "Gypsic.Solonchaks", "Haplic.Regosols..Sodic.")
 fao.grades = c(4, 3, 2, 4, 4, 4, 1, 3, 4, 2)
-## if pH>8.5 than it is definitively sodic
 ## https://www.blogs.nrcs.usda.gov/wps/PA_NRCSConsumption/download?cid=nrcseprd589210&ext=pdf
 ## Sodic Soils have maybe low levels of neutral soluble salts (ECe > 4.0 dS/m), they have relatively high levels of sodium on the exchange complex (ESP and SAR values are above 15 and 13, respectively). 
 ## The pH values of sodic soils exceed 8.5, rising to 10 or higher in some cases.
@@ -31,6 +31,7 @@ sodic_grade <- function(i, in.path, fao.lst, fao.grades, ph_t1=85, ph_t2=81){
 }
 
 #sodic_grade(i="T33349", in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, fao.grades)
+#sodic_grade(i="T10410", in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, fao.grades)
 
 ## Acidic subsoils:
 PHIHOX_U = c(20, 45, 50, 55, 66, 73, 110)
@@ -58,11 +59,18 @@ wrapper.ACID <- function(i, in.path, fao.acid, fao.acid.grades, PHIHOX_U){
 }
 
 #wrapper.ACID(i="T38716", in.path="/data/tt/SoilGrids250m/predicted250m", fao.acid, fao.acid.grades, PHIHOX_U)
+#wrapper.ACID(i="T10410", in.path="/data/tt/SoilGrids250m/predicted250m", fao.acid, fao.acid.grades, PHIHOX_U)
+
+# clean-up:
+#for(i in c("ACDWRB_M_ss", "SLGWRB")){  
+#   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
+#   unlink(del.lst)
+#}
 
 ## Run in parallel:
 pr.dirs <- basename(list.dirs("/data/tt/SoilGrids250m/predicted250m")[-1])
 
-sfInit(parallel=TRUE, cpus=56)
+sfInit(parallel=TRUE, cpus=48)
 sfExport("sodic_grade", "fao.lst", "fao.grades")
 sfLibrary(raster)
 sfLibrary(rgdal)
@@ -77,12 +85,6 @@ sfLibrary(GSIF)
 out <- sfClusterApplyLB(pr.dirs, function(i){try( wrapper.ACID(i, in.path="/data/tt/SoilGrids250m/predicted250m", fao.acid, fao.acid.grades, PHIHOX_U) )})
 sfStop()
 
-# clean-up:
- # for(i in c("ACDWRB_M_sb", "SLGWRB")){  
- #   del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^", i, "*.tif")), full.names=TRUE, recursive=TRUE)
- #   unlink(del.lst)
- # }
-
 ## metadata:
 metasd <- read.csv('/data/GEOG/META_GEOTIFF_1B.csv', stringsAsFactors = FALSE)
 sel.metasd = names(metasd)[-sapply(c("FileName","VARIABLE_NAME"), function(x){grep(x, names(metasd))})]
@@ -90,12 +92,12 @@ source("mosaick_functions_ll.R")
 
 ## Make mosaics -----
 t.vars = c("SLGWRB", "ACDWRB_M_ss")
+r <- raster("/data/stacked250m/LCEE10.tif")
+cellsize = res(r)[1]
+te = paste(as.vector(extent(r))[c(1,3,2,4)], collapse=" ")
+
 library(snowfall)
 sfInit(parallel=TRUE, cpus=ifelse(length(t.vars)>45, 45, length(t.vars)))
-sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd")
-out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], i=NULL, in.path="/data/tt/SoilGrids250m/predicted250m", ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == paste0(t.vars[x], "_250m_ll.tif")), sel.metasd]) )})
+sfExport("t.vars", "make_mosaick_ll", "metasd", "sel.metasd", "cellsize", "te")
+out <- sfClusterApplyLB(1:length(t.vars), function(x){ try( make_mosaick_ll(varn=t.vars[x], in.path="/data/tt/SoilGrids250m/predicted250m", tr=cellsize, te=te, ot="Byte", dstnodata=255, metadata=metasd[which(metasd$FileName == paste0(t.vars[x], "_250m_ll.tif")), sel.metasd]) )})
 sfStop()
-
-## clean-up ----
-#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^SLGWRB_*.tif")), full.names=TRUE, recursive=TRUE)
-#unlink(del.lst)
