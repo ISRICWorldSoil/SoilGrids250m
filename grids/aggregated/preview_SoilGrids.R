@@ -1,13 +1,14 @@
-## Preview SoilGrids predictions (PNGs) / generate metadata (XML files)
+## Preview SoilGrids predictions (PNGs); generate aggregated maps in parallel, generate metadata (XML files)
 ## Tom.Hengl@isric.org
 
+setwd("/data/aggregated")
 library(rgdal)
 library(GSIF)
 library(utils)
 library(R.utils)
 library(snowfall)
 library(parallel)
-library(raster)
+library(raster)             
 library(RSAGA)
 library(grDevices)
 library(plotKML)
@@ -15,11 +16,9 @@ library(maps)
 library(RColorBrewer)
 library(XML)
 
+source("/data/models/mosaick_functions_ll.R")
 plotKML.env(convert="convert", show.env=FALSE)
-gdalwarp = "/usr/local/bin/gdalwarp"
-gdal_translate = "/usr/local/bin/gdal_translate"
-gdalbuildvrt = "/usr/local/bin/gdalbuildvrt"
-system("/usr/local/bin/gdal-config --version")
+system("gdal-config --version")
 country.m <- map('world', plot=FALSE, fill=TRUE)
 IDs <- sapply(strsplit(country.m$names, ":"), function(x) x[1])
 require(maptools)
@@ -28,33 +27,100 @@ country <- as(map2SpatialPolygons(country.m, IDs=IDs), "SpatialLines")
 soil.legends[4] = "BLDFIE"
 soil.legends[5] = "CECSOL"
 
+## Reproject some maps to Sinusoidal projection system ----
+r.mod = raster("/data/MCD12Q1/LandCover_2001001_L1_500m.tif")
+mod.grid = readRDS("/data/models/Sinusoidal_tiles_200km.rds")
 
-## List of property maps:
-tif.lst <- list.files(path="/data/GEOG", pattern=glob2rx("*_1km_ll.tif$"), full.names=TRUE, recursive=TRUE)
-## 256
-#tif.lst[grep("WRB",tif.lst)]
+latlon2sin(input.file="/data/GEOG/OCSTHA_M_30cm_250m_ll.tif", output.file="/data/GEOG/OCSTHA_M_30cm_300m_sin.tif", mod.grid=mod.grid, pixsize=300, te=paste(as.vector(extent(r.mod))[c(1,3,2,4)], collapse=" "))
+latlon2sin(input.file="/data/GEOG/OCSTHA_M_100cm_250m_ll.tif", output.file="/data/GEOG/OCSTHA_M_100cm_300m_sin.tif", mod.grid=mod.grid, pixsize=300, te=paste(as.vector(extent(r.mod))[c(1,3,2,4)], collapse=" "))
+latlon2sin(input.file="/data/GEOG/OCSTHA_M_200cm_250m_ll.tif", output.file="/data/GEOG/OCSTHA_M_200cm_300m_sin.tif", mod.grid=mod.grid, pixsize=300, te=paste(as.vector(extent(r.mod))[c(1,3,2,4)], collapse=" "))
+latlon2sin(input.file="/data/GEOG/TAXNWRB_250m_ll.tif", output.file="/data/GEOG/TAXNWRB_300m_sin.tif", mod.grid=mod.grid, pixsize=300, te=paste(as.vector(extent(r.mod))[c(1,3,2,4)], collapse=" "))
+latlon2sin(input.file="/data/GEOG/TAXOUSDA_250m_ll.tif", output.file="/data/GEOG/TAXOUSDA_300m_sin.tif", mod.grid=mod.grid, pixsize=300, te=paste(as.vector(extent(r.mod))[c(1,3,2,4)], collapse=" "))
+latlon2sin(input.file="/data/GEOG/OCSTHA_M_30cm_250m_ll.tif", output.file="/data/GEOG/OCSTHA_M_30cm_300m_sin.tif", mod.grid=mod.grid, pixsize=300, te=paste(as.vector(extent(r.mod))[c(1,3,2,4)], collapse=" "))
+## GAUL 2014 data set (https://github.com/ISRICWorldSoil/SoilGrids250m/blob/master/grids/countries/GAUL_250m.R)
+latlon2sin(input.file="/data/countries/GAUL_ADMIN1_landmask_250m.tif", output.file="/data/GEOG/GAUL_ADMIN1_landmask_300m_sin.tif", mod.grid=mod.grid, pixsize=300, te=paste(as.vector(extent(r.mod))[c(1,3,2,4)], collapse=" "))
 
-aggr_SG <- function(i, r, tr=0.05, ti="1km", tn="5km"){
-  out = gsub(paste0("_", ti), paste0("_", tn), basename(i))
-  if(missing(r)){
-    if(any(basename(i) %in% c("TAXOUSDA_M_250m_ll.tif", "TAXNWRB_250m_ll.tif"))){
-      r = 'near'
-    } else {
-      r = 'average'
-    }
-  }
-  if(!file.exists(out)){ 
-    system(paste0(gdalwarp, ' ', i, ' ', set.file.extension(gsub(paste0("_", ti), paste0("_", tn), basename(i)), ".tif"), ' -r \"', r, '\" -tr ', tr, ' ', tr, ' -co \"COMPRESS=DEFLATE\"')) 
+## Total soil organic carbon stock per GAUL ----
+summary_OCS_tiles <- function(i, tileS.tbl, admin="/data/GEOG/GAUL_ADMIN1_landmask_300m_sin.tif", ocs="/data/GEOG/OCSTHA_M_100cm_300m_sin.tif"){
+  m = readGDAL(fname=admin, offset=unlist(tileS.tbl[i,c("offset.y","offset.x")]), region.dim=unlist(tileS.tbl[i,c("region.dim.y","region.dim.x")]), output.dim=unlist(tileS.tbl[i,c("region.dim.y","region.dim.x")]), silent = TRUE)
+  m@data[,2] = readGDAL(fname=ocs, offset=unlist(tileS.tbl[i,c("offset.y","offset.x")]), region.dim=unlist(tileS.tbl[i,c("region.dim.y","region.dim.x")]), output.dim=unlist(tileS.tbl[i,c("region.dim.y","region.dim.x")]), silent = TRUE)$band1
+  names(m) = c("Value","OCS")
+  if(sum(!is.na(m$OCS))>0){
+    ## Aggregate per class combination
+    SOC_agg.admin <- plyr::ddply(m@data, .(Value), summarize, Total_OCS_mT=sum(OCS*300^2/10000, na.rm=TRUE)/1e6, Area_km2=sum(!is.na(OCS))*0.09)
+    return(SOC_agg.admin)
   }
 }
 
+tileS.tbl = readRDS("/data/models/tileS.tbl.rds")
+ov_ADMIN_sin = readRDS("/data/models/Sinusoidal_tiles_200km.rds")
+tS.sel = as.character(ov_ADMIN_sin$ID)
+hb.leg = read.csv("/data/countries/g2015_2014_1_legend.csv")
+## run in parallel:
 sfInit(parallel=TRUE, cpus=48)
-sfExport("tif.lst", "gdalwarp", "aggr_SG")
+sfExport("summary_OCS_tiles", "tileS.tbl", "tS.sel")
+sfLibrary(rgdal)
+sfLibrary(plyr)
+sfLibrary(dplyr)
+sfLibrary(utils)
+out.lst <- sfClusterApplyLB(as.numeric(tS.sel), function(x){ summary_OCS_tiles(x, tileS.tbl=tileS.tbl) })
+sfStop()
+Tocs = rbind.fill(out.lst)
+str(Tocs)
+summary(is.na(Tocs$Value)) ## many missing values for country?
+Tocs.sum = plyr::ddply(Tocs, .(Value), summarize, OCS_mT=sum(Total_OCS_mT, na.rm=TRUE), Total_Area_km2=sum(Area_km2, na.rm=TRUE))
+Tocs.sum$ADM0_NAME = plyr::join(Tocs.sum, hb.leg)$ADM0_NAME
+Tocs.sum$ADM1_NAME_filename = plyr::join(Tocs.sum, hb.leg, by="Value")$ADM1_NAME_filename
+Tocs.sum$OCS_t_ha = round(Tocs.sum$OCS_mT*1e6/(Tocs.sum$Total_Area_km2*100))
+Tocs.sum$OCS_mT = round(Tocs.sum$OCS_mT, 1)
+write.csv(Tocs.sum, "Status_OCS_100cm_per_Country.csv")
+## Total stock 0-100cm:
+sum(Tocs.sum$OCS_mT[!is.na(Tocs.sum$Value)])
+
+sfInit(parallel=TRUE, cpus=48)
+sfExport("summary_OCS_tiles", "tileS.tbl", "tS.sel")
+sfLibrary(rgdal)
+sfLibrary(plyr)
+sfLibrary(dplyr)
+sfLibrary(utils)
+out.lst <- sfClusterApplyLB(as.numeric(tS.sel), function(x){ summary_OCS_tiles(x, tileS.tbl=tileS.tbl, ocs="/data/GEOG/OCSTHA_M_30cm_300m_sin.tif") })
+sfStop()
+Tocs30 = rbind.fill(out.lst)
+str(Tocs30)
+Tocs30.sum = plyr::ddply(Tocs30, .(Value), summarize, OCS_mT=sum(Total_OCS_mT, na.rm=TRUE), Total_Area_km2=sum(Area_km2, na.rm=TRUE))
+Tocs30.sum$ADM0_NAME = plyr::join(Tocs30.sum, hb.leg)$ADM0_NAME
+Tocs30.sum$ADM1_NAME_filename = plyr::join(Tocs30.sum, hb.leg, by="Value")$ADM1_NAME_filename
+Tocs30.sum$OCS_t_ha = round(Tocs30.sum$OCS_mT*1e6/(Tocs30.sum$Total_Area_km2*100))
+Tocs30.sum$OCS_mT = round(Tocs30.sum$OCS_mT, 1)
+write.csv(Tocs30.sum, "Status_OCS_30cm_per_Country.csv")
+## Total stock 0-30cm:
+sum(Tocs30.sum$OCS_mT[!is.na(Tocs30.sum$Value)])
+
+## List of property maps:
+tif.lst <- list.files(path="/data/GEOG", pattern=glob2rx("*.tif$"), full.names=TRUE, recursive=TRUE)
+## 318
+#tif.lst[grep("WRB",tif.lst)]
+
+## Resample to 1 km (takes 20 mins)
+sfInit(parallel=TRUE, cpus=48)
+sfExport("tif.lst", "aggr_SG")
 sfLibrary(rgdal)
 sfLibrary(RSAGA)
 out <- sfClusterApplyLB(tif.lst, aggr_SG)
 sfStop()
 
+sfInit(parallel=TRUE, cpus=48)
+sfExport("tif.lst", "aggr_SG")
+sfLibrary(rgdal)
+sfLibrary(RSAGA)
+out <- sfClusterApplyLB(tif.lst, aggr_SG, tr=1/20, tr.metric=5000, out.dir="/data/aggregated/5km/", ti="250m", tn="5km")
+sfStop()
+sfInit(parallel=TRUE, cpus=48)
+sfExport("tif.lst", "aggr_SG")
+sfLibrary(rgdal)
+sfLibrary(RSAGA)
+out <- sfClusterApplyLB(tif.lst, aggr_SG, tr=1/10, tr.metric=10000, out.dir="/data/aggregated/10km/", ti="250m", tn="10km")
+sfStop()
 
 ## create PNGs (5km res)
 out.lst <- list.files(pattern=glob2rx("*_5km_ll.tif$"), full.names=TRUE, recursive=TRUE)
@@ -115,10 +181,9 @@ sfLibrary(grDevices)
 out <- sfClusterApplyLB(out.lst, try( plot_SG ) )
 sfStop()
 
-## cluster:
-cl <- makeCluster(getOption("cl.cores", 48))
-
 for(k in c("TAXNWRB","TAXOUSDA")){
+  ## cluster:
+  cl <- makeCluster(getOption("cl.cores", 48))
   ## Most probable class:
   cl.lst <- list.files("/data/GEOG/aggr", pattern=k, full.names=TRUE, recursive=TRUE)
   cl.legend <- read.csv(paste0("/data/models/", k, "/", k, "_legend.csv"))
@@ -138,11 +203,8 @@ for(k in c("TAXNWRB","TAXOUSDA")){
   writeGDAL(probs["cl1"], "TAXNWRB_1st_5km_ll.tif", type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(cl.tbl$Group)), colorTable=list(col.tbl$COLOR))
   writeGDAL(probs["cl2"], "TAXNWRB_2nd_5km_ll.tif", type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(cl.tbl$Group)), colorTable=list(col.tbl$COLOR))
   writeGDAL(probs["cl3"], "TAXNWRB_3rd_5km_ll.tif", type="Byte", mvFlag=255, options="COMPRESS=DEFLATE", catNames=list(paste(cl.tbl$Group)), colorTable=list(col.tbl$COLOR))
-  ## Soil orders / groups:
-  
+  stopCluster(cl)
 }
-
-stopCluster(cl)
 
 ## Rename some files:
 tif.lst <- list.files(path="/data/GEOG", pattern=glob2rx("*.tif$"), full.names = TRUE, recursive = FALSE)

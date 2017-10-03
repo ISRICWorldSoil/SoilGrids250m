@@ -45,3 +45,47 @@ make_mosaick_ll <- function(varn, i, in.path="/data/tt/SoilGrids250m/predicted25
     system (command, intern=TRUE)
   }
 }
+
+## Convert to sinusoidal projection ----
+latlon2sin = function(input.file, output.file, mod.grid, tmp.dir="/data/tmp/", proj, pixsize, cleanup.files=TRUE, te, resample="near"){
+  ## reproject grid in tiles:
+  out.files = paste0(tmp.dir, "T", mod.grid$ID, "_", set.file.extension(basename(input.file), ".tif"))
+  te.lst = apply(mod.grid@data[,1:4], 1, function(x){paste(x, collapse=" ")})
+  if(missing(proj)){ proj = "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs" }
+  sfInit(parallel=TRUE, cpus=48)
+  sfExport("mod.grid", "te.lst", "proj", "out.files")
+  #sfLibrary(rgdal)
+  x <- sfClusterApplyLB(1:length(out.files), function(i){ invisible( system(paste0('gdalwarp ', input.file, ' ', out.files[i], ' -r \"', resample, '\" -t_srs \"', proj, '\" -tr ', pixsize, ' ', pixsize, ' -te ', te.lst[i]), show.output.on.console = FALSE, intern = TRUE) ) }) ## -co \"COMPRESS=DEFLATE\"
+  sfStop()
+  ## mosaic:
+  tmp.lst = list.files(path=tmp.dir, pattern=basename(input.file), full.names=TRUE)
+  out.tmp <- tempfile(fileext = ".txt")
+  vrt.tmp <- tempfile(fileext = ".vrt")
+  cat(tmp.lst, sep="\n", file=out.tmp)
+  system(paste0('gdalbuildvrt -input_file_list ', out.tmp, ' ', vrt.tmp))
+  if(missing(te)){
+    system(paste0('gdalwarp ', vrt.tmp, ' ', output.file, ' -ot \"Int16\" -dstnodata \"-32767\" -co \"BIGTIFF=YES\" -multi -wm 2000 -co \"COMPRESS=DEFLATE\" -r \"near\"'))
+  } else {
+    system(paste0('gdalwarp ', vrt.tmp, ' ', output.file, ' -ot \"Int16\" -dstnodata \"-32767\" -co \"BIGTIFF=YES\" -multi -wm 2000 -co \"COMPRESS=DEFLATE\" -r \"near\" -te ', te))
+  }
+  if(cleanup.files==TRUE){ unlink(out.files) }
+}
+
+## resample maps to coarser resolution ----
+aggr_SG <- function(i, r, tr=1/120, tr.metric=1000, out.dir="/data/aggregated/1km/", ti="250m", tn="1km"){
+  if(missing(r)){
+    if(any(basename(i) %in% c("TAXOUSDA_250m_ll.tif", "TAXNWRB_250m_ll.tif", "TAXNWRB_300m_sin.tif", "TAXOUSDA_300m_sin.tif", paste0("TEXMHT_M_sl",1:7,"_250m_ll.tif")))){
+      r = 'near'
+    } else {
+      r = 'average'
+    }
+  }
+  if(any(basename(i) %in% c("OCSTHA_M_30cm_300m_sin.tif", "OCSTHA_M_100cm_300m_sin.tif", "OCSTHA_M_200cm_300m_sin.tif", "TAXNWRB_300m_sin.tif", "TAXOUSDA_300m_sin.tif"))){
+    tr = tr.metric
+    ti = "300m"
+  }
+  out.tif = paste0(out.dir, set.file.extension(gsub(paste0("_", ti), paste0("_", tn), basename(i)), ".tif"))
+  if(!file.exists(out.tif)){
+    system(paste0('gdalwarp ', i, ' ', out.tif, ' -r \"', r, '\" -tr ', tr, ' ', tr, ' -co \"COMPRESS=DEFLATE\"'))
+  }
+}

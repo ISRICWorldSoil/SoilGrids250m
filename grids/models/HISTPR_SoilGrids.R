@@ -1,4 +1,4 @@
-## Distribution of organic soils (probability of histosols) based on SoilGrids250m
+## Distribution of organic soils (probability of histosols) and soil organic carbon stocks based on SoilGrids250m
 ## http://gsif.isric.org/doku.php/wiki:soil_organic_carbon#generating_maps_of_ocs
 ## Tom.Hengl@isric.org
 
