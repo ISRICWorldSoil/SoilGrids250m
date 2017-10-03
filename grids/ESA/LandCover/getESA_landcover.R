@@ -93,3 +93,26 @@ sfExport("tile.gif", "plot_tile", "tile.tbl", "leg", "map_aspect")
 out <- sfClusterApplyLB(1:nrow(tile.tbl), function(i){try( tile.gif(i=i, tile.tbl=tile.tbl, leg=leg) )})
 sfStop()
 
+## Tiling system MODIS projection ----
+objS <- GDALinfo("ESACCI-LC-L4-LCCS-Map-300m-P1Y-2000-v2.0.7_sin.tif")
+tileS.lst <- getSpatialTiles(objS, block.x=200000, return.SpatialPolygons=TRUE)
+tileS.tbl <- getSpatialTiles(objS, block.x=200000, return.SpatialPolygons=FALSE)
+tileS.tbl$ID = as.character(1:nrow(tileS.tbl))
+## 20,301 tiles
+tileS.pol = SpatialPolygonsDataFrame(tileS.lst, tileS.tbl)
+writeOGR(tileS.pol, "tiles_sin.shp", "tiles_sin", "ESRI Shapefile")
+## remove tiles without values
+system(paste('gdal_translate ESACCI-LC-L4-LCCS-Map-300m-P1Y-2000-v2.0.7_sin.tif LCC_300m_sin.sdat -of \"SAGA\" -ot \"Byte\"'))
+#GDALinfo("LCC_300m_sin.sdat")
+system(paste0('saga_cmd -c=48 shapes_grid 2 -GRIDS=\"LCC_300m_sin.sgrd\" -POLYGONS=\"tiles_sin.shp\" -PARALLELIZED=1 -RESULT=\"ov_ADMIN_tiles_sin.shp\"'))
+ov_ADMIN_sin = readOGR("ov_ADMIN_tiles_sin.shp", "ov_ADMIN_tiles_sin")
+summary(selS.t <- (!ov_ADMIN_sin$LCC_300m_si.5==0)&(!ov_ADMIN_sin$LCC_300m_si.5==210))
+## 6400 tiles with values
+ov_ADMIN_sin = ov_ADMIN_sin[selS.t,]
+tS.sel = as.character(ov_ADMIN_sin$ID)
+newS.dirs <- paste0("/data/tt/LDN/Stiled/T", tS.sel)
+x <- lapply(newS.dirs, dir.create, recursive=TRUE, showWarnings=FALSE)
+saveRDS(ov_ADMIN_sin, "Sinusoidal_tiles_200km.rds")
+#writeOGR(ov_ADMIN_sin, "Sinusoidal_tiles_200km.shp", "Sinusoidal_tiles_200km", "ESRI Shapefile")
+unlink("Sinusoidal_tiles_200km.gpkg")
+writeOGR(ov_ADMIN_sin, "Sinusoidal_tiles_200km.gpkg", "Sinusoidal_tiles_200km", "GPKG")
