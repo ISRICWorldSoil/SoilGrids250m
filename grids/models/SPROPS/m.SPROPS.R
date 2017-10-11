@@ -29,7 +29,7 @@ library(plotKML)
 library(R.utils)
 library(GSIF)
 library(parallel)
-library(doParallel)
+#library(doParallel)
 
 plotKML.env(convert="convert", show.env=FALSE)
 gdalwarp = "gdalwarp"
@@ -91,6 +91,7 @@ hexbinplot(ovA$BLD~ovA$ORCDRC, colramp=colorRampPalette(pal), xlab="Organic carb
 ## Fill in gaps in soil BLD - we can make a PedoTransfer function (which includes soil type predictions)
 ov.tax = raster::extract(raster("/data/GEOG/TAXOUSDA_250m_ll.tif"), SPROPS.pnts)
 dfsB = plyr::join(ovA[,c("SOURCEID", "BLD", "ORCDRC", "CLYPPT", "SNDPPT", "PHIHOX", "DEPTH.f")], data.frame(SOURCEID=SPROPS.pnts$SOURCEID, TAXOUSDA=as.factor(ov.tax)))
+## data to fit BLD PTF:
 sel.ovA = complete.cases(dfsB[,c("ORCDRC", "BLD", "CLYPPT", "SNDPPT", "PHIHOX", "DEPTH.f", "TAXOUSDA")])
 summary(sel.ovA)
 dfsB = dfsB[sel.ovA,]
@@ -175,7 +176,20 @@ View(ovA[which(ovA$OCDENS>200),c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")])
 hexbinplot(log1p(ovA$OCDENS)~log1p(ovA$ORCDRC), colramp=colorRampPalette(pal), xlab="log - Organic carbon (permille)", ylab="log - Organic carbon density (kg/cubic-m)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, xbins=30, ybins=30, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1))
 ## treshold at ca 12%
 expm1(4.8)
+## Average ORC, BLD per soil type:
+s.ovA = plyr::join(ovA[,c("SOURCEID", "SOURCEDB", "TIMESTRR", "LONWGS84", "LATWGS84", "HZDTXT", "UHDICM", "LHDICM", "BLD", "BLD.f", "ORCDRC", "OCDENS", "CLYPPT", "SNDPPT", "PHIHOX", "DEPTH.f")], data.frame(SOURCEID=SPROPS.pnts$SOURCEID, TAXOUSDA=as.factor(ov.tax)))
+sum.dfsB = plyr::ddply(s.ovA, .(TAXOUSDA), summarize, M_ORC_30=round(mean(ORCDRC[DEPTH.f<30], na.rm=TRUE)), M_ORC_100=round(mean(ORCDRC[DEPTH.f<100], na.rm=TRUE)), M_BLD_30=round(mean(BLD.f[DEPTH.f<30], na.rm=TRUE)), M_BLD_100=round(mean(BLD.f[DEPTH.f<100], na.rm=TRUE)), M_OCD_30=round(mean(OCDENS[DEPTH.f<30], na.rm=TRUE)), N_horizons=sum(!is.na(ORCDRC)))
+TAXOUSDA.leg <- read.csv("../TAXOUSDA/TAXOUSDA_legend.csv")
+sum.dfsB$TAXOUSDA_name = join(data.frame(Number=sum.dfsB$TAXOUSDA), TAXOUSDA.leg)$Group
+## Total areas per soil type:
+grid1km.sin = readGDAL("/data/aggregated/1km/TAXOUSDA_1km_sin.tif")
+## 20015 rows and 40030 columns
+sum.USDA = summary(as.factor(grid1km.sin$band1))
+sum.dfsB$AREA = join(sum.dfsB, data.frame(TAXOUSDA=attr(sum.USDA, "names"), AREA=sum.USDA))$AREA
+write.csv(sum.dfsB, "ORC_summary_per_TAXOUSDA.csv")
+saveRDS(s.ovA, "global_soil_carbon_points.rds")
 
+## Save a copy of all soil point data / regression matrix:
 write.csv(ovA, file="ov.SPROPS_SoilGrids250m.csv")
 unlink("ov.SPROPS_SoilGrids250m.csv.gz")
 gzip("ov.SPROPS_SoilGrids250m.csv")
@@ -367,7 +381,7 @@ check_readGDAL = function(x){
   }
   return(out)
 }
-## takes 120 mins to inspect all tifs
+## takes 2hrs to inspect all tifs
 library(snowfall)
 sfInit(parallel=TRUE, cpus=48)
 sfLibrary(rgdal)
@@ -481,6 +495,7 @@ sfStop()
 save.image()
 
 ## ERROR 1: /data/tt/SoilGrids250m/predicted250m/T43440/ORCDRC_M_sl1_T43440.tif, band 1: IReadBlock failed at X offset 0, Y offset 0
+#make_mosaick_ll(varn="HISTPR", in.path="/data/tt/SoilGrids250m/predicted250m", tr=cellsize, te=te, ot=metasd[which(metasd$FileName == "HISTPR_250m_ll.tif"), "DATA_FORMAT"], dstnodata=metasd[which(metasd$FileName == "HISTPR_250m_ll.tif"), "NO_DATA"], metadata=metasd[which(metasd$FileName == "HISTPR_250m_ll.tif"), sel.metasd])
 
 ## ------------- VISUALIZATIONS -----------
 
@@ -560,4 +575,3 @@ CV_NPDB_V2_ORCDRC = list(list(Observed=NPDB_V2.ovA$ORCDRC, Predicted=NPDB_V2.ovA
 save(CV_NPDB_V2_ORCDRC, file="/data/profs/SPROPS/tmp/CV_NPDB_V2_ORCDRC.rda")
 ## Plot errors:
 plot_hexbin("NPDB_V2_ORCDRC", c(0,800), main="NPDB_V2_ORCDRC", in.file="/data/profs/SPROPS/tmp/CV_NPDB_V2_ORCDRC.rda", log.plot=TRUE, out.file = "plot_CV_NPDB_V2_ORCDRC.png")
-

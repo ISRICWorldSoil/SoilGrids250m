@@ -74,13 +74,13 @@ latlon2sin = function(input.file, output.file, mod.grid, tmp.dir="/data/tmp/", p
 ## resample maps to coarser resolution ----
 aggr_SG <- function(i, r, tr=1/120, tr.metric=1000, out.dir="/data/aggregated/1km/", ti="250m", tn="1km"){
   if(missing(r)){
-    if(any(basename(i) %in% c("TAXOUSDA_250m_ll.tif", "TAXNWRB_250m_ll.tif", "TAXNWRB_300m_sin.tif", "TAXOUSDA_300m_sin.tif", paste0("TEXMHT_M_sl",1:7,"_250m_ll.tif")))){
+    if(any(basename(i) %in% c("TAXOUSDA_250m_ll.tif", "TAXNWRB_250m_ll.tif", "TAXNWRB_300m_sin.tif", "TAXOUSDA_300m_sin.tif", "GAUL_ADMIN1_landmask_300m_sin.tif", paste0("TEXMHT_M_sl",1:7,"_250m_ll.tif")))){
       r = 'near'
     } else {
       r = 'average'
     }
   }
-  if(any(basename(i) %in% c("OCSTHA_M_30cm_300m_sin.tif", "OCSTHA_M_100cm_300m_sin.tif", "OCSTHA_M_200cm_300m_sin.tif", "TAXNWRB_300m_sin.tif", "TAXOUSDA_300m_sin.tif"))){
+  if(any(basename(i) %in% c("OCSTHA_M_30cm_300m_sin.tif", "OCSTHA_M_100cm_300m_sin.tif", "OCSTHA_M_200cm_300m_sin.tif", "TAXNWRB_300m_sin.tif", "TAXOUSDA_300m_sin.tif", "GAUL_ADMIN1_landmask_300m_sin.tif"))){
     tr = tr.metric
     ti = "300m"
   }

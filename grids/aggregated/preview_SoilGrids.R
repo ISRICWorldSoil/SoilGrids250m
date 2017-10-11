@@ -96,6 +96,12 @@ write.csv(Tocs30.sum, "Status_OCS_30cm_per_Country.csv")
 ## Total stock 0-30cm:
 sum(Tocs30.sum$OCS_mT[!is.na(Tocs30.sum$Value)])
 
+## Compare with 1km data:
+grid1km.sin = readGDAL("/data/aggregated/1km/OCSTHA_M_30cm_1km_sin.tif")
+sum(grid1km.sin$band1*1000^2/10000, na.rm=TRUE)/1e6
+## 1360 Pg C
+rm(grid1km.sin); gc()
+
 ## List of property maps:
 tif.lst <- list.files(path="/data/GEOG", pattern=glob2rx("*.tif$"), full.names=TRUE, recursive=TRUE)
 ## 318
