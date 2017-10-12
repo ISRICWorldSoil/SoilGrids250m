@@ -244,7 +244,7 @@ SoilGrids250m_XML = function(i, template.xml="Metadata_template_7d_250m_ll.xml",
   if(!file.exists(out.xml)){
     doc = xmlInternalTreeParse(template.xml)
     xm7d = xmlRoot(doc)
-    xmlValue(xm7d[["fileIdentifier"]][[1]]) = mdSG.s$gmd.fileIdentifier[1]
+    xmlValue(xm7d[["fileIdentifier"]][[1]]) = mdSG.s$gmd.fileIdentifier[i]
     xmlValue(xm7d[["identificationInfo"]][["MD_DataIdentification"]][["citation"]][["CI_Citation"]][["title"]][[1]]) = mdSG.s$gmd.title[i]
     xmlValue(xm7d[["identificationInfo"]][["MD_DataIdentification"]][["citation"]][["CI_Citation"]][["identifier"]][["RS_Identifier"]][["code"]][[1]]) = mdSG.s$GSIF_id[i]
     xmlValue(xm7d[["identificationInfo"]][["MD_DataIdentification"]][["citation"]][["CI_Citation"]][["edition"]][[1]]) = stringr::str_sub(mdSG.s$gco.Date[i], 1, 7)
@@ -263,7 +263,7 @@ SoilGrids250m_XML = function(i, template.xml="Metadata_template_7d_250m_ll.xml",
     CI_o <- sprintf('<gmd:onLine><gmd:CI_OnlineResource><gmd:linkage><gmd:URL>ftp://ftp.soilgrids.org/data/recent/%s</gmd:URL></gmd:linkage><gmd:protocol><gco:CharacterString>WWW:DOWNLOAD-1.0-ftp--download</gco:CharacterString></gmd:protocol><gmd:name><gco:CharacterString>%s</gco:CharacterString></gmd:name><gmd:function><gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download"/></gmd:function></gmd:CI_OnlineResource></gmd:onLine>', x, xt)
     ## WMS available:
     CI_w <- sprintf('<gmd:onLine><gmd:CI_OnlineResource><gmd:linkage><gmd:URL>http://data.isric.org/geoserver/sg250m/wms?</gmd:URL></gmd:linkage><gmd:protocol><gco:CharacterString>OGC:WMS</gco:CharacterString></gmd:protocol><gmd:name><gco:CharacterString>%s</gco:CharacterString></gmd:name><gmd:description><gco:CharacterString>%s</gco:CharacterString></gmd:description><gmd:function><gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/></gmd:function></gmd:CI_OnlineResource></gmd:onLine>', gsub(".tif", "", gsub("_ll.tif", "", x)), gsub("Download GeoTIFF map for ", "", xt))
-    pl1 = newXMLNode("MD_DigitalTransferOptions", parent=xm7d[["distributionInfo"]][["MD_Distribution"]][["transferOptions"]])
+    pl1 = newXMLNode("gmd:MD_DigitalTransferOptions", parent=xm7d[["distributionInfo"]][["MD_Distribution"]][["transferOptions"]])
     parseXMLAndAdd(c(CI_o, CI_w), parent=pl1, nsDefs  = c(gmd="http://www.isotc211.org/2005/gmd", gco="http://www.isotc211.org/2005/gco")) 
     ## Write to a file:
     saveXML(xm7d, out.xml) 
