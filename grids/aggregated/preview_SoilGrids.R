@@ -2,6 +2,7 @@
 ## Tom.Hengl@isric.org
 
 setwd("/data/aggregated")
+load(".RData")
 library(rgdal)
 library(GSIF)
 library(utils)
@@ -102,12 +103,12 @@ sum(grid1km.sin$band1*1000^2/10000, na.rm=TRUE)/1e6
 ## 1360 Pg C
 rm(grid1km.sin); gc()
 
-## List of property maps:
+## List of property maps ----
 tif.lst <- list.files(path="/data/GEOG", pattern=glob2rx("*.tif$"), full.names=TRUE, recursive=TRUE)
 ## 318
 #tif.lst[grep("WRB",tif.lst)]
 
-## Resample to 1 km (takes 20 mins)
+## Resample to 1 km (takes 20 mins) ----
 sfInit(parallel=TRUE, cpus=48)
 sfExport("tif.lst", "aggr_SG")
 sfLibrary(rgdal)
@@ -129,9 +130,9 @@ out <- sfClusterApplyLB(tif.lst, aggr_SG, tr=1/10, tr.metric=10000, out.dir="/da
 sfStop()
 
 ## create PNGs (5km res)
-out.lst <- list.files(pattern=glob2rx("*_5km_ll.tif$"), full.names=TRUE, recursive=TRUE)
+out.lst <- list.files(path="/data/aggregated/5km", pattern=glob2rx("*_5km_ll.tif$"), full.names=TRUE, recursive=TRUE)
 
-plot_SG <- function(i, res=150, zlim=c(0,40), width=7200, height=2987, ylim=c(-60, 85), replace=TRUE){
+plot_SG <- function(i, res=150, zlim=c(0,40), width=7200, height=2987, ylim=c(-60, 85), replace=TRUE, country, soil.legends){
   out.file = paste0(normalizeFilename(basename(i)), ".png")
   if(replace==TRUE){
     r <- raster(i)
@@ -178,13 +179,13 @@ plot_SG <- function(i, res=150, zlim=c(0,40), width=7200, height=2987, ylim=c(-6
   }
 }
 
-sfInit(parallel=TRUE, cpus=48)
-sfExport("tif.lst", "gdalwarp", "plot_SG", "country", "soil.legends")
+sfInit(parallel=TRUE, cpus=24)
+sfExport("out.lst", "plot_SG", "country", "soil.legends")
 sfLibrary(rgdal)
 sfLibrary(raster)
 sfLibrary(plotKML)
 sfLibrary(grDevices)
-out <- sfClusterApplyLB(out.lst, try( plot_SG ) )
+out <- sfClusterApplyLB(out.lst, function(i){ try( plot_SG(i, country=country, soil.legends=soil.legends) ) } )
 sfStop()
 
 for(k in c("TAXNWRB","TAXOUSDA")){
@@ -221,7 +222,58 @@ tif250m.lst <- list.files(path="/data/GEOG", pattern=glob2rx("*_250m_ll.tif$"), 
 write.csv(data.frame(FileName=basename(tif250m.lst)), "tif250m.lst.csv")
 ## 252 files
 
-## Generate Inspire metadata files for each zipped GEOTIFF:
+## Legends for soil types ----
+TAXOUSDA.leg <- read.csv("/data/models/TAXOUSDA/TAXOUSDA_legend.csv")
+TAXOUSDA.leg = TAXOUSDA.leg[!is.na(TAXOUSDA.leg$R),]
+cat(paste0(sapply(1:nrow(TAXOUSDA.leg), function(i){paste0(TAXOUSDA.leg$Number[i], ': \"', TAXOUSDA.leg$Group[i], '\"')}), collapse=", "), file = "TAXOUSDA_legend.txt")
+TAXNWRB.leg <- read.csv("/data/models/TAXNWRB/TAXNWRB_legend.csv")
+TAXNWRB.leg = TAXNWRB.leg[!is.na(TAXNWRB.leg$R),]
+cat(paste0(sapply(1:nrow(TAXNWRB.leg), function(i){paste0(TAXNWRB.leg$Number[i], ': \"', TAXNWRB.leg$Group[i], '\"')}), collapse=", "), file = "TAXNWRB_legend.txt")
+
+## Generate Inspire metadata files for each zipped GEOTIFF ----
+mdSG.s <- read.csv("META_GEOTIFF_Stacked.csv", stringsAsFactors = FALSE)
+doc = xmlInternalTreeParse("Metadata_template_7d_250m_ll.xml")
+xm7d = xmlRoot(doc)
+xm.ls = unlist(xmlToList("Metadata_template_7d_250m_ll.xml"))
+xm.df = data.frame(Fields=attr(xm.ls, "names"), Values=xm.ls)
+write.csv(xm.df, "Metadata_template_7d_250m_ll.csv")
+
+## Function to generate INSPIRE compatible XMLs for Geonetwork (https://goo.gl/V84S5h):
+SoilGrids250m_XML = function(i, template.xml="Metadata_template_7d_250m_ll.xml", mdSG.s, out.dir="/data/GEOG/"){
+  out.xml = paste0(out.dir, mdSG.s$GSIF_id[i], mdSG.s$XML_ext[i], ".xml")
+  if(!file.exists(out.xml)){
+    doc = xmlInternalTreeParse(template.xml)
+    xm7d = xmlRoot(doc)
+    xmlValue(xm7d[["fileIdentifier"]][[1]]) = mdSG.s$gmd.fileIdentifier[1]
+    xmlValue(xm7d[["identificationInfo"]][["MD_DataIdentification"]][["citation"]][["CI_Citation"]][["title"]][[1]]) = mdSG.s$gmd.title[i]
+    xmlValue(xm7d[["identificationInfo"]][["MD_DataIdentification"]][["citation"]][["CI_Citation"]][["identifier"]][["RS_Identifier"]][["code"]][[1]]) = mdSG.s$GSIF_id[i]
+    xmlValue(xm7d[["identificationInfo"]][["MD_DataIdentification"]][["citation"]][["CI_Citation"]][["edition"]][[1]]) = stringr::str_sub(mdSG.s$gco.Date[i], 1, 7)
+    xmlValue(xm7d[["identificationInfo"]][["MD_DataIdentification"]][["citation"]][["CI_Citation"]][["date"]][["CI_Date"]][["date"]][[1]]) = mdSG.s$gco.Date[i]
+    xmlValue(xm7d[["identificationInfo"]][["MD_DataIdentification"]][["abstract"]][[1]]) = mdSG.s$gmd.abstract[i]
+    xmlValue(xm7d[["identificationInfo"]][["MD_DataIdentification"]][["graphicOverview"]][["MD_BrowseGraphic"]][["fileName"]][[1]]) = mdSG.s$graphicOverview[i]
+    xmlValue(xm7d[["identificationInfo"]][["MD_DataIdentification"]][["descriptiveKeywords"]][["MD_Keywords"]][[2]][[1]]) = mdSG.s$keyword2[i]
+    ## Files available:
+    removeNodes(xm7d[["distributionInfo"]][["MD_Distribution"]][["transferOptions"]][["MD_DigitalTransferOptions"]])
+    x = list.files(path=out.dir, pattern=glob2rx(mdSG.s$Filenames[i]))
+    if(length(x)==1){ xt = paste0("Download GeoTIFF map for soil stratum") } 
+    if(length(x)==3){ xt = paste0("Download GeoTIFF map for 0-", c(30,100,200), " cm depth interval") }
+    if(length(x)==6){ xt = paste0("Download GeoTIFF map for ", c(0,5,15,30,60,100),"-", c(5,15,30,60,100,200), " cm depth interval") }
+    if(length(x)==7){ xt = paste0("Download GeoTIFF map for ", c(0,5,15,30,60,100,200), " cm depth") }
+    if(length(x)>7){ xt = paste0("Download GeoTIFF map for probability") } 
+    CI_o <- sprintf('<gmd:onLine><gmd:CI_OnlineResource><gmd:linkage><gmd:URL>ftp://ftp.soilgrids.org/data/recent/%s</gmd:URL></gmd:linkage><gmd:protocol><gco:CharacterString>WWW:DOWNLOAD-1.0-ftp--download</gco:CharacterString></gmd:protocol><gmd:name><gco:CharacterString>%s</gco:CharacterString></gmd:name><gmd:function><gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download"/></gmd:function></gmd:CI_OnlineResource></gmd:onLine>', x, xt)
+    ## WMS available:
+    CI_w <- sprintf('<gmd:onLine><gmd:CI_OnlineResource><gmd:linkage><gmd:URL>http://data.isric.org/geoserver/sg250m/wms?</gmd:URL></gmd:linkage><gmd:protocol><gco:CharacterString>OGC:WMS</gco:CharacterString></gmd:protocol><gmd:name><gco:CharacterString>%s</gco:CharacterString></gmd:name><gmd:description><gco:CharacterString>%s</gco:CharacterString></gmd:description><gmd:function><gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/></gmd:function></gmd:CI_OnlineResource></gmd:onLine>', gsub(".tif", "", gsub("_ll.tif", "", x)), gsub("Download GeoTIFF map for ", "", xt))
+    pl1 = newXMLNode("MD_DigitalTransferOptions", parent=xm7d[["distributionInfo"]][["MD_Distribution"]][["transferOptions"]])
+    parseXMLAndAdd(c(CI_o, CI_w), parent=pl1, nsDefs  = c(gmd="http://www.isotc211.org/2005/gmd", gco="http://www.isotc211.org/2005/gco")) 
+    ## Write to a file:
+    saveXML(xm7d, out.xml) 
+  }
+}
+x = sapply(1:nrow(mdSG.s), SoilGrids250m_XML, mdSG.s=mdSG.s)
+file.copy("/data/models/TAXOUSDA/TAXOUSDA_legend.csv", "/data/GEOG/TAXOUSDA_250m_ll.tif.csv")
+file.copy("/data/models/TAXNWRB/TAXNWRB_legend.csv", "/data/GEOG/TAXNWRB_250m_ll.tif.csv")
+
+## Old code:
 mdSG <- read.csv("META_GEOTIFF_1B.csv")
 data(landmask)
 gridded(landmask) <- ~x+y
