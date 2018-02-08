@@ -22,10 +22,12 @@ pfun <- function(x,y, ...){
 }
 
 plot_hexbin <- function(varn, breaks, main, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1), pal=R_pal[["bpy_colors"]][1:18], in.file, log.plot, out.file){
+  require("hexbin"); require("plotKML"); require("latticeExtra")
   if(missing(out.file)){ out.file = paste0("plot_CV_", varn, ".png") }
   if(!file.exists(out.file)){
-    load(in.file)
-    assign("m", get(paste0("CV_", varn)))
+    #load(in.file)
+    #assign("m", get(paste0("CV_", varn)))
+    m <- readRDS(in.file)
     d.meas <- min(m[[1]]$Observed, na.rm=TRUE)
     pred <- m[[1]]$Predicted
     meas <- m[[1]]$Observed

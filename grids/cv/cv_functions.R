@@ -98,8 +98,13 @@ predict_parallel <- function(j, sel, varn, formulaString, rmatrix, idcol){
 ## --------------------------------------------------------------
 
 ## predict soil properties in parallel:
-predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, method, cpus, Nsub=1e4){ 
+predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, method, cpus, Nsub=1e4, remove_duplicates=FALSE){
   s.train <- rmatrix[!sel==j,]
+  if(remove_duplicates==TRUE){
+    ## TH: optional - check how does model performs without the knowledge of the 3D dimension
+    sel.dup = !duplicated(s.train[,idcol])
+    s.train <- s.train[sel.dup,]
+  }
   s.test <- rmatrix[sel==j,]
   n.l <- dim(s.test)[1]
   if(missing(Nsub)){ Nsub = length(all.vars(formulaString))*50 }
@@ -148,16 +153,28 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, metho
   return(obs.pred)
 }
 
-cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus, method="ranger", Log=FALSE){     varn = all.vars(formulaString)[1]
+cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus, method="ranger", Log=FALSE, LLO=TRUE){     
+  varn = all.vars(formulaString)[1]
   message(paste("Running ", nfold, "-fold cross validation with model re-fitting method ", method," ...", sep=""))
-  if(sum(duplicated(rmatrix[,idcol]))>0.5*nrow(rmatrix)){
-    sel <- dismo::kfold(rmatrix, k=nfold, by=rmatrix[,idcol])
-    message(paste("Subsetting observations by '", idcol, "'"))
-  } else {
-    sel <- dismo::kfold(rmatrix, k=nfold)
-  }
   if(nfold > nrow(rmatrix)){ 
     stop("'nfold' argument must not exceed total number of points") 
+  }
+  if(sum(duplicated(rmatrix[,idcol]))>0.5*nrow(rmatrix)){
+    if(LLO==TRUE){
+      ## TH: Leave whole locations out
+      ul <- unique(rmatrix[,idcol])
+      sel.ul <- dismo::kfold(ul, k=nfold)
+      sel <- lapply(1:nfold, function(o){ data.frame(row.names=which(rmatrix[,idcol] %in% ul[sel.ul==o]), x=rep(o, length(which(rmatrix[,idcol] %in% ul[sel.ul==o])))) })
+      sel <- do.call(rbind, sel)
+      sel <- sel[order(as.numeric(row.names(sel))),]
+      message(paste0("Subsetting observations by unique location"))
+    } else {
+      sel <- dismo::kfold(rmatrix, k=nfold, by=rmatrix[,idcol])
+      message(paste0("Subsetting observations by '", idcol, "'"))
+    }
+  } else {
+    sel <- dismo::kfold(rmatrix, k=nfold)
+    message(paste0("Simple subsetting of observations using kfolds"))
   }
   if(missing(cpus)){ 
     if(method=="randomForest"){
@@ -179,12 +196,17 @@ cv_numeric <- function(formulaString, rmatrix, nfold, idcol, cpus, method="range
     }
   }
   if(method=="ranger"){
-    snowfall::sfInit(parallel=TRUE, cpus=ifelse(nfold>cpus, cpus, nfold))
-    snowfall::sfExport("predict_parallelP","idcol","formulaString","rmatrix","sel","varn","method")
-    snowfall::sfLibrary(package="plyr", character.only=TRUE)
-    snowfall::sfLibrary(package="ranger", character.only=TRUE)
-    out <- snowfall::sfLapply(1:nfold, function(j){predict_parallelP(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, method=method)})
-    snowfall::sfStop()
+    if(cpus==1){
+      out <- lapply(1:nfold, function(j){predict_parallelP(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, method=method)})
+    } else {
+      require("snowfall")
+      snowfall::sfInit(parallel=TRUE, cpus=ifelse(nfold>cpus, cpus, nfold))
+      snowfall::sfExport("predict_parallelP","idcol","formulaString","rmatrix","sel","varn","method")
+      snowfall::sfLibrary(package="plyr", character.only=TRUE)
+      snowfall::sfLibrary(package="ranger", character.only=TRUE)
+      out <- snowfall::sfLapply(1:nfold, function(j){predict_parallelP(j, sel=sel, varn=varn, formulaString=formulaString, rmatrix=rmatrix, idcol=idcol, method=method)})
+      snowfall::sfStop()
+    }
   }
   ## calculate mean accuracy:
   out <- plyr::rbind.fill(out)

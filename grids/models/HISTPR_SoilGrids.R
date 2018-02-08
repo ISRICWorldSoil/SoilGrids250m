@@ -97,7 +97,7 @@ wrapper.OCSTHA <- function(i, in.path, n.lst=c("ORCDRC","BLD.f","CRFVOL"), ORCDR
 
 ## derive OCS from organic carbon density (and depth to bedrock) -----
 ## this formula averages between two estimates
-wrapper.ocd2OCSTHA <- function(i, in.path, BDR.lst=c("BDRICM","BDRLOG","BDTICM"), sdepth = c(0, 5, 15, 30, 60, 100, 200), st = c(30,100,200), n.lst=c("ORCDRC","BLD.f","CRFVOL"), ORCDRC.sd=20, BLD.sd=100, CRFVOL.sd=5){
+wrapper.ocd2OCSTHA <- function(i, in.path, BDR.lst=c("BDRICM","BDRLOG","BDTICM"), sdepth = c(0, 5, 15, 30, 60, 100, 200), st = c(30,100,200), n.lst=c("ORCDRC","BLD.f","CRFVOL"), ORCDRC.sd=20, BLD.sd=100, CRFVOL.sd=5, bias.correction=TRUE, lm.CV_ORCDRC=NULL, lm.CV_OCDENS=NULL){
   out.all <- paste0(in.path, "/", i, "/OCSTHA_M_sd", 1:6, "_", i,".tif")
   if(any(!file.exists(out.all))){
     ## depth to bedrock maps:
@@ -120,9 +120,15 @@ wrapper.ocd2OCSTHA <- function(i, in.path, BDR.lst=c("BDRICM","BDRLOG","BDTICM")
       s0$OC <- rowMeans(s0@data[,grep("ORCDRC", names(s0))], na.rm = TRUE)
       s0$BD <- rowMeans(s0@data[,grep("BLD.f", names(s0))], na.rm = TRUE)
       s0$CF <- rowMeans(s0@data[,grep("CRFVOL", names(s0))], na.rm = TRUE)
+      if(bias.correction==TRUE){
+        ocd = rowMeans(s@data[,paste0("OCDENS_M_sl", d:(d+1), "_", i)], na.rm=TRUE)
+        ocd = expm1(predict(lm.CV_OCDENS, data.frame(Predicted=ocd/10)))*10
+        soc = s0$OC
+        soc = expm1(predict(lm.CV_ORCDRC, data.frame(Predicted=soc)))
+      }
       ## tons per ha (average between OCS based on OCD and based on the OCS formula):
-      v1 <- round(rowMeans(s@data[,paste0("OCDENS_M_sl", d:(d+1), "_", i)], na.rm=TRUE)*(sdepth[d+1]-sdepth[d])/100)
-      v2 <- round(as.vector(OCSKGM(ORCDRC=s0$OC, BLD=s0$BD, CRFVOL=s0$CF, HSIZE=(sdepth[d+1]-sdepth[d]), ORCDRC.sd=ORCDRC.sd, BLD.sd=BLD.sd, CRFVOL.sd=CRFVOL.sd)*10))
+      v1 <- round(ifelse(ocd<0,0,ocd)*(sdepth[d+1]-sdepth[d])/100)
+      v2 <- round(as.vector(GSIF::OCSKGM(ORCDRC=ifelse(soc<0,0,soc), BLD=s0$BD, CRFVOL=s0$CF, HSIZE=sdepth[d+1]-sdepth[d], ORCDRC.sd=ORCDRC.sd, BLD.sd=BLD.sd, CRFVOL.sd=CRFVOL.sd)*10))
       v = (v1+v2[s@grid.index])/2
       ## Correct (reduce OCS) for depth to bedrock:
       s@data[,paste0("OCSTHA_",d)] <- ifelse(sD@data[s@grid.index,"BDRICM"] > sdepth[d+1], v, ifelse(sD@data[s@grid.index,"BDRICM"] > sdepth[d], v*(sD@data[s@grid.index,"BDRICM"]-sdepth[d])/(sdepth[d+1]-sdepth[d]), 0))
@@ -146,22 +152,24 @@ wrapper.ocd2OCSTHA <- function(i, in.path, BDR.lst=c("BDRICM","BDRLOG","BDTICM")
 }
 
 #wrapper.ocd2OCSTHA(i="T38715", in.path="/data/tt/SoilGrids250m/predicted250m")
+wrapper.ocd2OCSTHA(i="T40858", in.path="/data/tt/SoilGrids250m/predicted250m", lm.CV_ORCDRC=lm.CV_ORCDRC, lm.CV_OCDENS=lm.CV_OCDENS)
 #wrapper.ocd2OCSTHA(i="T10410", in.path="/data/tt/SoilGrids250m/predicted250m")
 #wrapper.ocd2OCSTHA(i="T34387", in.path="/data/tt/SoilGrids250m/predicted250m")
 
 ## Run in parallel:
 pr.dirs <- basename(list.dirs("/data/tt/SoilGrids250m/predicted250m")[-1])
 
-sfInit(parallel=TRUE, cpus=48)
-sfExport("wrapper.ocd2OCSTHA")
+library(snowfall)
+sfInit(parallel=TRUE, cpus=24)
+sfExport("wrapper.ocd2OCSTHA", "lm.CV_ORCDRC", "lm.CV_OCDENS", "pr.dirs")
 sfLibrary(raster)
 sfLibrary(rgdal)
 sfLibrary(GSIF)
-out <- sfClusterApplyLB(pr.dirs, function(i){try( wrapper.ocd2OCSTHA(i, in.path="/data/tt/SoilGrids250m/predicted250m") )})
+out <- sfClusterApplyLB(pr.dirs, function(i){try( wrapper.ocd2OCSTHA(i, in.path="/data/tt/SoilGrids250m/predicted250m", lm.CV_ORCDRC=lm.CV_ORCDRC, lm.CV_OCDENS=lm.CV_OCDENS) )})
 sfStop()
 
-sfInit(parallel=TRUE, cpus=48)
-sfExport("histosol.prob", "fao.lst", "usda.lst")
+sfInit(parallel=TRUE, cpus=24)
+sfExport("histosol.prob", "fao.lst", "usda.lst", "pr.dirs")
 sfLibrary(raster)
 sfLibrary(rgdal)
 out <- sfClusterApplyLB(pr.dirs, function(i){try( histosol.prob(i, in.path="/data/tt/SoilGrids250m/predicted250m", fao.lst, usda.lst) )})
@@ -173,5 +181,10 @@ sfStop()
 #   unlink(del.lst)
 # }
 
-#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^OCSTHA*.tif")), full.names=TRUE, recursive=TRUE)
-#unlink(del.lst)
+#del.lst <- list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx("^OCSTHA*.tif$"), full.names=TRUE, recursive=TRUE)
+#x.t = as.vector(unlist(parallel::mclapply(del.lst, function(x){file.info(x)$ctime}, mc.cores=24)))
+#summary(x.t<unclass(as.POSIXct("2018-01-20")))
+#unlink(del.lst[x.t<unclass(as.POSIXct("2018-01-20"))])
+
+#del.lst = list.files(path="/data/tt/SoilGrids250m/predicted250m", pattern=glob2rx(paste0("^OCSTHA_M_sd1_*.tif$")), full.names=TRUE, recursive=TRUE)
+#str(del.lst)

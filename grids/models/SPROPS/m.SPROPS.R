@@ -176,7 +176,19 @@ View(ovA[which(ovA$OCDENS>200),c("SOURCEID","BLD","ORCDRC","BLD.f","OCDENS")])
 hexbinplot(log1p(ovA$OCDENS)~log1p(ovA$ORCDRC), colramp=colorRampPalette(pal), xlab="log - Organic carbon (permille)", ylab="log - Organic carbon density (kg/cubic-m)", type="g", lwd=1, lcex=8, inner=.2, cex.labels=.8, xbins=30, ybins=30, panel=pfun, colorcut=c(0,0.01,0.03,0.07,0.15,0.25,0.5,0.75,1))
 ## treshold at ca 12%
 expm1(4.8)
-## Average ORC, BLD per soil type:
+
+## Litter layer:
+sel.O = grep("O", ovA$HZDTXT, ignore.case = FALSE)
+#length(sel.O)
+#[1] 2104
+O.pnts = ovA[sel.O,c("SOURCEID", "SOURCEDB", "LONWGS84", "LATWGS84", "HZDTXT", "UHDICM", "LHDICM", "BLD.f", "ORCDRC")]
+O.pnts = O.pnts[!is.na(O.pnts$LONWGS84),]
+coordinates(O.pnts) = ~ LONWGS84+LATWGS84
+proj4string(O.pnts) = proj4string(SPROPS.pnts)
+plotKML(O.pnts["ORCDRC"], folder.name="Litter layer", file.name="Litter_observed.kml")
+zip(zipfile="Litter_observed.kmz", files="Litter_observed.kml", zip="zip") 
+
+## Average ORC, BLD per soil type ----
 s.ovA = plyr::join(ovA[,c("SOURCEID", "SOURCEDB", "TIMESTRR", "LONWGS84", "LATWGS84", "HZDTXT", "UHDICM", "LHDICM", "BLD", "BLD.f", "ORCDRC", "OCDENS", "CLYPPT", "SNDPPT", "PHIHOX", "DEPTH.f")], data.frame(SOURCEID=SPROPS.pnts$SOURCEID, TAXOUSDA=as.factor(ov.tax)))
 sum.dfsB = plyr::ddply(s.ovA, .(TAXOUSDA), summarize, M_ORC_30=round(mean(ORCDRC[DEPTH.f<30], na.rm=TRUE)), M_ORC_100=round(mean(ORCDRC[DEPTH.f<100], na.rm=TRUE)), M_BLD_30=round(mean(BLD.f[DEPTH.f<30], na.rm=TRUE)), M_BLD_100=round(mean(BLD.f[DEPTH.f<100], na.rm=TRUE)), M_OCD_30=round(mean(OCDENS[DEPTH.f<30], na.rm=TRUE)), N_horizons=sum(!is.na(ORCDRC)))
 TAXOUSDA.leg <- read.csv("../TAXOUSDA/TAXOUSDA_legend.csv")
@@ -520,35 +532,54 @@ dev.off()
 
 ## Cross-validation 10-fold (TH: this does not takes into account high spatial clustering):
 
-source("../../cv/cv_functions.R")
+## Cross-validation 10-fold ---- 
+## TH: this does not takes into account high spatial clustering
+
+source("/data/cv/cv_functions.R")
 cat("Results of Cross-validation:\n\n", file="resultsCV.txt")
 cv_lst <- rep(list(NULL), length(t.vars))
 for(j in 1:length(t.vars)){
-  if(!file.exists(paste0("CV_", t.vars[j], ".rda"))){
+  if(!file.exists(paste0("CV_", t.vars[j], ".rds"))){
     cat(paste("Variable:", all.vars(formulaString.lst[[j]])[1]), file="resultsCV.txt", append=TRUE)
     cat("\n", file="resultsCV.txt", append=TRUE)
-    cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA[complete.cases(ovA[,all.vars(formulaString.lst[[j]])]),], nfold=10, idcol="SOURCEID", Log=TRUE)
+    cv_lst[[j]] <- cv_numeric(formulaString.lst[[j]], rmatrix=ovA[complete.cases(ovA[,all.vars(formulaString.lst[[j]])]),], nfold=10, cpus=1, idcol="SOURCEID", Log=TRUE)
     sink(file="resultsCV.txt", append=TRUE, type="output")
     print(cv_lst[[j]]$Summary)
     cat("\n", file="resultsCV.txt", append=TRUE)
     sink()
-    assign(paste0("CV_", t.vars[j]), cv_lst[[j]])
-    save(list=paste0("CV_", t.vars[j]), file=paste0("CV_", t.vars[j], ".rda"))
+    saveRDS.gz(cv_lst[[j]], paste0("CV_", t.vars[j], ".rds"))
   }
 }
 
 ## correlation plots:
-source("../plot_hexbin.R")
-plt.names <- c("SOC in g/kg", "Soil pH x 10 in H2O", "Soil pH x 10 in KCl", "Coarse fragments in %vol", "Sand fraction in %", "Silt fraction in %", "Clay fraction in %", "Bulk density (FE) in kg / m3", "CEC soil in cmolc/kg") 
+source("/data/models/plot_hexbin.R")
+plt.names <- c("SOC in g/kg", "Soil pH x 10 in H2O", "Soil pH x 10 in KCl", "Coarse fragments in %vol", "Sand fraction in %", "Silt fraction in %", "Clay fraction in %", "Bulk density (FE) in kg / m3", "CEC soil in cmolc/kg", "Organic carbon density in kg / m3") 
 names(plt.names) = t.vars
-breaks.lst <- list(c(0,5,10,seq(20,1000,length=47)), seq(2.5,9.5,length=50), seq(2.5,9.5,length=50), c(0,1,2,5,seq(8,100,length=46)), seq(0,100,length=50), seq(0,100,length=50), seq(0,100,length=50), seq(450,2200,length=50), c(0,1,2,5,seq(8,450,length=26)))
+breaks.lst <- list(c(0,5,10,seq(20,1000,length=47)), seq(2.5,9.5,length=50), seq(2.5,9.5,length=50), c(0,1,2,5,seq(8,100,length=46)), seq(0,100,length=50), seq(0,100,length=50), seq(0,100,length=50), seq(450,2200,length=50), c(0,1,2,5,seq(8,450,length=26)), seq(0,1250,length=20))
 names(breaks.lst) = t.vars
-plt.log <- c(TRUE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE)
+plt.log <- c(TRUE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE)
 names(plt.log) = t.vars
 
 for(j in 1:length(t.vars)){
-  plot_hexbin(j, breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rda"), log.plot=plt.log[t.vars[j]])
+  plot_hexbin(t.vars[j], breaks.lst[[t.vars[j]]], main=plt.names[t.vars[j]], in.file=paste0("CV_", t.vars[j], ".rds"), log.plot=plt.log[t.vars[j]])
 }
+
+## Bias correction ----
+mO <- readRDS("CV_ORCDRC.rds")
+mO.s = mO$CV_residuals[sampleInt(size=6e4, n=nrow(mO$CV_residuals)),]
+x = mO$CV_residuals$Predicted/mO$CV_residuals$Observed
+mean(x[!x>20], na.rm=TRUE)
+#lm.CV_ORCDRC = loess(log1p(Observed)~log1p(Predicted), mO.s, span=.8, control=loess.control(surface="direct"))
+lm.CV_ORCDRC = lm(log1p(Observed)~ poly(log1p(Predicted), 3), mO$CV_residuals)
+expm1(predict(lm.CV_ORCDRC, data.frame(Predicted=c(0,20,80,180,350,450))))
+saveRDS(lm.CV_ORCDRC, "lm.CV_ORCDRC.rds")
+mD <- readRDS("CV_OCDENS.rds")
+mD.s = mD$CV_residuals[sampleInt(size=6e4, n=nrow(mD$CV_residuals)),]
+#lm.CV_OCDENS = loess(log1p(Observed)~log1p(Predicted), mD.s, span=.8, control=loess.control(surface="direct"))
+lm.CV_OCDENS = lm(log1p(Observed)~ poly(log1p(Predicted), 3), mD$CV_residuals)
+expm1(predict(lm.CV_OCDENS, data.frame(Predicted=c(0,25,75,180,350,550))))
+saveRDS(lm.CV_OCDENS, "lm.CV_OCDENS.rds")
+save.image()
 
 ## Comparison with indepdent point data not used for model building:
 load("/data/profs/SPROPS/tmp/SPROPS.NPDB_V2.rda")

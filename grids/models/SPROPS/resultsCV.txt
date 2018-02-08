@@ -1,38 +1,42 @@
 Results of Cross-validation:
 
 Variable: ORCDRC
-          ME      MAE     RMSE R.squared   logRMSE logR.squared
-1 -0.2918549 10.20963 32.79371 0.6354696 0.7152194    0.6878568
+          ME     MAE     RMSE R.squared   logRMSE logR.squared
+1 -0.3170407 14.9308 44.30831 0.6176974 0.9240491    0.5685518
 
 Variable: PHIHOX
-            ME       MAE     RMSE R.squared   logRMSE logR.squared
-1 -0.002102178 0.3840512 0.544603 0.8340664 0.0766682    0.8243564
+            ME       MAE      RMSE R.squared   logRMSE logR.squared
+1 -0.006049691 0.5563696 0.7482971 0.6829156 0.1047502    0.6689102
 
 Variable: PHIKCL
-           ME       MAE     RMSE R.squared   logRMSE logR.squared
-1 0.001848172 0.4270301 0.600106 0.7672543 0.0982657    0.7573911
+           ME       MAE      RMSE R.squared   logRMSE logR.squared
+1 -0.01369459 0.6075187 0.8124073 0.5343984 0.1329126    0.5217582
 
 Variable: CRFVOL
-          ME     MAE     RMSE R.squared   logRMSE logR.squared
-1 -0.1039682 5.51777 10.91137 0.5589506 0.9074957    0.6429036
+          ME      MAE     RMSE R.squared  logRMSE logR.squared
+1 -0.4048594 8.095012 13.67336 0.3168269 1.286312    0.3617819
 
 Variable: SNDPPT
-           ME      MAE     RMSE R.squared   logRMSE logR.squared
-1 -0.03690913 8.959922 13.10269 0.7859223 0.5304159    0.7404695
+          ME      MAE     RMSE R.squared  logRMSE logR.squared
+1 -0.3712353 14.57741 19.22129 0.5411525 0.765288    0.4731686
 
 Variable: SLTPPT
          ME      MAE     RMSE R.squared   logRMSE logR.squared
-1 0.0230658 6.748475 9.793534 0.7936035 0.4389706    0.7494746
+1 0.1907141 9.832726 13.29313 0.6185066 0.5866695    0.5616901
 
 Variable: CLYPPT
-         ME      MAE     RMSE R.squared   logRMSE logR.squared
-1 -0.102017 6.631797 9.546816 0.7261315 0.5040807    0.6991649
+          ME      MAE     RMSE R.squared   logRMSE logR.squared
+1 -0.1895747 9.588799 13.28649 0.4588173 0.6844829    0.4782277
 
-Variable: BLD
+Variable: BLD.f
         ME      MAE     RMSE R.squared   logRMSE logR.squared
-1 -1.57435 108.2753 164.7266 0.7577097 0.2265415    0.6352354
+1 3.041192 169.0642 245.6155 0.6943449 0.3648066    0.6548445
 
 Variable: CECSUM
-           ME      MAE     RMSE R.squared   logRMSE logR.squared
-1 -0.07096421 5.487295 10.31807 0.6449859 0.4831224     0.670228
+          ME      MAE     RMSE R.squared   logRMSE logR.squared
+1 -0.3537095 7.182843 12.41247  0.436511 0.6156602    0.4737656
+
+Variable: OCDENS
+          ME     MAE     RMSE R.squared   logRMSE logR.squared
+1 -0.6257806 11.0908 27.21392 0.4491045 0.9156944    0.6225582
 
