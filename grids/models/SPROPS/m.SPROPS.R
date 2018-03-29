@@ -2,11 +2,11 @@
 ## Tom.Hengl@isric.org
 
 # These lines should be run in a root session
-list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "xgboost", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps", "stringr", "R.utils", "grDevices")
+list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "xgboost", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps", "stringr", "R.utils", "grDevices", "GSIF")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
-setwd("/data/models/SPROPS")
+setwd("~/SoilGridsData/models/SPROPS")
 load(".RData")
 library(plyr)
 library(stringr)
@@ -32,14 +32,18 @@ library(GSIF)
 library(parallel)
 #library(doParallel)
 
+# Location of the local code repository
+repo_path <- "~/git/SoilGrids250m/"
+
 plotKML.env(convert="convert", show.env=FALSE)
 gdalwarp = "gdalwarp"
 gdalbuildvrt = "gdalbuildvrt"
 system("gdal-config --version")
-source("/data/models/wrapper.predict_cs.R")
-source("/data/models/saveRDS_functions.R")
-source('/data/models/mosaick_functions_ll.R')
-source('/data/models/extract_tiled.R')
+# ! shouldn't these scripts be imported from the code repo, instead of the data folder?
+source(paste(repo_path, "grids/models/wrapper.predict_cs.R", sep=""))
+source(paste(repo_path, "grids/models/saveRDS_functions.R", sep=""))
+source(paste(repo_path, "grids/models/mosaick_functions_ll.R", sep=""))
+source(paste(repo_path, "grids/models/extract_tiled.R", sep=""))
 ## metadata:
 metasd <- read.csv('/data/GEOG/META_GEOTIFF_1B.csv', stringsAsFactors = FALSE)
 sel.metasd = names(metasd)[-sapply(c("FileName","VARIABLE_NAME"), function(x){grep(x, names(metasd))})]
