@@ -1,6 +1,7 @@
 ## Fit models for soil properties and generate predictions - SoilGrids250m
 ## Tom.Hengl@isric.org
 
+# These lines should be run in a root session
 list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "parallel", "dismo", "snowfall", "lattice", "ranger", "xgboost", "mda", "psych", "stringr", "caret", "plotKML", "maptools", "maps", "stringr", "R.utils", "grDevices")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
