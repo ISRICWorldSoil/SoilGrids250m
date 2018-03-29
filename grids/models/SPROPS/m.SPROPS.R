@@ -6,6 +6,14 @@ list.of.packages <- c("raster", "rgdal", "nnet", "plyr", "R.utils", "dplyr", "pa
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
+# Location of the data folder - note that this script was originally intended to to find code and data all in the same path
+# Usually, data files (e.g. model outputs) are not in the code repository because they are too large
+data_path <- "~/SoilGridsData/"
+
+# Location of the local code repository
+repo_path <- "~/git/SoilGrids250m/"
+
+# On production, this must be adapted to either the data or the code folder
 setwd("~/SoilGridsData/models/SPROPS")
 load(".RData")
 library(plyr)
@@ -32,9 +40,6 @@ library(GSIF)
 library(parallel)
 #library(doParallel)
 
-# Location of the local code repository
-repo_path <- "~/git/SoilGrids250m/"
-
 plotKML.env(convert="convert", show.env=FALSE)
 gdalwarp = "gdalwarp"
 gdalbuildvrt = "gdalbuildvrt"
@@ -45,10 +50,10 @@ source(paste(repo_path, "grids/models/saveRDS_functions.R", sep=""))
 source(paste(repo_path, "grids/models/mosaick_functions_ll.R", sep=""))
 source(paste(repo_path, "grids/models/extract_tiled.R", sep=""))
 ## metadata:
-metasd <- read.csv('/data/GEOG/META_GEOTIFF_1B.csv', stringsAsFactors = FALSE)
+metasd <- read.csv(paste(data_path, '/data/GEOG/META_GEOTIFF_1B.csv', sep=""), stringsAsFactors = FALSE)
 sel.metasd = names(metasd)[-sapply(c("FileName","VARIABLE_NAME"), function(x){grep(x, names(metasd))})]
 ## covariates:
-des <- read.csv("/data/models/SoilGrids250m_COVS250m.csv")
+des <- read.csv(paste(data_path, "models/SoilGrids250m_COVS250m.csv", sep=""))
 mask_value <- as.list(des$MASK_VALUE)
 names(mask_value) = des$WORLDGRIDS_CODE
 
