@@ -60,7 +60,7 @@ names(mask_value) = des$WORLDGRIDS_CODE
 ## points:
 load(paste(data_path, "profs/SPROPS/SPROPS.pnts.rda", sep="")) ## spatial locations only
 ## 173,806 points
-load("/data/profs/SPROPS/all.pnts.rda")
+load(paste(data_path, "profs/SPROPS/all.pnts.rda", sep=""))
 
 ## Load Netherlands borders, just for testing
 borders.nl <- readOGR(paste(repo_path, "grids/models/data/borders.nl.gpkg", sep=""))
