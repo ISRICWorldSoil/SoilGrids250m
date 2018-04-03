@@ -72,8 +72,9 @@ SPROPS.pnts = SPROPS.pnts[!is.na(over(SPROPS.pnts, as(borders.nl, "SpatialPolygo
 
 
 ## spatia overlay (20 mins):
+## took about 15 min for the Netherlands
 tile.pol = rgdal::readOGR(paste(data_path, "models/tiles_ll_100km.shp", sep=""), "tiles_ll_100km")
-ov <- extract.tiled(x=SPROPS.pnts, tile.pol=tile.pol, path="/data/tt/SoilGrids250m/predicted250m", ID="ID", cpus=48)
+ov <- extract.tiled(x=SPROPS.pnts, tile.pol=tile.pol, path=paste(data_path, "tt/SoilGrids250m/predicted250m", sep=""), ID="ID", cpus=10)
 #str(ov)
 ovA <- join(all.pnts, ov, type="left", by="LOC_ID")
 ## 839,362 rows
