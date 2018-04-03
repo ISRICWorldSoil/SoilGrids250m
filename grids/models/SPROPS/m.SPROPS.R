@@ -50,7 +50,7 @@ source(paste(repo_path, "grids/models/saveRDS_functions.R", sep=""))
 source(paste(repo_path, "grids/models/mosaick_functions_ll.R", sep=""))
 source(paste(repo_path, "grids/models/extract_tiled.R", sep=""))
 ## metadata:
-metasd <- read.csv(paste(data_path, '/data/GEOG/META_GEOTIFF_1B.csv', sep=""), stringsAsFactors = FALSE)
+metasd <- read.csv(paste(repo_path, 'grids/GEOG/META_GEOTIFF_1B.csv', sep=""), stringsAsFactors = FALSE)
 sel.metasd = names(metasd)[-sapply(c("FileName","VARIABLE_NAME"), function(x){grep(x, names(metasd))})]
 ## covariates:
 des <- read.csv(paste(data_path, "models/SoilGrids250m_COVS250m.csv", sep=""))
@@ -58,9 +58,18 @@ mask_value <- as.list(des$MASK_VALUE)
 names(mask_value) = des$WORLDGRIDS_CODE
 
 ## points:
-load("/data/profs/SPROPS/SPROPS.pnts.rda") ## spatial locations only
+load(paste(data_path, "profs/SPROPS/SPROPS.pnts.rda", sep="")) ## spatial locations only
 ## 173,806 points
 load("/data/profs/SPROPS/all.pnts.rda")
+
+## Load Netherlands borders, just for testing
+borders.nl <- readOGR(paste(repo_path, "grids/models/data/borders.nl.gpkg", sep=""))
+# Adjust CRS to exactly match that of the points
+proj4string(borders.nl) <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+
+## Subset point locations within boders
+SPROPS.pnts = SPROPS.pnts[!is.na(over(SPROPS.pnts, as(borders.nl, "SpatialPolygons"))),]
+
 
 ## spatia overlay (20 mins):
 tile.pol = rgdal::readOGR("/data/models/tiles_ll_100km.shp", "tiles_ll_100km")
