@@ -205,8 +205,6 @@ saveRDS(s.ovA, "global_soil_carbon_points.rds")
 write.csv(ovA, file="ov.SPROPS_SoilGrids250m.csv")
 unlink("ov.SPROPS_SoilGrids250m.csv.gz")
 gzip("ov.SPROPS_SoilGrids250m.csv")
-save(ovA, file="ovA.rda")
-#load("ovA.rda")
 ## 1.3GB
 #load(".RData")
 pnts.ll = ovA[,c("SOURCEID","SAMPLEID","UHDICM","LHDICM","CRFVOL","SNDPPT","SLTPPT","CLYPPT","BLD","PHIHOX","PHIKCL","ORCDRC","CECSUM","SOURCEDB","TIMESTRR","LONWGS84","LATWGS84","DEPTH","HZDTXT","PHICAL","LOC_ID","UHDICM.f","LHDICM.f","DEPTH.f","CRFVOL.f","BLD.f","OCDENS")]
@@ -215,6 +213,12 @@ coordinates(pnts.ll) = ~ LONWGS84+LATWGS84
 proj4string(pnts.ll) = CRS("+proj=longlat +datum=WGS84")
 unlink("global_soil_points.gpkg")
 writeOGR(pnts.ll, "global_soil_points.gpkg", "global_soil_points", "GPKG")
+
+## Add country code to ovA ----
+ov.cnt = raster::extract(raster("/data/countries/GAUL_ADMIN0_landmask_250m.tif"), SPROPS.pnts)
+ovA$GAUL_ADMIN0 = plyr::join(ovA["SOURCEID"], data.frame(SOURCEID=SPROPS.pnts$SOURCEID, GAUL_ADMIN0=ov.cnt), match="first")$GAUL_ADMIN0 
+saveRDS.gz(ovA, "ovA.rds")
+#ovA = readRDS.gz("ovA.rds")
 
 ## ------------- MODEL FITTING -----------
 
