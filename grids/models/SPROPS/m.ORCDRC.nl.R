@@ -62,7 +62,7 @@ load(paste(data_path, "profs/SPROPS/SPROPS.pnts.rda", sep="")) ## spatial locati
 ## 173,806 points
 load(paste(data_path, "profs/SPROPS/all.pnts.rda", sep=""))
 
-## spatia overlay (20 mins):
+## --- Spatial Overlay: Profiles on Covariates (20 mins):
 ## This must be made for the entire points dataset, otherwise some properties may disappear.
 if(!file.exists("ovA.rds"))
 {
@@ -70,10 +70,10 @@ if(!file.exists("ovA.rds"))
 	ov <- extract.tiled(x=SPROPS.pnts, tile.pol=tile.pol, path=paste(data_path, "tt/SoilGrids250m/predicted250m", sep=""), ID="ID", cpus=10)
 	ovA <- join(all.pnts, ov, type="left", by="LOC_ID")
 	## Save to avoid computing a second time
-	saveRDS(ovA, "ovA.rds")
+	saveRDS.gz(ovA, "ovA.rds")
 } 
 else # If the file is already present then ovA was already computed
 { 
-	loadRDS("ovA.rds")
+	readRDS.gz("ovA.rds")
 }
 
