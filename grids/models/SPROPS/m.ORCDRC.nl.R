@@ -88,3 +88,20 @@ saveRDS.gz(ovA, "ovA.rds")
 ## Select profiles with NL code (179)
 ovA.nl <- ovA[which(ovA$GAUL_ADMIN0 == 179),]
 
+## ------------- MODEL FITTING -----------
+
+t.vars <- c("ORCDRC", "PHIHOX", "PHIKCL", "CRFVOL", "SNDPPT", "SLTPPT", "CLYPPT", "BLD.f", "CECSUM", "OCDENS")
+# Set maximum and minimum values
+z.min <- as.list(c(0,20,20,0,0,0,0,50,0,0))
+names(z.min) = t.vars
+z.max <- as.list(c(800,110,110,100,100,100,100,3500,2200,10000))
+names(z.max) = t.vars
+
+## FIT MODELS:
+pr.lst <- basename(list.files(path=paste(data_path, "stacked250m", sep=""), pattern=glob2rx("*.tif$")))
+## remove some predictors that might lead to artifacts (buffer maps and land cover):
+pr.lst <- pr.lst[-unlist(sapply(c("QUAUEA3","LCEE10","N11MSD3","CSCMCF5","B02CHE3","B08CHE3","B09CHE3","S01ESA4","S02ESA4","S11ESA4","S12ESA4","BICUSG"), function(x){grep(x, pr.lst)}))]
+
+formulaString.lst = lapply(t.vars, function(x){as.formula(paste(x, ' ~ DEPTH.f +', paste(pr.lst, collapse="+")))})
+#all.vars(formulaString.lst[[1]])
+save.image()
