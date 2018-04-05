@@ -77,3 +77,14 @@ else # If the file is already present then ovA was already computed
 	readRDS.gz("ovA.rds")
 }
 
+## --- Trim profiles dataset down to the Netherlands
+
+## Add country code to ovA
+ov.cnt = raster::extract(raster(paste(data_path, "/countries/GAUL_ADMIN0_landmask_250m.tif", sep="")), SPROPS.pnts)
+ovA$GAUL_ADMIN0 = plyr::join(ovA["SOURCEID"], data.frame(SOURCEID=SPROPS.pnts$SOURCEID, GAUL_ADMIN0=ov.cnt), match="first")$GAUL_ADMIN0 
+saveRDS.gz(ovA, "ovA.rds")
+#ovA = readRDS.gz("ovA.rds")
+
+## Select profiles with NL code (179)
+ovA.nl <- ovA[which(ovA$GAUL_ADMIN0 == 179),]
+
