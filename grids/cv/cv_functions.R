@@ -128,8 +128,8 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, metho
     test = s.test[,all.vars(formulaString)]
     ## tuning parameters:
     cl <- makeCluster(cpus)
-    registerDoParallel(cl)
-    ctrl <- trainControl(method="repeatedcv", number=3, repeats=1)
+	doParallel::registerDoParallel(cl)
+    ctrl <- caret::trainControl(method="repeatedcv", number=3, repeats=1)
     gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
     rf.tuneGrid <- expand.grid(mtry = seq(4,length(all.vars(formulaString))/3,by=2))
     ## fine-tune RF parameters:
