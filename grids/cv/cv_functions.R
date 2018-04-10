@@ -60,7 +60,7 @@ ensemble.predict <- function(formulaString, s.train, s.test, MaxNWts = 19000, ..
   gm1 <- nnet::multinom(formulaString, data=s.train, MaxNWts = MaxNWts)
   ## derive classification accuracy:
   gm1.w <- postResample(s.train[,all.vars(formulaString)[1]], predict(gm1, s.train, na.action = na.pass))[1]
-  gm2 <- ranger(formulaString, data=s.train, write.forest=TRUE, probability=TRUE, ...)
+  gm2 <- ranger::ranger(formulaString, data=s.train, write.forest=TRUE, probability=TRUE, ...)
   gm2.w <- 1-gm2$prediction.error
   probs1 <- predict(gm1, s.test, type="probs", na.action = na.pass) ## nnet
   probs2 <- predict(gm2, s.test, probability=TRUE, na.action = na.pass)$predictions ## randomForest
@@ -134,7 +134,7 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, metho
     rf.tuneGrid <- expand.grid(mtry = seq(4,length(all.vars(formulaString))/3,by=2))
     ## fine-tune RF parameters:
     t.mrfX <- caret::train(formulaString, data=s.train[sample.int(nrow(s.train), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
-    gm1 <- ranger(formulaString, data=s.train, write.forest=TRUE, mtry=t.mrfX$bestTune$mtry)
+    gm1 <- ranger::ranger(formulaString, data=s.train, write.forest=TRUE, mtry=t.mrfX$bestTune$mtry)
     gm1.w = 1/gm1$prediction.error
     gm2 <- caret::train(formulaString, data=s.train, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid)
     gm2.w = 1/(min(gm2$results$RMSE, na.rm=TRUE)^2)
@@ -143,7 +143,7 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, metho
     pred <- rowSums(cbind(v1*gm1.w, v2*gm2.w))/(gm1.w+gm2.w)
   }
   if(method=="ranger"){
-    gm <- ranger(formulaString, data=s.train, write.forest=TRUE, num.trees=85)
+    gm <- ranger::ranger(formulaString, data=s.train, write.forest=TRUE, num.trees=85)
     pred <- predict(gm, s.test, na.action = na.pass)$predictions 
   }
   obs.pred <- as.data.frame(list(s.test[,varn], pred))
