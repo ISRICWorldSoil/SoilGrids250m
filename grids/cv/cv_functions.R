@@ -99,6 +99,7 @@ predict_parallel <- function(j, sel, varn, formulaString, rmatrix, idcol){
 
 ## predict soil properties in parallel:
 predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, method, cpus, Nsub=1e4, remove_duplicates=FALSE){
+	message(paste0("Starting predict_parallelP with method: ", method))
   s.train <- rmatrix[!sel==j,]
   if(remove_duplicates==TRUE){
     ## TH: optional - check how does model performs without the knowledge of the 3D dimension
@@ -127,20 +128,29 @@ predict_parallelP <- function(j, sel, varn, formulaString, rmatrix, idcol, metho
   if(method=="caret"){
     test = s.test[,all.vars(formulaString)]
     ## tuning parameters:
-    cl <- makeCluster(cpus)
+    cl <- parallel::makeCluster(cpus)
 	doParallel::registerDoParallel(cl)
     ctrl <- caret::trainControl(method="repeatedcv", number=3, repeats=1)
-    gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1)
+    gb.tuneGrid <- expand.grid(eta = c(0.3,0.4), nrounds = c(50,100), max_depth = 2:3, gamma = 0, colsample_bytree = 0.8, min_child_weight = 1, subsample=Nsub)
     rf.tuneGrid <- expand.grid(mtry = seq(4,length(all.vars(formulaString))/3,by=2))
     ## fine-tune RF parameters:
-    t.mrfX <- caret::train(formulaString, data=s.train[sample.int(nrow(s.train), Nsub),], method="rf", trControl=ctrl, tuneGrid=rf.tuneGrid)
-    gm1 <- ranger::ranger(formulaString, data=s.train, write.forest=TRUE, mtry=t.mrfX$bestTune$mtry)
-    gm1.w = 1/gm1$prediction.error
-    gm2 <- caret::train(formulaString, data=s.train, method="xgbTree", trControl=ctrl, tuneGrid=gb.tuneGrid)
-    gm2.w = 1/(min(gm2$results$RMSE, na.rm=TRUE)^2)
+	# In recent versions, caret fails if a tuneGrid is provided
+	message("Starting training for random forest")
+	t.mrfX <- caret::train(formulaString, data=s.train[sample.int(nrow(s.train), Nsub),], method="rf", trControl=ctrl)#, tuneGrid=rf.tuneGrid)
+	gm1 <- ranger::ranger(formulaString, data=s.train, write.forest=TRUE, mtry=t.mrfX$bestTune$mtry)
+	gm1.w = 1/gm1$prediction.error
+	message("Starting training for xgbTree")
+	gm2 <- caret::train(formulaString, data=s.train, method="xgbTree", trControl=ctrl)#, tuneGrid=gb.tuneGrid)
+	gm2.w = 1/(min(gm2$results$RMSE, na.rm=TRUE)^2)
+		
     v1 <- predict(gm1, test, na.action=na.pass)$predictions
     v2 <- predict(gm2, test, na.action=na.pass)
     pred <- rowSums(cbind(v1*gm1.w, v2*gm2.w))/(gm1.w+gm2.w)
+	
+	# Stop cluster
+	parallel::stopCluster(cl)
+	closeAllConnections()
+	gc()
   }
   if(method=="ranger"){
     gm <- ranger::ranger(formulaString, data=s.train, write.forest=TRUE, num.trees=85)
