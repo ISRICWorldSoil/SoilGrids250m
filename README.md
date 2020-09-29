@@ -1,9 +1,7 @@
 # SoilGrids250m
-Global spatial predictions of soil properties and classes at 250 m resolution
+Global spatial predictions of soil properties and classes at 250 m resolution.
 
-SoilGrids250m is developed and maintained by [ISRIC - World Soil Information](www.isric.org). More information can be found at the [SoilGrids project website](https://www.isric.org/explore/soilgrids). The [SoilGrids Community Forum](https://groups.google.com/forum/#!forum/global-soil-information) provides a platform to discuss the SoilGrids products and its methodology. 
-
-SoilGrids250m can be accessed [here](www.soilgrids.org). Alternatively, the layer can be downloaded from ISRIC's [file service](https://files.isric.org/public/sg250m/).
+This repository hosts the source code used to create the SoilGrids version published in 2017 (Hengl et al. 2017). The maps generated in 2017 can be downloaded from [here](https://files.isric.org/soilgrids/former/2017-03-10/data/). For information about the most recent version of SoilGrids, please visit the [project page](https://www.isric.org/explore/soilgrids). The new maps are displayed in the new portal [soilgrids.org](https://www.soilgrids.org).
 
 Citation:
 * Hengl T, Mendes de Jesus J, Heuvelink GBM, Ruiperez Gonzalez M, Kilibarda M, Blagotić A, et al. (2017) [SoilGrids250m: Global gridded soil information based on machine learning](http://dx.doi.org/10.1371/journal.pone.0169748). PLoS ONE 12(2): e0169748. doi:10.1371/journal.pone.0169748
